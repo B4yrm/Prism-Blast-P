@@ -166,6 +166,11 @@
   .box .row{ display:flex; gap:8px; }
   .box .row button{ flex:1; text-align:center; align-items:center; }
   .box .row button.no{ background:var(--off); color:var(--ink); box-shadow:none; }
+  .cal{ display:grid; grid-template-columns:repeat(7, minmax(0,1fr)); gap:6px; }
+  .day{ background:var(--card3); border:1px solid var(--line); border-radius:10px; padding:6px 2px; text-align:center; font-size:11px; color:var(--muted); display:flex; flex-direction:column; gap:2px; min-width:0; }
+  .day b{ color:var(--ink); font-size:12px; }
+  .day.got{ opacity:.55; }
+  .day.today{ border-color:var(--good); box-shadow:0 0 12px #5fd38d33; color:var(--ink); }
   [hidden]{ display:none !important; }
   @media (prefers-reduced-motion: reduce){ .bar i, .toast{ transition:none; animation:none; } }
 </style>
@@ -206,6 +211,7 @@
       <div class="card">
         <h2>Hava və hadisələr</h2>
         <div class="events" id="events"></div>
+        <button class="act ghost" data-act="turbo" id="turboBtn"><b id="turboTitle">⚡ Turbo ×2</b><small id="turboSub"></small></button>
         <p class="hint">Nadir balıq qarmağa düşəndə ekranda <b>!</b> çıxır. Ekrana bas və basılı saxla: balıq çəkilir. Gərginlik qırmızıya çatanda burax, yoxsa ip qırılır. Əl ilə tutulan balıq <b>×2</b> qiymətə satılır.</p>
       </div>
       <div class="card">
@@ -224,6 +230,11 @@
         <div class="pane" id="ups"></div>
       </div>
       <div class="card">
+        <h2>🧑‍✈️ Kapitanlar <span class="tag"><span class="pearls">◆ <span id="pearlsMgr">0</span></span></span></h2>
+        <p class="hint">Kapitanı inci ilə işə götür. Onun qabiliyyətini dəniz ekranının solundakı düymə ilə işə sal. Qabiliyyət bitəndən sonra bir müddət dincəlir.</p>
+        <div class="pane" id="mgrs"></div>
+      </div>
+      <div class="card">
         <h2>🚢 Gəmilər <span class="tag" id="boatTag"></span></h2>
         <p class="hint">Gəmi tilovların maksimum sayını və satış qiymətini müəyyən edir. Okeanlara və buzlu dənizlərə yalnız güclü gəmi ilə getmək olar.</p>
         <div class="pane" id="boats"></div>
@@ -236,6 +247,11 @@
 
     <!-- QUESTS -->
     <section class="pane" id="pane-quest" hidden>
+      <div class="card">
+        <h2>🎁 Gündəlik hədiyyə <span class="tag" id="dailyTag"></span></h2>
+        <div class="cal" id="cal"></div>
+        <button class="act" data-act="daily" id="dailyBtn"><b id="dailyTitle"></b><small id="dailySub"></small></button>
+      </div>
       <div class="card">
         <h2>📜 Tapşırıqlar <span class="tag">mükafat: ₼ + <span class="pearls">◆ inci</span></span></h2>
         <div class="pane" id="quests"></div>
@@ -252,6 +268,11 @@
 
     <!-- MAP -->
     <section class="pane" id="pane-map" hidden>
+      <div class="card hero">
+        <h2>🧭 Yeni ekspedisiya <span class="tag" id="fameTag"></span></h2>
+        <p class="hint">Bütün dənizləri, pulu, avadanlığı və gəmini sıfırla, əvəzində <b>⚓ Şöhrət</b> qazan. Hər şöhrət xalı bütün qazancı daimi <b>+25%</b> artırır. İnci, albom, kapitanlar, inci mağazası və nailiyyətlər qalır.</p>
+        <button class="act" data-act="prestige" id="presBtn"><b id="presTitle"></b><small id="presSub"></small></button>
+      </div>
       <div class="card">
         <h2>🗺️ Dünya xəritəsi <span class="tag" id="mapTag"></span></h2>
         <p class="hint">Açılmış dənizə toxunub ora üz. Hər dənizdə 3 ulduz var, hər ulduz bütün qazancı +2% artırır.</p>
@@ -292,6 +313,9 @@
           <li><b>Tapşırıqlar</b> və <b>nailiyyətlər</b> inci verir. İncilərlə mağazada daimi bonus alırsan.</li>
           <li><b>Gecə</b> və <b>fırtınada</b> nadir balıq çox olur, <b>yağışda</b> balıq tez tutulur.</li>
           <li><b>Qızıl balığa</b> toxun və bonus qazan.</li>
+          <li>Tutulan balıq əvvəlcə <b>📦 anbara</b> düşür, pul isə <b>🚚 limanda</b> satılanda gəlir. Anbar dolanda tilovlar gözləyir. Liman satışını artır və ya gəmiyə toxunub əl ilə sat.</li>
+          <li><b>Kapitanlar</b>, <b>⚡ Turbo</b>, <b>🔥 Günün balığı</b> və <b>🎁 gündəlik hədiyyə</b> əlavə qazanc verir.</li>
+          <li>LVL 15-dən sonra <b>🧭 Yeni ekspedisiya</b> ilə yenidən başla və daimi şöhrət bonusu al.</li>
         </ol>
       </div>
       <button class="small" data-act="wipe">Bütün irəliləyişi sil</button>
@@ -412,7 +436,17 @@
     { id:'bait',   icon:'🪱', name:'Yem',           base:60,  g:2.4, max:() => 25,  desc:l => `nadir şans ×${(1.12 ** l).toFixed(2)}` },
     { id:'market', icon:'🏪', name:'Balıq bazarı',  base:100, g:2,   max:() => 999, desc:l => `qiymət ×${fmt(1.25 ** l)}` },
     { id:'sonar',  icon:'📡', name:'Sonar',         base:500, g:3.5, max:() => 10,  desc:l => `hadisələr +${l * 15}% tez` },
+    { id:'hold',   icon:'📦', name:'Anbar',         base:80,  g:2.3, max:() => 30,  desc:l => `${15 + 8 * l} balıq yeri` },
+    { id:'sell',   icon:'🚚', name:'Liman satışı',  base:120, g:2.4, max:() => 40,  desc:l => `${(0.6 * 1.18 ** l).toFixed(1)} balıq/san` },
   ];
+  // captains: active abilities with a cooldown; hired and levelled with pearls
+  const MGRS = [
+    { id:'speed', icon:'🧔', name:'Kapitan Rüstəm', ab:'Tam sürət',  eff:'ov sürəti ×2',     cd:180, hire:3 },
+    { id:'price', icon:'👩‍✈️', name:'Kapitan Leyla',  ab:'Bazar günü', eff:'satış qiyməti ×3', cd:240, hire:6 },
+    { id:'rare',  icon:'🧓', name:'Kapitan Nəriman', ab:'Nadir dalğa', eff:'nadir şans ×3',    cd:300, hire:10 },
+  ];
+  const mgrDur = id => 30 + 10 * Math.max(0, S.mgr[id].lvl - 1);
+  const DAILY_PEARLS = [1, 1, 2, 1, 2, 3, 6];
   const SHOP = [
     { id:'exp',  icon:'🧭', name:'Kapitan təcrübəsi', max:50, cost:l => 2 + l,     desc:l => `bütün qazanc ×${(1 + 0.1 * l).toFixed(1)}` },
     { id:'auto', icon:'🤖', name:'Təcrübəli ekipaj',  max:5,  cost:l => 3 + 2 * l, desc:l => `avto tutma +${l * 8}%` },
@@ -426,11 +460,15 @@
     ['fight', 10, 'Güclü qollar', 'Əl ilə 10 nadir balıq tut', 3], ['fight', 100, 'Döyüşçü', 'Əl ilə 100 nadir balıq tut', 8],
     ['gold', 5, 'Qızıl axtaran', '5 qızıl balıq tut', 3], ['gold', 50, 'Qızıl ovçu', '50 qızıl balıq tut', 8],
     ['stars', 30, 'Ulduzlu kapitan', '30 ulduz topla', 5], ['boat', 4, 'Buzqıran', 'Buzqıran al', 8],
+    ['exped', 1, 'Kəşfiyyatçı', 'İlk ekspedisiyanı başla', 6], ['streak', 7, 'Sadiq balıqçı', '7 gün ardıcıl hədiyyə al', 6],
   ];
 
   const fresh = () => ({
     money:0, total:0, caught:0, best:'', bestK:0, golds:0, fights:0, snaps:0, rares:0, newSpecies:0,
-    rods:0, hook:0, line:0, crew:0, bait:0, market:0, sonar:0, boat:0,
+    rods:0, hook:0, line:0, crew:0, bait:0, market:0, sonar:0, hold:0, sell:0, boat:0,
+    holdN:0, holdV:0, run:0, fame:0, exped:0, bestStreak:0,
+    mgr:{ speed:{ lvl:0, ready:0, until:0 }, price:{ lvl:0, ready:0, until:0 }, rare:{ lvl:0, ready:0, until:0 } },
+    turbo:{ until:0, ready:0 }, daily:{ last:'', streak:0 },
     pearls:0, shop:{ exp:0, auto:0, net:0, off:0 }, ach:{}, quests:[], qn:0,
     set:{ sound:true, vib:true, hq:true },
     sea:0, maxSea:0, catches:SEAS.map(() => 0), found:{}, rec:{}, last:Date.now(), clock:0,
@@ -491,19 +529,30 @@
     return starsCache.v;
   }
   const totalSpecies = SEAS.reduce((a, s) => a + s.fish.length, 0);
-  const valueMult = () => 1.25 ** S.market * (1 + 0.03 * foundN()) * (1 + 0.02 * totalStars()) * BOATS[S.boat].val * (1 + 0.1 * S.shop.exp);
+  const valueMult = () => 1.25 ** S.market * (1 + 0.03 * foundN()) * (1 + 0.02 * totalStars()) * BOATS[S.boat].val * (1 + 0.1 * S.shop.exp) * (1 + 0.25 * S.fame);
+  const mgrOn = id => S.mgr[id].lvl > 0 && Date.now() < S.mgr[id].until;
+  const turboOn = () => Date.now() < S.turbo.until;
+  const holdCap = () => 15 + 8 * S.hold;
+  const sellRate = () => 0.6 * 1.18 ** S.sell;
+  const saleMult = () => (turboOn() ? 2 : 1) * (mgrOn('price') ? 3 : 1);
+  const dayKey = (d = new Date()) => d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+  // one species per day sells for ×3; picked from the seas the player has opened
+  function dailyFish(){
+    const ids = []; SEAS.slice(0, S.maxSea + 1).forEach(s => s.fish.forEach((f, k) => ids.push(s.i + ':' + k)));
+    return ids[hash(dayKey()) % ids.length];
+  }
   const seaBase = i => 2 * 1.55 ** i;
   const fishValue = (i, k) => seaBase(i) * 3.2 ** k * valueMult();
   const ticket = i => 120 * 1.55 ** i;
-  const speedMul = () => 1.12 ** S.crew * BOATS[S.boat].speed;
+  const speedMul = () => 1.12 ** S.crew * BOATS[S.boat].speed * (mgrOn('speed') ? 2 : 1);
   const schoolOn = () => S.clock < schoolUntil;
-  const biteTime = () => 3.5 * 0.88 ** S.hook * (schoolOn() ? 0.4 : 1) * W_NOW().bite;
+  const biteTime = () => 3.5 * 0.88 ** S.hook * (schoolOn() ? 0.4 : 1) * W_NOW().bite * (mgrOn('speed') ? 0.5 : 1);
   const evMul = () => 1 + 0.15 * S.sonar;
   function autoChance(crew = S.crew){ return Math.min(0.95, 0.4 + 0.03 * crew + 0.08 * (S ? S.shop.auto : 0)); }
   const offRate = () => OFFLINE_RATE + 0.1 * S.shop.off, offCap = () => OFFLINE_H + 2 * S.shop.off;
 
   function weights(sea, live = true){
-    const rareBoost = live ? (isNight() ? 1.5 : 1) * W_NOW().rare : 1;
+    const rareBoost = live ? (isNight() ? 1.5 : 1) * W_NOW().rare * (mgrOn('rare') ? 3 : 1) : 1;
     return sea.fish.map((f, k) => 60 * 0.42 ** k * (k ? 1.12 ** S.bait : 1) * (k >= 2 ? rareBoost : 1));
   }
   function rollFish(sea){
@@ -517,8 +566,8 @@
   function expectedRate(){
     const sea = SEAS[S.sea], w = weights(sea, false), sum = w.reduce((a, b) => a + b, 0);
     const ev = w.reduce((a, x, k) => a + x / sum * fishValue(S.sea, k) * (k >= 2 ? autoChance() : 1), 0);
-    const cycle = (220 / 140 + 220 / 170) / speedMul() + 3.5 * 0.88 ** S.hook;
-    return (S.rods + 1) * ev / cycle;
+    const cycle = (220 / 140 + 220 / 170) / (1.12 ** S.crew * BOATS[S.boat].speed) + 3.5 * 0.88 ** S.hook;
+    return Math.min((S.rods + 1) / cycle, sellRate()) * ev;   // the slower of catching and selling sets the pace
   }
 
   // ---------------- Fish looks ----------------
@@ -739,7 +788,7 @@
   clouds = Array.from({ length:5 }, (v, i) => ({ x:i * 100 + Math.random() * 60, y:16 + Math.random() * 60, s:.6 + Math.random() * .7, v:3 + Math.random() * 6 }));
   birds = Array.from({ length:3 }, (v, i) => ({ x:Math.random() * W, y:30 + i * 18, v:18 + Math.random() * 10, ph:Math.random() * 6 }));
 
-  function earn(x){ S.money += x; S.total += x; }
+  function earn(x){ S.money += x; S.total += x; S.run += x; }
   function say(text, color, life = 2.6){ banner = { text, color, life, max:life }; }
   function splash(x, y, n = 10, color = '#ffffff'){
     const m = S.set.hq ? n : Math.ceil(n / 2);
@@ -754,10 +803,10 @@
     const i = S.sea, sea = SEAS[i], k = line.fish, name = sea.fish[k];
     const base = speciesKg(name, k), r = Math.random();
     const w = base * (0.6 + r * r * 1.2);
-    const v = fishValue(i, k) * (w / base) * (line.manual ? 2 : 1);
     const id = i + ':' + k, isNew = !S.found[id], isRec = !isNew && w > (S.rec[id] || 0);
+    const v = fishValue(i, k) * (w / base) * (line.manual ? 2 : 1) * (id === dailyFish() ? 3 : 1);
     const starsBefore = seaStars(i);
-    earn(v); S.caught++; S.catches[i]++;
+    S.holdN++; S.holdV += v; S.caught++; S.catches[i]++;
     S.found[id] = 1;
     if (!S.rec[id] || w > S.rec[id]) S.rec[id] = w;
     if (k >= 2) S.rares++;
@@ -775,6 +824,32 @@
     if (k >= 3 && (!S.best || k >= S.bestK)){ S.best = name; S.bestK = k; }
     if (seaStars(i) > starsBefore){ say(`⭐ ${sea.name}: ${seaStars(i)}-ci ulduz!`, '#e2b04a', 3); toast(`⭐ ${sea.name}: yeni ulduz qazandın`); }
     dirty.fish = dirty.map = dirty.album = true;
+  }
+
+  let sellAcc = 0;
+  function sellOne(){
+    if (S.holdN < 1) return 0;
+    const v = S.holdV / S.holdN; S.holdN--; S.holdV -= v;
+    if (S.holdN <= 0){ S.holdN = 0; S.holdV = 0; }
+    const got = v * saleMult(); earn(got); return got;
+  }
+  function useAbility(id){
+    const now = Date.now();
+    if (id === 'turbo'){
+      if (now < S.turbo.ready) return;
+      S.turbo.until = now + 600e3; S.turbo.ready = now + 1800e3;
+      say('⚡ TURBO! 10 dəqiqə satış ×2', '#ffd84a'); SFX.rare(); buzz(40); save(); return;
+    }
+    const m = S.mgr[id], def = MGRS.find(x => x.id === id);
+    if (!m.lvl || now < m.ready) return;
+    m.until = now + mgrDur(id) * 1000; m.ready = now + (mgrDur(id) + def.cd) * 1000;
+    say(`${def.icon} ${def.ab}: ${def.eff} · ${mgrDur(id)} san`, '#5fd38d'); SFX.rare(); buzz(40); save();
+  }
+  // round ability buttons on the left edge of the sea view
+  function abilityButtons(){
+    const list = [{ id:'turbo', icon:'⚡' }];
+    MGRS.forEach(m => { if (S.mgr[m.id].lvl) list.push({ id:m.id, icon:m.icon }); });
+    return list.map((b, i) => ({ ...b, x:28, y:236 + i * 50 }));
   }
 
   function startFight(L){
@@ -803,8 +878,14 @@
           else { floats.push({ x:rodX(L.k), y:L.y - 10, text:'Qaçdı!', life:1.2, color:'#ff8a8a' }); Object.assign(L, newLine(L.k)); }
         }
       }
-      else if (L.state === 'reel'){ L.y -= 170 * sp * dt; if (L.y <= SURF){ land(L); Object.assign(L, newLine(L.k)); } }
+      else if (L.state === 'reel'){ L.y -= 170 * sp * dt;
+        if (L.y <= SURF){ L.y = SURF; if (S.holdN >= holdCap()) L.state = 'full'; else { land(L); Object.assign(L, newLine(L.k)); } } }
+      else if (L.state === 'full' && S.holdN < holdCap()){ land(L); Object.assign(L, newLine(L.k)); }
     }
+    // the port sells from the hold at a steady pace
+    sellAcc += sellRate() * dt;
+    while (sellAcc >= 1 && S.holdN >= 1){ sellOne(); sellAcc -= 1; }
+    if (S.holdN < 1) sellAcc = Math.min(sellAcc, 1);
     if (fight){
       const f = fight, lineK = 0.92 ** S.line;
       f.t -= dt; f.surgeT -= dt;
@@ -1090,7 +1171,7 @@
       ctx.strokeStyle = L.state === 'fight' && fight && fight.ten > 75 ? '#ff6b6b' : '#ffffffb0'; ctx.lineWidth = 1;
       ctx.beginPath(); ctx.moveTo(tipX, tipY + bend); ctx.lineTo(tipX + (L.state === 'fight' ? Math.sin(t / 80) * 6 : 0), L.y); ctx.stroke();
       if (L.y > SURF + 4){ ctx.strokeStyle = '#ffffff55'; ctx.beginPath(); ctx.ellipse(tipX, SURF + 2, 6 + Math.sin(t / 100) * 2, 1.6, 0, 0, 7); ctx.stroke(); }
-      if (L.state === 'reel' || L.state === 'fight' || L.state === 'bite'){
+      if (L.state === 'reel' || L.state === 'fight' || L.state === 'bite' || L.state === 'full'){
         const name = sea.fish[L.fish];
         ctx.save(); ctx.translate(tipX, L.y + 14); ctx.rotate(-Math.PI / 2 + Math.sin(t / (L.state === 'reel' ? 120 : 50)) * .35);
         drawFish(ctx, name, fishLen(name, L.fish), t / 70, { hq, glow:L.fish >= 2 ? RAR[L.fish].color : null }); ctx.restore();
@@ -1135,16 +1216,37 @@
     text(`LVL ${S.sea + 1}  ${'★'.repeat(seaStars(S.sea))}${'☆'.repeat(3 - seaStars(S.sea))}`, 20, 25, 11, '#e7b54d', 800, 'left');
     text(sea.name, 20, 44, sea.name.length > 18 ? 14 : 17, '#ecf3fa', 800, 'left', "'Baloo 2'");
     text(fmt(S.money) + ' ₼', 380, 28, 18, '#f6d48a', 800, 'right', "'Baloo 2'");
-    text(`◆${S.pearls} · ${fmt(expectedRate() * (schoolOn() ? 2.5 : 1))}/san ${isNight() ? '🌙' : ''}${wx.icon}${schoolOn() ? '🐟' : ''}`, 380, 46, 11, '#8ea7bf', 700, 'right');
+    text(`◆${S.pearls} · ${fmt(expectedRate() * saleMult())}/san ${isNight() ? '🌙' : ''}${wx.icon}${schoolOn() ? '🐟' : ''}${turboOn() ? '⚡' : ''}`, 380, 46, 11, '#8ea7bf', 700, 'right');
+
+    // hold gauge under the sea name
+    const cap = holdCap(), fr = Math.min(1, S.holdN / cap), full = S.holdN >= cap;
+    ctx.fillStyle = '#08141ff0'; rr(10, 62, 204, 18, 9); ctx.fill();
+    ctx.fillStyle = '#24405b'; rr(14, 66, 196, 10, 5); ctx.fill();
+    ctx.fillStyle = full ? (Math.sin(t / 150) > 0 ? '#ff6b6b' : '#c94a4a') : fr > .75 ? '#ffb340' : '#3aa0e8';
+    rr(14, 66, Math.max(4, 196 * fr), 10, 5); ctx.fill();
+    text(full ? '📦 ANBAR DOLU · gəmiyə toxun' : `📦 ${Math.floor(S.holdN)}/${cap} · 🚚 ${sellRate().toFixed(1)}/san`, 112, 71.5, 9, '#ecf3fa', 800);
+    // ability buttons
+    const now = Date.now();
+    for (const b of abilityButtons()){
+      const st = b.id === 'turbo' ? S.turbo : S.mgr[b.id], on = now < st.until, ready = now >= st.ready;
+      const def = b.id === 'turbo' ? null : MGRS.find(m => m.id === b.id);
+      const total = b.id === 'turbo' ? 1800e3 : (mgrDur(b.id) + def.cd) * 1000;
+      ctx.fillStyle = on ? '#2a6b4a' : '#08141fe0'; ctx.beginPath(); ctx.arc(b.x, b.y, 19, 0, 7); ctx.fill();
+      ctx.strokeStyle = on ? '#5fd38d' : ready ? '#e7b54d' : '#24405b'; ctx.lineWidth = ready && !on ? 2 + Math.sin(t / 200) : 2; ctx.stroke();
+      if (!ready && !on){ ctx.fillStyle = '#0009'; ctx.beginPath(); ctx.moveTo(b.x, b.y); ctx.arc(b.x, b.y, 18, -Math.PI / 2, -Math.PI / 2 + 6.283 * (st.ready - now) / total); ctx.fill(); }
+      ctx.font = '18px system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#fff'; ctx.fillText(b.icon, b.x, b.y + 1);
+      if (on){ text(Math.ceil((st.until - now) / 1000) + 's', b.x, b.y + 27, 10, '#5fd38d', 800); }
+      else if (!ready){ const s = Math.ceil((st.ready - now) / 1000); text(s > 99 ? Math.ceil(s / 60) + 'd' : s + 's', b.x, b.y + 27, 10, '#8ea7bf', 800); }
+    }
 
     floats.forEach(f => { ctx.globalAlpha = Math.min(1, f.life * 2); ctx.lineWidth = 3; ctx.strokeStyle = '#08141faa';
       ctx.font = '800 13px Inter, system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.strokeText(f.text, f.x, f.y); text(f.text, f.x, f.y, 13, f.color, 800); });
     ctx.globalAlpha = 1;
     if (banner){
       const a = Math.min(1, banner.life * 2), dy = -10 * Math.max(0, 1 - (banner.max - banner.life) * 6);
-      ctx.globalAlpha = a; ctx.fillStyle = '#08141fe6'; rr(16, 66 + dy, 368, 34, 12); ctx.fill();
+      ctx.globalAlpha = a; ctx.fillStyle = '#08141fe6'; rr(16, 86 + dy, 368, 34, 12); ctx.fill();
       ctx.strokeStyle = banner.color; ctx.lineWidth = 2; ctx.stroke();
-      text(banner.text, 200, 83 + dy, banner.text.length > 36 ? 11 : 13, banner.color, 800);
+      text(banner.text, 200, 103 + dy, banner.text.length > 36 ? 11 : 13, banner.color, 800);
       ctx.globalAlpha = 1;
     }
 
@@ -1179,6 +1281,12 @@
   cv.addEventListener('pointerdown', e => {
     e.preventDefault(); audio();
     const [x, y] = toWorld(e);
+    const ab = abilityButtons().find(b => Math.hypot(x - b.x, y - b.y) < 22);
+    if (ab){ useAbility(ab.id); return; }
+    if (!fight && !lines.some(l => l.state === 'bite') && y > SURF - 75 && y < SURF + 22 && Math.abs(x - 200) < BOATS[S.boat].len / 2 + 10 && S.holdN >= 1){
+      let got = 0; for (let n = 0; n < 2; n++) got += sellOne();
+      floats.push({ x, y:y - 10, text:'🚚 +' + fmt(got) + ' ₼', life:1, color:'#7ff0a8' }); SFX.coin(); return;
+    }
     if (gold && Math.hypot(x - gold.x, y - gold.y) < 38){
       const prize = Math.max(50, expectedRate() * 45) * (1 + 0.5 * S.shop.net);
       earn(prize); S.golds++; SFX.rare(); buzz(60);
@@ -1214,7 +1322,7 @@
   }
   function fillQuests(){ while (S.quests.length < 3) S.quests.push(newQuest()); }
   const qProg = q => Math.min(q.n, counters()[q.kind] - q.start);
-  const achValue = key => ({ caught:S.caught, species:foundN(), seas:S.maxSea + 1, fight:S.fights, gold:S.golds, stars:totalStars(), boat:S.boat })[key];
+  const achValue = key => ({ caught:S.caught, species:foundN(), seas:S.maxSea + 1, fight:S.fights, gold:S.golds, stars:totalStars(), boat:S.boat, exped:S.exped, streak:S.bestStreak })[key];
 
   // ---------------- Panel ----------------
   const $ = id => document.getElementById(id);
@@ -1297,8 +1405,8 @@
     el.innerHTML = sea.fish.map((name, k) => {
       const id = i + ':' + k, known = S.found[id];
       return `<span data-ico="${k}"></span>
-        <span class="nm ${known ? '' : 'unknown'}">${known ? name : '??? (hələ tutulmayıb)'}<small style="color:${RAR[k].color}">${RAR[k].name} · şans ${pct(w[k] / sum * 100)}${known ? ' · rekord ' + kg(S.rec[id] || 0) : ''}</small></span>
-        <span class="val">${fmt(fishValue(i, k))} ₼</span>`;
+        <span class="nm ${known ? '' : 'unknown'}">${known ? name : '??? (hələ tutulmayıb)'}<small style="color:${RAR[k].color}">${RAR[k].name} · şans ${pct(w[k] / sum * 100)}${known ? ' · rekord ' + kg(S.rec[id] || 0) : ''}${id === dailyFish() ? ' · 🔥 ×3 bu gün' : ''}</small></span>
+        <span class="val">${fmt(fishValue(i, k) * (id === dailyFish() ? 3 : 1))} ₼</span>`;
     }).join('');
     el.querySelectorAll('[data-ico]').forEach(sp => { const k = +sp.dataset.ico; sp.replaceWith(fishIcon(sea.fish[k], S.found[i + ':' + k], 104, 52, 2)); });
   }
@@ -1337,6 +1445,39 @@
     $('albumTag').textContent = `${foundN()} / ${totalSpecies} növ`;
     $('albumBar').style.width = foundN() / totalSpecies * 100 + '%';
   }
+  function buildMgrs(){
+    const now = Date.now();
+    $('mgrs').innerHTML = MGRS.map(m => {
+      const st = S.mgr[m.id], hired = st.lvl > 0, maxed = st.lvl >= 5, cost = hired ? 2 + st.lvl * 2 : m.hire;
+      const state = !hired ? '' : now < st.until ? ' · <b style="color:var(--good)">işləyir</b>' : now < st.ready ? ` · dincəlir` : ' · <b style="color:var(--brass)">hazırdır</b>';
+      return `<div class="up${hired ? '' : ' done'}">
+        <div class="ic">${m.icon}</div>
+        <div class="nm"><b>${m.name} ${hired ? `<span style="color:var(--muted);font-weight:600">Sv ${st.lvl}/5</span>` : ''}</b><small>${m.ab}: ${m.eff}, ${hired ? mgrDur(m.id) : 30} san · dincəlmə ${m.cd / 60} dəq${state}</small></div>
+        <button class="act pearl" data-act="mgr" data-id="${m.id}" ${maxed || S.pearls < cost ? 'disabled' : ''}><b>${maxed ? 'Maks.' : hired ? '+10 san' : 'İşə götür'}</b><small>${maxed ? '' : '◆ ' + cost}</small></button>
+      </div>`;
+    }).join('');
+    $('pearlsMgr').textContent = S.pearls;
+  }
+  function dailyState(){
+    const today = dayKey(), y = new Date(); y.setDate(y.getDate() - 1);
+    const can = S.daily.last !== today;
+    const next = can ? (S.daily.last === dayKey(y) ? S.daily.streak % 7 + 1 : 1) : S.daily.streak;
+    return { can, day:next };
+  }
+  const dailyMoney = d => Math.max(500, expectedRate() * 120 * d);
+  function buildDaily(){
+    const ds = dailyState();
+    $('cal').innerHTML = DAILY_PEARLS.map((p, i) => {
+      const d = i + 1, got = ds.can ? d < ds.day : d <= ds.day, today = ds.can && d === ds.day;
+      return `<div class="day${got ? ' got' : ''}${today ? ' today' : ''}"><b>${got ? '✓' : d + '-ci'}</b><span>◆${p}</span><span>${d === 7 ? '🎉' : '💰'}</span></div>`;
+    }).join('');
+    $('dailyTitle').textContent = ds.can ? `${ds.day}-ci günün hədiyyəsini al` : 'Bu günün hədiyyəsi alınıb';
+    $('dailySub').textContent = ds.can ? `${fmt(dailyMoney(ds.day))} ₼ + ◆${DAILY_PEARLS[ds.day - 1]}` : 'Sabah yenə gəl, ardıcıllıq qırılmasın';
+    $('dailyBtn').disabled = !ds.can;
+    $('dailyTag').textContent = `ardıcıl: ${ds.can ? Math.max(0, ds.day - 1) : ds.day} gün`;
+  }
+  const fameGain = () => Math.floor(Math.cbrt(S.run / 1e7));
+
   function buildBoats(){
     $('boats').innerHTML = BOATS.map((b, k) => {
       const owned = S.boat >= k, cur = S.boat === k, next = k === S.boat + 1;
@@ -1382,7 +1523,7 @@
     $('achTag').textContent = `${got} / ${ACHS.length}`;
   }
 
-  let lastQuestSig = '', recT = 0, recId = null;
+  let lastQuestSig = '', lastMgrSig = '', recT = 0, recId = null;
   function updatePanel(){
     const i = S.sea, sea = SEAS[i], rate = expectedRate();
     $('money').textContent = fmt(S.money) + ' ₼';
@@ -1395,7 +1536,7 @@
       + (S.boat + 1 < BOATS.length && S.money >= BOATS[S.boat + 1].cost ? 1 : 0);
     $('shipBadge').hidden = !affordN; $('shipBadge').textContent = affordN;
     fillQuests();
-    const claimN = S.quests.filter(q => qProg(q) >= q.n).length + ACHS.filter((a, idx) => !S.ach[idx] && achValue(a[0]) >= a[1]).length;
+    const claimN = S.quests.filter(q => qProg(q) >= q.n).length + ACHS.filter((a, idx) => !S.ach[idx] && achValue(a[0]) >= a[1]).length + (dailyState().can ? 1 : 0);
     $('questBadge').hidden = !claimN; $('questBadge').textContent = claimN;
 
     if (tab === 'sea'){
@@ -1423,10 +1564,20 @@
         `<span class="pill${weather >= 2 ? ' hot' : ''}">${wx.icon} ${wx.name} · ${wDesc}</span>`
         + (isNight() ? `<span class="pill hot">🌙 Gecə · nadir ×1.5 · ${fmtTime(left)}</span>` : `<span class="pill">☀️ Gündüz · gecəyə ${fmtTime(toNight)}</span>`)
         + (schoolOn() ? `<span class="pill hot">🐟 Balıq sürüsü · ${fmtTime(schoolUntil - S.clock)}</span>` : '')
-        + (gold ? `<span class="pill hot">✨ Qızıl balıq üzür, ona toxun!</span>` : '');
+        + (gold ? `<span class="pill hot">✨ Qızıl balıq üzür, ona toxun!</span>` : '')
+        + (turboOn() ? `<span class="pill hot">⚡ Turbo ×2 · ${fmtTime((S.turbo.until - Date.now()) / 1000)}</span>` : '')
+        + MGRS.filter(m => mgrOn(m.id)).map(m => `<span class="pill hot">${m.icon} ${m.ab} · ${fmtTime((S.mgr[m.id].until - Date.now()) / 1000)}</span>`).join('')
+        + (() => { const [ds, dk] = dailyFish().split(':').map(Number); return `<span class="pill${ds === S.sea ? ' hot' : ''}">🔥 Günün balığı: ${S.found[ds + ':' + dk] ? SEAS[ds].fish[dk] : '???'} (${SEAS[ds].name}) ×3</span>`; })()
+        + (S.holdN >= holdCap() ? `<span class="pill" style="color:var(--bad);border-color:var(--bad)">📦 Anbar dolu: Liman satışını artır</span>` : '');
+      const tn = Date.now(), tReady = tn >= S.turbo.ready;
+      $('turboBtn').disabled = !tReady;
+      $('turboTitle').textContent = turboOn() ? '⚡ Turbo işləyir' : '⚡ Turbo ×2';
+      $('turboSub').textContent = tReady ? '10 dəqiqə satış qiyməti ×2 · pulsuz' : `yenidən hazır olacaq: ${fmtTime((S.turbo.ready - tn) / 1000)}`;
     }
     if (tab === 'ship'){
       if (dirty.ship){ buildBoats(); dirty.ship = false; }
+      const mgrSig = JSON.stringify([S.pearls, MGRS.map(m => [S.mgr[m.id].lvl, mgrOn(m.id), Date.now() < S.mgr[m.id].ready])]);
+      if (mgrSig !== lastMgrSig){ buildMgrs(); lastMgrSig = mgrSig; }
       document.querySelectorAll('#boats [data-cost]').forEach(el => { if (+el.dataset.k === S.boat + 1) el.disabled = S.money < +el.dataset.cost; });
       if (performance.now() - recT > 1000){ recT = performance.now(); recId = recommended(); }
       let anyBuy = false;
@@ -1448,16 +1599,25 @@
         <span>Növlər (${foundN()} × 3%)</span><span>×${(1 + .03 * foundN()).toFixed(2)}</span>
         <span>Ulduzlar (${totalStars()} × 2%)</span><span>×${(1 + .02 * totalStars()).toFixed(2)}</span>
         <span>Kapitan təcrübəsi</span><span>×${(1 + .1 * S.shop.exp).toFixed(1)}</span>
-        <span>Ümumi qiymət çarpanı</span><span>×${fmt(valueMult())}</span>`;
+        <span>Şöhrət (${S.fame} × 25%)</span><span>×${(1 + .25 * S.fame).toFixed(2)}</span>
+        <span>Ümumi qiymət çarpanı</span><span>×${fmt(valueMult())}</span>
+        <span>Tutma / satış sürəti</span><span>${((S.rods + 1) / ((220 / 140 + 220 / 170) / (1.12 ** S.crew * BOATS[S.boat].speed) + 3.5 * 0.88 ** S.hook)).toFixed(2)} / ${sellRate().toFixed(2)} balıq/san</span>`;
     }
     if (tab === 'quest'){
-      const sig = JSON.stringify([S.quests.map(q => q.id + ':' + (qProg(q) >= q.n)), S.pearls, S.ach, ACHS.map(a => achValue(a[0]) >= a[1])]);
-      if (dirty.quest || sig !== lastQuestSig){ buildQuests(); dirty.quest = false; lastQuestSig = sig; }
+      const sig = JSON.stringify([S.quests.map(q => q.id + ':' + (qProg(q) >= q.n)), S.pearls, S.ach, ACHS.map(a => achValue(a[0]) >= a[1]), S.daily]);
+      if (dirty.quest || sig !== lastQuestSig){ buildQuests(); buildDaily(); dirty.quest = false; lastQuestSig = sig; }
       S.quests.forEach(q => { const p = qProg(q), b = $('qb-' + q.id), tx = $('qt-' + q.id);
         if (b) b.style.width = p / q.n * 100 + '%';
         if (tx) tx.textContent = q.kind === 'earned' ? fmt(p) + ' / ' + fmt(q.n) : p + ' / ' + q.n; });
     }
-    if (tab === 'map' && dirty.map){ buildMap(); dirty.map = false; }
+    if (tab === 'map'){
+      if (dirty.map){ buildMap(); dirty.map = false; }
+      const g = fameGain(), okLvl = S.maxSea >= 14;
+      $('fameTag').textContent = `⚓ ${S.fame} · ×${(1 + .25 * S.fame).toFixed(2)}`;
+      $('presTitle').textContent = !okLvl ? 'LVL 15-ə çatanda açılır' : g < 1 ? 'Hələ şöhrət azdır' : `Ekspedisiyaya çıx: +${g} ⚓`;
+      $('presSub').textContent = !okLvl ? `İndi: LVL ${S.maxSea + 1}` : g < 1 ? `Bu dövrdə ${fmt(1e7)} ₼ qazan (indi ${fmt(S.run)})` : `Qazanc ×${(1 + .25 * (S.fame + g)).toFixed(2)} olacaq`;
+      $('presBtn').disabled = !okLvl || g < 1;
+    }
     if (tab === 'album' && dirty.album){ buildAlbum(); dirty.album = false; }
     if (tab === 'log'){
       $('setSound').checked = S.set.sound; $('setVib').checked = S.set.vib; $('setHq').checked = S.set.hq;
@@ -1470,7 +1630,9 @@
         <span>Qızıl balıqlar</span><span>${S.golds}</span>
         <span>Ən nadir ov</span><span>${S.best || '—'}</span>
         <span>Ümumi qazanc</span><span>${fmt(S.total)} ₼</span>
-        <span>Offline qazanc</span><span>${Math.round(offRate() * 100)}% · maks. ${offCap()} saat</span>`;
+        <span>Offline qazanc</span><span>${Math.round(offRate() * 100)}% · maks. ${offCap()} saat</span>
+        <span>Ekspedisiyalar</span><span>${S.exped} · ⚓ ${S.fame}</span>
+        <span>Ən uzun ardıcıllıq</span><span>${S.bestStreak} gün</span>`;
     }
   }
 
@@ -1538,6 +1700,33 @@
         toast(`🏆 ${ac[2]}: +◆${ac[4]}`, '#e9e4ff');
         break;
       }
+      case 'turbo': useAbility('turbo'); break;
+      case 'mgr': {
+        const m = MGRS.find(x => x.id === a.dataset.id), st = S.mgr[m.id], cost = st.lvl ? 2 + st.lvl * 2 : m.hire;
+        if (st.lvl >= 5 || S.pearls < cost) return;
+        S.pearls -= cost; st.lvl++; SFX.rare(); lastMgrSig = '';
+        toast(st.lvl === 1 ? `${m.icon} ${m.name} işə götürüldü. Düyməsi dəniz ekranının solundadır` : `${m.icon} ${m.ab}: ${mgrDur(m.id)} san`, '#e9e4ff');
+        break;
+      }
+      case 'daily': {
+        const ds = dailyState(); if (!ds.can) return;
+        const money = dailyMoney(ds.day), pr = DAILY_PEARLS[ds.day - 1];
+        earn(money); S.pearls += pr; S.daily = { last:dayKey(), streak:ds.day }; S.bestStreak = Math.max(S.bestStreak, ds.day === 7 ? 7 : ds.day);
+        SFX.rare(); dirty.quest = true;
+        toast(`🎁 ${ds.day}-ci gün: +${fmt(money)} ₼ +◆${pr}`, '#e9e4ff');
+        break;
+      }
+      case 'prestige': {
+        const g = fameGain(); if (S.maxSea < 14 || g < 1) return;
+        ask('Yeni ekspedisiya?', `Dənizlər, pul, avadanlıq və gəmi sıfırlanacaq. İnci, albom, kapitanlar və nailiyyətlər qalır. Qazancın daimi olaraq ×${(1 + .25 * (S.fame + g)).toFixed(2)} olacaq.`, `+${g} ⚓ Şöhrət`, () => {
+          const f = fresh(), keep = ['pearls', 'shop', 'ach', 'found', 'rec', 'set', 'mgr', 'daily', 'total', 'caught', 'golds', 'fights', 'snaps', 'rares', 'newSpecies', 'best', 'bestK', 'bestStreak', 'qn', 'clock'];
+          keep.forEach(k => { f[k] = S[k]; });
+          f.fame = S.fame + g; f.exped = S.exped + 1; f.quests = [];
+          S = f; resetSea(); fillQuests(); Object.keys(dirty).forEach(k => dirty[k] = true); save(); updatePanel();
+          toast(`🧭 Ekspedisiya başladı: ⚓ ${S.fame}, qazanc ×${(1 + .25 * S.fame).toFixed(2)}`);
+        });
+        return;
+      }
       case 'wipe':
         ask('Hər şeyi sil?', 'Bütün dənizlər, gəmilər, incilər və tapılan növlər birdəfəlik silinəcək.', '', () => {
           const keepSet = S.set; S = fresh(); S.set = keepSet; resetSea(); Object.keys(dirty).forEach(k => dirty[k] = true); save(); updatePanel();
@@ -1550,9 +1739,10 @@
 
   // ---------------- Modal ----------------
   let onYes = null;
-  function ask(title, txt, big, yes){
+  function ask(title, txt, big, yes, yesLabel, noLabel){
     $('mTitle').textContent = title; $('mText').textContent = txt; $('mBig').textContent = big;
-    onYes = yes || null; $('mNo').hidden = !yes; $('mOk').textContent = yes ? 'Bəli' : 'Davam et';
+    onYes = yes || null; $('mNo').hidden = !yes; $('mOk').textContent = yes ? (yesLabel || 'Bəli') : 'Davam et';
+    $('mNo').textContent = noLabel || 'Ləğv et';
     $('modal').classList.add('show');
   }
   const closeModal = () => $('modal').classList.remove('show');
@@ -1570,6 +1760,8 @@
       if (d.rods >= 1 && d.crew === undefined) S.rods = d.rods - 1;   // v1 stored the total rod count
       S.shop = Object.assign(f.shop, d.shop || {});
       S.set = Object.assign(f.set, d.set || {});
+      S.mgr = { speed:Object.assign(f.mgr.speed, (d.mgr || {}).speed), price:Object.assign(f.mgr.price, (d.mgr || {}).price), rare:Object.assign(f.mgr.rare, (d.mgr || {}).rare) };
+      S.turbo = Object.assign(f.turbo, d.turbo || {}); S.daily = Object.assign(f.daily, d.daily || {});
       S.catches = SEAS.map((s, i) => (d.catches || [])[i] || 0);
       S.found = d.found || {}; S.rec = d.rec || {}; S.ach = d.ach || {}; S.quests = d.quests || [];
       S.rares = d.rares || 0; S.newSpecies = d.newSpecies || 0;
@@ -1587,8 +1779,11 @@
     S.last = Date.now();
     if (away < 15) return;
     const gain = expectedRate() * away * offRate();
-    S.money += gain; S.total += gain;
-    ask('Xoş gəldin, kapitan!', `Sən ${fmtTime(away)} yox idin. Ekipaj balıq tutmağa davam etdi (${SEAS[S.sea].name}):`, '+' + fmt(gain) + ' ₼');
+    earn(gain);
+    const txt = `Sən ${fmtTime(away)} yox idin. Ekipaj balıq tutub limanda satdı (${SEAS[S.sea].name}):`;
+    if (S.pearls >= 1) ask('Xoş gəldin, kapitan!', txt + ' ◆1 inci ilə bu qazancı ikiqat edə bilərsən.', '+' + fmt(gain) + ' ₼',
+      () => { if (S.pearls < 1) return; S.pearls--; earn(gain); toast(`💰 İkiqat: +${fmt(gain)} ₼ əlavə`); save(); }, 'İkiqat al (◆1)', 'Belə qalsın');
+    else ask('Xoş gəldin, kapitan!', txt, '+' + fmt(gain) + ' ₼');
   }
 
   // ---------------- Loop ----------------
@@ -1614,6 +1809,7 @@
   resize();
   fillQuests();
   updatePanel();
+  if (dailyState().can) setTimeout(() => toast('🎁 Gündəlik hədiyyə hazırdır: Tapşırıq bölməsinə bax', '#5fd38d'), 1200);
   requestAnimationFrame(frame);
 })();
 </script>
