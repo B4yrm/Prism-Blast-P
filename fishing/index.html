@@ -41,7 +41,7 @@
   .chip.pearl{ color:var(--pearl); }
   .chip small{ color:var(--muted); font-weight:700; font-size:11px; }
 
-  .tabs{ display:grid; grid-template-columns:repeat(8, minmax(58px, 1fr)); overflow-x:auto; scrollbar-width:none; gap:2px; background:linear-gradient(180deg, var(--card2), var(--card)); border:1px solid var(--line); border-radius:var(--r); padding:4px; position:sticky; top:16px; z-index:3; box-shadow:0 8px 20px #0006; }
+  .tabs{ display:grid; grid-template-columns:repeat(9, minmax(58px, 1fr)); overflow-x:auto; scrollbar-width:none; gap:2px; background:linear-gradient(180deg, var(--card2), var(--card)); border:1px solid var(--line); border-radius:var(--r); padding:4px; position:sticky; top:16px; z-index:3; box-shadow:0 8px 20px #0006; }
   .tabs button{ font:inherit; font-size:11px; font-weight:700; background:none; border:0; color:var(--muted); border-radius:12px; padding:7px 1px 6px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:2px; position:relative; min-width:0; transition:background .15s, color .15s; }
   .tabs button span{ font-size:19px; line-height:1; transition:transform .15s; }
   .tabs button:hover span{ transform:translateY(-1px); }
@@ -199,6 +199,7 @@
       <button data-tab="quest"><span>📜</span>Tapşırıq<i class="badge" id="questBadge" hidden></i></button>
       <button data-tab="factory"><span>🏭</span>Sex<i class="badge" id="fxBadge" hidden></i></button>
       <button data-tab="market"><span>🏪</span>Bazar<i class="badge" id="mkBadge" hidden></i></button>
+      <button data-tab="rest"><span>🍽️</span>Restoran<i class="badge" id="rsBadge" hidden></i></button>
       <button data-tab="map"><span>🗺️</span>Xəritə</button>
       <button data-tab="album"><span>📖</span>Albom</button>
       <button data-tab="log"><span>⚙️</span>Ayarlar</button>
@@ -258,11 +259,15 @@
           <button class="act" data-act="fxopen" id="fxOpenBtn"><b id="fxOpenTitle"></b><small id="fxOpenSub"></small></button>
           <button class="act ghost" data-act="view" data-v="factory" id="fxViewBtn"><b>🏭 Sex ekranına bax</b><small>Konveyerləri canlı izlə</small></button>
         </div>
-        <p class="hint">Zəncir: <b>🎣 tutulma</b> → <b>🚚 gətirilmə</b> → <b>🚿 yuma və təmizlənmə</b> → <b>🔪 doğrama və 📦 qablaşdırma</b>. Qablaşdırılmış balıq bazarda piştaxtalarda satılır, təmiz balıq restoranda bişirilir, diri balıq birbaşa anbardan akvariuma gedir. Ən yavaş mərhələ bütün zənciri yavaşladır.</p>
+        <p class="hint">Zəncir: <b>🎣 tutulma</b> → <b>🚚 gətirilmə</b> → <b>🚿 yuma və təmizlənmə</b> → <b>📦 məhsul xətləri</b>. Hər xətt təmiz balıqdan öz məhsulunu hazırlayır: bütöv, dilim, fileto, dondurulmuş, hisə verilmiş, konserv. Təzə məhsullar bazarda piştaxtada, qalanları soyuducu rəfdə satılır. Restoran da bu məhsullardan yemək bişirir.</p>
       </div>
       <div class="card">
-        <h2>⚙️ Xətlər</h2>
+        <h2>⚙️ Əsas xətlər</h2>
         <div class="pane" id="fxUps"></div>
+      </div>
+      <div class="card">
+        <h2>📦 Məhsul xətləri</h2>
+        <div class="pane" id="fxLines"></div>
       </div>
     </section>
 
@@ -275,11 +280,32 @@
           <button class="act" data-act="mkopen" id="mkOpenBtn"><b id="mkOpenTitle"></b><small id="mkOpenSub"></small></button>
           <button class="act ghost" data-act="view" data-v="market" id="viewBtn"><b id="viewTitle"></b><small>Dəniz ekranı ilə bazar arasında keç</small></button>
         </div>
-        <p class="hint">Müştərilər qablaşdırılmış balığı piştaxtadan, diri balığı akvariumdan alır, ya da restoranda bişmiş balıq yeyir, sonra kassada ödəyir. Uzun növbə, çirk və boş piştaxta məmnuniyyəti azaldır. Reytinq qiyməti və müştəri axınını müəyyən edir. Bazar açıq olanda liman yalnız anbar 60%-dən çox dolanda satır.</p>
+        <p class="hint">Müştərilər təzə məhsulu piştaxtadan, dondurulmuş, hisə verilmiş və konservi soyuducu rəfdən, diri balığı akvariumdan alır, sonra kassada ödəyir. Uzun növbə, çirk və boş piştaxta məmnuniyyəti azaldır. Reytinq qiyməti və müştəri axınını müəyyən edir. Bazar açıq olanda liman yalnız anbar 60%-dən çox dolanda satır.</p>
       </div>
       <div class="card">
         <h2>🏗️ Bazarın inkişafı</h2>
         <div class="pane" id="mkUps"></div>
+      </div>
+    </section>
+
+    <!-- RESTAURANT -->
+    <section class="pane" id="pane-rest" hidden>
+      <div class="card hero">
+        <h2 id="rsName">🍽️ Balıq restoranı</h2>
+        <div class="stats" id="rsStats"></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px">
+          <button class="act" data-act="rsopen" id="rsOpenBtn"><b>🍽️ Restoranı aç</b><small id="rsOpenSub"></small></button>
+          <button class="act ghost" data-act="view" data-v="rest" id="rsViewBtn"><b>🍽️ Restoran ekranına bax</b><small>Aşpazları və ofisiantları izlə</small></button>
+        </div>
+        <p class="hint">Qonaq gəlir, boş masa gözləyir və oturur. Ofisiant sifarişi götürür, aşpaz bişirir, ofisiant yeməyi gətirir, qonaq yeyib ödəyir. Hər yemək sexdəki bir məhsuldan hazırlanır. Uzun gözləmə reytinqi salır.</p>
+      </div>
+      <div class="card">
+        <h2>📜 Menyu</h2>
+        <div class="pane" id="rsMenu"></div>
+      </div>
+      <div class="card">
+        <h2>🏗️ Restoranın inkişafı</h2>
+        <div class="pane" id="rsUps"></div>
       </div>
     </section>
 
@@ -353,8 +379,9 @@
           <li><b>Qızıl balığa</b> toxun və bonus qazan.</li>
           <li>Tutulan balıq əvvəlcə <b>📦 anbara</b> düşür, pul isə <b>🚚 limanda</b> satılanda gəlir. Anbar dolanda tilovlar gözləyir. Liman satışını artır və ya gəmiyə toxunub əl ilə sat.</li>
           <li><b>Kapitanlar</b>, <b>⚡ Turbo</b>, <b>🔥 Günün balığı</b> və <b>🎁 gündəlik hədiyyə</b> əlavə qazanc verir.</li>
-          <li><b>🏭 Sex</b>: yük maşını balığı gətirir, xətt yuyub təmizləyir, sonra doğrayıb qablaşdırır. Ən yavaş mərhələ yaşıl haşiyə ilə göstərilir.</li>
-          <li><b>🏪 Bazar</b>: qablaşdırılmış balıq piştaxtada, diri balıq akvariumda satılır, <b>🍽️ restoranda</b> təmiz balıq bişirilir. Növbələri qısalt, təmizliyə bax, reytinqi qaldır və daha böyük bazara keç.</li>
+          <li><b>🏭 Sex</b>: yük maşını balığı gətirir, xətt yuyub təmizləyir, sonra 6 məhsul xətti bütöv, dilim, fileto, dondurulmuş, hisə verilmiş və konserv hazırlayır. Ən yavaş mərhələ yaşıl haşiyə ilə göstərilir.</li>
+          <li><b>🏪 Bazar</b>: təzə məhsul piştaxtada, uzunömürlü məhsul soyuducu rəfdə, diri balıq akvariumda satılır. Növbələri qısalt, təmizliyə bax, reytinqi qaldır və daha böyük bazara keç.</li>
+          <li><b>🍽️ Restoran</b>: ayrıca binadır. Menyuya yemək əlavə et, masa, ofisiant və aşpaz al. Hər yemək sexdəki bir məhsuldan bişirilir.</li>
           <li>LVL 15-dən sonra <b>🧭 Yeni ekspedisiya</b> ilə yenidən başla və daimi şöhrət bonusu al.</li>
         </ol>
       </div>
@@ -501,7 +528,7 @@
     { id:'cash',   icon:'💳', name:'Kassa',           base:2000, g:10,  max:() => 2,  desc:l => `${l + 1} kassa` },
     { id:'ck',     icon:'🧾', name:'Kassirlər',       base:300,  g:2.2, max:() => 20, desc:l => `ödəniş ${(3 * 0.88 ** l).toFixed(1)} san` },
     { id:'aqua',   icon:'🐠', name:'Diri balıq akvariumu', base:300, g:2.2, max:() => 20, desc:l => `xidmət ${(3 * 0.9 ** l).toFixed(1)} san` },
-    { id:'rest',   icon:'🍽️', name:'Restoran',        base:3e4,  g:2.3, max:() => 20, desc:l => l ? `${restSeats(l)} masa · yemək ×${(VAL.dish * (1 + 0.15 * l)).toFixed(1)}` : 'bağlı' },
+    { id:'shelf',  icon:'❄️', name:'Soyuducu rəf',    base:1e4,  g:2.3, max:() => 20, desc:l => l ? `dondurulmuş, hisə verilmiş, konserv · xidmət ${(3 * 0.9 ** l).toFixed(1)} san` : 'bağlı' },
     { id:'clean',  icon:'🧹', name:'Təmizlikçilər',   base:800,  g:3,   max:() => 10, desc:l => `təmizlik ${(0.3 + 1.5 * l).toFixed(1)}/san` },
   ];
   const SHOP = [
@@ -518,7 +545,7 @@
     ['gold', 5, 'Qızıl axtaran', '5 qızıl balıq tut', 3], ['gold', 50, 'Qızıl ovçu', '50 qızıl balıq tut', 8],
     ['stars', 30, 'Ulduzlu kapitan', '30 ulduz topla', 5], ['boat', 4, 'Buzqıran', 'Buzqıran al', 8],
     ['exped', 1, 'Kəşfiyyatçı', 'İlk ekspedisiyanı başla', 6], ['served', 500, 'Bazar sahibi', 'Bazarda 500 müştəriyə xidmət et', 5], ['mktier', 3, 'Birja', 'Balıq birjası aç', 10],
-    ['packed', 1000, 'Qablaşdırma ustası', '1 000 balıq qablaşdır', 5], ['dishes', 300, 'Baş aşpaz', 'Restoranda 300 yemək sat', 6], ['streak', 7, 'Sadiq balıqçı', '7 gün ardıcıl hədiyyə al', 6],
+    ['packed', 1000, 'Sex ustası', '1 000 məhsul hazırla', 5], ['dishes', 300, 'Baş aşpaz', 'Restoranda 300 yemək ver', 6], ['streak', 7, 'Sadiq balıqçı', '7 gün ardıcıl hədiyyə al', 6],
   ];
 
   const fresh = () => ({
@@ -527,8 +554,11 @@
     holdN:0, holdV:0, run:0, fame:0, exped:0, bestStreak:0,
     mgr:{ speed:{ lvl:0, ready:0, until:0 }, price:{ lvl:0, ready:0, until:0 }, rare:{ lvl:0, ready:0, until:0 } },
     turbo:{ until:0, ready:0 }, daily:{ last:'', streak:0 }, view:'sea',
-    mk:{ open:false, tier:0, ads:0, stalls:0, sk:0, cash:0, ck:0, aqua:0, rest:0, clean:0, served:0, angry:0, dirt:0, dishes:0, sat:[] },
-    fx:{ open:false, truck:0, wash:0, pack:0, cold:0, rawN:0, rawV:0, cleanN:0, cleanV:0, packN:0, packV:0, washed:0, packed:0 },
+    mk:{ open:false, tier:0, ads:0, stalls:0, sk:0, cash:0, ck:0, aqua:0, shelf:0, clean:0, served:0, angry:0, dirt:0, dishes:0, sat:[] },
+    fx:{ open:false, truck:0, wash:0, cold:0, raw:{ n:0, v:0 }, clean:{ n:0, v:0 }, washed:0, packed:0,
+      lines:{ whole:1, steak:0, fillet:0, frozen:0, smoked:0, canned:0 },
+      p:{ whole:{ n:0, v:0 }, steak:{ n:0, v:0 }, fillet:{ n:0, v:0 }, frozen:{ n:0, v:0 }, smoked:{ n:0, v:0 }, canned:{ n:0, v:0 } } },
+    rs:{ open:false, ads:0, tables:0, waiters:0, wsp:0, chefs:0, csp:0, decor:0, served:0, angry:0, sat:[], menu:{ soup:true } },
     pearls:0, shop:{ exp:0, auto:0, net:0, off:0 }, ach:{}, quests:[], qn:0,
     set:{ sound:true, vib:true, hq:true },
     sea:0, maxSea:0, catches:SEAS.map(() => 0), found:{}, rec:{}, last:Date.now(), clock:0,
@@ -913,43 +943,55 @@
   }
 
   // ---------------- Processing plant (sex) ----------------
-  // hold (raw, on the boat) -> truck -> plant intake -> washing & cleaning -> cutting & packing -> packed stock
+  // hold (raw, on the boat) -> truck -> plant intake -> washing & cleaning -> product lines -> product stocks
   const mkScale = () => 1.55 ** S.maxSea;
-  const FXUPS = [
-    { id:'truck', icon:'🚚', name:'Yük maşını (gətirilmə)',   base:400, g:2.2,  max:() => 40, desc:l => `${fxRate('truck', l).toFixed(1)} balıq/san` },
-    { id:'wash',  icon:'🚿', name:'Yuma və təmizlənmə',       base:600, g:2.2,  max:() => 40, desc:l => `${fxRate('wash', l).toFixed(1)} balıq/san · ${1 + Math.floor(l / 5)} işçi` },
-    { id:'pack',  icon:'🔪', name:'Doğrama və qablaşdırma',   base:900, g:2.25, max:() => 40, desc:l => `${fxRate('pack', l).toFixed(1)} balıq/san · ${1 + Math.floor(l / 5)} işçi` },
-    { id:'cold',  icon:'❄️', name:'Soyuducu anbar',          base:500, g:2.4,  max:() => 20, desc:l => `hər anbar ${fxCap(l)} balıq` },
+  const PRODUCTS = [
+    { id:'whole',  icon:'🐟', name:'Təmizlənmiş bütöv', mult:1.5, rate:.4,  unlock:0,   shelf:'stall' },
+    { id:'steak',  icon:'🥩', name:'Dilim (steyk)',     mult:2.2, rate:.32, unlock:3e3, shelf:'stall' },
+    { id:'fillet', icon:'🔪', name:'Fileto',            mult:2.5, rate:.3,  unlock:8e3, shelf:'stall' },
+    { id:'frozen', icon:'🧊', name:'Dondurulmuş',       mult:1.9, rate:.35, unlock:2e4, shelf:'shelf' },
+    { id:'smoked', icon:'🔥', name:'Hisə verilmiş',     mult:3,   rate:.25, unlock:6e4, shelf:'shelf' },
+    { id:'canned', icon:'🥫', name:'Konserv',           mult:3.4, rate:.22, unlock:2e5, shelf:'shelf' },
   ];
-  const fxRate = (id, l = S.fx[id]) => ({ truck:.5, wash:.4, pack:.3 }[id]) * 1.2 ** l * (turboOn() ? 1 : 1);
+  const FXUPS = [
+    { id:'truck', icon:'🚚', name:'Yük maşını (gətirilmə)', base:400, g:2.2, max:() => 40, desc:l => `${fxRate('truck', l).toFixed(1)} balıq/san` },
+    { id:'wash',  icon:'🚿', name:'Yuma və təmizlənmə',     base:600, g:2.2, max:() => 40, desc:l => `${fxRate('wash', l).toFixed(1)} balıq/san · ${1 + Math.floor(l / 5)} işçi` },
+    { id:'cold',  icon:'❄️', name:'Soyuducu anbar',        base:500, g:2.4, max:() => 20, desc:l => `hər anbar ${fxCap(l)} ədəd` },
+  ];
+  const fxRate = (id, l = S.fx[id]) => ({ truck:.5, wash:.45 }[id]) * 1.2 ** l;
+  const lineRate = (p, l = S.fx.lines[p.id]) => l ? p.rate * 1.2 ** (l - 1) : 0;
+  const lineCost = p => (S.fx.lines[p.id] ? Math.max(500, p.unlock) * 2.2 ** S.fx.lines[p.id] : Math.max(300, p.unlock)) * mkScale();
   const fxCap = (l = S.fx.cold) => 20 + 12 * l;
   const fxCost = u => u.base * u.g ** S.fx[u.id] * mkScale();
   const fxOpenCost = () => 600 * mkScale();
-  const VAL = { live:1.4, clean:1.3, packed:2.2, dish:3.5 };   // price factors against the raw catch value
-  let fxAcc = { truck:0, wash:0, pack:0 }, truckT = 0;
-  function moveStock(fromN, fromV, n){
-    const one = S.fx[fromV] / S.fx[fromN] || 0; S.fx[fromN] -= n; S.fx[fromV] -= one * n;
-    if (S.fx[fromN] <= 0){ S.fx[fromN] = 0; S.fx[fromV] = 0; } return one * n;
-  }
+  const stock = id => S.fx.p[id];
+  let fxAcc = { truck:0, wash:0 }, lineAcc = {}, truckT = 0, lineTurn = 0;
+  function moveFrom(o, n){ const one = o.v / o.n || 0; o.n -= n; o.v -= one * n; if (o.n <= 0){ o.n = 0; o.v = 0; } return one * n; }
   function stepFactory(dt){
     const fx = S.fx, cap = fxCap();
     truckT += dt * fxRate('truck') / 4;
     fxAcc.truck += fxRate('truck') * dt;
-    while (fxAcc.truck >= 1 && S.holdN >= 1 && fx.rawN < cap){
+    while (fxAcc.truck >= 1 && S.holdN >= 1 && fx.raw.n < cap){
       const one = S.holdV / S.holdN; S.holdN--; S.holdV -= one; if (S.holdN <= 0){ S.holdN = 0; S.holdV = 0; }
-      fx.rawN++; fx.rawV += one; fxAcc.truck--;
+      fx.raw.n++; fx.raw.v += one; fxAcc.truck--;
     }
     fxAcc.wash += fxRate('wash') * dt;
-    while (fxAcc.wash >= 1 && fx.rawN >= 1 && fx.cleanN < cap){ const v = moveStock('rawN', 'rawV', 1); fx.cleanN++; fx.cleanV += v; fxAcc.wash--; fx.washed++; }
-    fxAcc.pack += fxRate('pack') * dt;
-    while (fxAcc.pack >= 1 && fx.cleanN >= 1 && fx.packN < cap){ const v = moveStock('cleanN', 'cleanV', 1); fx.packN++; fx.packV += v; fxAcc.pack--; fx.packed++; }
-    for (const k of ['truck', 'wash', 'pack']) fxAcc[k] = Math.min(fxAcc[k], 2);
+    while (fxAcc.wash >= 1 && fx.raw.n >= 1 && fx.clean.n < cap){ const v = moveFrom(fx.raw, 1); fx.clean.n++; fx.clean.v += v; fxAcc.wash--; fx.washed++; }
+    // product lines pull cleaned fish in rotating order so no line starves the others
+    lineTurn = (lineTurn + 1) % PRODUCTS.length;
+    for (let k = 0; k < PRODUCTS.length; k++){
+      const p = PRODUCTS[(k + lineTurn) % PRODUCTS.length], r = lineRate(p); if (!r) continue;
+      lineAcc[p.id] = Math.min(2, (lineAcc[p.id] || 0) + r * dt);
+      const st = stock(p.id);
+      while (lineAcc[p.id] >= 1 && fx.clean.n >= 1 && st.n < cap){ const v = moveFrom(fx.clean, 1); st.n++; st.v += v; lineAcc[p.id]--; fx.packed++; }
+    }
+    for (const k of ['truck', 'wash']) fxAcc[k] = Math.min(fxAcc[k], 2);
   }
   const fxBottleneck = () => {
-    const fx = S.fx, cap = fxCap();
-    if (fx.packN >= cap) return 'Qablaşdırılmış anbar dolub: bazarda satışı artır';
-    if (fx.cleanN >= cap * .9) return 'Doğrama və qablaşdırma yavaşdır';
-    if (fx.rawN >= cap * .9) return 'Yuma xətti yavaşdır';
+    const fx = S.fx, cap = fxCap(), open = PRODUCTS.filter(p => fx.lines[p.id]);
+    if (open.length && open.every(p => stock(p.id).n >= cap)) return 'Məhsul anbarları dolub: bazarda satışı artır';
+    if (fx.clean.n >= cap * .9) return 'Məhsul xətləri yavaşdır';
+    if (fx.raw.n >= cap * .9) return 'Yuma xətti yavaşdır';
     if (S.holdN >= holdCap() * .9) return 'Yük maşını yetişmir';
     return '';
   };
@@ -958,91 +1000,87 @@
     const fx = S.fx, cap = fxCap(), sea = SEAS[S.sea];
     ctx.fillStyle = '#c9cfd4'; ctx.fillRect(-10, -10, W + 20, H + 20);
     for (let y = 120; y < H; y += 20){ ctx.fillStyle = (y / 20) % 2 ? '#c2c9cf' : '#cdd3d8'; ctx.fillRect(0, y, W, 20); }
-    // dock with water and road
     ctx.fillStyle = WATER[sea.region][0]; ctx.fillRect(-10, 84, W + 20, 36);
     for (let x = 0; x < W; x += 24){ ctx.strokeStyle = '#ffffff55'; ctx.beginPath(); ctx.arc(x + (t / 60) % 24, 104, 6, Math.PI * 1.1, Math.PI * 1.9); ctx.stroke(); }
     ctx.fillStyle = '#7a5235'; ctx.fillRect(250, 112, 140, 10);
     ctx.save(); ctx.translate(320, 104); ctx.scale(.45, .45); ctx.fillStyle = BOATS[S.boat].hull; ctx.beginPath(); ctx.moveTo(-60, -8); ctx.lineTo(60, -8); ctx.lineTo(48, 12); ctx.lineTo(-48, 12); ctx.fill(); ctx.restore();
-    ctx.fillStyle = '#5c6670'; ctx.fillRect(-10, 122, W + 20, 34);
-    ctx.strokeStyle = '#e8e8e8'; ctx.setLineDash([12, 10]); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0, 139); ctx.lineTo(W, 139); ctx.stroke(); ctx.setLineDash([]);
-    // truck shuttling between dock and intake
-    const ph = (truckT % 1), going = ph < .5, tx = going ? 300 - ph * 2 * 240 : 60 + (ph - .5) * 2 * 240;
-    ctx.save(); ctx.translate(tx, 136); if (!going) ctx.scale(-1, 1);
+    ctx.fillStyle = '#5c6670'; ctx.fillRect(-10, 122, W + 20, 30);
+    ctx.strokeStyle = '#e8e8e8'; ctx.setLineDash([12, 10]); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0, 137); ctx.lineTo(W, 137); ctx.stroke(); ctx.setLineDash([]);
+    const ph = truckT % 1, going = ph < .5, tx = going ? 300 - ph * 2 * 240 : 60 + (ph - .5) * 2 * 240;
+    ctx.save(); ctx.translate(tx, 134); if (!going) ctx.scale(-1, 1);
     ctx.fillStyle = '#e7b54d'; rr(-22, -12, 30, 18, 3); ctx.fill(); ctx.fillStyle = '#2f6f9f'; rr(-30, -8, 10, 14, 2); ctx.fill();
     ctx.fillStyle = '#9fd3ea'; ctx.fillRect(-29, -6, 6, 5); ctx.fillStyle = '#222'; [-24, 0].forEach(x => { ctx.beginPath(); ctx.arc(x, 7, 4, 0, 7); ctx.fill(); });
     if (going && S.holdN >= 1){ ctx.fillStyle = '#9fb4c2'; ctx.fillRect(-18, -16, 22, 5); }
     ctx.restore();
-    text('🚚 Gətirilmə', 200, 126, 9, '#fff', 800);
-    // bins
     const bin = (x, y, w, h, title, n, color) => {
       ctx.fillStyle = '#ffffff'; rr(x, y, w, h, 8); ctx.fill(); ctx.strokeStyle = n >= cap ? '#d6453d' : '#8a96a0'; ctx.lineWidth = 2; ctx.stroke();
       ctx.fillStyle = color; rr(x + 4, y + h - 4 - (h - 22) * Math.min(1, n / cap), w - 8, (h - 22) * Math.min(1, n / cap), 4); ctx.fill();
-      text(title, x + w / 2, y + 9, 9, '#33414d', 800);
-      text(`${Math.floor(n)}/${cap}`, x + w / 2, y + h / 2 + 6, 12, '#1f2a24', 800);
+      text(title, x + w / 2, y + 9, 9, '#33414d', 800); text(`${Math.floor(n)}/${cap}`, x + w / 2, y + h / 2 + 6, 12, '#1f2a24', 800);
     };
-    bin(14, 166, 86, 64, '❄️ Xam balıq', fx.rawN, '#9fc3d9');
-    bin(300, 270, 86, 64, '✨ Təmiz balıq', fx.cleanN, '#a8e0c4');
-    bin(14, 440, 96, 64, '📦 Qablaşdırılmış', fx.packN, '#f1d39a');
-    // conveyors
-    const belt = (x1, x2, y, dir, active, kind) => {
-      ctx.fillStyle = '#3c4a5a'; rr(Math.min(x1, x2), y - 7, Math.abs(x2 - x1), 14, 7); ctx.fill();
-      ctx.strokeStyle = '#56687a'; ctx.lineWidth = 1; for (let x = Math.min(x1, x2) + ((t / 25 * dir) % 12 + 12) % 12; x < Math.max(x1, x2); x += 12){ ctx.beginPath(); ctx.moveTo(x, y - 6); ctx.lineTo(x, y + 6); ctx.stroke(); }
-      if (!active) return;
-      const len = Math.abs(x2 - x1), sp = 40;
-      for (let i = 0; i < 6; i++){
-        const p = ((t / 1000 * sp + i * len / 6) % len), x = dir > 0 ? x1 + p : x1 - p;
-        ctx.save(); ctx.translate(x, y - 6);
-        if (kind === 'box' && ((dir > 0 ? p : p) > len * .55)){ ctx.fillStyle = '#c99a5b'; ctx.fillRect(-7, -6, 14, 10); ctx.strokeStyle = '#8a6a4a'; ctx.strokeRect(-7, -6, 14, 10); ctx.fillStyle = '#e74c3c'; ctx.fillRect(-7, -2, 14, 2); }
-        else { if (dir < 0) ctx.scale(-1, 1); drawFish(ctx, sea.fish[i % sea.fish.length], 16, t / 200 + i, { hq:false }); }
-        ctx.restore();
+    bin(10, 160, 80, 60, '❄️ Xam', fx.raw.n, '#9fc3d9');
+    bin(310, 160, 80, 60, '✨ Təmiz', fx.clean.n, '#a8e0c4');
+    // washing station and belt
+    const washing = fx.raw.n >= 1 && fx.clean.n < cap;
+    ctx.fillStyle = '#3c4a5a'; rr(92, 228, 216, 12, 6); ctx.fill();
+    ctx.strokeStyle = '#56687a'; ctx.lineWidth = 1; for (let x = 92 + (t / 25) % 12; x < 308; x += 12){ ctx.beginPath(); ctx.moveTo(x, 229); ctx.lineTo(x, 239); ctx.stroke(); }
+    if (washing) for (let i = 0; i < 5; i++){ const x = 96 + ((t / 1000 * 40 + i * 42) % 208); ctx.save(); ctx.translate(x, 226); drawFish(ctx, sea.fish[i % sea.fish.length], 15, t / 200 + i, { hq:false }); ctx.restore(); }
+    ctx.fillStyle = '#ffffffee'; rr(112, 162, 176, 46, 10); ctx.fill(); ctx.strokeStyle = washing ? '#2f7d5b' : '#8a96a0'; ctx.lineWidth = 2; ctx.stroke();
+    text(`🚿 Yuma və təmizlənmə · Sv ${fx.wash}`, 200, 174, 10, '#1f2a24', 800);
+    for (let i = 0; i < Math.min(6, 1 + Math.floor(fx.wash / 5)); i++){ const wx = 128 + i * 24, wy = 196 + (washing ? Math.sin(t / 120 + i) * 1.5 : 0);
+      ctx.fillStyle = '#2f6f9f'; ctx.beginPath(); ctx.arc(wx, wy, 5, 0, 7); ctx.fill(); ctx.fillStyle = '#f2c9a0'; ctx.beginPath(); ctx.arc(wx, wy - 7, 3.5, 0, 7); ctx.fill(); ctx.fillStyle = '#fff'; ctx.fillRect(wx - 4, wy - 12, 8, 2); }
+    if (washing){ ctx.fillStyle = '#7cc6f2cc'; for (let i = 0; i < 10; i++){ const dx = (i * 19 + t / 18) % 200; ctx.beginPath(); ctx.arc(100 + dx, 222 - ((t / 8 + i * 13) % 12), 1.6, 0, 7); ctx.fill(); } }
+    // product lines: 2 columns x 3 rows
+    text('📦 Məhsul xətləri', 200, 254, 11, '#33414d', 800);
+    PRODUCTS.forEach((p, i) => {
+      const x = 10 + (i % 2) * 196, y = 264 + Math.floor(i / 2) * 82, l = fx.lines[p.id], st = stock(p.id);
+      if (!l){ ctx.setLineDash([5, 5]); ctx.strokeStyle = '#8a96a0'; ctx.lineWidth = 1.5; rr(x, y, 184, 74, 10); ctx.stroke(); ctx.setLineDash([]);
+        text(`🔒 ${p.icon} ${p.name}`, x + 92, y + 30, 11, '#5c6670', 800); text(`qiymət ×${p.mult}`, x + 92, y + 48, 10, '#5c6670', 700); return; }
+      const busy = fx.clean.n >= 1 && st.n < cap;
+      ctx.fillStyle = '#ffffff'; rr(x, y, 184, 74, 10); ctx.fill(); ctx.strokeStyle = st.n >= cap ? '#d6453d' : busy ? '#2f7d5b' : '#8a96a0'; ctx.lineWidth = 2; ctx.stroke();
+      text(`${p.icon} ${p.name}`, x + 10, y + 13, 11, '#1f2a24', 800, 'left'); text(`Sv ${l}`, x + 174, y + 13, 10, '#5c6670', 800, 'right');
+      // machine with moving item
+      ctx.fillStyle = '#3c4a5a'; rr(x + 10, y + 40, 110, 8, 4); ctx.fill();
+      if (busy){ const px = x + 12 + ((t / 1000 * 30 * (1 + l / 10)) % 100);
+        if (p.id === 'canned'){ ctx.fillStyle = '#b8c2cc'; ctx.fillRect(px - 5, y + 30, 10, 10); ctx.fillStyle = '#e74c3c'; ctx.fillRect(px - 5, y + 33, 10, 3); }
+        else if (p.id === 'frozen'){ ctx.fillStyle = '#d6f0ff'; rr(px - 7, y + 30, 14, 10, 2); ctx.fill(); ctx.strokeStyle = '#7cc6f2'; ctx.strokeRect(px - 7, y + 30, 14, 10); }
+        else { ctx.save(); ctx.translate(px, y + 35); drawFish(ctx, sea.fish[i % sea.fish.length], 14, t / 200, { hq:false }); ctx.restore(); }
+        if (p.id === 'smoked'){ ctx.fillStyle = '#9aa3ab88'; for (let s = 0; s < 3; s++){ ctx.beginPath(); ctx.arc(x + 60 + s * 8, y + 26 - ((t / 30 + s * 9) % 12), 3, 0, 7); ctx.fill(); } }
       }
-    };
-    belt(100, 300, 250, 1, fx.rawN >= 1 && fx.cleanN < cap, 'fish');
-    belt(300, 110, 400, -1, fx.cleanN >= 1 && fx.packN < cap, 'box');
-    // stations with workers
-    const station = (x, y, w, title, lvl, active, icon) => {
-      ctx.fillStyle = '#ffffffee'; rr(x, y, w, 40, 10); ctx.fill(); ctx.strokeStyle = active ? '#2f7d5b' : '#8a96a0'; ctx.lineWidth = 2; ctx.stroke();
-      text(title, x + w / 2, y + 12, 10, '#1f2a24', 800);
-      const n = 1 + Math.floor(lvl / 5);
-      for (let i = 0; i < Math.min(n, 6); i++){ const wx = x + 14 + i * 22, wy = y + 30 + (active ? Math.sin(t / 120 + i) * 1.5 : 0);
-        ctx.fillStyle = '#2f6f9f'; ctx.beginPath(); ctx.arc(wx, wy, 5, 0, 7); ctx.fill(); ctx.fillStyle = '#f2c9a0'; ctx.beginPath(); ctx.arc(wx, wy - 7, 3.5, 0, 7); ctx.fill();
-        ctx.fillStyle = '#fff'; ctx.fillRect(wx - 4, wy - 12, 8, 2); }
-      ctx.font = '16px system-ui'; ctx.textAlign = 'center'; ctx.fillText(icon, x + w - 16, y + 28);
-    };
-    station(130, 196, 150, `Yuma və təmizlənmə · Sv ${fx.wash}`, fx.wash, fx.rawN >= 1, '🚿');
-    if (fx.rawN >= 1 && fx.cleanN < cap){ ctx.fillStyle = '#7cc6f2aa'; for (let i = 0; i < 8; i++){ const dx = (i * 17 + t / 20) % 120; ctx.beginPath(); ctx.arc(150 + dx, 240 - ((t / 8 + i * 13) % 14), 1.6, 0, 7); ctx.fill(); } }
-    station(130, 346, 150, `Doğrama və qablaşdırma · Sv ${fx.pack}`, fx.pack, fx.cleanN >= 1, '🔪');
-    // arrows to market and restaurant
-    text('→ 🏪 Bazar (piştaxta)', 210, 470, 11, '#33414d', 800, 'left');
-    text('→ 🍽️ Restoran', 300, 352, 11, '#33414d', 800, 'left');
+      for (let w = 0; w < Math.min(4, 1 + Math.floor(l / 5)); w++){ const wx = x + 20 + w * 22, wy = y + 60;
+        ctx.fillStyle = '#7d55c7'; ctx.beginPath(); ctx.arc(wx, wy, 4.5, 0, 7); ctx.fill(); ctx.fillStyle = '#f2c9a0'; ctx.beginPath(); ctx.arc(wx, wy - 6, 3, 0, 7); ctx.fill(); }
+      ctx.fillStyle = '#eef2f5'; rr(x + 128, y + 26, 48, 40, 6); ctx.fill();
+      text(`${Math.floor(st.n)}`, x + 152, y + 42, 13, st.n >= cap ? '#d6453d' : '#1f2a24', 800); text(`/${cap}`, x + 152, y + 56, 9, '#5c6670', 700);
+    });
     const bn = fxBottleneck();
-    ctx.fillStyle = '#08141fe0'; rr(12, 514, 376, 22, 11); ctx.fill();
-    text(bn ? '⚠️ ' + bn : `✅ Xətt rəvan işləyir · qablaşdırılıb: ${fmt(fx.packed)}`, 200, 525, 11, bn ? '#ffb340' : '#7ff0a8', 800);
+    ctx.fillStyle = '#08141fe0'; rr(10, 514, 380, 22, 11); ctx.fill();
+    text(bn ? '⚠️ ' + bn : `✅ Xətlər rəvan işləyir · hazır məhsul: ${fmt(fx.packed)}`, 200, 525, 11, bn ? '#ffb340' : '#7ff0a8', 800);
   }
+
+  const VIEWS = [['sea', '🌊', () => true], ['factory', '🏭', () => S.fx.open], ['market', '🏪', () => S.mk.open], ['rest', '🍽️', () => S.rs.open]];
 
   // ---------------- Fish market ----------------
   const mkCost = u => u.base * u.g ** S.mk[u.id] * mkScale();
-  const mkStars = () => { const a = S.mk.sat.length ? S.mk.sat.reduce((x, y) => x + y, 0) / S.mk.sat.length : 70; return Math.max(1, Math.min(5, Math.round((1 + a / 25) * 2) / 2)); };
-  const mkSatPct = () => S.mk.sat.length ? Math.round(S.mk.sat.reduce((x, y) => x + y, 0) / S.mk.sat.length) : 70;
+  const avg = a => a.length ? a.reduce((x, y) => x + y, 0) / a.length : 70;
+  const starsOf = a => Math.max(1, Math.min(5, Math.round((1 + avg(a) / 25) * 2) / 2));
+  const mkStars = () => starsOf(S.mk.sat);
+  const mkSatPct = () => Math.round(avg(S.mk.sat));
   const mkMult = () => (1 + 0.08 * S.mk.sk) * (0.6 + 0.18 * mkStars()) * TIERS[S.mk.tier].mult * saleMult();
-  const mkPrice = () => VAL.packed * mkMult();
-  const restSeats = (l = S.mk.rest) => l ? Math.min(4, 1 + Math.floor(l / 4)) : 0;
-  const dishMult = () => VAL.dish * (1 + 0.15 * S.mk.rest);
+  const LIVE = 1.4;
   const MK = { door:{ x:200, y:552 } };
-  // stations: each has servers, a service spot per server, a queue line and a service time
   const ST = {
     stall:{ n:() => 1 + S.mk.stalls, pos:i => ({ x:47 + i * 60, y:190 }), q:k => ({ x:58 + Math.min(k, 19) * 15, y:236 }), time:() => 4 * 0.88 ** S.mk.sk },
+    shelf:{ n:() => S.mk.shelf ? 2 : 0, pos:i => ({ x:60 + i * 60, y:326 }), q:k => ({ x:30 + Math.min(k, 10) * 14, y:358 }), time:() => 3 * 0.9 ** S.mk.shelf },
     aqua: { n:() => 2, pos:i => ({ x:262 + i * 60, y:326 }), q:k => ({ x:226 + Math.min(k, 10) * 14, y:358 }), time:() => 3 * 0.9 ** S.mk.aqua },
-    rest: { n:() => restSeats(), pos:i => ({ x:44 + i * 38, y:322 }), q:k => ({ x:30 + Math.min(k, 10) * 14, y:358 }), time:() => 7 },
     cash: { n:() => 1 + S.mk.cash, pos:i => ({ x:150 + i * 50, y:446 }), q:k => ({ x:110 + Math.min(k, 14) * 14, y:484 }), time:() => 3 * 0.88 ** S.mk.ck },
   };
+  const availAt = st => PRODUCTS.filter(p => p.shelf === st && S.fx.lines[p.id] && stock(p.id).n >= 1);
   let mkC = [], occ = {}, mkSpawn = 2, mkLog = [];
   const MKCOLS = ['#e76f51', '#2a9d8f', '#264653', '#e9c46a', '#8d5bd1', '#f4a261', '#457b9d', '#d62828', '#6a994e', '#bc6c25'];
-  function mkReset(){ mkC = []; occ = { stall:Array(6).fill(null), aqua:[null, null], rest:Array(4).fill(null), cash:Array(3).fill(null) }; }
+  function mkReset(){ mkC = []; occ = { stall:Array(6).fill(null), shelf:[null, null], aqua:[null, null], cash:Array(3).fill(null) }; }
   mkReset();
-  function mkLeave(c, score){
-    c.state = 'exit'; c.path = [{ x:c.x, y:520 }, MK.door]; c.next = 'gone';
-    S.mk.sat.push(Math.max(0, Math.min(100, score))); if (S.mk.sat.length > 30) S.mk.sat.shift();
+  function leaveWith(arr, c, score, door){
+    c.state = 'exit'; c.path = [{ x:c.x, y:520 }, door]; c.next = 'gone';
+    arr.push(Math.max(0, Math.min(100, score))); if (arr.length > 30) arr.shift();
   }
   function takeHold(n){
     let v = 0;
@@ -1050,21 +1088,22 @@
     if (S.holdN <= 0){ S.holdN = 0; S.holdV = 0; }
     return v;
   }
-  function takeFx(kind, n){
-    const N = kind + 'N', V = kind + 'V'; let v = 0;
-    for (let i = 0; i < n && S.fx[N] >= 1; i++) v += moveStock(N, V, 1);
-    return v;
-  }
-  function goQueue(c, st){ c.state = 'q'; c.st = st; c.qt = performance.now(); c.wait = 0; }
   function chooseStation(c){
     const opts = [];
-    if (S.fx.packN >= 1) opts.push(['stall', .5]);
+    if (availAt('stall').length) opts.push(['stall', .5]);
+    if (S.mk.shelf && availAt('shelf').length) opts.push(['shelf', .35]);
     if (S.holdN >= 1) opts.push(['aqua', .3]);
-    if (S.mk.rest > 0 && S.fx.cleanN >= 1) opts.push(['rest', .35]);
-    if (!opts.length){ c.mood = '😞'; c.moodT = 2; mkLeave(c, 30); return; }
-    let r = Math.random() * opts.reduce((a, o) => a + o[1], 0);
-    for (const [s, w] of opts){ r -= w; if (r <= 0){ c.path = [ST[s].q(0)]; c.next = 'q:' + s; return; } }
-    c.path = [ST[opts[0][0]].q(0)]; c.next = 'q:' + opts[0][0];
+    if (!opts.length){ c.mood = '😞'; c.moodT = 2; leaveWith(S.mk.sat, c, 30, MK.door); return; }
+    let r = Math.random() * opts.reduce((a, o) => a + o[1], 0), pick = opts[0][0];
+    for (const [s, w] of opts){ r -= w; if (r <= 0){ pick = s; break; } }
+    c.path = [ST[pick].q(0)]; c.next = 'q:' + pick;
+  }
+  function moveAgent(c, dt, speed){
+    let mv = speed * dt;
+    while (c.path.length && mv > 0){
+      const p = c.path[0], dx = p.x - c.x, dy = p.y - c.y, d = Math.hypot(dx, dy);
+      if (d <= mv){ c.x = p.x; c.y = p.y; c.path.shift(); mv -= d; } else { c.x += dx / d * mv; c.y += dy / d * mv; mv = 0; }
+    }
   }
   function stepMarket(dt){
     const mk = S.mk, stars = mkStars();
@@ -1085,13 +1124,9 @@
     for (const c of mkC){
       if (c.moodT > 0) c.moodT -= dt;
       if (c.state === 'q'){ c.wait += dt; c.tw += dt;
-        if (c.wait > 28){ c.mood = '😠'; c.moodT = 2; mk.angry++; mkLeave(c, 20 - mk.dirt * .4); continue; } }
+        if (c.wait > 28){ c.mood = '😠'; c.moodT = 2; mk.angry++; leaveWith(mk.sat, c, 20 - mk.dirt * .4, MK.door); continue; } }
       if (c.state === 'serve'){ c.t -= dt; if (c.t <= 0) mkDone(c); continue; }
-      let mv = 70 * dt;
-      while (c.path.length && mv > 0){
-        const p = c.path[0], dx = p.x - c.x, dy = p.y - c.y, d = Math.hypot(dx, dy);
-        if (d <= mv){ c.x = p.x; c.y = p.y; c.path.shift(); mv -= d; } else { c.x += dx / d * mv; c.y += dy / d * mv; mv = 0; }
-      }
+      moveAgent(c, dt, 70);
       if (!c.path.length && c.next) mkArrive(c);
     }
     mkC = mkC.filter(c => !c.gone);
@@ -1100,7 +1135,7 @@
   function mkArrive(c){
     const n = c.next; c.next = null;
     if (n === 'choose') chooseStation(c);
-    else if (n.startsWith('q:')) goQueue(c, n.slice(2));
+    else if (n.startsWith('q:')){ c.state = 'q'; c.st = n.slice(2); c.qt = performance.now(); c.wait = 0; }
     else if (n.startsWith('serve:')){ c.state = 'serve'; c.stage = n.slice(6); c.t = c.dur = ST[c.stage].time(); }
     else if (n === 'gone') c.gone = true;
   }
@@ -1109,18 +1144,29 @@
     if (s === 'cash'){
       earn(c.buy); mk.served++; mkLog.push([performance.now(), c.buy]);
       floats.push({ x:c.x, y:c.y - 18, text:'+' + fmt(c.buy) + ' ₼', life:1.1, color:'#ffe08a', view:'market' });
-      c.mood = '😊'; c.moodT = 1.5; mkLeave(c, 100 - c.tw * 1.5 - mk.dirt * 0.4); return;
+      c.mood = '😊'; c.moodT = 1.5; leaveWith(mk.sat, c, 100 - c.tw * 1.5 - mk.dirt * 0.4, MK.door); return;
     }
     let v = 0;
-    if (s === 'stall'){ const n = 1 + (Math.random() * 3 | 0); v = takeFx('pack', n) * VAL.packed / 1; c.what = '📦'; mk.dirt = Math.min(100, mk.dirt + 0.6); }
-    if (s === 'aqua'){ const n = 1 + (Math.random() * 2 | 0); v = takeHold(n) * VAL.live; c.what = '🐟'; mk.dirt = Math.min(100, mk.dirt + 1); }
-    if (s === 'rest'){ v = takeFx('clean', 1) / VAL.clean * dishMult(); c.what = '🍲'; mk.dishes++; mk.dirt = Math.min(100, mk.dirt + 0.8); }
-    if (v <= 0){ c.mood = '😞'; c.moodT = 2; mkLeave(c, 35); return; }
-    c.buy += v * (mkMult()); 
+    if (s === 'stall' || s === 'shelf'){
+      const list = availAt(s);
+      if (list.length){ const p = list[Math.random() * list.length | 0], n = 1 + (Math.random() * 3 | 0), st = stock(p.id);
+        for (let i = 0; i < n && st.n >= 1; i++) v += moveFrom(st, 1) * p.mult;
+        c.what = p.icon; }
+      mk.dirt = Math.min(100, mk.dirt + 0.6);
+    }
+    if (s === 'aqua'){ v = takeHold(1 + (Math.random() * 2 | 0)) * LIVE; c.what = '🐠'; mk.dirt = Math.min(100, mk.dirt + 1); }
+    if (v <= 0){ c.mood = '😞'; c.moodT = 2; leaveWith(mk.sat, c, 35, MK.door); return; }
+    c.buy += v * mkMult();
     c.state = 'walk'; c.path = [{ x:c.x, y:s === 'stall' ? 262 : 375 }, { x:200, y:385 }]; c.next = 'q:cash';
   }
   const mkRevMin = () => mkLog.reduce((a, e) => a + e[1], 0);
 
+  function drawPerson(c, vest){
+    ctx.fillStyle = '#0002'; ctx.beginPath(); ctx.ellipse(c.x, c.y + 6, 6, 2.5, 0, 0, 7); ctx.fill();
+    ctx.fillStyle = c.col; ctx.beginPath(); ctx.arc(c.x, c.y, 6, 0, 7); ctx.fill();
+    if (vest){ ctx.fillStyle = vest; ctx.fillRect(c.x - 3, c.y - 3, 6, 7); }
+    ctx.fillStyle = '#f2c9a0'; ctx.beginPath(); ctx.arc(c.x, c.y - 7, 4, 0, 7); ctx.fill();
+  }
   function drawMarket(t){
     const mk = S.mk, tier = TIERS[mk.tier], sea = SEAS[S.sea], nStall = ST.stall.n(), nCash = ST.cash.n();
     ctx.fillStyle = '#d8ccb3'; ctx.fillRect(-10, -10, W + 20, H + 20);
@@ -1131,29 +1177,30 @@
     for (let i = 0; i < 20; i++){ ctx.fillStyle = i % 2 ? '#ffffff' : tier.color; ctx.beginPath(); ctx.moveTo(i * 20, 120); ctx.lineTo(i * 20 + 20, 120); ctx.lineTo(i * 20 + 10, 132); ctx.fill(); }
     ctx.fillStyle = '#7a5c3a55';
     for (let i = 0; i < Math.floor(mk.dirt / 6); i++){ const x = (i * 97 + 31) % 380 + 10, y = 250 + (i * 53) % 280; ctx.beginPath(); ctx.ellipse(x, y, 8 + i % 3 * 3, 4 + i % 2 * 2, i, 0, 7); ctx.fill(); }
-    // packed-fish stalls
+    const fresh = availAt('stall');
     for (let i = 0; i < tier.stalls; i++){
       const x = 22 + i * 60, y = 136, open = i < nStall;
       if (!open){ ctx.setLineDash([4, 4]); ctx.strokeStyle = '#8a7a62'; ctx.lineWidth = 1.5; rr(x, y, 50, 40, 6); ctx.stroke(); ctx.setLineDash([]); text('🔒', x + 25, y + 20, 13, '#6b5d48', 700); continue; }
       ctx.fillStyle = '#7a5235'; rr(x, y + 26, 50, 16, 4); ctx.fill();
       const ig = ctx.createLinearGradient(0, y, 0, y + 28); ig.addColorStop(0, '#ffffff'); ig.addColorStop(1, '#bfe3f2');
       ctx.fillStyle = ig; rr(x + 2, y, 46, 28, 5); ctx.fill();
-      if (S.fx.packN >= 1) for (let k = 0; k < 3; k++){ ctx.fillStyle = '#c99a5b'; ctx.fillRect(x + 6 + k * 14, y + 8 + (k % 2) * 4, 12, 10); ctx.fillStyle = '#e74c3c'; ctx.fillRect(x + 6 + k * 14, y + 12 + (k % 2) * 4, 12, 2); }
+      if (fresh.length){ const p = fresh[i % fresh.length];
+        for (let k = 0; k < 2; k++){ ctx.save(); ctx.translate(x + 15 + k * 20, y + 14); ctx.rotate(-.3 + k * .5); drawFish(ctx, sea.fish[(i + k) % sea.fish.length], 17, 0, { hq:false }); ctx.restore(); }
+        ctx.font = '11px system-ui'; ctx.textAlign = 'center'; ctx.fillText(p.icon, x + 10, y + 34); }
       else text('boş', x + 25, y + 14, 10, '#c0392b', 800);
       ctx.fillStyle = '#ffe08a'; rr(x + 30, y + 30, 18, 9, 2); ctx.fill(); text('₼', x + 39, y + 35, 8, '#5b4636', 900);
     }
-    text('📦 Qablaşdırılmış balıq', 200, 180, 9, '#5b4636', 800);
+    text('🐟 Təzə: bütöv · dilim · fileto', 200, 180, 9, '#5b4636', 800);
     ctx.strokeStyle = '#8a7a62'; ctx.lineWidth = 2; ctx.setLineDash([2, 4]); ctx.beginPath(); ctx.moveTo(40, 250); ctx.lineTo(360, 250); ctx.stroke(); ctx.setLineDash([]);
-    // restaurant (left) and live-fish aquarium (right)
     const room = (x, title, on, draw) => {
       if (!on){ ctx.setLineDash([5, 5]); ctx.strokeStyle = '#8a7a62'; ctx.lineWidth = 1.5; rr(x, 268, 170, 76, 10); ctx.stroke(); ctx.setLineDash([]); text('🔒 ' + title, x + 85, 306, 12, '#6b5d48', 800); return; }
       ctx.fillStyle = '#efe6d4'; rr(x, 268, 170, 76, 10); ctx.fill(); ctx.strokeStyle = '#a8977a'; ctx.lineWidth = 2; ctx.stroke();
       text(title, x + 10, 281, 11, '#5b4636', 800, 'left'); draw(x);
     };
-    room(16, '🍽️ Restoran', mk.rest > 0, x => {
-      ctx.fillStyle = '#5b4636'; rr(x + 120, 290, 42, 22, 4); ctx.fill(); ctx.fillStyle = '#ff8a3d'; ctx.beginPath(); ctx.arc(x + 132, 296, 4 + Math.sin(t / 90), 0, 7); ctx.fill();
-      text('👨‍🍳', x + 150, 300, 13, '#000', 400);
-      for (let j = 0; j < 4; j++){ const open = j < restSeats(); ctx.fillStyle = open ? '#8a5a32' : '#cbbfa8'; ctx.beginPath(); ctx.arc(x + 28 + j * 38, 310, 10, 0, 7); ctx.fill(); if (open){ ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(x + 28 + j * 38, 310, 4, 0, 7); ctx.fill(); } }
+    room(16, '❄️ Soyuducu rəf', mk.shelf > 0, x => {
+      const g = ctx.createLinearGradient(0, 288, 0, 312); g.addColorStop(0, '#e9f6fb'); g.addColorStop(1, '#bcdcea');
+      ctx.fillStyle = g; rr(x + 10, 288, 150, 22, 4); ctx.fill(); ctx.strokeStyle = '#8fb9cc'; ctx.stroke();
+      availAt('shelf').forEach((p, k) => { ctx.font = '13px system-ui'; ctx.textAlign = 'center'; for (let j = 0; j < 3; j++) ctx.fillText(p.icon, x + 24 + k * 50 + j * 12, 304); });
     });
     room(214, '🐠 Diri balıq', true, x => {
       for (let j = 0; j < 2; j++){ const ax = x + 20 + j * 72, g = ctx.createLinearGradient(0, 286, 0, 312); g.addColorStop(0, '#7fd3f0'); g.addColorStop(1, '#2a8fbf');
@@ -1168,18 +1215,164 @@
     }
     ctx.fillStyle = '#5b4636'; ctx.fillRect(160, H - 10, 80, 10); ctx.fillStyle = '#9fd3ea88'; ctx.fillRect(166, H - 8, 68, 8);
     for (const c of mkC){
-      ctx.fillStyle = '#0002'; ctx.beginPath(); ctx.ellipse(c.x, c.y + 6, 6, 2.5, 0, 0, 7); ctx.fill();
-      ctx.fillStyle = c.col; ctx.beginPath(); ctx.arc(c.x, c.y, 6, 0, 7); ctx.fill();
-      ctx.fillStyle = '#f2c9a0'; ctx.beginPath(); ctx.arc(c.x, c.y - 7, 4, 0, 7); ctx.fill();
+      drawPerson(c);
       if (c.what && c.state !== 'serve'){ ctx.font = '9px system-ui'; ctx.textAlign = 'center'; ctx.fillText(c.what, c.x + 9, c.y + 2); }
       if (c.state === 'serve'){ ctx.fillStyle = '#0004'; ctx.fillRect(c.x - 9, c.y - 18, 18, 3); ctx.fillStyle = '#2f7d5b'; ctx.fillRect(c.x - 9, c.y - 18, 18 * (1 - c.t / c.dur), 3); }
       if (c.state === 'q' && c.wait > 14 && !(c.moodT > 0)){ ctx.font = '12px system-ui'; ctx.textAlign = 'center'; ctx.fillText('😤', c.x, c.y - 16); }
       if (c.mood && c.moodT > 0){ ctx.font = '14px system-ui'; ctx.textAlign = 'center'; ctx.fillText(c.mood, c.x, c.y - 18); }
     }
-    ctx.fillStyle = '#08141fe0'; rr(12, 512, 182, 22, 11); ctx.fill();
-    text(`📦 ${Math.floor(S.fx.packN)} · 🐟 ${Math.floor(S.holdN)} · ✨ ${Math.floor(S.fx.cleanN)}`, 103, 523, 11, '#ecf3fa', 800);
+    ctx.fillStyle = '#08141fe0'; rr(12, 512, 200, 22, 11); ctx.fill();
+    text(PRODUCTS.filter(p => S.fx.lines[p.id]).map(p => p.icon + Math.floor(stock(p.id).n)).join(' ') + ' 🐠' + Math.floor(S.holdN), 112, 523, 10, '#ecf3fa', 800);
     ctx.fillStyle = '#08141fe0'; rr(238, 512, 150, 22, 11); ctx.fill();
     text(`${'★'.repeat(Math.floor(mkStars()))}${mkStars() % 1 ? '½' : ''} · ${mkSatPct()}% razı`, 313, 523, 11, '#e7b54d', 800);
+  }
+
+  // ---------------- Restaurant ----------------
+  const DISHES = [
+    { id:'soup',    icon:'🍲', name:'Balıq şorbası',              need:'clean',  mult:3.5, unlock:0 },
+    { id:'kebab',   icon:'🍢', name:'Balıq kababı',               need:'steak',  mult:4.5, unlock:2e4 },
+    { id:'fried',   icon:'🍳', name:'Qızardılmış fileto',         need:'fillet', mult:5,   unlock:6e4 },
+    { id:'salad',   icon:'🥗', name:'Hisə verilmiş balıq salatı', need:'smoked', mult:6.5, unlock:3e5 },
+    { id:'lavangi', icon:'🫕', name:'Balıq lavəngisi',            need:'clean',  mult:8,   unlock:1.5e6 },
+  ];
+  const RSUPS = [
+    { id:'ads',    icon:'📣', name:'Reklam',         base:300,  g:2.2, max:() => 25, desc:l => `hər ${(7 * 0.88 ** l).toFixed(1)} san bir qonaq` },
+    { id:'tables', icon:'🪑', name:'Masalar',        base:1500, g:3.2, max:() => 6,  desc:l => `${l + 2} masa` },
+    { id:'waiters',icon:'🤵', name:'Ofisiantlar',    base:2500, g:4,   max:() => 4,  desc:l => `${l + 1} ofisiant` },
+    { id:'wsp',    icon:'👟', name:'Ofisiant sürəti', base:400, g:2.1, max:() => 20, desc:l => `sürət ×${(1.1 ** l).toFixed(2)}` },
+    { id:'chefs',  icon:'👨‍🍳', name:'Aşpazlar',     base:3000, g:4,   max:() => 4,  desc:l => `${l + 1} aşpaz` },
+    { id:'csp',    icon:'🔥', name:'Mətbəx avadanlığı', base:500, g:2.15, max:() => 25, desc:l => `bişirmə ${(6 * 0.88 ** l).toFixed(1)} san` },
+    { id:'decor',  icon:'🖼️', name:'Dekor',          base:800,  g:2.4, max:() => 20, desc:l => `qiymət +${10 * l}%` },
+  ];
+  const rsCost = u => u.base * u.g ** S.rs[u.id] * mkScale();
+  const rsOpenCost = () => 5000 * mkScale();
+  const dishCost = d => Math.max(800, d.unlock) * mkScale();
+  const rsStars = () => starsOf(S.rs.sat);
+  const rsMult = () => (1 + 0.1 * S.rs.decor) * (0.6 + 0.18 * rsStars()) * saleMult();
+  const ingr = need => need === 'clean' ? S.fx.clean : stock(need);
+  const dishOK = d => S.rs.menu[d.id] && (d.need === 'clean' || S.fx.lines[d.need]) && ingr(d.need).n >= 1;
+  const RS = { door:{ x:200, y:552 }, pass:{ x:200, y:200 } };
+  const tablePos = i => ({ x:58 + (i % 4) * 95, y:270 + Math.floor(i / 4) * 110 });
+  let rsC = [], rsW = [], rsTables = [], rsTasks = [], rsCook = [], rsChefs = [], rsSpawn = 3, rsLog = [];
+  function rsReset(){ rsC = []; rsW = []; rsTables = Array(8).fill(null); rsTasks = []; rsCook = []; rsChefs = []; }
+  rsReset();
+  function syncStaff(){
+    while (rsW.length < 1 + S.rs.waiters) rsW.push({ x:RS.pass.x + rsW.length * 16 - 24, y:RS.pass.y + 14, path:[], task:null, col:'#1f2a24', hold:null, wait:0 });
+    while (rsChefs.length < 1 + S.rs.chefs) rsChefs.push({ job:null, t:0 });
+  }
+  function stepRest(dt){
+    const rs = S.rs, stars = rsStars(), nT = 2 + rs.tables; syncStaff();
+    rsSpawn -= dt;
+    if (rsSpawn <= 0){
+      rsSpawn = 7 * 0.88 ** rs.ads / (0.6 + 0.1 * stars) * (0.7 + Math.random() * 0.6);
+      if (rsC.length < 24) rsC.push({ x:RS.door.x + (Math.random() - .5) * 20, y:H + 10, path:[{ x:200, y:510 }], next:'wait', state:'walk', col:MKCOLS[Math.random() * MKCOLS.length | 0], wait:0, tw:0, mood:null, moodT:0 });
+    }
+    // seat waiting guests
+    const waiting = rsC.filter(c => c.state === 'wq').sort((a, b) => a.qt - b.qt);
+    for (let i = 0; i < nT && waiting.length; i++){
+      if (rsTables[i]) continue;
+      const c = waiting.shift(); rsTables[i] = c; c.table = i; c.state = 'walk'; const p = tablePos(i); c.path = [{ x:c.x, y:p.y + 26 }, { x:p.x, y:p.y + 18 }]; c.next = 'seat';
+    }
+    waiting.forEach((c, k) => { c.path = [{ x:120 + Math.min(k, 12) * 14, y:520 }]; });
+    // guests
+    for (const c of rsC){
+      if (c.moodT > 0) c.moodT -= dt;
+      if (c.state === 'wq' || c.state === 'order' || c.state === 'food'){ c.wait += dt; c.tw += dt;
+        const lim = c.state === 'wq' ? 30 : 45;
+        if (c.wait > lim){ c.mood = '😠'; c.moodT = 2; rs.angry++; if (c.table !== undefined && rsTables[c.table] === c) rsTables[c.table] = null; rsTasks = rsTasks.filter(x => x.c !== c); rsCook = rsCook.filter(x => x.c !== c); leaveWith(rs.sat, c, 15, RS.door); continue; } }
+      if (c.state === 'eat'){ c.t -= dt; if (c.t <= 0){
+        rsTables[c.table] = null; earn(c.bill); rs.served++; rsLog.push([performance.now(), c.bill]);
+        floats.push({ x:c.x, y:c.y - 18, text:'+' + fmt(c.bill) + ' ₼', life:1.2, color:'#ffe08a', view:'rest' });
+        c.mood = '😋'; c.moodT = 1.5; leaveWith(rs.sat, c, 100 - c.tw * 1.2, RS.door);
+      } continue; }
+      moveAgent(c, dt, 60);
+      if (!c.path.length && c.next){ const n = c.next; c.next = null;
+        if (n === 'wait'){ c.state = 'wq'; c.qt = performance.now(); c.wait = 0; }
+        else if (n === 'seat'){ c.state = 'order'; c.wait = 0; rsTasks.push({ type:'order', c }); }
+        else if (n === 'gone') c.gone = true; }
+    }
+    rsC = rsC.filter(c => !c.gone);
+    // waiters pick tasks
+    const sp = 80 * 1.1 ** rs.wsp;
+    for (const w of rsW){
+      if (!w.task && rsTasks.length){ w.task = rsTasks.shift(); const p = tablePos(w.task.c.table); w.path = [{ x:w.x, y:240 }, { x:p.x + 18, y:p.y + 8 }]; w.phase = 'go'; if (w.task.type === 'deliver') w.hold = w.task.dish.icon; }
+      if (!w.task) continue;
+      if (w.wait > 0){ w.wait -= dt; continue; }
+      moveAgent(w, dt, sp);
+      if (w.path.length) continue;
+      const tk = w.task, c = tk.c;
+      if (w.phase === 'go'){
+        if (c.gone || c.state === 'exit'){ w.task = null; w.hold = null; w.path = [{ x:w.x, y:240 }, { x:RS.pass.x, y:RS.pass.y + 14 }]; continue; }
+        if (tk.type === 'order'){
+          const menu = DISHES.filter(dishOK);
+          if (!menu.length){ c.mood = '😞'; c.moodT = 2; rsTables[c.table] = null; leaveWith(rs.sat, c, 30, RS.door); w.task = null; w.path = [{ x:w.x, y:240 }, { x:RS.pass.x, y:RS.pass.y + 14 }]; continue; }
+          const d = menu[Math.random() * menu.length | 0]; const v = moveFrom(ingr(d.need), 1);
+          c.dish = d; c.bill = v * d.mult * rsMult(); c.state = 'food'; c.wait = 0; w.wait = .8; w.phase = 'back';
+          w.path = [{ x:w.x, y:240 }, { x:RS.pass.x, y:RS.pass.y + 14 }]; w.order = { c, dish:d };
+        } else { c.state = 'eat'; c.t = 5; w.hold = null; w.phase = 'back'; w.path = [{ x:w.x, y:240 }, { x:RS.pass.x, y:RS.pass.y + 14 }]; }
+        continue;
+      }
+      if (w.phase === 'back'){ if (w.order){ rsCook.push(w.order); w.order = null; } w.task = null; }
+    }
+    // chefs cook
+    for (const ch of rsChefs){
+      if (!ch.job && rsCook.length){ ch.job = rsCook.shift(); ch.t = ch.dur = 6 * 0.88 ** rs.csp; }
+      if (ch.job){ ch.t -= dt; if (ch.t <= 0){ const j = ch.job; ch.job = null; if (!j.c.gone && j.c.state === 'food') rsTasks.unshift({ type:'deliver', c:j.c, dish:j.dish }); } }
+    }
+    const now = performance.now(); rsLog = rsLog.filter(e => now - e[0] < 60000);
+  }
+  const rsRevMin = () => rsLog.reduce((a, e) => a + e[1], 0);
+
+  function drawRest(t){
+    const rs = S.rs, nT = 2 + rs.tables;
+    ctx.fillStyle = '#8a5a32'; ctx.fillRect(-10, -10, W + 20, H + 20);
+    for (let y = 120; y < H; y += 16){ ctx.fillStyle = (y / 16) % 2 ? '#94613a' : '#9c6840'; ctx.fillRect(0, y, W, 16); ctx.fillStyle = '#0000001a'; ctx.fillRect(((y * 7) % 120), y, 2, 16); ctx.fillRect(((y * 7) % 120) + 180, y, 2, 16); }
+    // kitchen
+    ctx.fillStyle = '#e8edf1'; ctx.fillRect(-10, 84, W + 20, 100);
+    for (let x = 0; x < W; x += 20){ ctx.fillStyle = (x / 20) % 2 ? '#dfe5ea' : '#eef2f5'; ctx.fillRect(x, 84, 20, 100); }
+    ctx.fillStyle = '#5b6670'; rr(20, 96, 360, 30, 6); ctx.fill();
+    for (let i = 0; i < 1 + rs.chefs; i++){
+      const x = 50 + i * 75, ch = rsChefs[i], busy = ch && ch.job;
+      ctx.fillStyle = '#2b2f33'; ctx.beginPath(); ctx.arc(x, 110, 10, 0, 7); ctx.fill();
+      if (busy){ ctx.fillStyle = `rgba(255,${120 + Math.sin(t / 80) * 40},40,.9)`; ctx.beginPath(); ctx.arc(x, 110, 6 + Math.sin(t / 60), 0, 7); ctx.fill();
+        ctx.fillStyle = '#ffffff55'; for (let s = 0; s < 3; s++){ ctx.beginPath(); ctx.arc(x - 6 + s * 6, 98 - ((t / 25 + s * 7) % 14), 2.5, 0, 7); ctx.fill(); } }
+      const cx = x, cy = 148; ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(cx, cy, 7, 0, 7); ctx.fill(); ctx.fillStyle = '#f2c9a0'; ctx.beginPath(); ctx.arc(cx, cy - 9, 4.5, 0, 7); ctx.fill();
+      ctx.fillStyle = '#fff'; ctx.fillRect(cx - 5, cy - 18, 10, 5);
+      if (busy){ ctx.fillStyle = '#0004'; ctx.fillRect(cx - 12, cy + 10, 24, 3); ctx.fillStyle = '#ff8a3d'; ctx.fillRect(cx - 12, cy + 10, 24 * (1 - ch.t / ch.dur), 3);
+        ctx.font = '11px system-ui'; ctx.textAlign = 'center'; ctx.fillText(ch.job.dish.icon, cx + 14, cy - 4); }
+    }
+    // pass counter and menu board
+    ctx.fillStyle = '#c9a36a'; rr(140, 178, 120, 14, 4); ctx.fill(); text('🔔 Paylama', 200, 185, 9, '#3b2615', 800);
+    ctx.fillStyle = '#2d2a26'; rr(286, 134, 104, 44, 6); ctx.fill();
+    const menu = DISHES.filter(d => rs.menu[d.id]);
+    text('MENYU', 338, 142, 9, '#f6d48a', 800); ctx.font = '12px system-ui'; ctx.textAlign = 'center'; ctx.fillText(menu.map(d => d.icon).join(' ') || '—', 338, 162);
+    // tables
+    for (let i = 0; i < 8; i++){
+      const p = tablePos(i), open = i < nT;
+      if (!open){ ctx.setLineDash([4, 4]); ctx.strokeStyle = '#c9a36a88'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(p.x, p.y, 18, 0, 7); ctx.stroke(); ctx.setLineDash([]); continue; }
+      ctx.fillStyle = '#00000033'; ctx.beginPath(); ctx.ellipse(p.x + 2, p.y + 4, 20, 14, 0, 0, 7); ctx.fill();
+      ctx.fillStyle = '#f6efe2'; ctx.beginPath(); ctx.arc(p.x, p.y, 19, 0, 7); ctx.fill(); ctx.strokeStyle = '#d6c7aa'; ctx.lineWidth = 2; ctx.stroke();
+      ctx.fillStyle = '#e74c3c'; ctx.beginPath(); ctx.arc(p.x, p.y, 3, 0, 7); ctx.fill();
+      ctx.fillStyle = '#5b3a1c'; rr(p.x - 8, p.y + 20, 16, 8, 3); ctx.fill();
+      const c = rsTables[i];
+      if (c && c.state === 'eat'){ ctx.font = '15px system-ui'; ctx.textAlign = 'center'; ctx.fillText(c.dish.icon, p.x, p.y + 5); }
+    }
+    // guests and waiters
+    for (const c of rsC){
+      drawPerson(c);
+      if (c.state === 'order'){ ctx.font = '11px system-ui'; ctx.textAlign = 'center'; ctx.fillText('📋', c.x + 10, c.y - 12); }
+      if (c.state === 'food' && c.dish){ ctx.font = '10px system-ui'; ctx.textAlign = 'center'; ctx.fillText('⏳' + c.dish.icon, c.x + 12, c.y - 12); }
+      if (c.state === 'eat'){ ctx.fillStyle = '#0004'; ctx.fillRect(c.x - 9, c.y - 18, 18, 3); ctx.fillStyle = '#5fd38d'; ctx.fillRect(c.x - 9, c.y - 18, 18 * (1 - c.t / 5), 3); }
+      if ((c.state === 'wq' || c.state === 'order' || c.state === 'food') && c.wait > 18 && !(c.moodT > 0)){ ctx.font = '12px system-ui'; ctx.textAlign = 'center'; ctx.fillText('😤', c.x - 10, c.y - 14); }
+      if (c.mood && c.moodT > 0){ ctx.font = '14px system-ui'; ctx.textAlign = 'center'; ctx.fillText(c.mood, c.x, c.y - 18); }
+    }
+    for (const w of rsW){ drawPerson(w, '#ffffff'); ctx.fillStyle = '#c0392b'; ctx.fillRect(w.x - 2, w.y - 3, 4, 2);
+      if (w.hold){ ctx.font = '11px system-ui'; ctx.textAlign = 'center'; ctx.fillText(w.hold, w.x + 9, w.y - 8); } }
+    ctx.fillStyle = '#3b2615'; ctx.fillRect(160, H - 10, 80, 10); ctx.fillStyle = '#f6d48a88'; ctx.fillRect(166, H - 8, 68, 8);
+    ctx.fillStyle = '#08141fe0'; rr(12, 534, 176, 20, 10); ctx.fill();
+    text(`🍽️ ${rsC.filter(c => c.state === 'eat').length} yeyir · ${rsC.filter(c => c.state === 'wq').length} gözləyir`, 100, 544, 10, '#ecf3fa', 800);
+    ctx.fillStyle = '#08141fe0'; rr(238, 534, 150, 20, 10); ctx.fill();
+    text(`${'★'.repeat(Math.floor(rsStars()))}${rsStars() % 1 ? '½' : ''} · ${Math.round(avg(rs.sat))}% razı`, 313, 544, 10, '#e7b54d', 800);
   }
 
   function startFight(L){
@@ -1219,6 +1412,7 @@
     if (S.holdN < 1 || !portOn) sellAcc = Math.min(sellAcc, 1);
     if (S.fx.open) stepFactory(dt);
     if (S.mk.open) stepMarket(dt);
+    if (S.rs.open) stepRest(dt);
     if (fight){
       const f = fight, lineK = 0.92 ** S.line;
       f.t -= dt; f.surgeT -= dt;
@@ -1376,8 +1570,8 @@
     const sx = shake > 0 ? (Math.random() - .5) * 8 * shake : 0, sy = shake > 0 ? (Math.random() - .5) * 8 * shake : 0;
     const base = () => ctx.setTransform(scale, 0, 0, scale, sx * scale, sy * scale);
     base();
-    const curView = S.view === 'market' && S.mk.open ? 'market' : S.view === 'factory' && S.fx.open ? 'factory' : 'sea';
-    if (curView === 'market'){ drawMarket(t); } else if (curView === 'factory'){ drawFactory(t); } else {
+    const curView = S.view === 'market' && S.mk.open ? 'market' : S.view === 'factory' && S.fx.open ? 'factory' : S.view === 'rest' && S.rs.open ? 'rest' : 'sea';
+    if (curView === 'market'){ drawMarket(t); } else if (curView === 'factory'){ drawFactory(t); } else if (curView === 'rest'){ drawRest(t); } else {
 
     // sky
     const sky = ctx.createLinearGradient(0, 0, 0, SURF);
@@ -1563,10 +1757,10 @@
     text(full ? '📦 ANBAR DOLU · gəmiyə toxun' : `📦 ${Math.floor(S.holdN)}/${cap} · 🚚 ${sellRate().toFixed(1)}/san`, 112, 71.5, 9, '#ecf3fa', 800);
     // sea / market toggle
     const inMk = curView !== 'sea';
-    [['sea', '🌊 Dəniz', true], ['factory', '🏭 Sex', S.fx.open], ['market', '🏪 Bazar', S.mk.open]].forEach(([v, label, open], i) => {
-      const x = 220 + i * 57;
-      ctx.fillStyle = curView === v ? '#e7b54d' : open ? '#24405bee' : '#08141fcc'; rr(x, 62, 55, 18, 9); ctx.fill();
-      text(open ? label : '🔒' + label.slice(2), x + 27.5, 71.5, 9, curView === v ? '#1b1405' : open ? '#ecf3fa' : '#8ea7bf', 800);
+    VIEWS.forEach(([v, icon, open], i) => {
+      const x = 220 + i * 43;
+      ctx.fillStyle = curView === v ? '#e7b54d' : open() ? '#24405bee' : '#08141fcc'; rr(x, 62, 41, 18, 9); ctx.fill();
+      ctx.globalAlpha = open() ? 1 : .45; ctx.font = '12px system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(icon, x + 20.5, 72); ctx.globalAlpha = 1;
     });
     // ability buttons
     const now = Date.now();
@@ -1628,15 +1822,14 @@
   cv.addEventListener('pointerdown', e => {
     e.preventDefault(); audio();
     const [x, y] = toWorld(e);
-    if (x > 220 && x < 391 && y > 60 && y < 82){
-      const v = ['sea', 'factory', 'market'][Math.min(2, Math.floor((x - 220) / 57))];
-      if (v === 'factory' && !S.fx.open){ document.querySelector('[data-tab=factory]').click(); return; }
-      if (v === 'market' && !S.mk.open){ document.querySelector('[data-tab=market]').click(); return; }
+    if (x > 220 && x < 393 && y > 60 && y < 82){
+      const [v, , open] = VIEWS[Math.min(3, Math.floor((x - 220) / 43))];
+      if (!open()){ document.querySelector(`[data-tab=${v}]`).click(); return; }
       S.view = v; save(); return;
     }
     const ab = abilityButtons().find(b => Math.hypot(x - b.x, y - b.y) < 22);
     if (ab){ useAbility(ab.id); return; }
-    if ((S.view === 'market' && S.mk.open) || (S.view === 'factory' && S.fx.open)){
+    if (S.view !== 'sea' && VIEWS.find(x => x[0] === S.view)[2]()){
       if (y > 470 && y < 508 && x > 60 && x < 340 && lines.some(l => l.state === 'bite')){ S.view = 'sea'; }
       return;
     }
@@ -1679,7 +1872,7 @@
   }
   function fillQuests(){ while (S.quests.length < 3) S.quests.push(newQuest()); }
   const qProg = q => Math.min(q.n, counters()[q.kind] - q.start);
-  const achValue = key => ({ caught:S.caught, species:foundN(), seas:S.maxSea + 1, fight:S.fights, gold:S.golds, stars:totalStars(), boat:S.boat, exped:S.exped, streak:S.bestStreak, served:S.mk.served, mktier:S.mk.tier, packed:S.fx.packed, dishes:S.mk.dishes })[key];
+  const achValue = key => ({ caught:S.caught, species:foundN(), seas:S.maxSea + 1, fight:S.fights, gold:S.golds, stars:totalStars(), boat:S.boat, exped:S.exped, streak:S.bestStreak, served:S.mk.served, mktier:S.mk.tier, packed:S.fx.packed, dishes:S.rs.served })[key];
 
   // ---------------- Panel ----------------
   const $ = id => document.getElementById(id);
@@ -1850,13 +2043,12 @@
     const fx = S.fx, cap = fxCap(), bn = fxBottleneck();
     $('fxTag').textContent = fx.open ? 'işləyir' : 'bağlı';
     $('fxStats').innerHTML = fx.open ? `
-      <span>🚚 Gətirilmə</span><span>${fxRate('truck').toFixed(1)} balıq/san</span>
-      <span>🚿 Yuma və təmizlənmə</span><span>${fxRate('wash').toFixed(1)} balıq/san</span>
-      <span>🔪 Doğrama və qablaşdırma</span><span>${fxRate('pack').toFixed(1)} balıq/san</span>
-      <span>Anbarlar: ❄️ xam / ✨ təmiz / 📦 qablaşdırılmış</span><span>${Math.floor(fx.rawN)} / ${Math.floor(fx.cleanN)} / ${Math.floor(fx.packN)} (maks. ${cap})</span>
-      <span>Cəmi yuyulan / qablaşdırılan</span><span>${fmt(fx.washed)} / ${fmt(fx.packed)}</span>
+      <span>🚚 Gətirilmə / 🚿 Yuma</span><span>${fxRate('truck').toFixed(1)} / ${fxRate('wash').toFixed(1)} balıq/san</span>
+      <span>❄️ Xam / ✨ Təmiz</span><span>${Math.floor(fx.raw.n)} / ${Math.floor(fx.clean.n)} (maks. ${cap})</span>
+      <span>Məhsul stoku</span><span>${PRODUCTS.filter(p => fx.lines[p.id]).map(p => p.icon + ' ' + Math.floor(stock(p.id).n)).join('  ')}</span>
+      <span>Cəmi yuyulan / hazırlanan</span><span>${fmt(fx.washed)} / ${fmt(fx.packed)}</span>
       <span>Vəziyyət</span><span style="color:${bn ? 'var(--brass)' : 'var(--good)'}">${bn || 'rəvan işləyir'}</span>`
-      : `<span>Açılış qiyməti</span><span>${fmt(fxOpenCost())} ₼</span><span>Nə verir</span><span>qablaşdırılmış balıq ×2.2 qiymət</span>`;
+      : `<span>Açılış qiyməti</span><span>${fmt(fxOpenCost())} ₼</span><span>Nə verir</span><span>6 növ balıq məhsulu, ×1.5-dən ×3.4-ə qədər qiymət</span>`;
     $('fxOpenBtn').hidden = fx.open;
     $('fxOpenTitle').textContent = '🏭 Sexi aç'; $('fxOpenSub').textContent = fmt(fxOpenCost()) + ' ₼';
     $('fxOpenBtn').disabled = S.money < fxOpenCost();
@@ -1869,8 +2061,63 @@
       $('fbc-' + u.id).textContent = maxed ? '' : fmt(c) + ' ₼';
       $('fbt-' + u.id).disabled = !fx.open || maxed || S.money < c;
       $('fpb-' + u.id).style.width = l / mx * 100 + '%';
-      const slow = fx.open && ((u.id === 'wash' && bn.startsWith('Yuma')) || (u.id === 'pack' && bn.startsWith('Doğrama')) || (u.id === 'truck' && bn.startsWith('Yük')) || (u.id === 'cold' && bn.startsWith('Qablaşdırılmış')));
+      const slow = fx.open && ((u.id === 'wash' && bn.startsWith('Yuma')) || (u.id === 'truck' && bn.startsWith('Yük')) || (u.id === 'cold' && bn.startsWith('Məhsul anbar')));
       $('frow-' + u.id).classList.toggle('rec', slow);
+    });
+    PRODUCTS.forEach(p => {
+      const l = fx.lines[p.id], c = lineCost(p), maxed = l >= 40;
+      $('lds-' + p.id).textContent = l ? `${lineRate(p).toFixed(2)} ədəd/san · qiymət ×${p.mult} · stok ${Math.floor(stock(p.id).n)}/${cap}` : `qiymət ×${p.mult} · ${p.shelf === 'stall' ? 'piştaxtada' : 'soyuducu rəfdə'} satılır`;
+      $('llv-' + p.id).textContent = l ? `Sv ${l}` : '';
+      $('lbn-' + p.id).textContent = maxed ? 'Maks.' : l ? '+1' : 'Aç';
+      $('lbc-' + p.id).textContent = maxed ? '' : fmt(c) + ' ₼';
+      $('lbt-' + p.id).disabled = !fx.open || maxed || S.money < c;
+      $('lrow-' + p.id).classList.toggle('rec', fx.open && bn.startsWith('Məhsul xət') && l > 0);
+    });
+  }
+  $('fxLines').innerHTML = PRODUCTS.map(p => `<div class="up" id="lrow-${p.id}">
+      <div class="ic">${p.icon}</div>
+      <div class="nm"><b>${p.name} <span id="llv-${p.id}" style="color:var(--muted);font-weight:600"></span></b><small id="lds-${p.id}"></small></div>
+      <button class="act" data-act="line" data-id="${p.id}" id="lbt-${p.id}"><b id="lbn-${p.id}"></b><small id="lbc-${p.id}"></small></button>
+    </div>`).join('');
+  $('rsUps').innerHTML = RSUPS.map(u => `<div class="up">
+      <div class="ic">${u.icon}</div>
+      <div class="nm"><b>${u.name} <span id="rlv-${u.id}" style="color:var(--muted);font-weight:600"></span></b><small id="rds-${u.id}"></small><div class="bar thin gold"><i id="rpb-${u.id}"></i></div></div>
+      <button class="act" data-act="rsup" data-id="${u.id}" id="rbt-${u.id}"><b id="rbn-${u.id}"></b><small id="rbc-${u.id}"></small></button>
+    </div>`).join('');
+  $('rsMenu').innerHTML = DISHES.map(d => `<div class="up" id="drow-${d.id}">
+      <div class="ic">${d.icon}</div>
+      <div class="nm"><b>${d.name}</b><small id="dds-${d.id}"></small></div>
+      <button class="act" data-act="dish" data-id="${d.id}" id="dbt-${d.id}"><b id="dbn-${d.id}"></b><small id="dbc-${d.id}"></small></button>
+    </div>`).join('');
+  function updateRest(){
+    const rs = S.rs, st = rsStars();
+    $('rsName').innerHTML = `🍽️ Balıq restoranı <span class="stars">${'★'.repeat(Math.floor(st))}${st % 1 ? '½' : ''}<span class="no">${'★'.repeat(5 - Math.ceil(st))}</span></span><span class="tag">${rs.open ? 'açıq' : 'bağlı'}</span>`;
+    $('rsStats').innerHTML = rs.open ? `
+      <span>Məmnuniyyət</span><span>${Math.round(avg(rs.sat))}%</span>
+      <span>Son 1 dəqiqədə gəlir</span><span>${fmt(rsRevMin())} ₼</span>
+      <span>Masalar / ofisiantlar / aşpazlar</span><span>${2 + rs.tables} / ${1 + rs.waiters} / ${1 + rs.chefs}</span>
+      <span>Qonaqlar: yeyir / gözləyir</span><span>${rsC.filter(c => c.state === 'eat').length} / ${rsC.filter(c => c.state !== 'eat' && c.state !== 'exit').length}</span>
+      <span>Verilən yemək / əsəbi gedən</span><span>${fmt(rs.served)} / ${fmt(rs.angry)}</span>`
+      : `<span>Açılış qiyməti</span><span>${fmt(rsOpenCost())} ₼</span><span>Şərt</span><span>${S.fx.open ? '✓ Sex açıqdır' : 'əvvəlcə 🏭 Sexi aç'}</span>`;
+    $('rsOpenBtn').hidden = rs.open;
+    $('rsOpenSub').textContent = fmt(rsOpenCost()) + ' ₼';
+    $('rsOpenBtn').disabled = !S.fx.open || S.money < rsOpenCost();
+    $('rsViewBtn').disabled = !rs.open;
+    RSUPS.forEach(u => {
+      const l = rs[u.id], mx = u.max(), maxed = l >= mx, c = rsCost(u);
+      $('rlv-' + u.id).textContent = `${l}/${mx}`;
+      $('rds-' + u.id).textContent = maxed ? u.desc(l) : `${u.desc(l)} → ${u.desc(l + 1)}`;
+      $('rbn-' + u.id).textContent = maxed ? 'Maks.' : '+1';
+      $('rbc-' + u.id).textContent = maxed ? '' : fmt(c) + ' ₼';
+      $('rbt-' + u.id).disabled = !rs.open || maxed || S.money < c;
+      $('rpb-' + u.id).style.width = l / mx * 100 + '%';
+    });
+    DISHES.forEach(d => {
+      const on = rs.menu[d.id], lineOK = d.need === 'clean' || S.fx.lines[d.need], need = d.need === 'clean' ? '✨ təmiz balıq' : PRODUCTS.find(p => p.id === d.need).icon + ' ' + PRODUCTS.find(p => p.id === d.need).name.toLowerCase();
+      $('dds-' + d.id).textContent = `qiymət ×${d.mult} · tərkib: ${need}${!lineOK ? ' (sexdə bu xətti aç)' : on ? ` · stok ${Math.floor(ingr(d.need).n)}` : ''}`;
+      $('dbn-' + d.id).textContent = on ? 'Menyuda' : 'Menyuya əlavə et';
+      $('dbc-' + d.id).textContent = on ? '✓' : fmt(dishCost(d)) + ' ₼';
+      $('dbt-' + d.id).disabled = on || !rs.open || S.money < dishCost(d);
     });
   }
   function updateMarket(){
@@ -1878,13 +2125,12 @@
     $('mkName').innerHTML = `🏪 ${mk.open ? tier.name : 'Balıq bazarı'} <span class="stars">${'★'.repeat(Math.floor(st))}${st % 1 ? '½' : ''}<span class="no">${'★'.repeat(5 - Math.ceil(st))}</span></span><span class="tag">${mk.open ? `səviyyə ${mk.tier + 1}/${TIERS.length}` : 'bağlı'}</span>`;
     $('mkStats').innerHTML = mk.open ? `
       <span>Məmnuniyyət</span><span>${mkSatPct()}%</span>
-      <span>Qiymət: qablaşdırılmış / diri / yemək</span><span>×${(VAL.packed * mkMult()).toFixed(1)} / ×${(VAL.live * mkMult()).toFixed(1)} / ×${(dishMult() * mkMult()).toFixed(1)}</span>
+      <span>Bazar qiymət çarpanı</span><span>×${mkMult().toFixed(2)} (məhsulun öz qiymətinin üstünə)</span>
       <span>Son 1 dəqiqədə gəlir</span><span>${fmt(mkRevMin())} ₼</span>
       <span>İçəridəki müştərilər</span><span>${mkC.length}</span>
       <span>Xidmət edilən / əsəbi gedən</span><span>${fmt(mk.served)} / ${fmt(mk.angry)}</span>
       <span>Çirk</span><span>${Math.round(mk.dirt)}%</span>
-      <span>Restoranda satılan yemək</span><span>${fmt(mk.dishes)}</span>
-      <span>Stok: 📦 / 🐟 / ✨</span><span>${Math.floor(S.fx.packN)} / ${Math.floor(S.holdN)} / ${Math.floor(S.fx.cleanN)}</span>` : `<span>Açılış qiyməti</span><span>${fmt(mkOpenCost())} ₼</span><span>Satış</span><span>diri balıq ×1.4, qablaşdırılmış ×2.2, restoran ×3.5+</span>`;
+      <span>Stok</span><span>${PRODUCTS.filter(p => S.fx.lines[p.id]).map(p => p.icon + Math.floor(stock(p.id).n)).join(' ')} 🐠${Math.floor(S.holdN)}</span>` : `<span>Açılış qiyməti</span><span>${fmt(mkOpenCost())} ₼</span><span>Satış</span><span>diri balıq ×1.4, sex məhsulları ×1.5–3.4</span>`;
     if (!mk.open){ $('mkOpenTitle').textContent = '🏪 Bazarı aç'; $('mkOpenSub').textContent = fmt(mkOpenCost()) + ' ₼'; $('mkOpenBtn').disabled = S.money < mkOpenCost(); }
     else if (nx){ const c = nx.cost * mkScale(), ok = st >= nx.need;
       $('mkOpenTitle').textContent = `⬆️ ${nx.name}`; $('mkOpenSub').textContent = ok ? `${fmt(c)} ₼ · qiymət ×${nx.mult}, ${nx.stalls} piştaxta` : `${nx.need}★ reytinq lazımdır (indi ${st}★)`;
@@ -1896,7 +2142,7 @@
       const l = mk[u.id], mx = u.max(), maxed = l >= mx, c = mkCost(u);
       $('mlv-' + u.id).textContent = `${l}/${mx}`;
       $('mds-' + u.id).textContent = maxed ? u.desc(l) + (u.id === 'stalls' && TIERS[mk.tier + 1] ? ' · daha çoxu üçün bazarı böyüt' : '') : `${u.desc(l)} → ${u.desc(l + 1)}`;
-      $('mbn-' + u.id).textContent = maxed ? 'Maks.' : u.id === 'rest' && !l ? 'Aç' : '+1';
+      $('mbn-' + u.id).textContent = maxed ? 'Maks.' : u.id === 'shelf' && !l ? 'Aç' : '+1';
       $('mbc-' + u.id).textContent = maxed ? '' : fmt(c) + ' ₼';
       $('mbt-' + u.id).disabled = !mk.open || maxed || S.money < c;
       $('mpb-' + u.id).style.width = (mx ? l / mx : 1) * 100 + '%';
@@ -2039,7 +2285,10 @@
     $('mkBadge').hidden = !mkAfford; $('mkBadge').textContent = mkAfford;
     if (tab === 'market') updateMarket();
     if (tab === 'factory') updateFactory();
-    const fxAfford = S.fx.open ? FXUPS.filter(u => S.fx[u.id] < u.max() && S.money >= fxCost(u)).length : (S.money >= fxOpenCost() ? 1 : 0);
+    if (tab === 'rest') updateRest();
+    const rsAfford = S.rs.open ? RSUPS.filter(u => S.rs[u.id] < u.max() && S.money >= rsCost(u)).length + DISHES.filter(d => !S.rs.menu[d.id] && S.money >= dishCost(d)).length : (S.fx.open && S.money >= rsOpenCost() ? 1 : 0);
+    $('rsBadge').hidden = !rsAfford; $('rsBadge').textContent = rsAfford;
+    const fxAfford = S.fx.open ? FXUPS.filter(u => S.fx[u.id] < u.max() && S.money >= fxCost(u)).length + PRODUCTS.filter(p => S.fx.lines[p.id] < 40 && S.money >= lineCost(p)).length : (S.money >= fxOpenCost() ? 1 : 0);
     $('fxBadge').hidden = !fxAfford; $('fxBadge').textContent = fxAfford;
     if (tab === 'map'){
       if (dirty.map){ buildMap(); dirty.map = false; }
@@ -2133,13 +2382,33 @@
       }
       case 'turbo': useAbility('turbo'); break;
       case 'view': {
-        const v = a.dataset.v, open = v === 'market' ? S.mk.open : S.fx.open; if (!open) return;
+        const v = a.dataset.v, open = VIEWS.find(x => x[0] === v)[2](); if (!open) return;
         S.view = S.view === v ? 'sea' : v; if (window.innerWidth <= 820) window.scrollTo({ top:0 }); break;
       }
       case 'fxopen': {
         if (S.fx.open || !buy(fxOpenCost())) return;
         S.fx.open = true; S.view = 'factory'; SFX.rare(); toast('🏭 Sex açıldı! Yük maşını balığı gətirməyə başladı');
         if (window.innerWidth <= 820) window.scrollTo({ top:0 }); break;
+      }
+      case 'line': {
+        const p = PRODUCTS.find(x => x.id === a.dataset.id), c = lineCost(p);
+        if (!S.fx.open || S.fx.lines[p.id] >= 40 || !buy(c)) return;
+        S.fx.lines[p.id]++; SFX.buy(); toast(S.fx.lines[p.id] === 1 ? `${p.icon} ${p.name} xətti açıldı` : `${p.icon} ${p.name}: ${lineRate(p).toFixed(2)} ədəd/san`); break;
+      }
+      case 'rsopen': {
+        if (S.rs.open || !S.fx.open || !buy(rsOpenCost())) return;
+        S.rs.open = true; S.view = 'rest'; SFX.rare(); toast('🍽️ Restoran açıldı! İlk qonaqlar yoldadır');
+        if (window.innerWidth <= 820) window.scrollTo({ top:0 }); break;
+      }
+      case 'rsup': {
+        const u = RSUPS.find(x => x.id === a.dataset.id), c = rsCost(u);
+        if (!S.rs.open || S.rs[u.id] >= u.max() || !buy(c)) return;
+        S.rs[u.id]++; SFX.buy(); toast(`${u.icon} ${u.name}: ${u.desc(S.rs[u.id])}`); break;
+      }
+      case 'dish': {
+        const d = DISHES.find(x => x.id === a.dataset.id);
+        if (!S.rs.open || S.rs.menu[d.id] || !buy(dishCost(d))) return;
+        S.rs.menu[d.id] = true; SFX.rare(); toast(`${d.icon} ${d.name} menyuya əlavə edildi`); break;
       }
       case 'fxup': {
         const u = FXUPS.find(x => x.id === a.dataset.id), c = fxCost(u);
@@ -2180,14 +2449,14 @@
           const f = fresh(), keep = ['pearls', 'shop', 'ach', 'found', 'rec', 'set', 'mgr', 'daily', 'total', 'caught', 'golds', 'fights', 'snaps', 'rares', 'newSpecies', 'best', 'bestK', 'bestStreak', 'qn', 'clock'];
           keep.forEach(k => { f[k] = S[k]; });
           f.fame = S.fame + g; f.exped = S.exped + 1; f.quests = [];
-          S = f; resetSea(); mkReset(); fillQuests(); Object.keys(dirty).forEach(k => dirty[k] = true); save(); updatePanel();
+          S = f; resetSea(); mkReset(); rsReset(); fillQuests(); Object.keys(dirty).forEach(k => dirty[k] = true); save(); updatePanel();
           toast(`🧭 Ekspedisiya başladı: ⚓ ${S.fame}, qazanc ×${(1 + .25 * S.fame).toFixed(2)}`);
         });
         return;
       }
       case 'wipe':
         ask('Hər şeyi sil?', 'Bütün dənizlər, gəmilər, incilər və tapılan növlər birdəfəlik silinəcək.', '', () => {
-          const keepSet = S.set; S = fresh(); S.set = keepSet; resetSea(); mkReset(); Object.keys(dirty).forEach(k => dirty[k] = true); save(); updatePanel();
+          const keepSet = S.set; S = fresh(); S.set = keepSet; resetSea(); mkReset(); rsReset(); Object.keys(dirty).forEach(k => dirty[k] = true); save(); updatePanel();
         });
         return;
       default: return;
@@ -2221,8 +2490,17 @@
       S.mgr = { speed:Object.assign(D.mgr.speed, (d.mgr || {}).speed), price:Object.assign(D.mgr.price, (d.mgr || {}).price), rare:Object.assign(D.mgr.rare, (d.mgr || {}).rare) };
       S.turbo = Object.assign(D.turbo, d.turbo || {}); S.daily = Object.assign(D.daily, d.daily || {});
       S.mk = Object.assign(D.mk, d.mk || {}); S.mk.sat = Array.isArray(S.mk.sat) ? S.mk.sat.slice(-30) : [];
-      if (d.mk && (d.mk.emal || d.mk.kafe) && !d.mk.rest) S.mk.rest = Math.max(d.mk.emal || 0, d.mk.kafe || 0);   // older market rooms become the restaurant
-      S.fx = Object.assign(D.fx, d.fx || {});
+      const ofx = d.fx || {};
+      S.fx = Object.assign(D.fx, ofx);
+      S.fx.lines = Object.assign(fresh().fx.lines, ofx.lines || {});
+      S.fx.p = Object.assign(fresh().fx.p, ofx.p || {});
+      S.fx.raw = ofx.raw || { n:ofx.rawN || 0, v:ofx.rawV || 0 };
+      S.fx.clean = ofx.clean || { n:ofx.cleanN || 0, v:ofx.cleanV || 0 };
+      if (ofx.packN){ S.fx.p.whole = { n:ofx.packN, v:ofx.packV || 0 }; }          // older packed stock becomes whole cleaned fish
+      if (ofx.pack && !(ofx.lines || {}).fillet) S.fx.lines.fillet = ofx.pack;      // the old packing line becomes the fillet line
+      ['rawN', 'rawV', 'cleanN', 'cleanV', 'packN', 'packV', 'pack'].forEach(k => delete S.fx[k]);
+      const D2 = fresh(); S.rs = Object.assign(D2.rs, d.rs || {}); S.rs.menu = Object.assign({ soup:true }, (d.rs || {}).menu || {}); S.rs.sat = Array.isArray(S.rs.sat) ? S.rs.sat.slice(-30) : [];
+      if (d.mk && d.mk.rest && !d.rs){ S.rs.open = !!S.fx.open; S.rs.decor = d.mk.rest; }  // an old market restaurant becomes the new building
       S.catches = SEAS.map((s, i) => (d.catches || [])[i] || 0);
       S.found = d.found || {}; S.rec = d.rec || {}; S.ach = d.ach || {}; S.quests = d.quests || [];
       S.rares = d.rares || 0; S.newSpecies = d.newSpecies || 0;
