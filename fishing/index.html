@@ -288,7 +288,7 @@
         <ol class="how">
           <li>Tilovlar adi balığı <b>özü tutur</b>. Sən pul yığıb gəmi və avadanlıq alırsan.</li>
           <li><b>Nadir balıq</b> düşəndə ekrana bas və saxla. Gərginlik çox artanda burax. Tutsan qiymət ×2 olur. Bir neçə saniyə toxunmasan, ekipaj özü cəhd edir.</li>
-          <li>Dənizdə lazımi sayda balıq tut, səfər pulunu ödə və növbəti dənizə keç. Okean və buzlu dənizlər üçün <b>gəmi</b> lazımdır.</li>
+          <li>Dənizdə lazımi sayda balıq tut, səfər pulunu ödə və növbəti dənizə keç. Keçiddə <b>qalan pul sıfırlanır</b>, ona görə əvvəlcə avadanlığa xərclə. Okean və buzlu dənizlər üçün <b>gəmi</b> lazımdır.</li>
           <li><b>Tapşırıqlar</b> və <b>nailiyyətlər</b> inci verir. İncilərlə mağazada daimi bonus alırsan.</li>
           <li><b>Gecə</b> və <b>fırtınada</b> nadir balıq çox olur, <b>yağışda</b> balıq tez tutulur.</li>
           <li><b>Qızıl balığa</b> toxun və bonus qazan.</li>
@@ -630,6 +630,11 @@
       c.moveTo(tx, 0); c.lineTo(tx - L * .18, -L * .16 + tw); c.quadraticCurveTo(tx - L * .1, tw * .5, tx - L * .18, L * .16 + tw); c.closePath();
     }
     c.fill();
+    c.strokeStyle = 'rgba(0,0,0,.28)'; c.lineWidth = Math.max(.5, L * .012); c.stroke();
+    if (type !== 'eel' && type !== 'sunfish'){   // tail fin rays
+      c.strokeStyle = 'rgba(255,255,255,.18)'; c.beginPath();
+      for (let r = -2; r <= 2; r++){ c.moveTo(tx, 0); c.lineTo(tx - L * .16, r * L * .05 + tw); } c.stroke();
+    }
 
     c.globalAlpha = finA * .8;
     c.beginPath();
@@ -642,13 +647,16 @@
       c.moveTo(L * .05, L * .26); c.quadraticCurveTo(-L * .12, L * (type === 'sunfish' ? .7 : .42), -L * .3, L * .1); }
     else if (type !== 'eel' && type !== 'flat' && type !== 'puffer'){ c.moveTo(L * .12, -L * .2); c.quadraticCurveTo(0, -L * .34 + fw, -L * .16, -L * .2);
       c.moveTo(L * .14, L * .14); c.quadraticCurveTo(L * .06, L * .26 - fw, -L * .02, L * .16); }
-    c.fill(); c.globalAlpha = finA;
+    c.fill(); c.strokeStyle = 'rgba(0,0,0,.25)'; c.lineWidth = Math.max(.5, L * .01); c.stroke(); c.globalAlpha = finA;
 
     c.fillStyle = grad;
     if (type === 'flat'){ c.beginPath(); c.ellipse(0, 0, L * .4, L * .26, 0, 0, 7); c.fill();
       c.strokeStyle = back; c.lineWidth = L * .04; c.globalAlpha = finA * .7; c.beginPath(); c.ellipse(0, 0, L * .42, L * .28, 0, 0, 7); c.stroke(); c.globalAlpha = finA; }
     else { fishPath(c, type, L, wig); c.fill(); }
     c.shadowBlur = 0;
+    c.strokeStyle = 'rgba(0,0,0,.38)'; c.lineWidth = Math.max(.6, L * .018);
+    if (type === 'flat'){ c.beginPath(); c.ellipse(0, 0, L * .4, L * .26, 0, 0, 7); } else fishPath(c, type, L, wig);
+    c.stroke();
 
     if (type === 'bill'){ c.strokeStyle = back; c.lineWidth = L * .025; c.beginPath(); c.moveTo(L * .42, 0); c.lineTo(L * .78, -L * .01); c.stroke(); }
     if (lk.saw){ c.fillStyle = back; c.fillRect(L * .45, -L * .02, L * .3, L * .04); }
@@ -664,23 +672,51 @@
       if (lk.pat === 'spots'){ c.fillStyle = type === 'coel' || has(name, 'Balina') ? '#ffffffaa' : '#0004'; for (let i = 0; i < 14; i++){ c.beginPath(); c.arc((hash(name + i) % 60 - 30) / 100 * L, (hash(i + name) % 30 - 18) / 100 * L, L * .018, 0, 7); c.fill(); } }
       if (lk.pat === 'waves'){ c.strokeStyle = '#0006'; c.lineWidth = 1.2; for (let x = -.25; x < .35; x += .08){ c.beginPath(); c.moveTo(L * x, -L * .2); c.quadraticCurveTo(L * (x + .05), -L * .1, L * x, -L * .02); c.stroke(); } }
     }
-    if (opts.hq !== false){
+    // darker back for depth
+    const ds = c.createLinearGradient(0, -L * .3, 0, L * .02);
+    ds.addColorStop(0, 'rgba(0,0,0,.32)'); ds.addColorStop(1, 'rgba(0,0,0,0)');
+    c.fillStyle = ds; c.fillRect(-L * .6, -L * .7, L * 1.3, L * .7);
+    if (opts.hq !== false && L >= 16){
+      if (type !== 'eel' && type !== 'shark' && type !== 'sturgeon' && type !== 'puffer' && !opts.golden){
+        c.strokeStyle = 'rgba(255,255,255,.13)'; c.lineWidth = Math.max(.4, L * .008);
+        const s = L * .055;
+        for (let x = L * .18; x > -L * .32; x -= s * 1.2) for (let y = -L * .22; y < L * .22; y += s * 1.1){
+          c.beginPath(); c.arc(x + ((y / s) & 1 ? s * .6 : 0), y, s * .7, Math.PI * .55, Math.PI * 1.45); c.stroke(); }
+      }
       const sh = c.createLinearGradient(0, -L * .3, 0, 0);
-      sh.addColorStop(0, '#ffffff00'); sh.addColorStop(.6, '#ffffff38'); sh.addColorStop(1, '#ffffff00');
-      c.fillStyle = sh; c.fillRect(-L * .3, -L * .2, L * .7, L * .16);
-      c.strokeStyle = '#ffffff22'; c.lineWidth = .8; c.beginPath(); c.moveTo(L * .2, -L * .15); c.quadraticCurveTo(L * .17, 0, L * .2, L * .15); c.stroke();
+      sh.addColorStop(0, '#ffffff00'); sh.addColorStop(.6, '#ffffff40'); sh.addColorStop(1, '#ffffff00');
+      c.fillStyle = sh; c.fillRect(-L * .3, -L * .2, L * .7, L * .14);
+      if (type !== 'flat' && type !== 'puffer'){
+        c.strokeStyle = 'rgba(255,255,255,.3)'; c.lineWidth = Math.max(.4, L * .01);
+        c.beginPath(); c.moveTo(L * .22, -L * .03); c.quadraticCurveTo(0, -L * .07, -L * .3, -L * .005); c.stroke();
+      }
+    }
+    if (type !== 'flat' && type !== 'eel' && type !== 'ray'){
+      c.strokeStyle = 'rgba(0,0,0,.35)'; c.lineWidth = Math.max(.6, L * .016);
+      const gx = type === 'shark' ? L * .2 : L * .22;
+      c.beginPath(); c.moveTo(gx + L * .02, -L * .13); c.quadraticCurveTo(gx - L * .05, 0, gx + L * .02, L * .13); c.stroke();
+      c.strokeStyle = 'rgba(255,255,255,.22)'; c.beginPath(); c.moveTo(gx + L * .035, -L * .11); c.quadraticCurveTo(gx - L * .03, 0, gx + L * .035, L * .11); c.stroke();
     }
     c.restore();
+    // mouth
+    if (type !== 'flat' && type !== 'ray' && type !== 'eel'){
+      const nose = type === 'shark' || type === 'sturgeon' ? L * .5 : L * .44;
+      c.strokeStyle = 'rgba(0,0,0,.5)'; c.lineWidth = Math.max(.6, L * .014);
+      c.beginPath(); c.moveTo(nose - L * .005, L * .025); c.quadraticCurveTo(nose - L * .05, L * (type === 'grouper' ? .07 : .045), nose - L * (type === 'grouper' ? .12 : .08), L * .04); c.stroke();
+    }
     if (type === 'shark'){ c.strokeStyle = '#0003'; c.lineWidth = 1; for (let i = 0; i < 3; i++){ c.beginPath(); c.moveTo(L * (.26 - i * .03), -L * .05); c.lineTo(L * (.25 - i * .03), L * .05); c.stroke(); } }
     const ex = type === 'flat' ? L * .22 : type === 'eel' ? L * .42 : type === 'shark' ? L * .36 : L * .3;
     const ey = type === 'flat' ? -L * .08 : -L * .04;
-    c.fillStyle = '#fff'; c.beginPath(); c.arc(ex, ey, Math.max(1.4, L * .042), 0, 7); c.fill();
-    c.fillStyle = '#111'; c.beginPath(); c.arc(ex + L * .008, ey, Math.max(1, L * .026), 0, 7); c.fill();
-    c.fillStyle = '#fff'; c.beginPath(); c.arc(ex + L * .016, ey - L * .01, Math.max(.4, L * .008), 0, 7); c.fill();
+    const er = Math.max(1.5, L * .05);
+    c.fillStyle = '#f4f1e6'; c.beginPath(); c.arc(ex, ey, er, 0, 7); c.fill();
+    c.strokeStyle = 'rgba(0,0,0,.45)'; c.lineWidth = Math.max(.4, L * .008); c.stroke();
+    c.fillStyle = type === 'shark' ? '#1a1a1a' : '#c99a2e'; c.beginPath(); c.arc(ex + L * .006, ey, er * .72, 0, 7); c.fill();
+    c.fillStyle = '#0d0d0d'; c.beginPath(); c.arc(ex + L * .01, ey, er * .48, 0, 7); c.fill();
+    c.fillStyle = '#fff'; c.beginPath(); c.arc(ex + er * .45, ey - er * .4, Math.max(.4, er * .25), 0, 7); c.fill();
     if (type === 'flat'){ c.fillStyle = '#fff'; c.beginPath(); c.arc(ex - L * .07, ey - L * .05, Math.max(1.2, L * .035), 0, 7); c.fill(); c.fillStyle = '#111'; c.beginPath(); c.arc(ex - L * .065, ey - L * .05, Math.max(.8, L * .02), 0, 7); c.fill(); }
     c.restore();
   }
-  const fishLen = (name, k) => { const t = look(name).type; return (22 + k * 5) * ({ shark:1.6, bill:1.5, sturgeon:1.5, eel:1.3, ray:1.3, sunfish:1.2, tuna:1.15, coel:1.25 }[t] || 1); };
+  const fishLen = (name, k) => { const t = look(name).type; return (28 + k * 6) * ({ shark:1.6, bill:1.5, sturgeon:1.5, eel:1.3, ray:1.3, sunfish:1.2, tuna:1.15, coel:1.25 }[t] || 1); };
 
   // ---------------- Simulation ----------------
   let lines = [], swimmers = [], floats = [], particles = [], banner = null, gold = null, fight = null, holding = false;
@@ -692,7 +728,7 @@
   function newLine(k){ return { k, y:SURF, depth:230 + Math.random() * 270, state:'sink', t:0, fish:-1, manual:false }; }
   function syncLines(){ while (lines.length < nRods()) lines.push(newLine(lines.length)); }
   function newSwimmer(sea){
-    const dir = Math.random() < .5 ? 1 : -1, z = .45 + Math.random() * .55;
+    const dir = Math.random() < .5 ? 1 : -1, z = .55 + Math.random() * .45;
     return { k:rollFish(sea), x:Math.random() * W, y:200 + Math.random() * 310, v:(14 + Math.random() * 22) * dir * z, ph:Math.random() * 6, z };
   }
   function resetSea(){
@@ -1009,7 +1045,7 @@
     for (const f of swimmers){
       const name = sea.fish[f.k];
       ctx.save(); ctx.translate(f.x, f.y + Math.sin(f.ph / 3) * 3); ctx.scale(Math.sign(f.v) * f.z, f.z);
-      ctx.globalAlpha = .35 + .6 * f.z; drawFish(ctx, name, fishLen(name, f.k), f.ph, { hq:hq && f.z > .7, glow:hq && f.k >= 3 && f.z > .7 ? RAR[f.k].color + '88' : null }); ctx.restore();
+      ctx.globalAlpha = .55 + .45 * f.z; drawFish(ctx, name, fishLen(name, f.k), f.ph, { hq:hq && f.z > .7, glow:hq && f.k >= 3 && f.z > .7 ? RAR[f.k].color + '88' : null }); ctx.restore();
     }
     if (gold){
       ctx.save(); ctx.translate(gold.x, gold.y + Math.sin(gold.ph / 2) * 4); ctx.scale(Math.sign(gold.v), 1);
@@ -1245,9 +1281,13 @@
       <button class="act" data-act="up" data-id="${u.id}" id="bt-${u.id}"><b id="bn-${u.id}"></b><small id="bc-${u.id}"></small></button>
     </div>`).join('');
 
-  function fishIcon(name, known, w, h, len, sc){
+  // fills the picture: long or tall body types get a shorter length so the whole fish fits
+  function fishIcon(name, known, w, h, sc){
     const c = document.createElement('canvas'); c.className = 'ico'; c.width = w; c.height = h;
-    const g = c.getContext('2d'); g.translate(w / 2, h / 2); g.scale(sc, sc);
+    const g = c.getContext('2d'); g.scale(sc, sc);
+    const f = { bill:1.55, shark:1.35, sturgeon:1.3, eel:1.25, sunfish:1.9, reef:1.45, puffer:1.35, ray:1.7, coel:1.15, flat:1.1 }[look(name).type] || 1;
+    const len = (w / sc) * .74 / f;
+    g.translate(w / sc / 2 + len * .06, h / sc / 2);
     if (!known) g.filter = 'brightness(0) opacity(0.35)';
     drawFish(g, name, len, .5);
     return c;
@@ -1260,7 +1300,7 @@
         <span class="nm ${known ? '' : 'unknown'}">${known ? name : '??? (hələ tutulmayıb)'}<small style="color:${RAR[k].color}">${RAR[k].name} · şans ${pct(w[k] / sum * 100)}${known ? ' · rekord ' + kg(S.rec[id] || 0) : ''}</small></span>
         <span class="val">${fmt(fishValue(i, k))} ₼</span>`;
     }).join('');
-    el.querySelectorAll('[data-ico]').forEach(sp => { const k = +sp.dataset.ico; sp.replaceWith(fishIcon(sea.fish[k], S.found[i + ':' + k], 104, 52, 22, 1.9)); });
+    el.querySelectorAll('[data-ico]').forEach(sp => { const k = +sp.dataset.ico; sp.replaceWith(fishIcon(sea.fish[k], S.found[i + ':' + k], 104, 52, 2)); });
   }
   const starHtml = n => `<span class="stars">${'★'.repeat(n)}<span class="no">${'★'.repeat(3 - n)}</span></span>`;
 
@@ -1293,7 +1333,7 @@
     }).join('');
     $('albumList').innerHTML = html || '<p class="hint">Bu filtrə uyğun balıq yoxdur.</p>';
     $('albumList').querySelectorAll('[data-a]').forEach(sp => { const [si, k] = sp.dataset.a.split(':').map(Number);
-      sp.replaceWith(fishIcon(SEAS[si].fish[k], S.found[sp.dataset.a], 192, 96, 24, 3)); });
+      sp.replaceWith(fishIcon(SEAS[si].fish[k], S.found[sp.dataset.a], 192, 96, 2)); });
     $('albumTag').textContent = `${foundN()} / ${totalSpecies} növ`;
     $('albumBar').style.width = foundN() / totalSpecies * 100 + '%';
   }
@@ -1374,7 +1414,7 @@
         const nb = boatFor(nextI), boatOk = S.boat >= nb;
         $('nextTitle').textContent = `⛵ Yeni LVL ${nextI + 1}: ${SEAS[nextI].name}`;
         $('nextSub').textContent = got < need(front) ? `${SEAS[front].name}: daha ${need(front) - got} balıq tut`
-          : !boatOk ? `${BOATS[nb].icon} ${BOATS[nb].name} lazımdır (Gəmi bölməsi)` : `Səfər: ${fmt(ticket(nextI))} ₼`;
+          : !boatOk ? `${BOATS[nb].icon} ${BOATS[nb].name} lazımdır (Gəmi bölməsi)` : `Səfər: ${fmt(ticket(nextI))} ₼ · qalan pul sıfırlanır`;
         $('nextBtn').disabled = got < need(front) || !boatOk || S.money < ticket(nextI);
       }
       const left = DAY - (S.clock % DAY), toNight = .62 * DAY - (S.clock % DAY), wx = W_NOW();
@@ -1466,10 +1506,17 @@
       }
       case 'next': {
         const n = S.maxSea + 1;
-        if (n >= SEAS.length || S.catches[S.maxSea] < need(S.maxSea) || S.boat < boatFor(n) || !buy(ticket(n))) return;
-        S.maxSea = n; S.sea = n; resetSea(); dirty.fish = dirty.map = dirty.album = true; SFX.rare();
-        ask(`LVL ${n + 1}`, `${SEAS[n].ocean}. Burada ${SEAS[n].fish.length} yeni balıq növü səni gözləyir.`, SEAS[n].name);
-        break;
+        if (n >= SEAS.length || S.catches[S.maxSea] < need(S.maxSea) || S.boat < boatFor(n) || S.money < ticket(n)) return;
+        const lost = S.money - ticket(n);
+        ask(`LVL ${n + 1}: ${SEAS[n].name}`,
+          `Səfər ${fmt(ticket(n))} ₼. Yeni səviyyəyə keçəndə qalan pul sıfırlanır` + (lost >= 1 ? `: ${fmt(lost)} ₼ itəcək. İstəsən, əvvəlcə Gəmi bölməsində xərclə.` : '.'),
+          'Keçək?', () => {
+            if (S.money < ticket(n) || S.maxSea + 1 !== n) return;
+            S.money = 0; S.maxSea = n; S.sea = n; resetSea(); dirty.fish = dirty.map = dirty.album = true; SFX.rare();
+            toast(`⛵ LVL ${n + 1}: ${SEAS[n].name} · ${SEAS[n].fish.length} yeni növ səni gözləyir`);
+            save(); updatePanel();
+          });
+        return;
       }
       case 'claim': {
         const q = S.quests.find(x => x.id === +a.dataset.q); if (!q || qProg(q) < q.n) return;
