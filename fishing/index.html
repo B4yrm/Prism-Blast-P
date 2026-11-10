@@ -331,8 +331,15 @@
     <section class="pane" id="pane-cx" hidden>
       <div class="card hero">
         <h2>🏢 Kompleks binaları</h2>
-        <p class="hint">Kompleksə yeni binalar tik. <b>🏠 Yataqxana</b> işçiləri dincəldir və bütün sexdə, bazarda, restoranda işi sürətləndirir. <b>🏢 Baş ofis</b> bütün qazancı artırır.</p>
+        <p class="hint">İşçilər darvazadan <b>özləri gəlir</b>, yataqxanada yerləşir və işçisi ən az olan sektora gedir. Neçə işçi qala bilər, <b>🏠 yataqxananın</b> çarpayı sayından asılıdır. <b>🏢 Baş ofis</b> qazancı artırır və işçiləri daha tez gətirir.</p>
         <div class="pane" id="cxUps"></div>
+      </div>
+      <div class="card">
+        <h2>👷 İşçilər <span class="tag" id="wkTag"></span></h2>
+        <div class="bar gold"><i id="wkBar"></i></div>
+        <p class="hint" id="wkInfo"></p>
+        <div class="pane" id="wkRows"></div>
+        <p class="hint">Hər sektorun maksimum işçi sayı onun təkmilləşdirmələri ilə artır: liman (anbar və satış), sex (yuma və açılmış xətlər), bazar (piştaxta, kassa, akvarium, rəf), restoran (ofisiant və aşpaz yerləri). İşçisi az olan sektor yavaş işləyir, satıcısı olmayan piştaxta isə ümumiyyətlə işləmir.</p>
       </div>
     </section>
 
@@ -600,6 +607,7 @@
       lines:{ whole:1, steak:0, fillet:0, frozen:0, smoked:0, canned:0 },
       p:{ whole:{ n:0, v:0 }, steak:{ n:0, v:0 }, fillet:{ n:0, v:0 }, frozen:{ n:0, v:0 }, smoked:{ n:0, v:0 }, canned:{ n:0, v:0 } } },
     cx:{ dorm:0, hq:0 },
+    wk:{ pool:0, port:2, plant:0, market:0, rest:0, timer:0 },
     rs:{ open:false, ads:0, tables:0, waiters:0, wsp:0, chefs:0, csp:0, decor:0, served:0, angry:0, sat:[], menu:{ soup:true } },
     pearls:0, shop:{ exp:0, auto:0, net:0, off:0 }, ach:{}, quests:[], qn:0,
     set:{ sound:true, vib:true, hq:true },
@@ -665,7 +673,7 @@
   const mgrOn = id => S.mgr[id].lvl > 0 && Date.now() < S.mgr[id].until;
   const turboOn = () => Date.now() < S.turbo.until;
   const holdCap = () => 15 + 8 * S.hold;
-  const sellRate = () => 0.6 * 1.18 ** S.sell;
+  const sellRate = () => 0.6 * 1.18 ** S.sell * (0.15 + 0.85 * wkRatio('port'));
   const saleMult = () => (turboOn() ? 2 : 1) * (mgrOn('price') ? 3 : 1);
   const dayKey = (d = new Date()) => d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
   // one species per day sells for ×3; picked from the seas the player has opened
@@ -682,7 +690,54 @@
   const evMul = () => 1 + 0.15 * S.sonar;
   function autoChance(crew = S.crew){ return Math.min(0.95, 0.4 + 0.03 * crew + 0.08 * (S ? S.shop.auto : 0)); }
   const offRate = () => OFFLINE_RATE + 0.1 * S.shop.off, offCap = () => OFFLINE_H + 2 * S.shop.off + 0.5 * (S.cx ? S.cx.hq : 0);
-  const staffMul = () => 1 + 0.06 * (S.cx ? S.cx.dorm : 0);     // rested workers from the dorm work faster everywhere
+  const staffMul = () => 1;
+  // ---------------- Workers ----------------
+  // applicants walk in on their own while there are free beds and open jobs; each sector has a job cap set by its upgrades
+  const SECTORS = [
+    { id:'port',   icon:'⚓', name:'Liman',    job:'yükləyici' },
+    { id:'plant',  icon:'🏭', name:'Sex',      job:'sex işçisi' },
+    { id:'market', icon:'🏪', name:'Bazar',    job:'satıcı / kassir' },
+    { id:'rest',   icon:'🍽️', name:'Restoran', job:'ofisiant / aşpaz' },
+  ];
+  const beds = () => 6 + 6 * (S.cx ? S.cx.dorm : 0);
+  const wkTotal = () => S.wk.pool + SECTORS.reduce((a, s) => a + S.wk[s.id], 0);
+  function marketSlots(){
+    const mk = S.mk, caps = { cash:1 + mk.cash, stall:1 + mk.stalls, aqua:2, shelf:mk.shelf ? 2 : 0 }, have = { cash:0, stall:0, aqua:0, shelf:0 }, out = [];
+    const order = ['cash', 'stall', 'aqua', 'stall', 'shelf', 'cash', 'stall', 'aqua', 'shelf', 'stall', 'cash', 'stall', 'stall'];
+    for (const k of order) if (have[k] < caps[k]){ have[k]++; out.push(k); }
+    for (const k in caps) while (have[k] < caps[k]){ have[k]++; out.push(k); }
+    return out;
+  }
+  const maxW = id => ({
+    port:  2 + Math.floor(S.hold / 5) + Math.floor(S.sell / 5),
+    plant: S.fx.open ? 3 + PRODUCTS.filter(p => S.fx.lines[p.id]).length + Math.floor(S.fx.wash / 5) : 0,
+    market:S.mk.open ? marketSlots().length : 0,
+    rest:  S.rs.open ? 2 + S.rs.waiters + S.rs.chefs : 0,
+  })[id];
+  const wkRatio = id => maxW(id) ? Math.min(1, S.wk[id] / maxW(id)) : 0;
+  // how many market stations of each kind have someone working them
+  function mkStaffed(kind){ return marketSlots().slice(0, S.wk.market).filter(k => k === kind).length; }
+  function rsStaff(){
+    const w = S.wk.rest, mw = 1 + S.rs.waiters, mc = 1 + S.rs.chefs;
+    let waiters = Math.min(mw, Math.ceil(w / 2)), chefs = Math.min(mc, w - waiters);
+    waiters = Math.min(mw, w - chefs);
+    return { waiters, chefs };
+  }
+  function clampWorkers(){
+    for (const s of SECTORS){ const m = maxW(s.id); if (S.wk[s.id] > m){ S.wk.pool += S.wk[s.id] - m; S.wk[s.id] = m; } }
+    let over = wkTotal() - beds();
+    for (const k of ['pool', 'port', 'plant', 'market', 'rest']){ if (over <= 0) break; const d = Math.min(over, S.wk[k]); S.wk[k] -= d; over -= d; }
+  }
+  // place one worker where they are needed most (lowest share of the cap filled)
+  function assignWorker(){
+    const open = SECTORS.filter(s => S.wk[s.id] < maxW(s.id));
+    if (!open.length) return null;
+    open.sort((a, b) => S.wk[a.id] / maxW(a.id) - S.wk[b.id] / maxW(b.id));
+    S.wk[open[0].id]++; return open[0];
+  }
+  const wkInterval = () => 20 / (1 + 0.1 * (S.cx ? S.cx.hq : 0));
+  const wkWanted = () => SECTORS.some(s => S.wk[s.id] < maxW(s.id)) || S.wk.pool > 0;
+  let wkWalk = [];
 
   function weights(sea, live = true){
     const rareBoost = live ? (isNight() ? 1.5 : 1) * W_NOW().rare * (mgrOn('rare') ? 3 : 1) : 1;
@@ -1001,8 +1056,8 @@
     { id:'wash',  icon:'🚿', name:'Yuma və təmizlənmə',     base:600, g:2.2, max:() => 40, desc:l => `${fxRate('wash', l).toFixed(1)} balıq/san · ${1 + Math.floor(l / 5)} işçi` },
     { id:'cold',  icon:'❄️', name:'Soyuducu anbar',        base:500, g:2.4, max:() => 20, desc:l => `hər anbar ${fxCap(l)} ədəd` },
   ];
-  const fxRate = (id, l = S.fx[id]) => ({ truck:.5, wash:.45 }[id]) * 1.2 ** l * staffMul();
-  const lineRate = (p, l = S.fx.lines[p.id]) => l ? p.rate * 1.2 ** (l - 1) * staffMul() : 0;
+  const fxRate = (id, l = S.fx[id]) => ({ truck:.5, wash:.45 }[id]) * 1.2 ** l * (id === 'truck' ? 0.3 + 0.7 * wkRatio('port') : 0.1 + 0.9 * wkRatio('plant'));
+  const lineRate = (p, l = S.fx.lines[p.id]) => l ? p.rate * 1.2 ** (l - 1) * (0.1 + 0.9 * wkRatio('plant')) : 0;
   const lineCost = p => (S.fx.lines[p.id] ? Math.max(500, p.unlock) * 2.2 ** S.fx.lines[p.id] : Math.max(300, p.unlock)) * mkScale();
   const fxCap = (l = S.fx.cold) => 20 + 12 * l;
   const fxCost = u => u.base * u.g ** S.fx[u.id] * mkScale();
@@ -1069,7 +1124,7 @@
     if (washing) for (let i = 0; i < 5; i++){ const x = 96 + ((t / 1000 * 40 + i * 42) % 208); ctx.save(); ctx.translate(x, 226); drawFish(ctx, sea.fish[i % sea.fish.length], 15, t / 200 + i, { hq:false }); ctx.restore(); }
     ctx.fillStyle = '#ffffffee'; rr(112, 162, 176, 46, 10); ctx.fill(); ctx.strokeStyle = washing ? '#2f7d5b' : '#8a96a0'; ctx.lineWidth = 2; ctx.stroke();
     text(`🚿 Yuma və təmizlənmə · Sv ${fx.wash}`, 200, 174, 10, '#1f2a24', 800);
-    for (let i = 0; i < Math.min(6, 1 + Math.floor(fx.wash / 5)); i++){ const wx = 128 + i * 24, wy = 196 + (washing ? Math.sin(t / 120 + i) * 1.5 : 0);
+    for (let i = 0; i < Math.min(6, S.wk.plant); i++){ const wx = 128 + i * 24, wy = 196 + (washing ? Math.sin(t / 120 + i) * 1.5 : 0);
       ctx.fillStyle = '#2f6f9f'; ctx.beginPath(); ctx.arc(wx, wy, 5, 0, 7); ctx.fill(); ctx.fillStyle = '#f2c9a0'; ctx.beginPath(); ctx.arc(wx, wy - 7, 3.5, 0, 7); ctx.fill(); ctx.fillStyle = '#fff'; ctx.fillRect(wx - 4, wy - 12, 8, 2); }
     if (washing){ ctx.fillStyle = '#7cc6f2cc'; for (let i = 0; i < 10; i++){ const dx = (i * 19 + t / 18) % 200; ctx.beginPath(); ctx.arc(100 + dx, 222 - ((t / 8 + i * 13) % 12), 1.6, 0, 7); ctx.fill(); } }
     // product lines: 2 columns x 3 rows
@@ -1132,11 +1187,11 @@
     { id:'factory', name:'Sex',      icon:'🏭', gx:5, gy:3, w:6, d:4, wall:'#7f8c99', floor:'#cfd6dc', open:() => S.fx.open, tab:'factory' },
     { id:'market',  name:'Bazar',    icon:'🏪', gx:0, gy:9, w:4, d:5, wall:'#c0874e', floor:'#ead9b5', open:() => S.mk.open, tab:'market' },
     { id:'rest',    name:'Restoran', icon:'🍽️', gx:6, gy:9, w:5, d:5, wall:'#8d4f3a', floor:'#a8744a', open:() => S.rs.open, tab:'rest' },
-    { id:'dorm',    name:'Yataqxana', icon:'🏠', gx:13, gy:3, w:3, d:4, wall:'#5f8a5a', floor:'#e3dccb', open:() => S.cx.dorm > 0, tab:'cx' },
+    { id:'dorm',    name:'Yataqxana', icon:'🏠', gx:13, gy:3, w:3, d:4, wall:'#5f8a5a', floor:'#e3dccb', open:() => true, tab:'cx' },
     { id:'hq',      name:'Baş ofis',  icon:'🏢', gx:13, gy:9, w:3, d:5, wall:'#3c4a6e', floor:'#d6dbe6', open:() => S.cx.hq > 0, tab:'cx' },
   ];
   const CXUPS = [
-    { id:'dorm', icon:'🏠', name:'İşçi yataqxanası', base:2000, g:2.5, max:() => 20, desc:l => l ? `${l * 2} çarpayı · işçilər ×${(1 + 0.06 * l).toFixed(2)} sürətli` : 'tikilməyib' },
+    { id:'dorm', icon:'🏠', name:'İşçi yataqxanası', base:2000, g:2.5, max:() => 20, desc:l => `${6 + 6 * l} çarpayı (işçi yeri)` },
     { id:'hq',   icon:'🏢', name:'Baş ofis',          base:5000, g:2.6, max:() => 20, desc:l => l ? `bütün qazanc +${5 * l}% · offline +${(0.5 * l).toFixed(1)} saat` : 'tikilməyib' },
   ];
   const cxCost = u => u.base * u.g ** S.cx[u.id] * mkScale();
@@ -1232,7 +1287,7 @@
         if (b.id === 'sea'){
           const n = Math.min(9, Math.ceil(S.holdN / Math.max(1, holdCap()) * 9));
           for (let i = 0; i < n; i++) cube(b.gx + .4 + (i % 3) * .8, b.gy + .4 + Math.floor(i / 3) * .8, .6, .6, 7, '#c99a5b', '#8a6a4a', '#a8794a');
-          figure(b.gx + 2.4, b.gy + 2.3 + Math.sin(t / 900) * .3, '#2f6f9f', 0, '#e7b54d');
+          for (let i = 0; i < Math.min(5, S.wk.port); i++) figure(b.gx + .6 + i * .55, b.gy + 2.3 + Math.sin(t / 900 + i) * .3, '#2f6f9f', Math.abs(Math.sin(t / 260 + i)) * 1.2, '#e7b54d');
         }
         if (b.id === 'factory'){
           const busy = S.fx.raw.n >= 1 || S.fx.clean.n >= 1;
@@ -1243,7 +1298,7 @@
           }
           const lines = PRODUCTS.filter(p => S.fx.lines[p.id]).length;
           for (let i = 0; i < Math.min(lines, 5); i++) cube(b.gx + 5.2, b.gy + .4 + i * .7, .5, .5, 6, ['#9fc3d9', '#e74c3c', '#f1d39a', '#d6f0ff', '#8a6a4a'][i], '#5c6670', '#6b7680');
-          for (let i = 0; i < 2 + Math.min(4, Math.floor(S.fx.wash / 5)); i++) figure(b.gx + 1 + i * .9, b.gy + 1.5 + (i % 2) * 1.7, '#7d55c7', busy ? Math.abs(Math.sin(t / 200 + i)) * 1.5 : 0, '#ffffff');
+          for (let i = 0; i < Math.min(6, S.wk.plant); i++) figure(b.gx + 1 + i * .9, b.gy + 1.5 + (i % 2) * 1.7, '#7d55c7', busy ? Math.abs(Math.sin(t / 200 + i)) * 1.5 : 0, '#ffffff');
         }
         if (b.id === 'market'){
           for (let i = 0; i < 1 + S.mk.stalls; i++) cube(b.gx + .4 + i * .9, b.gy + .4, .7, .7, 6, '#e6f4fb', '#8fb9cc', '#a8cfdf');
@@ -1253,10 +1308,11 @@
           for (let i = 0; i < n; i++) figure(b.gx + .6 + ((i * .37 + t / 9000 * (1 + i % 3)) % 1) * 2.8, b.gy + 1.4 + ((i * .61 + t / 13000) % 1) * 2.2, MKCOLS[i % MKCOLS.length], Math.abs(Math.sin(t / 180 + i)) * 1.2);
         }
         if (b.id === 'dorm'){
-          const beds = Math.min(8, S.cx.dorm * 2);
-          for (let i = 0; i < beds; i++){ const gx = b.gx + .3 + (i % 2) * 1.5, gy = b.gy + .3 + Math.floor(i / 2) * .9;
+          const nb = Math.min(8, Math.ceil(beds() / 3));
+          for (let i = 0; i < nb; i++){ const gx = b.gx + .3 + (i % 2) * 1.5, gy = b.gy + .3 + Math.floor(i / 2) * .9;
             cube(gx, gy, 1.1, .6, 4, '#ffffff', '#c9c2b2', '#ddd6c6'); poly(tile(gx, gy, .3, .6, 4.5), '#7cc6f2'); }
-          for (let i = 0; i < Math.min(3, Math.ceil(beds / 3)); i++){ const p = iso(b.gx + .55 + i * 1.5 % 3, b.gy + .6 + i * .9, 6); ctx.fillStyle = '#f2c9a0'; ctx.beginPath(); ctx.arc(p.x, p.y, 2.5, 0, 7); ctx.fill();
+          const sleepers = isNight() ? Math.min(nb, Math.ceil(wkTotal() / 3)) : Math.min(2, S.wk.pool);
+          for (let i = 0; i < sleepers; i++){ const p = iso(b.gx + .55 + i * 1.5 % 3, b.gy + .6 + i * .9, 6); ctx.fillStyle = '#f2c9a0'; ctx.beginPath(); ctx.arc(p.x, p.y, 2.5, 0, 7); ctx.fill();
             text('z', p.x + 6, p.y - 8 - (t / 300 + i) % 6, 8, '#ffffffcc', 800); }
         }
         if (b.id === 'hq'){
@@ -1268,13 +1324,13 @@
         }
         if (b.id === 'rest'){
           cube(b.gx + .3, b.gy + .3, 4.4, .7, 7, '#e8edf1', '#aab4bd', '#c2cbd2');
-          for (let i = 0; i < 1 + S.rs.chefs; i++){ figure(b.gx + .8 + i * 1.1, b.gy + 1.3, '#ffffff', Math.abs(Math.sin(t / 220 + i)) * 1.2, '#ffffff'); }
+          for (let i = 0; i < rsStaff().chefs; i++){ figure(b.gx + .8 + i * 1.1, b.gy + 1.3, '#ffffff', Math.abs(Math.sin(t / 220 + i)) * 1.2, '#ffffff'); }
           const nt = 2 + S.rs.tables;
           for (let i = 0; i < nt; i++){ const tg = { x:b.gx + .9 + (i % 4) * 1.05, y:b.gy + 2.4 + Math.floor(i / 4) * 1.3 }, p = iso(tg.x, tg.y, 5);
             cube(tg.x - .25, tg.y - .25, .5, .5, 5, '#f6efe2', '#c9b896', '#ddd0b4'); }
           const eat = rsC.filter(c => c.state === 'eat' || c.state === 'food' || c.state === 'order').length;
           for (let i = 0; i < Math.min(eat, nt); i++) figure(b.gx + .9 + (i % 4) * 1.05 + .35, b.gy + 2.4 + Math.floor(i / 4) * 1.3 + .35, MKCOLS[(i + 3) % MKCOLS.length]);
-          for (let i = 0; i < 1 + S.rs.waiters; i++) figure(b.gx + 1 + ((t / 6000 + i * .4) % 1) * 3.4, b.gy + 3.1 + Math.sin(t / 800 + i) * .3, '#1f2a24', 0);
+          for (let i = 0; i < rsStaff().waiters; i++) figure(b.gx + 1 + ((t / 6000 + i * .4) % 1) * 3.4, b.gy + 3.1 + Math.sin(t / 800 + i) * .3, '#1f2a24', 0);
         }
       });
     }
@@ -1285,6 +1341,17 @@
       ctx.fillStyle = '#e7b54d'; ctx.beginPath(); ctx.moveTo(-12, -4); ctx.lineTo(6, -11); ctx.lineTo(6, -20); ctx.lineTo(-12, -13); ctx.fill();
       ctx.fillStyle = '#2f6f9f'; ctx.beginPath(); ctx.moveTo(6, -11); ctx.lineTo(13, -14); ctx.lineTo(13, -20); ctx.lineTo(6, -18); ctx.fill();
       ctx.fillStyle = '#222'; ctx.beginPath(); ctx.arc(-6, -4, 2.5, 0, 7); ctx.arc(8, -9, 2.5, 0, 7); ctx.fill(); ctx.restore();
+    }
+    // new workers: gate -> dorm -> their sector
+    const DOOR = { port:[2.5, 6.4], plant:[8, 7.3], market:[2, 14.3], rest:[8.5, 14.3] };
+    for (const w of wkWalk){
+      const d = DOOR[w.to], back = d[1] > 10;
+      const path = [[4.8, 20.6], [4.8, 8], [14.5, 8], [14.5, 7.3], [14.5, 8], back ? [14.5, 15.8] : [d[0], 8], back ? [d[0], 15.8] : d, d];
+      let rem = w.t * 2.4, p = path[0];
+      for (let i = 1; i < path.length; i++){ const a = path[i - 1], b = path[i], L = Math.hypot(b[0] - a[0], b[1] - a[1]);
+        if (rem <= L){ p = [a[0] + (b[0] - a[0]) * rem / L, a[1] + (b[1] - a[1]) * rem / L]; break; } rem -= L; p = b; }
+      figure(p[0], p[1], w.col, Math.abs(Math.sin(w.t * 9)) * 1.4, '#e7b54d');
+      const q = iso(p[0], p[1], 24); ctx.font = '11px system-ui'; ctx.textAlign = 'center'; ctx.fillText('👷', q.x, q.y);
     }
     // visitors walking from the gate
     const walkers = (S.mk.open ? 4 : 0) + (S.rs.open ? 3 : 0);
@@ -1298,14 +1365,16 @@
     cube(3.9, 20.6, .3, .3, 18, '#5b4636', '#3b2615', '#4a3524'); cube(5.5, 20.6, .3, .3, 18, '#5b4636', '#3b2615', '#4a3524');
     const g1 = iso(4.05, 20.75, 18), g2 = iso(5.65, 20.75, 18); ctx.strokeStyle = '#e7b54d'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(g1.x, g1.y); ctx.lineTo(g2.x, g2.y); ctx.stroke();
     // name plates
-    plate(BUILD[0], `📦 ${Math.floor(S.holdN)}/${holdCap()}`);
-    plate(BUILD[1], S.fx.open ? `${PRODUCTS.filter(p => S.fx.lines[p.id]).length} xətt · ${fmt(S.fx.packed)} məhsul` : `🔒 ${fmt(fxOpenCost())} ₼`);
-    plate(BUILD[2], S.mk.open ? `${'★'.repeat(Math.floor(mkStars()))} · ${mkC.length} müştəri` : `🔒 ${fmt(mkOpenCost())} ₼`);
-    plate(BUILD[3], S.rs.open ? `${'★'.repeat(Math.floor(rsStars()))} · ${rsC.length} qonaq` : S.fx.open ? `🔒 ${fmt(rsOpenCost())} ₼` : '🔒 əvvəlcə Sex');
-    plate(BUILD[4], S.cx.dorm ? `Sv ${S.cx.dorm} · işçilər ×${staffMul().toFixed(2)}` : `🔒 ${fmt(cxCost(CXUPS[0]))} ₼`);
+    plate(BUILD[0], `📦 ${Math.floor(S.holdN)}/${holdCap()} · 👷 ${S.wk.port}/${maxW('port')}`);
+    plate(BUILD[1], S.fx.open ? `${PRODUCTS.filter(p => S.fx.lines[p.id]).length} xətt · 👷 ${S.wk.plant}/${maxW('plant')}` : `🔒 ${fmt(fxOpenCost())} ₼`);
+    plate(BUILD[2], S.mk.open ? `${'★'.repeat(Math.floor(mkStars()))} · ${mkC.length} müştəri · 👷 ${S.wk.market}/${maxW('market')}` : `🔒 ${fmt(mkOpenCost())} ₼`);
+    plate(BUILD[3], S.rs.open ? `${'★'.repeat(Math.floor(rsStars()))} · ${rsC.length} qonaq · 👷 ${S.wk.rest}/${maxW('rest')}` : S.fx.open ? `🔒 ${fmt(rsOpenCost())} ₼` : '🔒 əvvəlcə Sex');
+    plate(BUILD[4], `🛏️ ${wkTotal()}/${beds()} işçi`);
     plate(BUILD[5], S.cx.hq ? `Sv ${S.cx.hq} · qazanc +${5 * S.cx.hq}%` : `🔒 ${fmt(cxCost(CXUPS[1]))} ₼`);
     ctx.restore();
     if (dark){ ctx.fillStyle = `rgba(10,20,50,${dark})`; ctx.fillRect(-10, -10, W + 20, H + 20); }
+    ctx.fillStyle = '#08141fe0'; rr(10, 86, 128, 20, 10); ctx.fill();
+    text(`👷 ${wkTotal()}/${beds()} işçi${S.wk.pool ? ' · ' + S.wk.pool + ' boş' : ''}`, 74, 96, 10, wkTotal() >= beds() && wkWanted() ? '#ffb340' : '#ecf3fa', 800);
     if (S.clock < 60){ ctx.fillStyle = '#08141fe0'; rr(40, H - 132, 320, 20, 10); ctx.fill();
       text('Binaya toxun · sürüşdür · iki barmaqla böyüt', 200, H - 122, 10, '#ecf3fa', 800); }
   }
@@ -1320,10 +1389,10 @@
   const LIVE = 1.4;
   const MK = { door:{ x:200, y:552 } };
   const ST = {
-    stall:{ n:() => 1 + S.mk.stalls, pos:i => ({ x:47 + i * 60, y:190 }), q:k => ({ x:58 + Math.min(k, 19) * 15, y:236 }), time:() => 4 * 0.88 ** S.mk.sk / staffMul() },
-    shelf:{ n:() => S.mk.shelf ? 2 : 0, pos:i => ({ x:60 + i * 60, y:326 }), q:k => ({ x:30 + Math.min(k, 10) * 14, y:358 }), time:() => 3 * 0.9 ** S.mk.shelf },
-    aqua: { n:() => 2, pos:i => ({ x:262 + i * 60, y:326 }), q:k => ({ x:226 + Math.min(k, 10) * 14, y:358 }), time:() => 3 * 0.9 ** S.mk.aqua },
-    cash: { n:() => 1 + S.mk.cash, pos:i => ({ x:150 + i * 50, y:446 }), q:k => ({ x:110 + Math.min(k, 14) * 14, y:484 }), time:() => 3 * 0.88 ** S.mk.ck },
+    stall:{ n:() => mkStaffed('stall'), pos:i => ({ x:47 + i * 60, y:190 }), q:k => ({ x:58 + Math.min(k, 19) * 15, y:236 }), time:() => 4 * 0.88 ** S.mk.sk / staffMul() },
+    shelf:{ n:() => mkStaffed('shelf'), pos:i => ({ x:60 + i * 60, y:326 }), q:k => ({ x:30 + Math.min(k, 10) * 14, y:358 }), time:() => 3 * 0.9 ** S.mk.shelf },
+    aqua: { n:() => mkStaffed('aqua'), pos:i => ({ x:262 + i * 60, y:326 }), q:k => ({ x:226 + Math.min(k, 10) * 14, y:358 }), time:() => 3 * 0.9 ** S.mk.aqua },
+    cash: { n:() => mkStaffed('cash'), pos:i => ({ x:150 + i * 50, y:446 }), q:k => ({ x:110 + Math.min(k, 14) * 14, y:484 }), time:() => 3 * 0.88 ** S.mk.ck },
   };
   const availAt = st => PRODUCTS.filter(p => p.shelf === st && S.fx.lines[p.id] && stock(p.id).n >= 1);
   let mkC = [], occ = {}, mkSpawn = 2, mkLog = [];
@@ -1431,7 +1500,8 @@
     for (let i = 0; i < Math.floor(mk.dirt / 6); i++){ const x = (i * 97 + 31) % 380 + 10, y = 250 + (i * 53) % 280; ctx.beginPath(); ctx.ellipse(x, y, 8 + i % 3 * 3, 4 + i % 2 * 2, i, 0, 7); ctx.fill(); }
     const fresh = availAt('stall');
     for (let i = 0; i < tier.stalls; i++){
-      const x = 22 + i * 60, y = 136, open = i < nStall;
+      const x = 22 + i * 60, y = 136, open = i < 1 + mk.stalls;
+      if (open && i >= nStall){ ctx.globalAlpha = .45; ctx.fillStyle = '#7a5235'; rr(x, y + 26, 50, 16, 4); ctx.fill(); ctx.fillStyle = '#ffffff'; rr(x + 2, y, 46, 28, 5); ctx.fill(); ctx.globalAlpha = 1; text('👷 yox', x + 25, y + 18, 10, '#c0392b', 800); continue; }
       if (!open){ ctx.setLineDash([4, 4]); ctx.strokeStyle = '#8a7a62'; ctx.lineWidth = 1.5; rr(x, y, 50, 40, 6); ctx.stroke(); ctx.setLineDash([]); text('🔒', x + 25, y + 20, 13, '#6b5d48', 700); continue; }
       ctx.fillStyle = '#7a5235'; rr(x, y + 26, 50, 16, 4); ctx.fill();
       const ig = ctx.createLinearGradient(0, y, 0, y + 28); ig.addColorStop(0, '#ffffff'); ig.addColorStop(1, '#bfe3f2');
@@ -1461,6 +1531,7 @@
     });
     for (let j = 0; j < 3; j++){
       const x = 128 + j * 50, y = 404, open = j < nCash;
+      if (!open && j < 1 + mk.cash){ ctx.fillStyle = '#3c4a5a77'; rr(x, y, 44, 26, 5); ctx.fill(); text('👷 yox', x + 22, y + 13, 9, '#ffb3b3', 800); continue; }
       if (!open){ ctx.setLineDash([4, 4]); ctx.strokeStyle = '#8a7a62'; ctx.lineWidth = 1.5; rr(x, y, 44, 26, 5); ctx.stroke(); ctx.setLineDash([]); continue; }
       ctx.fillStyle = '#3c4a5a'; rr(x, y, 44, 26, 5); ctx.fill(); ctx.fillStyle = '#5fd38d'; ctx.fillRect(x + 6, y + 5, 14, 8); text('💳', x + 32, y + 13, 11, '#fff', 700);
       ctx.fillStyle = '#f2c9a0'; ctx.beginPath(); ctx.arc(x + 22, y - 6, 5, 0, 7); ctx.fill(); ctx.fillStyle = tier.color; ctx.fillRect(x + 17, y - 1, 10, 4);
@@ -1509,11 +1580,16 @@
   function rsReset(){ rsC = []; rsW = []; rsTables = Array(8).fill(null); rsTasks = []; rsCook = []; rsChefs = []; }
   rsReset();
   function syncStaff(){
-    while (rsW.length < 1 + S.rs.waiters) rsW.push({ x:RS.pass.x + rsW.length * 16 - 24, y:RS.pass.y + 14, path:[], task:null, col:'#1f2a24', hold:null, wait:0 });
-    while (rsChefs.length < 1 + S.rs.chefs) rsChefs.push({ job:null, t:0 });
+    const st = rsStaff();
+    while (rsW.length < st.waiters) rsW.push({ x:RS.pass.x + rsW.length * 16 - 24, y:RS.pass.y + 14, path:[], task:null, col:'#1f2a24', hold:null, wait:0 });
+    while (rsChefs.length < st.chefs) rsChefs.push({ job:null, t:0 });
+    // workers moved away leave once they are free; their work goes back to the queue
+    for (let i = rsW.length - 1; i >= st.waiters && i >= 0; i--){ const w = rsW[i]; if (w.task){ if (w.order) rsCook.push(w.order); else rsTasks.unshift(w.task); } rsW.splice(i, 1); }
+    for (let i = rsChefs.length - 1; i >= st.chefs && i >= 0; i--){ const c = rsChefs[i]; if (c.job) rsCook.unshift(c.job); rsChefs.splice(i, 1); }
   }
   function stepRest(dt){
     const rs = S.rs, stars = rsStars(), nT = 2 + rs.tables; syncStaff();
+    if (!rsW.length || !rsChefs.length){ rsSpawn = Math.max(rsSpawn, 2); }
     rsSpawn -= dt;
     if (rsSpawn <= 0){
       rsSpawn = 7 * 0.88 ** rs.ads / (0.6 + 0.1 * stars) * (0.7 + Math.random() * 0.6);
@@ -1585,6 +1661,7 @@
     ctx.fillStyle = '#5b6670'; rr(20, 96, 360, 30, 6); ctx.fill();
     for (let i = 0; i < 1 + rs.chefs; i++){
       const x = 50 + i * 75, ch = rsChefs[i], busy = ch && ch.job;
+      if (!ch){ ctx.fillStyle = '#2b2f3388'; ctx.beginPath(); ctx.arc(x, 110, 10, 0, 7); ctx.fill(); text('👷 yox', x, 148, 9, '#c0392b', 800); continue; }
       ctx.fillStyle = '#2b2f33'; ctx.beginPath(); ctx.arc(x, 110, 10, 0, 7); ctx.fill();
       if (busy){ ctx.fillStyle = `rgba(255,${120 + Math.sin(t / 80) * 40},40,.9)`; ctx.beginPath(); ctx.arc(x, 110, 6 + Math.sin(t / 60), 0, 7); ctx.fill();
         ctx.fillStyle = '#ffffff55'; for (let s = 0; s < 3; s++){ ctx.beginPath(); ctx.arc(x - 6 + s * 6, 98 - ((t / 25 + s * 7) % 14), 2.5, 0, 7); ctx.fill(); } }
@@ -1641,6 +1718,16 @@
 
   function step(dt){
     S.clock += dt;
+    S.wk.timer += dt;
+    if (S.wk.timer >= wkInterval()){
+      S.wk.timer = 0;
+      if (S.wk.pool > 0){ const s = assignWorker(); if (s){ S.wk.pool--; toast(`👷 Boş işçi işə başladı: ${s.icon} ${s.name}`); } }
+      else if (wkTotal() < beds() && wkWanted()){
+        const s = assignWorker();
+        if (s){ wkWalk.push({ t:0, to:s.id, col:MKCOLS[Math.random() * MKCOLS.length | 0] }); toast(`👷 Yeni işçi gəldi: ${s.icon} ${s.name} (${S.wk[s.id]}/${maxW(s.id)})`, '#5fd38d'); }
+      }
+    }
+    wkWalk.forEach(w => { w.t += dt; }); wkWalk = wkWalk.filter(w => w.t < 14);
     syncLines();
     const sea = SEAS[S.sea], sp = speedMul();
     for (const L of lines){
@@ -2348,6 +2435,7 @@
       <span>❄️ Xam / ✨ Təmiz</span><span>${Math.floor(fx.raw.n)} / ${Math.floor(fx.clean.n)} (maks. ${cap})</span>
       <span>Məhsul stoku</span><span>${PRODUCTS.filter(p => fx.lines[p.id]).map(p => p.icon + ' ' + Math.floor(stock(p.id).n)).join('  ')}</span>
       <span>Cəmi yuyulan / hazırlanan</span><span>${fmt(fx.washed)} / ${fmt(fx.packed)}</span>
+      <span>👷 İşçilər</span><span>${S.wk.plant}/${maxW('plant')} · sürət ${Math.round((0.1 + 0.9 * wkRatio('plant')) * 100)}%</span>
       <span>Vəziyyət</span><span style="color:${bn ? 'var(--brass)' : 'var(--good)'}">${bn || 'rəvan işləyir'}</span>`
       : `<span>Açılış qiyməti</span><span>${fmt(fxOpenCost())} ₼</span><span>Nə verir</span><span>6 növ balıq məhsulu, ×1.5-dən ×3.4-ə qədər qiymət</span>`;
     $('fxOpenBtn').hidden = fx.open;
@@ -2395,7 +2483,29 @@
       <div class="nm"><b>${u.name} <span id="xlv-${u.id}" style="color:var(--muted);font-weight:600"></span></b><small id="xds-${u.id}"></small><div class="bar thin gold"><i id="xpb-${u.id}"></i></div></div>
       <button class="act" data-act="cxup" data-id="${u.id}" id="xbt-${u.id}"><b id="xbn-${u.id}"></b><small id="xbc-${u.id}"></small></button>
     </div>`).join('');
+  $('wkRows').innerHTML = SECTORS.map(s => `<div class="up">
+      <div class="ic">${s.icon}</div>
+      <div class="nm"><b>${s.name} <span id="wkn-${s.id}" style="color:var(--muted);font-weight:600"></span></b><small id="wkd-${s.id}"></small><div class="bar thin"><i id="wkb-${s.id}"></i></div></div>
+      <div style="display:flex;gap:6px"><button class="act ghost" data-act="wkminus" data-id="${s.id}" id="wkm-${s.id}" style="min-width:42px;align-items:center"><b>−</b></button><button class="act" data-act="wkplus" data-id="${s.id}" id="wkp-${s.id}" style="min-width:42px;align-items:center"><b>+</b></button></div>
+    </div>`).join('');
   function updateCx(){
+    const tot = wkTotal(), bd = beds();
+    $('wkTag').textContent = `${tot} / ${bd} çarpayı`;
+    $('wkBar').style.width = Math.min(1, tot / bd) * 100 + '%';
+    $('wkInfo').innerHTML = S.wk.pool ? `Boşda: <b>${S.wk.pool}</b> işçi. "+" ilə sektora göndər.` :
+      tot >= bd ? (wkWanted() ? 'Yataqxana doludur. Yeni işçilər üçün <b>yataqxananı böyüt</b>.' : 'Bütün iş yerləri doludur.')
+      : wkWanted() ? `Növbəti işçi təxminən <b>${Math.ceil(wkInterval() - S.wk.timer)} san</b> sonra gələcək.` : 'Bütün iş yerləri doludur. Sektorları böyüdəndə yeni yerlər açılır.';
+    SECTORS.forEach(s => {
+      const m = maxW(s.id), w = S.wk[s.id];
+      $('wkn-' + s.id).textContent = `${w}/${m}`;
+      let extra = '';
+      if (s.id === 'market' && S.mk.open) extra = ` · işləyən: ${mkStaffed('stall')} piştaxta, ${mkStaffed('cash')} kassa, ${mkStaffed('aqua')} akvarium${S.mk.shelf ? ', ' + mkStaffed('shelf') + ' rəf' : ''}`;
+      if (s.id === 'rest' && S.rs.open){ const st = rsStaff(); extra = ` · ${st.waiters} ofisiant, ${st.chefs} aşpaz`; }
+      $('wkd-' + s.id).textContent = m ? `${s.job} · sürət ${Math.round(wkRatio(s.id) * 100)}%${extra}` : 'sektor hələ açılmayıb';
+      $('wkb-' + s.id).style.width = (m ? w / m : 0) * 100 + '%';
+      $('wkm-' + s.id).disabled = w < 1;
+      $('wkp-' + s.id).disabled = w >= m || (!S.wk.pool && tot >= bd);
+    });
     CXUPS.forEach(u => {
       const l = S.cx[u.id], mx = u.max(), maxed = l >= mx, c = cxCost(u);
       $('xlv-' + u.id).textContent = l ? `${l}/${mx}` : '';
@@ -2412,7 +2522,8 @@
     $('rsStats').innerHTML = rs.open ? `
       <span>Məmnuniyyət</span><span>${Math.round(avg(rs.sat))}%</span>
       <span>Son 1 dəqiqədə gəlir</span><span>${fmt(rsRevMin())} ₼</span>
-      <span>Masalar / ofisiantlar / aşpazlar</span><span>${2 + rs.tables} / ${1 + rs.waiters} / ${1 + rs.chefs}</span>
+      <span>Masalar / ofisiantlar / aşpazlar</span><span>${2 + rs.tables} / ${rsStaff().waiters} (maks. ${1 + rs.waiters}) / ${rsStaff().chefs} (maks. ${1 + rs.chefs})</span>
+      <span>👷 İşçilər</span><span>${S.wk.rest}/${maxW('rest')}${S.wk.rest < 2 ? ' · ən azı 2 işçi lazımdır' : ''}</span>
       <span>Qonaqlar: yeyir / gözləyir</span><span>${rsC.filter(c => c.state === 'eat').length} / ${rsC.filter(c => c.state !== 'eat' && c.state !== 'exit').length}</span>
       <span>Verilən yemək / əsəbi gedən</span><span>${fmt(rs.served)} / ${fmt(rs.angry)}</span>`
       : `<span>Açılış qiyməti</span><span>${fmt(rsOpenCost())} ₼</span><span>Şərt</span><span>${S.fx.open ? '✓ Sex açıqdır' : 'əvvəlcə 🏭 Sexi aç'}</span>`;
@@ -2447,6 +2558,7 @@
       <span>İçəridəki müştərilər</span><span>${mkC.length}</span>
       <span>Xidmət edilən / əsəbi gedən</span><span>${fmt(mk.served)} / ${fmt(mk.angry)}</span>
       <span>Çirk</span><span>${Math.round(mk.dirt)}%</span>
+      <span>👷 İşçilər</span><span>${S.wk.market}/${maxW('market')} · ${mkStaffed('stall')} piştaxta, ${mkStaffed('cash')} kassa işləyir</span>
       <span>Stok</span><span>${PRODUCTS.filter(p => S.fx.lines[p.id]).map(p => p.icon + Math.floor(stock(p.id).n)).join(' ')} 🐠${Math.floor(S.holdN)}</span>` : `<span>Açılış qiyməti</span><span>${fmt(mkOpenCost())} ₼</span><span>Satış</span><span>diri balıq ×1.4, sex məhsulları ×1.5–3.4</span>`;
     if (!mk.open){ $('mkOpenTitle').textContent = '🏪 Bazarı aç'; $('mkOpenSub').textContent = fmt(mkOpenCost()) + ' ₼'; $('mkOpenBtn').disabled = S.money < mkOpenCost(); }
     else if (nx){ const c = nx.cost * mkScale(), ok = st >= nx.need;
@@ -2604,7 +2716,7 @@
     if (tab === 'factory') updateFactory();
     if (tab === 'rest') updateRest();
     if (tab === 'cx') updateCx();
-    const cxAfford = CXUPS.filter(u => S.cx[u.id] < u.max() && S.money >= cxCost(u)).length;
+    const cxAfford = CXUPS.filter(u => S.cx[u.id] < u.max() && S.money >= cxCost(u)).length + S.wk.pool;
     $('cxBadge').hidden = !cxAfford; $('cxBadge').textContent = cxAfford;
     const rsAfford = S.rs.open ? RSUPS.filter(u => S.rs[u.id] < u.max() && S.money >= rsCost(u)).length + DISHES.filter(d => !S.rs.menu[d.id] && S.money >= dishCost(d)).length : (S.fx.open && S.money >= rsOpenCost() ? 1 : 0);
     $('rsBadge').hidden = !rsAfford; $('rsBadge').textContent = rsAfford;
@@ -2709,6 +2821,12 @@
         if (S.fx.open || !buy(fxOpenCost())) return;
         S.fx.open = true; SFX.rare(); toast('🏭 Sex açıldı! Yük maşını balığı gətirməyə başladı'); break;
       }
+      case 'wkplus': {
+        const id = a.dataset.id; if (S.wk[id] >= maxW(id)) return;
+        if (S.wk.pool > 0) S.wk.pool--; else if (wkTotal() >= beds()) return; else { toast('👷 Yeni işçi yoldadır'); return; }
+        S.wk[id]++; break;
+      }
+      case 'wkminus': { const id = a.dataset.id; if (S.wk[id] < 1) return; S.wk[id]--; S.wk.pool++; break; }
       case 'cxup': {
         const u = CXUPS.find(x => x.id === a.dataset.id), c = cxCost(u);
         if (S.cx[u.id] >= u.max() || !buy(c)) return;
@@ -2772,6 +2890,7 @@
           const f = fresh(), keep = ['pearls', 'shop', 'ach', 'found', 'rec', 'set', 'mgr', 'daily', 'total', 'caught', 'golds', 'fights', 'snaps', 'rares', 'newSpecies', 'best', 'bestK', 'bestStreak', 'qn', 'clock'];
           keep.forEach(k => { f[k] = S[k]; });
           f.fame = S.fame + g; f.exped = S.exped + 1; f.quests = [];
+          f.wk = { pool:0, port:2, plant:0, market:0, rest:0, timer:0 };
           S = f; resetSea(); mkReset(); rsReset(); fillQuests(); closeSheet(); Object.keys(dirty).forEach(k => dirty[k] = true); save(); updatePanel();
           toast(`🧭 Ekspedisiya başladı: ⚓ ${S.fame}, qazanc ×${(1 + .25 * S.fame).toFixed(2)}`);
         });
@@ -2823,6 +2942,8 @@
       if (ofx.pack && !(ofx.lines || {}).fillet) S.fx.lines.fillet = ofx.pack;      // the old packing line becomes the fillet line
       ['rawN', 'rawV', 'cleanN', 'cleanV', 'packN', 'packV', 'pack'].forEach(k => delete S.fx[k]);
       S.cx = Object.assign(fresh().cx, d.cx || {});
+      S.wk = Object.assign(fresh().wk, d.wk || {});
+      if (!d.wk){ S.wk.port = 0; for (let i = 0; i < beds(); i++) if (!assignWorker()) break; }   // older saves start with a full crew up to the free beds
       const D2 = fresh(); S.rs = Object.assign(D2.rs, d.rs || {}); S.rs.menu = Object.assign({ soup:true }, (d.rs || {}).menu || {}); S.rs.sat = Array.isArray(S.rs.sat) ? S.rs.sat.slice(-30) : [];
       if (d.mk && d.mk.rest && !d.rs){ S.rs.open = !!S.fx.open; S.rs.decor = d.mk.rest; }  // an old market restaurant becomes the new building
       S.catches = SEAS.map((s, i) => (d.catches || [])[i] || 0);
@@ -2842,8 +2963,12 @@
     const away = Math.min((Date.now() - S.last) / 1000, offCap() * 3600);
     S.last = Date.now();
     if (away < 15) return;
+    // applicants kept arriving while away
+    let came = 0;
+    for (let n = Math.floor(away / wkInterval()); n > 0 && wkTotal() < beds() && assignWorker(); n--) came++;
     const gain = expectedRate() * away * offRate();
     earn(gain);
+    if (came) setTimeout(() => toast(`👷 Sən yoxkən ${came} yeni işçi gəldi`, '#5fd38d'), 1500);
     const txt = `Sən ${fmtTime(away)} yox idin. Ekipaj balıq tutub limanda satdı (${SEAS[S.sea].name}):`;
     if (S.pearls >= 1) ask('Xoş gəldin, kapitan!', txt + ' ◆1 inci ilə bu qazancı ikiqat edə bilərsən.', '+' + fmt(gain) + ' ₼',
       () => { if (S.pearls < 1) return; S.pearls--; earn(gain); toast(`💰 İkiqat: +${fmt(gain)} ₼ əlavə`); save(); }, 'İkiqat al (◆1)', 'Belə qalsın');
@@ -2863,7 +2988,7 @@
     for (let k = 0; k < 3; k++) step(dt / 3);
     S.last = Date.now();
     draw(now);
-    if (now - panelT > 200){ panelT = now; updatePanel(); }
+    if (now - panelT > 200){ panelT = now; clampWorkers(); updatePanel(); }
     requestAnimationFrame(frame);
   }
 
