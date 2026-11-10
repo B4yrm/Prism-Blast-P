@@ -7,7 +7,7 @@
 <style>
   :root{
     --bg:#0b0b16; --panel:#15152a; --panel2:#1d1d38; --line:#2a2a4d;
-    --text:#ecebff; --muted:#9a98c4; --accent:#8f7bff; --good:#4ade80; --bad:#5a5878;
+    --text:#ecebff; color-scheme:dark; --muted:#9a98c4; --accent:#8f7bff; --good:#4ade80; --bad:#5a5878;
   }
   *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   html,body{ margin:0; height:100%; }
@@ -16,7 +16,7 @@
     color:var(--text); font-family:-apple-system, Segoe UI, Roboto, sans-serif;
     user-select:none; overflow-x:hidden;
   }
-  .wrap{ max-width:1000px; margin:0 auto; padding:16px; display:grid; gap:16px; grid-template-columns:1fr 1fr; }
+  .wrap{ max-width:1000px; margin:0 auto; padding-block:16px; padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)); display:grid; gap:16px; grid-template-columns:1fr 1fr; }
   @media (max-width:760px){ .wrap{ grid-template-columns:1fr; } }
   header{ grid-column:1/-1; text-align:center; }
   h1{ margin:4px 0 0; font-size:22px; letter-spacing:2px;
@@ -57,6 +57,7 @@
   .prestige{ text-align:center; }
   .prestige p{ color:var(--muted); font-size:13px; margin:6px 0 12px; line-height:1.5; }
   .btn{ background:linear-gradient(90deg,#6b5bff,#c26bff); color:#fff; border:0; border-radius:12px; padding:12px 18px; font-weight:800; font-size:15px; cursor:pointer; width:100%; }
+  .btn[hidden]{ display:none; }
   .btn:disabled{ background:var(--bad); cursor:default; }
   .stats{ font-size:13px; color:var(--muted); line-height:1.8; }
   .stats b{ color:var(--text); font-variant-numeric:tabular-nums; }
@@ -118,7 +119,7 @@
   <h3 id="mTitle">Xoş gəldin!</h3>
   <div id="mText" style="color:var(--muted);font-size:14px"></div>
   <div class="big" id="mBig"></div>
-  <button class="btn" id="mOk">Davam et</button>
+  <div style="display:flex;gap:8px"><button class="btn" id="mNo" style="background:var(--bad)" hidden>Ləğv et</button><button class="btn" id="mOk">Davam et</button></div>
 </div></div>
 
 <script>
@@ -262,22 +263,29 @@
   $('prestigeBtn').onclick = () => {
     const gain = shardsOnReset();
     if (gain < 1) return;
-    if (!confirm(`Bütün bilik, heyət və təkmilləşdirmələr sıfırlanacaq.\n+${gain} Diplom qazanacaqsan. Davam?`)) return;
+    ask('Məzun et?', 'Bütün bilik, heyət və təkmilləşdirmələr sıfırlanacaq. Qazanacaqsan:', '+' + gain + ' diplom', () => {
     const keep = { shards:S.shards + gain, prestiges:S.prestiges + 1, allTotal:S.allTotal, clicks:S.clicks, start:S.start };
     S = Object.assign(fresh(), keep);
     save(); render(true);
+    });
   };
 
   $('resetBtn').onclick = () => {
-    if (!confirm('Bütün irəliləyiş (diplomlar daxil) silinəcək. Əminsən?')) return;
-    S = fresh(); save(); render(true);
+    ask('Hər şeyi sil?', 'Bütün irəliləyiş, diplomlar da daxil, birdəfəlik silinəcək.', '', () => { S = fresh(); save(); render(true); });
   };
 
-  function showModal(title, text, big){
+  let onYes = null;
+  function showModal(title, text, big, yes){
     $('mTitle').textContent = title; $('mText').textContent = text; $('mBig').textContent = big;
+    onYes = yes || null;
+    $('mNo').hidden = !yes;
+    $('mOk').textContent = yes ? 'Bəli' : 'Davam et';
     $('modal').classList.add('show');
   }
-  $('mOk').onclick = () => $('modal').classList.remove('show');
+  const ask = (t, x, b, yes) => showModal(t, x, b, yes);
+  const closeModal = () => $('modal').classList.remove('show');
+  $('mOk').onclick = () => { closeModal(); if (onYes) onYes(); };
+  $('mNo').onclick = closeModal;
 
   // ---------- Render ----------
   let lastFull = 0;
