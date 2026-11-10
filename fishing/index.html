@@ -14,43 +14,43 @@
   :root{
     color-scheme: dark;
     --bg:#0b1a2b; --card:#11253b; --card2:#16304c; --line:#24476b; --ink:#e8f1fa; --muted:#93acc4;
-    --brass:#e2b04a; --brass-ink:#1b1405; --off:#2a4560; --sea:#2b8fd6; --good:#5fd38d;
+    --brass:#e2b04a; --brass-ink:#1b1405; --off:#2a4560; --sea:#2b8fd6; --good:#5fd38d; --pearl:#e9e4ff; --bad:#ff6b6b;
     --display:'Baloo 2', 'Trebuchet MS', system-ui, sans-serif;
     --body:'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
-    --viewH: min(84vh, 640px);
+    --viewH: min(84vh, 660px);
   }
   *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   html,body{ margin:0; }
   body{ background:var(--bg); color:var(--ink); font-family:var(--body); font-size:14px; }
   body::before{ content:""; position:fixed; inset:0 0 auto; height:env(safe-area-inset-top, 0px); z-index:10; background:var(--bg); }
   .wrap{
-    max-width:1100px; margin:0 auto; padding-block:16px;
+    max-width:1120px; margin:0 auto; padding-block:16px;
     padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px));
     display:grid; gap:16px; grid-template-columns:auto minmax(0, 1fr); align-items:start;
   }
-  .view{ height:var(--viewH); aspect-ratio:400/560; max-width:100%; border-radius:18px; overflow:hidden; box-shadow:0 8px 30px #0008; position:sticky; top:16px; }
-  canvas{ width:100%; height:100%; display:block; cursor:crosshair; touch-action:manipulation; }
+  .viewbox{ position:sticky; top:16px; }
+  .view{ height:var(--viewH); aspect-ratio:400/560; max-width:100%; border-radius:18px; overflow:hidden; box-shadow:0 8px 30px #0008; }
+  canvas{ width:100%; height:100%; display:block; cursor:pointer; touch-action:none; user-select:none; -webkit-user-select:none; }
   .side{ display:flex; flex-direction:column; gap:12px; min-width:0; }
   .top{ display:flex; gap:12px; align-items:center; justify-content:space-between; }
   h1{ font-family:var(--display); font-weight:800; font-size:28px; margin:0; color:var(--brass); line-height:1; }
   .money{ font-family:var(--display); font-size:30px; font-weight:800; color:var(--brass); font-variant-numeric:tabular-nums; text-align:right; line-height:1.1; }
   .rate{ color:var(--muted); font-variant-numeric:tabular-nums; text-align:right; font-size:13px; }
 
-  .tabs{ display:grid; grid-template-columns:repeat(5, 1fr); gap:4px; background:var(--card); border:1px solid var(--line); border-radius:14px; padding:4px; position:sticky; top:16px; z-index:3; }
-  .tabs button{ font:inherit; font-size:12px; font-weight:700; background:none; border:0; color:var(--muted); border-radius:10px; padding:8px 2px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:2px; position:relative; }
+  .tabs{ display:grid; grid-template-columns:repeat(6, 1fr); gap:3px; background:var(--card); border:1px solid var(--line); border-radius:14px; padding:4px; position:sticky; top:16px; z-index:3; }
+  .tabs button{ font:inherit; font-size:11px; font-weight:700; background:none; border:0; color:var(--muted); border-radius:10px; padding:7px 1px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:2px; position:relative; min-width:0; }
   .tabs button span{ font-size:18px; line-height:1; }
   .tabs button.on{ background:var(--card2); color:var(--ink); box-shadow:inset 0 -2px 0 var(--brass); }
-  .tabs button .pip{ position:absolute; top:5px; right:calc(50% - 18px); width:8px; height:8px; border-radius:50%; background:var(--good); }
+  .tabs .pip{ position:absolute; top:4px; right:calc(50% - 17px); min-width:8px; height:8px; border-radius:4px; background:var(--good); }
 
   @media (max-width:820px){
-    :root{ --viewH: 50vh; }
+    :root{ --viewH: 52vh; }
     .wrap{ grid-template-columns:minmax(0,1fr); gap:10px; padding-block:0 16px; }
-    .view{ top:env(safe-area-inset-top, 0px); margin:0 auto; z-index:4; border-radius:0 0 18px 18px; }
-    .viewbox{ position:sticky; top:env(safe-area-inset-top, 0px); z-index:4; background:var(--bg); display:flex; justify-content:center; padding-bottom:8px; }
+    .viewbox{ top:env(safe-area-inset-top, 0px); z-index:4; background:var(--bg); display:flex; justify-content:center; padding-bottom:8px; }
+    .view{ border-radius:0 0 18px 18px; }
     .tabs{ top:calc(env(safe-area-inset-top, 0px) + var(--viewH) + 8px); }
     .top{ display:none; }
   }
-  @media (min-width:821px){ .viewbox{ position:sticky; top:16px; } }
 
   .pane{ display:flex; flex-direction:column; gap:12px; }
   .card{ background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px; display:flex; flex-direction:column; gap:10px; }
@@ -60,10 +60,10 @@
   .hint b{ color:var(--ink); }
   .bar{ height:8px; background:var(--off); border-radius:4px; overflow:hidden; }
   .bar i{ display:block; height:100%; background:var(--sea); transition:width .3s; }
+  .bar.gold i{ background:var(--brass); }
   .stars{ color:var(--brass); letter-spacing:2px; font-size:15px; }
   .stars .no{ color:var(--off); }
   .goals{ display:grid; gap:6px; font-size:13px; }
-  .goals div{ display:flex; gap:8px; align-items:center; }
   .goals .ok{ color:var(--good); }
   .goals .todo{ color:var(--muted); }
 
@@ -74,6 +74,8 @@
   button.act b{ font-size:14px; }
   button.act small{ font-variant-numeric:tabular-nums; opacity:.85; }
   button.act:disabled{ background:var(--off); color:var(--muted); cursor:default; }
+  button.act.pearl{ background:var(--pearl); color:#2a2150; }
+  button.act.pearl:disabled{ background:var(--off); color:var(--muted); }
   button:focus-visible{ outline:3px solid var(--sea); outline-offset:2px; }
 
   .events{ display:flex; gap:8px; flex-wrap:wrap; }
@@ -81,7 +83,7 @@
   .pill.hot{ color:var(--brass); border-color:var(--brass); }
 
   .fish{ display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:6px 10px; align-items:center; font-size:13px; }
-  .fish .dot{ width:10px; height:10px; border-radius:50%; }
+  .fish canvas.ico{ width:44px; height:22px; cursor:default; }
   .fish .nm small{ display:block; font-size:11px; color:var(--muted); }
   .fish .val{ text-align:right; font-variant-numeric:tabular-nums; font-weight:700; }
   .unknown{ color:var(--muted); font-style:italic; }
@@ -89,11 +91,15 @@
   .seg{ display:flex; gap:4px; }
   .seg button{ font:inherit; font-size:12px; font-weight:700; background:var(--card2); color:var(--muted); border:1px solid var(--line); border-radius:8px; padding:5px 10px; cursor:pointer; }
   .seg button.on{ color:var(--ink); border-color:var(--brass); }
-  .up{ display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:10px; align-items:center; padding:10px; background:var(--card2); border-radius:12px; }
+  .up{ display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:10px; align-items:center; padding:10px; background:var(--card2); border-radius:12px; border:1px solid transparent; }
+  .up.cur{ border-color:var(--brass); }
+  .up.done{ opacity:.6; }
   .up .ic{ font-size:24px; width:34px; text-align:center; }
+  .up .nm{ min-width:0; }
   .up .nm b{ display:block; font-size:14px; }
-  .up .nm small{ color:var(--muted); font-size:12px; }
-  .up button.act{ min-width:112px; align-items:flex-end; text-align:right; }
+  .up .nm small{ color:var(--muted); font-size:12px; display:block; }
+  .up button.act{ min-width:104px; align-items:flex-end; text-align:right; }
+  .up .bar{ margin-top:6px; }
 
   .ocean{ display:flex; flex-direction:column; gap:6px; }
   .ocean h3{ margin:4px 0 2px; font-family:var(--display); font-size:16px; color:var(--muted); font-weight:700; }
@@ -114,6 +120,7 @@
   ol.how{ margin:0; padding-left:18px; color:var(--muted); font-size:13px; line-height:1.6; }
   ol.how b{ color:var(--ink); }
   .small{ font:inherit; font-size:12px; background:none; border:1px solid var(--line); color:var(--muted); border-radius:8px; padding:6px 10px; cursor:pointer; align-self:flex-start; }
+  .pearls{ color:var(--pearl); font-weight:800; }
 
   .modal{ position:fixed; inset:0; background:#000a; display:none; align-items:center; justify-content:center; padding:16px; z-index:20; }
   .modal.show{ display:flex; }
@@ -130,20 +137,21 @@
 </head>
 <body>
 <div class="wrap">
-  <div class="viewbox"><div class="view"><canvas id="cv" aria-label="Dəniz və balıqçı qayığı. Qızıl balığa toxunun."></canvas></div></div>
+  <div class="viewbox"><div class="view"><canvas id="cv" aria-label="Dəniz və balıqçı gəmisi. Nadir balıq tutulanda ekrana basıb saxla."></canvas></div></div>
 
   <div class="side">
     <div class="top">
       <h1>Balıqçı Idle</h1>
       <div>
         <div class="money" id="money">0 ₼</div>
-        <div class="rate"><span id="rate">0</span> ₼/san · ⭐ <span id="starsTop">0</span></div>
+        <div class="rate"><span id="rate">0</span> ₼/san · <span class="pearls">◆ <span id="pearlsTop">0</span></span> · ⭐ <span id="starsTop">0</span></div>
       </div>
     </div>
 
     <nav class="tabs" role="tablist">
       <button data-tab="sea" class="on"><span>🌊</span>Dəniz</button>
-      <button data-tab="gear"><span>⚓</span>Avadanlıq<i class="pip" id="gearPip" hidden></i></button>
+      <button data-tab="ship"><span>🚢</span>Gəmi<i class="pip" id="shipPip" hidden></i></button>
+      <button data-tab="quest"><span>📜</span>Tapşırıq<i class="pip" id="questPip" hidden></i></button>
       <button data-tab="map"><span>🗺️</span>Xəritə</button>
       <button data-tab="album"><span>📖</span>Albom</button>
       <button data-tab="log"><span>📒</span>Jurnal</button>
@@ -158,9 +166,9 @@
         <button class="act" data-act="next" id="nextBtn"><b id="nextTitle"></b><small id="nextSub"></small></button>
       </div>
       <div class="card">
-        <h2>Hadisələr</h2>
+        <h2>Hava və hadisələr</h2>
         <div class="events" id="events"></div>
-        <p class="hint">Qızıl balıq görəndə ona toxun: 45 saniyəlik qazanc verir. Gecə nadir balıqlar daha çox çıxır.</p>
+        <p class="hint">Nadir balıq qarmağa düşəndə ekranda <b>!</b> çıxır. Ekrana bas və basılı saxla: balıq çəkilir. Gərginlik qırmızıya çatanda burax, yoxsa ip qırılır. Əl ilə tutulan balıq <b>×2</b> qiymətə satılır.</p>
       </div>
       <div class="card">
         <h2>🎣 Bu dənizin balıqları <span class="tag" id="seaFound"></span></h2>
@@ -168,8 +176,13 @@
       </div>
     </section>
 
-    <!-- GEAR -->
-    <section class="pane" id="pane-gear" hidden>
+    <!-- SHIP -->
+    <section class="pane" id="pane-ship" hidden>
+      <div class="card">
+        <h2>🚢 Gəmilər <span class="tag" id="boatTag"></span></h2>
+        <p class="hint">Gəmi tilovların maksimum sayını və satış qiymətini müəyyən edir. Okeanlara və buzlu dənizlərə yalnız güclü gəmi ilə getmək olar.</p>
+        <div class="pane" id="boats"></div>
+      </div>
       <div class="card">
         <h2>⚓ Avadanlıq
           <span class="seg" id="buyMode" style="margin-left:auto"><button data-m="1" class="on">x1</button><button data-m="10">x10</button><button data-m="max">MAX</button></span>
@@ -182,11 +195,27 @@
       </div>
     </section>
 
+    <!-- QUESTS -->
+    <section class="pane" id="pane-quest" hidden>
+      <div class="card">
+        <h2>📜 Tapşırıqlar <span class="tag">mükafat: ₼ + <span class="pearls">◆ inci</span></span></h2>
+        <div class="pane" id="quests"></div>
+      </div>
+      <div class="card">
+        <h2>◆ İnci mağazası <span class="tag"><span class="pearls">◆ <span id="pearlsShop">0</span></span></span></h2>
+        <div class="pane" id="shop"></div>
+      </div>
+      <div class="card">
+        <h2>🏆 Nailiyyətlər <span class="tag" id="achTag"></span></h2>
+        <div class="pane" id="achs"></div>
+      </div>
+    </section>
+
     <!-- MAP -->
     <section class="pane" id="pane-map" hidden>
       <div class="card">
         <h2>🗺️ Dünya xəritəsi <span class="tag" id="mapTag"></span></h2>
-        <p class="hint">Açılmış dənizə toxunub ora üz. Hər dənizdə 3 ulduz var və hər ulduz bütün qazancı +2% artırır.</p>
+        <p class="hint">Açılmış dənizə toxunub ora üz. Hər dənizdə 3 ulduz var, hər ulduz bütün qazancı +2% artırır.</p>
         <div id="mapList" class="pane"></div>
       </div>
     </section>
@@ -209,12 +238,12 @@
       <div class="card">
         <h2>Necə oynanır</h2>
         <ol class="how">
-          <li>Tilovlar balığı <b>özü tutur</b>, sən pul toplayıb avadanlıq alırsan.</li>
-          <li>Dənizdə lazımi sayda balıq tut, sonra <b>səfər pulunu</b> ödəyib növbəti dənizə keç.</li>
-          <li>Hər balığın <b>çəkisi</b> var: ağır balıq daha baha satılır.</li>
-          <li><b>Gecə</b> nadir balıq şansı ×1.5 olur. <b>Balıq sürüsü</b> zamanı ov 2.5 dəfə sürətlənir.</li>
+          <li>Tilovlar adi balığı <b>özü tutur</b>. Sən pul yığıb gəmi və avadanlıq alırsan.</li>
+          <li><b>Nadir balıq</b> düşəndə ekrana bas və saxla. Gərginlik çox artanda burax. Tutsan qiymət ×2 olur. Bir neçə saniyə toxunmasan, ekipaj özü cəhd edir.</li>
+          <li>Dənizdə lazımi sayda balıq tut, səfər pulunu ödə və növbəti dənizə keç. Okean və buzlu dənizlər üçün <b>gəmi</b> lazımdır.</li>
+          <li><b>Tapşırıqlar</b> və <b>nailiyyətlər</b> inci verir. İncilərlə mağazada daimi bonus alırsan.</li>
+          <li><b>Gecə</b> və <b>fırtınada</b> nadir balıq çox olur, <b>yağışda</b> balıq tez tutulur.</li>
           <li><b>Qızıl balığa</b> toxun və bonus qazan.</li>
-          <li>Ulduz və yeni növlər <b>daimi bonus</b> verir, ona görə köhnə dənizlərə qayıtmağa dəyər.</li>
         </ol>
       </div>
       <button class="small" data-act="wipe">Bütün irəliləyişi sil</button>
@@ -305,25 +334,55 @@
     mild:['#2f7fb8','#123a5e'], warm:['#2a9fd0','#0f3f66'], cold:['#3b6f91','#122d44'], tropic:['#22c1c9','#0c4a6e'],
     ocean:['#1f5fa8','#06203d'], arctic:['#6f9fb8','#1a3348'], antarctic:['#7fb2c9','#173247'],
   };
+  // boats: rods = max rods, val = sale multiplier, from = first sea index that needs this boat
+  const BOATS = [
+    { name:'Qayıq',           icon:'🛶', rods:2, val:1,    speed:1,    cost:0,    from:0,  hull:'#8a5a32', len:120 },
+    { name:'Motorlu qayıq',   icon:'🚤', rods:3, val:1.1,  speed:1.15, cost:1500, from:0,  hull:'#e8e4da', len:150 },
+    { name:'Balıqçı gəmisi',  icon:'⛴️', rods:5, val:1.25, speed:1.2,  cost:2e5,  from:19, hull:'#2f6f9f', len:190 },
+    { name:'Trauler',         icon:'🚢', rods:6, val:1.5,  speed:1.3,  cost:5e8,  from:40, hull:'#3c4a5a', len:220 },
+    { name:'Buzqıran',        icon:'🧊', rods:8, val:2,    speed:1.4,  cost:3e11, from:41, hull:'#c0392b', len:240 },
+  ];
+  const boatFor = i => BOATS.reduce((a, b, k) => (i >= b.from ? k : a), 0);
+  const WEATHER = [
+    { id:'clear', name:'Aydın',   icon:'☀️', bite:1,    rare:1   },
+    { id:'cloud', name:'Buludlu', icon:'⛅', bite:1,    rare:1.1 },
+    { id:'rain',  name:'Yağış',   icon:'🌧️', bite:0.75, rare:1   },
+    { id:'storm', name:'Fırtına', icon:'⛈️', bite:1.1,  rare:1.7 },
+  ];
 
-  const OFFLINE_H = 8, OFFLINE_RATE = 0.5, DAY = 240, STAR3 = 100;
+  const OFFLINE_H = 8, OFFLINE_RATE = 0.5, DAY = 240, STAR3 = 100, BITE_WAIT = 8;
   const SAVE_KEY = 'fishIdle.v1';
   const W = 400, H = 560, SURF = 150;
   const need = i => 20 + i;
 
-  // upgrades: lvl() reads the current level, cost is geometric from base by growth
   const UPS = [
-    { id:'rods',   icon:'🎣', name:'Tilov',        base:40,  g:6,   max:7,   desc:l => `${l + 1} tilov` },
-    { id:'hook',   icon:'🪝', name:'Qarmaq',       base:30,  g:2.2, max:20,  desc:l => `gözləmə ${(3.5 * 0.88 ** l).toFixed(1)} san` },
-    { id:'crew',   icon:'👷', name:'Ekipaj',       base:200, g:3,   max:10,  desc:l => `çəkmə sürəti ×${(1.15 ** l).toFixed(2)}` },
-    { id:'bait',   icon:'🪱', name:'Yem',          base:60,  g:2.4, max:25,  desc:l => `nadir şans ×${(1.12 ** l).toFixed(2)}` },
-    { id:'market', icon:'🏪', name:'Balıq bazarı', base:100, g:2,   max:999, desc:l => `qiymət ×${fmt(1.25 ** l)}` },
-    { id:'sonar',  icon:'📡', name:'Sonar',        base:500, g:3.5, max:10,  desc:l => `hadisələr +${l * 15}% tez` },
+    { id:'rods',   icon:'🎣', name:'Tilov',         base:40,  g:6,   max:() => BOATS[S.boat].rods - 1, desc:l => `${l + 1} tilov` },
+    { id:'hook',   icon:'🪝', name:'Qarmaq',        base:30,  g:2.2, max:() => 20,  desc:l => `gözləmə ${(3.5 * 0.88 ** l).toFixed(1)} san` },
+    { id:'line',   icon:'🧵', name:'Möhkəm ip',     base:150, g:2.6, max:() => 15,  desc:l => `gərginlik −${Math.round((1 - 0.92 ** l) * 100)}%` },
+    { id:'crew',   icon:'👷', name:'Ekipaj',        base:200, g:3,   max:() => 10,  desc:l => `sürət ×${(1.12 ** l).toFixed(2)} · avto ${Math.round(autoChance(l) * 100)}%` },
+    { id:'bait',   icon:'🪱', name:'Yem',           base:60,  g:2.4, max:() => 25,  desc:l => `nadir şans ×${(1.12 ** l).toFixed(2)}` },
+    { id:'market', icon:'🏪', name:'Balıq bazarı',  base:100, g:2,   max:() => 999, desc:l => `qiymət ×${fmt(1.25 ** l)}` },
+    { id:'sonar',  icon:'📡', name:'Sonar',         base:500, g:3.5, max:() => 10,  desc:l => `hadisələr +${l * 15}% tez` },
+  ];
+  const SHOP = [
+    { id:'exp',  icon:'🧭', name:'Kapitan təcrübəsi', max:50, cost:l => 2 + l,     desc:l => `bütün qazanc ×${(1 + 0.1 * l).toFixed(1)}` },
+    { id:'auto', icon:'🤖', name:'Təcrübəli ekipaj',  max:5,  cost:l => 3 + 2 * l, desc:l => `avto tutma +${l * 8}%` },
+    { id:'net',  icon:'🥅', name:'Qızıl tor',         max:5,  cost:l => 3 + l,     desc:l => `qızıl balıq mükafatı ×${(1 + 0.5 * l).toFixed(1)}` },
+    { id:'off',  icon:'🌙', name:'Gecə növbəsi',      max:5,  cost:l => 4 + 2 * l, desc:l => `offline ${50 + l * 10}%, maks. ${8 + l * 2} saat` },
+  ];
+  const ACHS = [
+    ['caught', 100, 'İlk yüz', '100 balıq tut', 2], ['caught', 1000, 'Balıqçı', '1 000 balıq tut', 4], ['caught', 10000, 'Dəniz qurdu', '10 000 balıq tut', 8],
+    ['species', 25, 'Kolleksiyaçı', '25 növ tap', 3], ['species', 100, 'İxtioloq', '100 növ tap', 6], ['species', 200, 'Ensiklopediya', '200 növ tap', 10],
+    ['seas', 10, 'Səyyah', '10 dəniz aç', 3], ['seas', 27, 'Okeanların yolçusu', '27 dəniz aç', 6], ['seas', 54, 'Dünya kapitanı', 'Bütün 54 dənizi aç', 15],
+    ['fight', 10, 'Güclü qollar', 'Əl ilə 10 nadir balıq tut', 3], ['fight', 100, 'Döyüşçü', 'Əl ilə 100 nadir balıq tut', 8],
+    ['gold', 5, 'Qızıl axtaran', '5 qızıl balıq tut', 3], ['gold', 50, 'Qızıl ovçu', '50 qızıl balıq tut', 8],
+    ['stars', 30, 'Ulduzlu kapitan', '30 ulduz topla', 5], ['boat', 4, 'Buzqıran', 'Buzqıran al', 8],
   ];
 
   const fresh = () => ({
-    money:0, total:0, caught:0, best:'', bestK:0, golds:0,
-    rods:0, hook:0, crew:0, bait:0, market:0, sonar:0,   // rods = extra rods beyond the first
+    money:0, total:0, caught:0, best:'', bestK:0, golds:0, fights:0, snaps:0, rares:0, newSpecies:0,
+    rods:0, hook:0, line:0, crew:0, bait:0, market:0, sonar:0, boat:0,
+    pearls:0, shop:{ exp:0, auto:0, net:0, off:0 }, ach:{}, quests:[], qn:0,
     sea:0, maxSea:0, catches:SEAS.map(() => 0), found:{}, rec:{}, last:Date.now(), clock:0,
   });
   let S = fresh();
@@ -337,27 +396,32 @@
     return e < SUF.length ? (n / 10 ** (e * 3)).toFixed(2) + SUF[e] : n.toExponential(2).replace('+', '');
   }
   const kg = x => x < 1 ? (x * 1000).toFixed(0) + ' q' : x.toFixed(x < 10 ? 2 : 1) + ' kq';
-  const fmtTime = s => { s = Math.floor(s); const h = s / 3600 | 0, m = s % 3600 / 60 | 0;
+  const fmtTime = s => { s = Math.max(0, Math.floor(s)); const h = s / 3600 | 0, m = s % 3600 / 60 | 0;
     return h ? `${h} saat ${m} dəq` : m ? `${m} dəq ${s % 60} san` : `${s} san`; };
   const pct = x => x >= 10 ? x.toFixed(0) + '%' : x >= 1 ? x.toFixed(1) + '%' : x.toFixed(2) + '%';
 
   // ---------------- Rules ----------------
+  let weather = 0, weatherT = 90, nextWeather = 0;
+  const W_NOW = () => WEATHER[weather];
   const isNight = () => (S.clock % DAY) / DAY > 0.62;
   const seaStars = i => (S.catches[i] >= need(i)) + SEAS[i].fish.every((f, k) => S.found[i + ':' + k]) + (S.catches[i] >= STAR3);
   const totalStars = () => SEAS.reduce((a, s, i) => a + (i <= S.maxSea ? seaStars(i) : 0), 0);
   const foundN = () => Object.keys(S.found).length;
   const totalSpecies = SEAS.reduce((a, s) => a + s.fish.length, 0);
-  const valueMult = () => 1.25 ** S.market * (1 + 0.03 * foundN()) * (1 + 0.02 * totalStars());
+  const valueMult = () => 1.25 ** S.market * (1 + 0.03 * foundN()) * (1 + 0.02 * totalStars()) * BOATS[S.boat].val * (1 + 0.1 * S.shop.exp);
   const seaBase = i => 2 * 1.55 ** i;
   const fishValue = (i, k) => seaBase(i) * 3.2 ** k * valueMult();
   const ticket = i => 120 * 1.55 ** i;
-  const speedMul = () => 1.15 ** S.crew;
+  const speedMul = () => 1.12 ** S.crew * BOATS[S.boat].speed;
   const schoolOn = () => S.clock < schoolUntil;
-  const biteTime = () => 3.5 * 0.88 ** S.hook * (schoolOn() ? 0.4 : 1);
+  const biteTime = () => 3.5 * 0.88 ** S.hook * (schoolOn() ? 0.4 : 1) * W_NOW().bite;
   const evMul = () => 1 + 0.15 * S.sonar;
+  function autoChance(crew = S.crew){ return Math.min(0.95, 0.4 + 0.03 * crew + 0.08 * (S ? S.shop.auto : 0)); }
+  const offRate = () => OFFLINE_RATE + 0.1 * S.shop.off, offCap = () => OFFLINE_H + 2 * S.shop.off;
 
-  function weights(sea, night = isNight()){
-    return sea.fish.map((f, k) => 60 * 0.42 ** k * (k ? 1.12 ** S.bait : 1) * (night && k >= 2 ? 1.5 : 1));
+  function weights(sea, live = true){
+    const rareBoost = live ? (isNight() ? 1.5 : 1) * W_NOW().rare : 1;
+    return sea.fish.map((f, k) => 60 * 0.42 ** k * (k ? 1.12 ** S.bait : 1) * (k >= 2 ? rareBoost : 1));
   }
   function rollFish(sea){
     const w = weights(sea), sum = w.reduce((a, b) => a + b, 0);
@@ -365,61 +429,231 @@
     for (let k = 0; k < w.length; k++){ r -= w[k]; if (r <= 0) return k; }
     return 0;
   }
-  // species weight: a name-based size factor so a sturgeon outweighs a sprat of the same rarity
-  function speciesKg(name, k){
-    let h = 7; for (const c of name) h = (h * 33 + c.charCodeAt(0)) % 1000;
-    return RAR[k].kg * (0.6 + h / 1000 * 0.9);
-  }
-  // expected income per second in the current sea, used for the rate readout and offline earnings
+  function hash(s){ let h = 7; for (const c of s) h = (h * 33 + c.charCodeAt(0)) % 100003; return h; }
+  const speciesKg = (name, k) => RAR[k].kg * (0.6 + hash(name) % 1000 / 1000 * 0.9);
+  // expected income per second in the current sea; rare fish count at the crew's auto-catch chance
   function expectedRate(){
     const sea = SEAS[S.sea], w = weights(sea, false), sum = w.reduce((a, b) => a + b, 0);
-    const ev = w.reduce((a, x, k) => a + x / sum * fishValue(S.sea, k), 0);
+    const ev = w.reduce((a, x, k) => a + x / sum * fishValue(S.sea, k) * (k >= 2 ? autoChance() : 1), 0);
     const cycle = (220 / 140 + 220 / 170) / speedMul() + 3.5 * 0.88 ** S.hook;
     return (S.rods + 1) * ev / cycle;
   }
-  function fishColor(name){
-    let h = 0; for (const c of name) h = (h * 31 + c.charCodeAt(0)) % 360;
-    return `hsl(${h} 55% 62%)`;
+
+  // ---------------- Fish looks ----------------
+  const has = (n, ...ws) => ws.some(w => n.toLowerCase().includes(w.toLowerCase()));
+  const LOOKS = new Map();
+  function look(name){
+    if (LOOKS.has(name)) return LOOKS.get(name);
+    let type = 'basic', back, belly, pat = null;
+    if (has(name, 'köpəkbalığı', 'Mişar')) type = 'shark';
+    else if (has(name, 'marlin', 'Qılınc', 'Yelkənli')) type = 'bill';
+    else if (has(name, 'atimeriya')) type = 'coel';
+    else if (has(name, 'nərə', 'Bölgə')) type = 'sturgeon';
+    else if (has(name, 'skat')) type = 'ray';
+    else if (has(name, 'Fuqu')) type = 'puffer';
+    else if (has(name, 'Ay balığı')) type = 'sunfish';
+    else if (has(name, 'ilanbalığı', 'Qayış')) type = 'eel';
+    else if (has(name, 'Kambala', 'Kalkan', 'Dil balığı', 'Turbo', 'paltus')) type = 'flat';
+    else if (has(name, 'Kloun', 'Kəpənək', 'cərrah', 'Tutuquşu', 'Şir balığı', 'Sarqasso')) type = 'reef';
+    else if (has(name, 'qrupper', 'Napoleon', 'Rofos', 'Barramundi', 'Dəniz şeytanı', 'Skorpena', 'skulpin', 'pişik')) type = 'grouper';
+    else if (has(name, 'tuna', 'Skumbriya', 'Palamut', 'Albakor', 'Kral balığı', 'Amberjek', 'Sarıquyruq', 'kingfiş', 'Skipcek', 'Barrakuda', 'Dorado', 'Lüfer', 'Uçan')) type = 'tuna';
+    else if (has(name, 'qızılbalı', 'Keta', 'Nerka', 'Semqa', 'çar', 'Dolli', 'Nelma', 'alabalı')) type = 'salmon';
+    const h = hash(name) % 360;
+    back = `hsl(${h} 30% 42%)`; belly = `hsl(${h} 25% 78%)`;
+    const set = (b, l, p) => { back = b; belly = l; if (p) pat = p; };
+    if (type === 'shark') set('#5d7183', '#dfe7ee');
+    if (type === 'sturgeon') set('#5b5a4c', '#d9d2bd');
+    if (type === 'tuna') set('#1f3f6e', '#d6e2ee');
+    if (type === 'bill') set('#1d3c78', '#e2ecf6', 'bars');
+    if (type === 'salmon') set('#5f7d8f', '#f0c7bf', 'spots');
+    if (type === 'flat') set('#8a7656', '#c9b48c', 'spots');
+    if (type === 'eel') set('#4b4a36', '#b8b08a');
+    if (type === 'coel') set('#2f4f86', '#6f8fc0', 'spots');
+    if (type === 'ray') set('#2c3440', '#e8eef3');
+    if (type === 'puffer') set('#b49a5a', '#f3ead0', 'spots');
+    if (type === 'sunfish') set('#8d9aa8', '#e1e6ea');
+    if (type === 'grouper') set('#7a5c3c', '#d8b98f', 'spots');
+    if (has(name, 'Sardina', 'Kilkə', 'siyənə', 'Hamsi', 'Ançous', 'Tulka', 'Salaka', 'Kapelin', 'Moyva', 'Sayra', 'Gümüş', 'Omul', 'Ryapuşka', 'Muksun', 'Çir', 'sisko')) set('#41658a', '#e3ebf2');
+    if (has(name, 'Qırmızı', 'snapper', 'Barbun', 'emperor', 'levrek', 'Sinaqrid')) set('#c2423b', '#f6c1a8');
+    if (has(name, 'Sarı', 'Kəpənək')) set('#e2b72a', '#fff1b5');
+    if (has(name, 'Mavi cərrah')) set('#2c6fd6', '#f5d33b');
+    if (has(name, 'Kloun')) set('#f07a1e', '#ffb067', 'bands');
+    if (has(name, 'Şir balığı')) set('#a2432e', '#f3d6c6', 'bars');
+    if (has(name, 'Tutuquşu')) set('#2fae96', '#9fe3c8');
+    if (has(name, 'Dorado')) set('#2e8a5a', '#f2d34f');
+    if (has(name, 'Zümrüd')) set('#2f8a6b', '#c7efe0');
+    if (has(name, 'Skumbriya')) pat = 'waves';
+    if (has(name, 'Pələng', 'Zolaqlı')) pat = 'bars';
+    if (has(name, 'Balina köpəkbalığı')) set('#34506e', '#e7eef4', 'spots');
+    if (has(name, 'Qrenlandiya köpəkbalığı')) set('#4a4f55', '#9aa1a8');
+    if (has(name, 'Böyük ağ')) set('#6d7a86', '#f4f6f8');
+    if (has(name, 'Kütüm', 'Çəki', 'Çapaq', 'Kefal', 'Pilenqas', 'Sıf', 'Treska', 'Pikşa', 'Merluza', 'Navaqa', 'treska', 'Mintay', 'Saida', 'Merlanq')) set('#6b7b6a', '#e2e4d6');
+    if (has(name, 'Buz balığı', 'buz balığı', 'Antarktika gümüş', 'nototeniya')) set('#9fb4c2', '#eef4f8');
+    if (has(name, 'diş balığı')) set('#3d4650', '#b9c2ca');
+    const L = { type, back, belly, pat, hammer:has(name, 'Çəkic'), saw:has(name, 'Mişar'), sail:has(name, 'Yelkənli') };
+    LOOKS.set(name, L); return L;
   }
+
+  // draws a fish facing +x, centred on (0,0), body length ~len
+  function fishPath(c, type, len, wig){
+    const L = len, Hh = { basic:.28, tuna:.24, salmon:.25, shark:.2, bill:.2, eel:.09, flat:.42, sturgeon:.16, puffer:.48, sunfish:.62, reef:.5, grouper:.32, coel:.3, ray:.3 }[type] * L;
+    const tw = Math.sin(wig) * L * 0.06;
+    c.beginPath();
+    if (type === 'eel'){
+      c.moveTo(L * .5, 0);
+      for (let i = 0; i <= 12; i++){ const x = L * .5 - i / 12 * L; c.lineTo(x, Math.sin(wig + i * .7) * L * .05 - Hh * (1 - i / 14)); }
+      for (let i = 12; i >= 0; i--){ const x = L * .5 - i / 12 * L; c.lineTo(x, Math.sin(wig + i * .7) * L * .05 + Hh * (1 - i / 14)); }
+      c.closePath(); return;
+    }
+    const nose = type === 'shark' || type === 'sturgeon' ? L * .5 : L * .44;
+    c.moveTo(nose, type === 'sturgeon' ? Hh * .2 : 0);
+    c.bezierCurveTo(L * .3, -Hh * 1.05, -L * .15, -Hh * 1.05, -L * .32, -Hh * .25 + tw * .3);
+    c.lineTo(-L * .32, Hh * .25 + tw * .3);
+    c.bezierCurveTo(-L * .15, Hh * 1.05, L * .3, Hh * 1.05, nose, type === 'sturgeon' ? Hh * .2 : 0);
+    c.closePath();
+  }
+
+  function drawFish(c, name, len, wig, opts = {}){
+    const lk = look(name), L = len, type = lk.type, tw = Math.sin(wig) * L * 0.08;
+    c.save();
+    if (opts.golden){ c.shadowColor = '#ffd84a'; c.shadowBlur = 16; }
+    const back = opts.golden ? '#e9a817' : lk.back, belly = opts.golden ? '#ffe680' : lk.belly;
+    const grad = c.createLinearGradient(0, -L * .3, 0, L * .3);
+    grad.addColorStop(0, back); grad.addColorStop(.55, belly); grad.addColorStop(1, belly);
+
+    if (type === 'ray'){
+      const f = Math.sin(wig) * L * .12;
+      c.fillStyle = back; c.beginPath();
+      c.moveTo(L * .35, 0); c.quadraticCurveTo(0, -L * .2, -L * .05, -L * .55 + f); c.quadraticCurveTo(-L * .2, -L * .1, -L * .3, 0);
+      c.quadraticCurveTo(-L * .2, L * .1, -L * .05, L * .55 - f); c.quadraticCurveTo(0, L * .2, L * .35, 0); c.fill();
+      c.strokeStyle = back; c.lineWidth = L * .03; c.beginPath(); c.moveTo(-L * .3, 0); c.lineTo(-L * .8, tw); c.stroke();
+      c.fillStyle = belly; c.globalAlpha = .4; c.beginPath(); c.ellipse(L * .05, 0, L * .12, L * .08, 0, 0, 7); c.fill();
+      c.restore(); return;
+    }
+
+    // tail
+    c.fillStyle = back;
+    c.beginPath();
+    const tx = type === 'eel' ? -L * .5 : -L * .3;
+    if (type === 'shark' || type === 'sturgeon'){
+      c.moveTo(tx + L * .02, 0); c.lineTo(tx - L * .26, -L * .2 + tw); c.lineTo(tx - L * .14, tw * .5); c.lineTo(tx - L * .18, L * .08 + tw); c.closePath();
+    } else if (type === 'tuna' || type === 'bill'){
+      c.moveTo(tx, 0); c.quadraticCurveTo(tx - L * .1, -L * .05, tx - L * .2, -L * .22 + tw); c.quadraticCurveTo(tx - L * .12, tw * .4, tx - L * .2, L * .22 + tw); c.quadraticCurveTo(tx - L * .1, L * .05, tx, 0);
+    } else if (type === 'sunfish'){
+      c.moveTo(tx + L * .02, -L * .25); c.quadraticCurveTo(tx - L * .1, tw, tx + L * .02, L * .25);
+    } else if (type === 'coel'){
+      c.moveTo(tx, 0); c.lineTo(tx - L * .12, -L * .12 + tw); c.lineTo(tx - L * .22, tw); c.lineTo(tx - L * .12, L * .12 + tw); c.closePath();
+    } else if (type !== 'eel'){
+      c.moveTo(tx, 0); c.lineTo(tx - L * .18, -L * .16 + tw); c.quadraticCurveTo(tx - L * .1, tw * .5, tx - L * .18, L * .16 + tw); c.closePath();
+    }
+    c.fill();
+
+    // fins
+    c.fillStyle = back; c.globalAlpha = .9;
+    c.beginPath();
+    if (type === 'shark'){ c.moveTo(L * .05, -L * .17); c.lineTo(-L * .06, -L * .36); c.lineTo(-L * .12, -L * .15); c.fill();
+      c.beginPath(); c.moveTo(L * .14, L * .12); c.lineTo(L * .02, L * .3); c.lineTo(-L * .02, L * .12); }
+    else if (type === 'bill' && lk.sail){ c.moveTo(L * .3, -L * .15); c.quadraticCurveTo(L * .05, -L * .55, -L * .25, -L * .14); }
+    else if (type === 'bill'){ c.moveTo(L * .22, -L * .16); c.lineTo(L * .12, -L * .34); c.lineTo(L * .02, -L * .17); }
+    else if (type === 'reef' || type === 'sunfish'){ c.moveTo(L * .1, -L * .26); c.quadraticCurveTo(-L * .1, -L * (type === 'sunfish' ? .7 : .42), -L * .3, -L * .1);
+      c.moveTo(L * .05, L * .26); c.quadraticCurveTo(-L * .12, L * (type === 'sunfish' ? .7 : .42), -L * .3, L * .1); }
+    else if (type === 'puffer'){ /* spines drawn later */ }
+    else if (type !== 'eel' && type !== 'flat'){ c.moveTo(L * .12, -L * .2); c.quadraticCurveTo(0, -L * .34, -L * .16, -L * .2); }
+    c.fill(); c.globalAlpha = 1;
+
+    // body
+    c.fillStyle = grad;
+    if (type === 'flat'){ c.beginPath(); c.ellipse(0, 0, L * .4, L * .26, 0, 0, 7); c.fill();
+      c.strokeStyle = back; c.lineWidth = L * .04; c.globalAlpha = .7; c.beginPath(); c.ellipse(0, 0, L * .42, L * .28, 0, 0, 7); c.stroke(); c.globalAlpha = 1; }
+    else { fishPath(c, type, L, wig); c.fill(); }
+    c.shadowBlur = 0;
+
+    // bill / snout extras
+    if (type === 'bill'){ c.strokeStyle = back; c.lineWidth = L * .025; c.beginPath(); c.moveTo(L * .42, 0); c.lineTo(L * .78, -L * .01); c.stroke(); }
+    if (lk.saw){ c.fillStyle = back; c.fillRect(L * .45, -L * .02, L * .3, L * .04); }
+    if (lk.hammer){ c.fillStyle = back; c.beginPath(); c.ellipse(L * .48, 0, L * .04, L * .14, 0, 0, 7); c.fill(); }
+    if (type === 'sturgeon'){ c.fillStyle = belly; for (let i = 0; i < 6; i++){ c.beginPath(); c.arc(L * .3 - i * L * .1, -L * .12, L * .018, 0, 7); c.fill(); }
+      c.strokeStyle = back; c.lineWidth = 1; c.beginPath(); c.moveTo(L * .42, L * .06); c.lineTo(L * .42, L * .12); c.moveTo(L * .38, L * .06); c.lineTo(L * .38, L * .12); c.stroke(); }
+    if (type === 'puffer'){ c.strokeStyle = back; c.lineWidth = 1; for (let a = 0; a < 6.28; a += .45){ c.beginPath(); c.moveTo(Math.cos(a) * L * .32, Math.sin(a) * L * .32); c.lineTo(Math.cos(a) * L * .4, Math.sin(a) * L * .4); c.stroke(); } }
+
+    // patterns, clipped to the body
+    if (lk.pat && !opts.golden){
+      c.save(); if (type === 'flat'){ c.beginPath(); c.ellipse(0, 0, L * .4, L * .26, 0, 0, 7); } else fishPath(c, type, L, wig); c.clip();
+      if (lk.pat === 'bands'){ c.fillStyle = '#ffffff'; [.22, -.02, -.24].forEach(x => { c.fillRect(L * x - L * .03, -L, L * .06, L * 2); }); }
+      if (lk.pat === 'bars'){ c.fillStyle = '#0003'; for (let x = -.3; x < .4; x += .1) c.fillRect(L * x, -L, L * .035, L * 2); }
+      if (lk.pat === 'spots'){ c.fillStyle = type === 'coel' || has(name, 'Balina') ? '#ffffffaa' : '#0004'; for (let i = 0; i < 14; i++){ c.beginPath(); c.arc((hash(name + i) % 60 - 30) / 100 * L, (hash(i + name) % 30 - 18) / 100 * L, L * .018, 0, 7); c.fill(); } }
+      if (lk.pat === 'waves'){ c.strokeStyle = '#0006'; c.lineWidth = 1.2; for (let x = -.25; x < .35; x += .08){ c.beginPath(); c.moveTo(L * x, -L * .2); c.quadraticCurveTo(L * (x + .05), -L * .1, L * x, -L * .02); c.stroke(); } }
+      c.restore();
+    }
+    if (type === 'shark'){ c.strokeStyle = '#0003'; c.lineWidth = 1; for (let i = 0; i < 3; i++){ c.beginPath(); c.moveTo(L * (.26 - i * .03), -L * .05); c.lineTo(L * (.25 - i * .03), L * .05); c.stroke(); } }
+    // eye
+    const ex = type === 'flat' ? L * .22 : type === 'eel' ? L * .42 : type === 'shark' ? L * .36 : L * .3;
+    const ey = type === 'flat' ? -L * .08 : -L * .04;
+    c.fillStyle = '#fff'; c.beginPath(); c.arc(ex, ey, Math.max(1.4, L * .04), 0, 7); c.fill();
+    c.fillStyle = '#111'; c.beginPath(); c.arc(ex + L * .008, ey, Math.max(1, L * .025), 0, 7); c.fill();
+    if (type === 'flat'){ c.fillStyle = '#fff'; c.beginPath(); c.arc(ex - L * .07, ey - L * .05, Math.max(1.2, L * .035), 0, 7); c.fill(); c.fillStyle = '#111'; c.beginPath(); c.arc(ex - L * .065, ey - L * .05, Math.max(.8, L * .02), 0, 7); c.fill(); }
+    c.restore();
+  }
+  const fishLen = (name, k) => { const t = look(name).type; return (22 + k * 5) * ({ shark:1.6, bill:1.5, sturgeon:1.5, eel:1.3, ray:1.3, sunfish:1.2, tuna:1.15, coel:1.25 }[t] || 1); };
 
   // ---------------- Simulation ----------------
-  let lines = [], swimmers = [], floats = [], banner = null, gold = null;
-  let goldT = 40, schoolT = 120, schoolUntil = -1;
+  let lines = [], swimmers = [], floats = [], particles = [], banner = null, gold = null, fight = null, holding = false;
+  let goldT = 40, schoolT = 120, schoolUntil = -1, flash = 0, clouds = [];
   const nRods = () => S.rods + 1;
-  const rodX = k => 200 + (k - (nRods() - 1) / 2) * Math.min(28, 190 / Math.max(1, nRods()));
+  const boatLen = () => BOATS[S.boat].len;
+  const rodX = k => 200 + (k - (nRods() - 1) / 2) * Math.min(26, (boatLen() - 30) / Math.max(1, nRods()));
 
-  function newLine(k){ return { k, y:SURF, depth:230 + Math.random() * 280, state:'sink', t:0, fish:-1 }; }
+  function newLine(k){ return { k, y:SURF, depth:230 + Math.random() * 270, state:'sink', t:0, fish:-1, manual:false }; }
   function syncLines(){ while (lines.length < nRods()) lines.push(newLine(lines.length)); }
-  function resetSea(){
-    lines = []; syncLines();
-    const sea = SEAS[S.sea];
-    swimmers = Array.from({ length:9 }, () => newSwimmer(sea));
-  }
   function newSwimmer(sea){
     const dir = Math.random() < .5 ? 1 : -1;
-    return { k:rollFish(sea), x:Math.random() * W, y:200 + Math.random() * 330, v:(14 + Math.random() * 22) * dir, ph:Math.random() * 6 };
+    return { k:rollFish(sea), x:Math.random() * W, y:205 + Math.random() * 300, v:(14 + Math.random() * 22) * dir, ph:Math.random() * 6 };
   }
+  function resetSea(){
+    lines = []; fight = null; syncLines();
+    swimmers = Array.from({ length:9 }, () => newSwimmer(SEAS[S.sea]));
+  }
+  clouds = Array.from({ length:4 }, (v, i) => ({ x:i * 120 + Math.random() * 60, y:20 + Math.random() * 60, s:.7 + Math.random() * .6, v:4 + Math.random() * 6 }));
 
   function earn(x){ S.money += x; S.total += x; }
   function say(text, color, life = 2.6){ banner = { text, color, life }; }
+  function splash(x, y, n = 10, color = '#ffffff'){
+    for (let i = 0; i < n; i++) particles.push({ x, y, vx:(Math.random() - .5) * 90, vy:-40 - Math.random() * 80, life:.8, g:220, color, r:1.5 + Math.random() * 1.5 });
+  }
 
   function land(line){
     const i = S.sea, sea = SEAS[i], k = line.fish, name = sea.fish[k];
     const base = speciesKg(name, k), r = Math.random();
-    const w = base * (0.6 + r * r * 1.2);             // most fish are average, a few are giants
-    const v = fishValue(i, k) * (w / base);
+    const w = base * (0.6 + r * r * 1.2);
+    const v = fishValue(i, k) * (w / base) * (line.manual ? 2 : 1);
     const id = i + ':' + k, isNew = !S.found[id], isRec = !isNew && w > (S.rec[id] || 0);
     const starsBefore = seaStars(i);
     earn(v); S.caught++; S.catches[i]++;
     S.found[id] = 1;
     if (!S.rec[id] || w > S.rec[id]) S.rec[id] = w;
-    floats.push({ x:rodX(line.k), y:SURF - 26, text:'+' + fmt(v) + ' ₼', life:1.2, color:'#ffe08a' });
+    if (k >= 2) S.rares = (S.rares || 0) + 1;
+    if (isNew) S.newSpecies = (S.newSpecies || 0) + 1;
+    splash(rodX(line.k) + 6, SURF, k >= 2 ? 18 : 8);
+    floats.push({ x:rodX(line.k), y:SURF - 26, text:'+' + fmt(v) + ' ₼', life:1.2, color:line.manual ? '#ffd84a' : '#ffe08a' });
     if (isNew) say('YENİ NÖV: ' + name, RAR[k].color);
+    else if (line.manual) say(`ƏL İLƏ TUTULDU ×2: ${name} · ${kg(w)}`, RAR[k].color);
     else if (k >= 2) say(`${RAR[k].name.toUpperCase()}: ${name} · ${kg(w)}`, RAR[k].color);
     else if (isRec && k >= 1) say(`REKORD: ${name} · ${kg(w)}`, '#ffe08a', 1.8);
     if (k >= 3 && (!S.best || k >= S.bestK)){ S.best = name; S.bestK = k; }
     if (seaStars(i) > starsBefore) say(`⭐ ${sea.name}: ${seaStars(i)}-ci ulduz!`, '#e2b04a', 3);
     dirty.fish = dirty.map = dirty.album = true;
+  }
+
+  function startFight(L){
+    const k = L.fish;
+    fight = { L, k, prog:15, ten:20, t:25, surge:0, surgeT:1, str:0.7 + k * 0.15 + S.sea * 0.004 };
+    L.state = 'fight';
+  }
+  function endFight(won){
+    const L = fight.L;
+    if (won){ L.manual = true; L.state = 'reel'; S.fights++; }
+    else { L.state = 'sink'; Object.assign(L, newLine(L.k)); S.snaps++; }
+    fight = null; holding = false;
   }
 
   function step(dt){
@@ -428,12 +662,33 @@
     const sea = SEAS[S.sea], sp = speedMul();
     for (const L of lines){
       if (L.state === 'sink'){ L.y += 140 * sp * dt; if (L.y >= L.depth){ L.y = L.depth; L.state = 'wait'; L.t = biteTime() * (0.6 + Math.random() * 0.8); } }
-      else if (L.state === 'wait'){ L.t -= dt; if (L.t <= 0){ L.fish = rollFish(sea); L.state = 'reel'; } }
+      else if (L.state === 'wait'){ L.t -= dt; if (L.t <= 0){ L.fish = rollFish(sea); if (L.fish >= 2){ L.state = 'bite'; L.t = BITE_WAIT; } else L.state = 'reel'; } }
+      else if (L.state === 'bite'){
+        L.t -= dt;
+        if (L.t <= 0){
+          if (Math.random() < autoChance()){ L.state = 'reel'; }
+          else { floats.push({ x:rodX(L.k), y:L.y - 10, text:'Qaçdı!', life:1.2, color:'#ff8a8a' }); Object.assign(L, newLine(L.k)); }
+        }
+      }
       else if (L.state === 'reel'){ L.y -= 170 * sp * dt; if (L.y <= SURF){ land(L); Object.assign(L, newLine(L.k)); } }
+    }
+    if (fight){
+      const f = fight, lineK = 0.92 ** S.line;
+      f.t -= dt; f.surgeT -= dt;
+      if (f.surgeT <= 0){ f.surge = 0.5; f.surgeT = 0.9 + Math.random() * 1.4; }
+      if (f.surge > 0) f.surge -= dt;
+      const surge = f.surge > 0 ? 70 * f.str : 0;
+      if (holding){ f.prog += 24 / f.str * dt; f.ten += (28 * f.str + surge) * lineK * dt; }
+      else { f.prog -= 4 * f.str * dt; f.ten -= 60 * dt; f.ten += surge * 0.3 * lineK * dt; }
+      f.ten = Math.max(0, f.ten); f.prog = Math.max(0, f.prog);
+      f.L.y = SURF + 40 + (1 - f.prog / 100) * 300;
+      if (f.ten >= 100){ say('İP QIRILDI! ' + sea.fish[f.k] + ' qaçdı', '#ff6b6b'); splash(rodX(f.L.k) + 6, SURF, 6, '#ff9a9a'); endFight(false); }
+      else if (f.prog >= 100){ endFight(true); }
+      else if (f.t <= 0){ say('Balıq yoruldu və qaçdı', '#ff8a8a'); endFight(false); }
     }
     for (const f of swimmers){
       f.x += f.v * dt * (schoolOn() ? 1.6 : 1); f.ph += dt * 6;
-      if (f.x < -40 || f.x > W + 40){ f.v = -f.v; f.k = rollFish(sea); f.y = 200 + Math.random() * 330; }
+      if (f.x < -60 || f.x > W + 60){ f.v = -f.v; f.k = rollFish(sea); f.y = 205 + Math.random() * 300; }
     }
     // events
     goldT -= dt * evMul();
@@ -450,6 +705,18 @@
       swimmers.push(...Array.from({ length:8 }, () => newSwimmer(sea)));
     }
     if (!schoolOn() && swimmers.length > 9) swimmers.length = 9;
+    weatherT -= dt;
+    if (weatherT <= 0){
+      const r = Math.random(); weather = r < .4 ? 0 : r < .65 ? 1 : r < .87 ? 2 : 3;
+      weatherT = 70 + Math.random() * 80;
+      if (weather >= 2) say(`${W_NOW().icon} ${W_NOW().name} başladı`, weather === 3 ? '#b77bff' : '#7cc6f2', 2.2);
+    }
+    if (weather === 3 && Math.random() < dt * 0.15) flash = 1;
+    flash = Math.max(0, flash - dt * 3);
+    clouds.forEach(c => { c.x += c.v * dt * (weather === 3 ? 4 : 1); if (c.x > W + 80) c.x = -80; });
+    particles.forEach(p => { p.x += p.vx * dt; p.y += p.vy * dt; p.vy += p.g * dt; p.life -= dt; });
+    particles = particles.filter(p => p.life > 0);
+    if (Math.random() < dt * 3) particles.push({ x:Math.random() * W, y:H - 20, vx:0, vy:-25 - Math.random() * 20, life:5, g:0, color:'#ffffff55', r:1 + Math.random() * 2, bubble:true });
     floats.forEach(f => { f.life -= dt; f.y -= 24 * dt; });
     floats = floats.filter(f => f.life > 0);
     if (banner){ banner.life -= dt; if (banner.life <= 0) banner = null; }
@@ -469,109 +736,226 @@
     ctx.font = `${weight} ${size}px ${font}, system-ui, sans-serif`; ctx.fillStyle = color;
     ctx.textAlign = align; ctx.textBaseline = 'middle'; ctx.fillText(t, x, y);
   }
-  const mix = (a, b, t) => { const p = s => [1, 3, 5].map(i => parseInt(s.slice(i, i + 2), 16));
+  // blends two colours given as #rrggbb or rgb(r,g,b), so blends can be nested
+  const mix = (a, b, t) => { const p = s => s[0] === '#' ? [1, 3, 5].map(i => parseInt(s.slice(i, i + 2), 16)) : s.match(/\d+/g).map(Number);
     const A = p(a), B = p(b); return `rgb(${A.map((v, i) => Math.round(v + (B[i] - v) * t)).join(',')})`; };
+  const rr = (x, y, w, h, r) => { ctx.beginPath(); ctx.roundRect(x, y, w, h, r); };
 
-  function drawFish(x, y, k, name, dir, wig, hooked, golden){
-    const s = 0.8 + k * 0.22;
-    ctx.save(); ctx.translate(x, y);
-    if (hooked) ctx.rotate(-Math.PI / 2 + Math.sin(wig) * 0.25); else ctx.scale(dir, 1);
-    ctx.scale(s, s);
-    if (golden){ ctx.shadowColor = '#ffd84a'; ctx.shadowBlur = 18; }
-    ctx.fillStyle = golden ? '#ffcf3a' : fishColor(name);
-    ctx.beginPath(); ctx.moveTo(-12, 0); ctx.lineTo(-20, -7 + Math.sin(wig) * 2); ctx.lineTo(-20, 7 + Math.sin(wig) * 2); ctx.closePath(); ctx.fill();
-    ctx.beginPath(); ctx.ellipse(0, 0, 14, 7, 0, 0, 7); ctx.fill();
-    ctx.shadowBlur = 0;
-    ctx.fillStyle = '#0006'; ctx.beginPath(); ctx.arc(8, -2, 1.6, 0, 7); ctx.fill();
-    if (k >= 2 && !golden){ ctx.strokeStyle = RAR[k].color; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.ellipse(0, 0, 15, 8, 0, 0, 7); ctx.stroke(); }
+  function drawBoat(bob, dark, roll){
+    const b = BOATS[S.boat], L = b.len, x0 = 200 - L / 2, y = SURF - 12 + bob;
+    ctx.save(); ctx.translate(200, y); ctx.rotate(roll); ctx.translate(-200, -y);
+    // hull
+    ctx.fillStyle = b.hull; ctx.beginPath();
+    ctx.moveTo(x0 - 6, y - 4); ctx.lineTo(x0 + L + (S.boat === 4 ? 18 : 8), y - 6); ctx.lineTo(x0 + L - 12, y + 18); ctx.lineTo(x0 + 16, y + 18); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#0003'; ctx.fillRect(x0 + 10, y + 10, L - 20, 8);
+    ctx.fillStyle = S.boat === 0 ? '#c79a5b' : '#f4f1ea'; ctx.fillRect(x0 - 4, y - 7, L + 8, 4);
+    if (S.boat === 4){ ctx.fillStyle = '#fff'; ctx.fillRect(x0 + 6, y + 2, L - 10, 3); }
+    // superstructure
+    if (S.boat >= 1){
+      const cw = 30 + S.boat * 10, ch = 18 + S.boat * 7, cx = 200 - cw / 2 - (S.boat >= 3 ? 30 : 0);
+      ctx.fillStyle = '#eef2f5'; rr(cx, y - 7 - ch, cw, ch, 3); ctx.fill();
+      ctx.fillStyle = dark > .5 ? '#ffd76a' : '#7cc6f2';
+      for (let i = 0; i < Math.floor(cw / 14); i++) ctx.fillRect(cx + 4 + i * 14, y - 3 - ch, 9, 7);
+      if (S.boat >= 2){ ctx.fillStyle = '#c94a3a'; ctx.fillRect(cx + cw - 12, y - 7 - ch - 14, 8, 14); ctx.fillStyle = '#222'; ctx.fillRect(cx + cw - 12, y - 7 - ch - 16, 8, 3); }
+      if (S.boat >= 3){ ctx.strokeStyle = '#d9dee3'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(200 + 50, y - 7); ctx.lineTo(200 + 50, y - 60); ctx.lineTo(200 + 90, y - 7); ctx.stroke(); }
+    } else {
+      ctx.fillStyle = '#5b3a1c'; ctx.fillRect(200 - 30, y - 10, 4, 6); ctx.fillRect(200 + 26, y - 10, 4, 6);
+    }
+    if (dark > .5){ ctx.fillStyle = '#ffd76a'; ctx.beginPath(); ctx.arc(x0 + L - 4, y - 14, 3, 0, 7); ctx.fill(); }
     ctx.restore();
   }
 
   function draw(t){
-    const sea = SEAS[S.sea], [w1, w2] = WATER[sea.region];
+    const sea = SEAS[S.sea], [w1, w2] = WATER[sea.region], wx = WEATHER[weather];
     const cold = sea.region === 'arctic' || sea.region === 'antarctic';
     const ph = (S.clock % DAY) / DAY;
-    // darkness: 0 by day, rises at dusk, 1 at night, falls at dawn
-    const dark = ph < 0.55 ? 0 : ph < 0.62 ? (ph - 0.55) / 0.07 : ph < 0.95 ? 1 : 1 - (ph - 0.95) / 0.05;
+    const dark = ph < .55 ? 0 : ph < .62 ? (ph - .55) / .07 : ph < .95 ? 1 : 1 - (ph - .95) / .05;
+    const gloom = wx.id === 'storm' ? .55 : wx.id === 'rain' ? .35 : wx.id === 'cloud' ? .15 : 0;
+    const waveA = wx.id === 'storm' ? 8 : wx.id === 'rain' ? 4.5 : 3;
     ctx.setTransform(scale, 0, 0, scale, 0, 0);
+
+    // sky
     const sky = ctx.createLinearGradient(0, 0, 0, SURF);
-    sky.addColorStop(0, mix(cold ? '#9fc3d9' : '#7cc6f2', '#0a1430', dark));
-    sky.addColorStop(1, mix(cold ? '#dbe9f1' : '#cfeeff', '#1d2b55', dark));
-    ctx.fillStyle = sky; ctx.fillRect(0, 0, W, SURF);
-    if (dark > 0.3){ ctx.fillStyle = `rgba(255,255,255,${dark * 0.8})`; for (let i = 0; i < 24; i++) ctx.fillRect((i * 97) % W, (i * 53) % 120 + 4, 1.5, 1.5); }
-    ctx.fillStyle = dark > 0.5 ? '#f1f1e6' : (cold ? '#f4f8fb' : '#fff3c4');
-    ctx.beginPath(); ctx.arc(340, 90 - Math.sin(Math.PI * Math.min(1, ph / 0.6)) * 50 + dark * 0, 18, 0, 7); ctx.fill();
-    if (cold){ ctx.fillStyle = mix('#f2f7fa', '#7f93a8', dark); [[30, 138, 50], [310, 140, 70]].forEach(([x, y, w]) => { ctx.beginPath(); ctx.moveTo(x, y + 12); ctx.lineTo(x + 10, y - 6); ctx.lineTo(x + w - 12, y - 4); ctx.lineTo(x + w, y + 12); ctx.fill(); }); }
+    sky.addColorStop(0, mix(mix(cold ? '#9fc3d9' : '#6cbcf0', '#56606e', gloom), '#0a1430', dark));
+    sky.addColorStop(1, mix(mix(cold ? '#dbe9f1' : '#cfeeff', '#8b95a3', gloom), '#1d2b55', dark));
+    ctx.fillStyle = sky; ctx.fillRect(0, 0, W, SURF + 10);
+    if (dark > .3 && gloom < .3){ ctx.fillStyle = `rgba(255,255,255,${dark * .8})`; for (let i = 0; i < 28; i++) ctx.fillRect((i * 97) % W, (i * 53) % 120 + 4, 1.5, 1.5); }
+    if (gloom < .5){
+      ctx.fillStyle = dark > .5 ? '#f1f1e6' : (cold ? '#f4f8fb' : '#fff3c4');
+      ctx.globalAlpha = 1 - gloom; ctx.beginPath(); ctx.arc(340, 90 - Math.sin(Math.PI * Math.min(1, ph / .6)) * 50, 18, 0, 7); ctx.fill(); ctx.globalAlpha = 1;
+    }
+    clouds.forEach(c => {
+      ctx.fillStyle = mix(mix('#ffffff', '#5d6673', gloom * 1.3 > 1 ? 1 : gloom * 1.3), '#2b3550', dark * .8);
+      ctx.globalAlpha = .85; [[0, 0, 18], [16, -6, 16], [32, 0, 15], [14, 5, 16]].forEach(([dx, dy, r]) => { ctx.beginPath(); ctx.arc(c.x + dx * c.s, c.y + dy * c.s, r * c.s, 0, 7); ctx.fill(); });
+      ctx.globalAlpha = 1;
+    });
+    if (cold){ ctx.fillStyle = mix('#f2f7fa', '#7f93a8', dark); [[20, 140, 60], [320, 142, 70]].forEach(([x, y, w]) => { ctx.beginPath(); ctx.moveTo(x, y + 12); ctx.lineTo(x + 12, y - 10); ctx.lineTo(x + w - 14, y - 6); ctx.lineTo(x + w, y + 12); ctx.fill(); }); }
+    else if (sea.region === 'tropic'){ ctx.fillStyle = mix('#2f7d4f', '#0e1d18', dark); ctx.beginPath(); ctx.ellipse(36, SURF + 2, 40, 10, 0, Math.PI, 0); ctx.fill();
+      ctx.strokeStyle = mix('#6b4a2a', '#111', dark); ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(34, SURF - 6); ctx.quadraticCurveTo(30, SURF - 30, 40, SURF - 44); ctx.stroke();
+      ctx.fillStyle = mix('#2f9a55', '#0f2418', dark); for (let a = 0; a < 5; a++){ ctx.beginPath(); ctx.ellipse(40 + Math.cos(a * 1.3) * 12, SURF - 44 + Math.sin(a * 1.3) * 5, 14, 4, a * 1.3, 0, 7); ctx.fill(); } }
+    else { ctx.fillStyle = mix('#4f6f5a', '#0f1a16', dark); ctx.beginPath(); ctx.moveTo(0, SURF); ctx.lineTo(0, SURF - 18); ctx.quadraticCurveTo(40, SURF - 34, 90, SURF - 8); ctx.lineTo(100, SURF); ctx.fill(); }
+
+    // water body
     const wg = ctx.createLinearGradient(0, SURF, 0, H);
-    wg.addColorStop(0, mix(w1, '#0b2242', dark * 0.6)); wg.addColorStop(1, mix(w2, '#020a16', dark * 0.6));
-    ctx.fillStyle = wg; ctx.beginPath(); ctx.moveTo(0, SURF);
-    for (let x = 0; x <= W; x += 10) ctx.lineTo(x, SURF + Math.sin(x / 30 + t / 600) * 3);
-    ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.fill();
-    ctx.fillStyle = `rgba(255,255,255,${0.05 * (1 - dark)})`;
+    wg.addColorStop(0, mix(mix(w1, '#3d566b', gloom * .5), '#0b2242', dark * .6)); wg.addColorStop(1, mix(w2, '#020a16', dark * .6));
+    ctx.fillStyle = wg; ctx.fillRect(0, SURF - 10, W, H - SURF + 10);
+    // light rays
+    ctx.fillStyle = `rgba(255,255,255,${.05 * (1 - dark) * (1 - gloom)})`;
     for (let r = 0; r < 4; r++){ const x = 60 + r * 95 + Math.sin(t / 2000 + r) * 15; ctx.beginPath(); ctx.moveTo(x, SURF); ctx.lineTo(x + 30, SURF); ctx.lineTo(x - 30, H); ctx.lineTo(x - 70, H); ctx.fill(); }
-    ctx.fillStyle = '#00000033'; ctx.beginPath(); ctx.moveTo(0, H);
-    for (let x = 0; x <= W; x += 20) ctx.lineTo(x, H - 18 - Math.sin(x / 40) * 6);
-    ctx.lineTo(W, H); ctx.fill();
+    // seabed and plants
+    ctx.fillStyle = mix(sea.region === 'tropic' ? '#d9c08a' : '#4b5a52', '#101820', .5 + dark * .3);
+    ctx.beginPath(); ctx.moveTo(0, H); for (let x = 0; x <= W; x += 20) ctx.lineTo(x, H - 18 - Math.sin(x / 40) * 6); ctx.lineTo(W, H); ctx.fill();
+    for (let i = 0; i < 9; i++){
+      const x = 20 + i * 45 + (i % 2) * 10, base = H - 16;
+      if (sea.region === 'tropic' && i % 3 === 0){ ctx.fillStyle = ['#ff7f7f', '#ffb36b', '#c38bff'][i % 3 === 0 ? (i / 3) % 3 : 0];
+        for (let b = 0; b < 4; b++){ ctx.beginPath(); ctx.arc(x + Math.cos(b) * 8, base - 8 - b * 5, 5, 0, 7); ctx.fill(); } }
+      else if (!cold){ ctx.strokeStyle = mix('#2f8a4f', '#0b1f14', dark); ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x, base);
+        for (let s = 1; s <= 5; s++) ctx.lineTo(x + Math.sin(t / 900 + s + i) * 5, base - s * 9); ctx.stroke(); }
+      else { ctx.fillStyle = '#5c6670'; ctx.beginPath(); ctx.ellipse(x, base, 12, 7, 0, Math.PI, 0); ctx.fill(); }
+    }
 
-    for (const f of swimmers) drawFish(f.x, f.y + Math.sin(f.ph / 3) * 3, f.k, sea.fish[f.k], Math.sign(f.v), f.ph, false);
+    // swimmers
+    for (const f of swimmers){
+      const name = sea.fish[f.k];
+      ctx.save(); ctx.translate(f.x, f.y + Math.sin(f.ph / 3) * 3); ctx.scale(Math.sign(f.v), 1);
+      ctx.globalAlpha = .9; drawFish(ctx, name, fishLen(name, f.k), f.ph); ctx.restore();
+    }
     if (gold){
-      drawFish(gold.x, gold.y + Math.sin(gold.ph / 2) * 4, 3, '', Math.sign(gold.v), gold.ph, false, true);
-      ctx.strokeStyle = `rgba(255,216,74,${0.5 + 0.5 * Math.sin(t / 150)})`; ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.arc(gold.x, gold.y, 26, 0, 7); ctx.stroke();
+      ctx.save(); ctx.translate(gold.x, gold.y + Math.sin(gold.ph / 2) * 4); ctx.scale(Math.sign(gold.v), 1);
+      drawFish(ctx, 'Qızıl balıq', 40, gold.ph, { golden:true }); ctx.restore();
+      ctx.strokeStyle = `rgba(255,216,74,${.5 + .5 * Math.sin(t / 150)})`; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(gold.x, gold.y, 28, 0, 7); ctx.stroke();
     }
 
-    const bob = Math.sin(t / 700) * 2;
-    ctx.fillStyle = '#7a4b2a'; ctx.beginPath();
-    ctx.moveTo(90, SURF - 14 + bob); ctx.lineTo(310, SURF - 14 + bob); ctx.lineTo(285, SURF + 8 + bob); ctx.lineTo(115, SURF + 8 + bob); ctx.fill();
-    ctx.fillStyle = '#e2b04a'; ctx.fillRect(95, SURF - 16 + bob, 210, 4);
-    ctx.fillStyle = '#eee'; ctx.fillRect(170, SURF - 46 + bob, 50, 32);
-    ctx.fillStyle = dark > 0.5 ? '#ffd76a' : '#7cc6f2'; ctx.fillRect(176, SURF - 40 + bob, 14, 10); ctx.fillRect(198, SURF - 40 + bob, 14, 10);
-    if (dark > 0.5){ ctx.fillStyle = '#ffd76a'; ctx.beginPath(); ctx.arc(302, SURF - 22 + bob, 3, 0, 7); ctx.fill(); }
+    // bubbles and splashes
+    particles.forEach(p => { ctx.globalAlpha = Math.min(1, p.life * 2); ctx.fillStyle = p.color;
+      if (p.bubble){ ctx.strokeStyle = p.color; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(p.x + Math.sin(p.y / 10) * 2, p.y, p.r, 0, 7); ctx.stroke(); if (p.y < SURF) p.life = 0; }
+      else { ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 7); ctx.fill(); } });
+    ctx.globalAlpha = 1;
 
+    // surface waves (two layers)
+    const bob = Math.sin(t / 700) * (waveA * .7), roll = Math.sin(t / 900) * (waveA * .006);
+    ctx.fillStyle = mix(mix(w1, '#ffffff', .12), '#0b2242', dark * .6);
+    ctx.beginPath(); ctx.moveTo(0, SURF - 4);
+    for (let x = 0; x <= W; x += 8) ctx.lineTo(x, SURF - 2 + Math.sin(x / 28 + t / 500) * waveA);
+    ctx.lineTo(W, SURF + 14); ctx.lineTo(0, SURF + 14); ctx.fill();
+
+    // rods and lines
     for (const L of lines){
-      const x = rodX(L.k), tipY = SURF - 40 + bob;
-      ctx.strokeStyle = '#3b2615'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x, SURF - 14 + bob); ctx.lineTo(x + 6, tipY); ctx.stroke();
-      ctx.strokeStyle = '#ffffffaa'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x + 6, tipY); ctx.lineTo(x + 6, L.y); ctx.stroke();
-      if (L.state === 'reel') drawFish(x + 6, L.y + 12, L.fish, sea.fish[L.fish], 1, t / 80, true);
-      else { ctx.fillStyle = '#ff5e5e'; ctx.beginPath(); ctx.arc(x + 6, L.y + (L.state === 'wait' ? Math.sin(t / 150) * 2 : 0), 3, 0, 7); ctx.fill(); }
+      const x = rodX(L.k), tipY = SURF - 46 + bob, tipX = x + 10;
+      const bend = L.state === 'fight' ? 12 + Math.sin(t / 60) * 4 : L.state === 'bite' ? 6 + Math.sin(t / 90) * 3 : 0;
+      ctx.strokeStyle = '#3b2615'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x, SURF - 14 + bob); ctx.quadraticCurveTo(x + 4, tipY + 10, tipX, tipY + bend); ctx.stroke();
+      ctx.strokeStyle = L.state === 'fight' && fight && fight.ten > 75 ? '#ff6b6b' : '#ffffffaa'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(tipX, tipY + bend); ctx.lineTo(tipX + (L.state === 'fight' ? Math.sin(t / 80) * 6 : 0), L.y); ctx.stroke();
+      if (L.state === 'reel' || L.state === 'fight' || L.state === 'bite'){
+        const name = sea.fish[L.fish];
+        ctx.save(); ctx.translate(tipX, L.y + 14); ctx.rotate(-Math.PI / 2 + Math.sin(t / (L.state === 'reel' ? 120 : 50)) * .35);
+        drawFish(ctx, name, fishLen(name, L.fish), t / 70); ctx.restore();
+      } else { ctx.fillStyle = '#ff5e5e'; ctx.beginPath(); ctx.arc(tipX, L.y + (L.state === 'wait' ? Math.sin(t / 150) * 2 : 0), 3, 0, 7); ctx.fill(); }
+      if (L.state === 'bite' && !fight){
+        const pulse = 1 + Math.sin(t / 120) * .15;
+        ctx.fillStyle = RAR[L.fish].color; ctx.beginPath(); ctx.arc(tipX, tipY - 16, 11 * pulse, 0, 7); ctx.fill();
+        text('!', tipX, tipY - 15, 15, '#0b1a2b', 900);
+      }
     }
+    drawBoat(bob, dark, roll);
+
+    // rain / storm overlay
+    if (wx.id === 'rain' || wx.id === 'storm'){
+      ctx.strokeStyle = 'rgba(200,220,240,.45)'; ctx.lineWidth = 1; ctx.beginPath();
+      const n = wx.id === 'storm' ? 70 : 40;
+      for (let i = 0; i < n; i++){ const x = (i * 53 + t / 4 * (1 + i % 3)) % (W + 40) - 20, y = (i * 97 + t / 2.2) % H; ctx.moveTo(x, y); ctx.lineTo(x - 4, y + 12); }
+      ctx.stroke();
+    }
+    if (flash > 0){ ctx.fillStyle = `rgba(255,255,255,${flash * .6})`; ctx.fillRect(0, 0, W, H); }
 
     // HUD
     ctx.fillStyle = '#0b1a2bcc';
-    ctx.beginPath(); ctx.roundRect(10, 10, 200, 46, 10); ctx.fill();
-    ctx.beginPath(); ctx.roundRect(218, 10, 172, 46, 10); ctx.fill();
+    rr(10, 10, 200, 46, 10); ctx.fill(); rr(218, 10, 172, 46, 10); ctx.fill();
     text(`LVL ${S.sea + 1}  ${'★'.repeat(seaStars(S.sea))}${'☆'.repeat(3 - seaStars(S.sea))}`, 20, 24, 11, '#e2b04a', 800, 'left');
     text(sea.name, 20, 43, sea.name.length > 18 ? 14 : 17, '#e8f1fa', 800, 'left', "'Baloo 2'");
     text(fmt(S.money) + ' ₼', 380, 27, 18, '#e2b04a', 800, 'right', "'Baloo 2'");
-    text(`${fmt(expectedRate() * (schoolOn() ? 2.5 : 1))} ₼/san ${isNight() ? '🌙' : '☀️'}${schoolOn() ? ' 🐟' : ''}`, 380, 45, 11, '#93acc4', 700, 'right');
+    text(`${fmt(expectedRate() * (schoolOn() ? 2.5 : 1))}/san ${isNight() ? '🌙' : ''}${wx.icon}${schoolOn() ? '🐟' : ''}`, 380, 45, 11, '#93acc4', 700, 'right');
 
     floats.forEach(f => { ctx.globalAlpha = Math.min(1, f.life * 2); text(f.text, f.x, f.y, 13, f.color, 800); });
     ctx.globalAlpha = 1;
     if (banner){
       ctx.globalAlpha = Math.min(1, banner.life * 2);
-      ctx.fillStyle = '#0b1a2bdd'; ctx.beginPath(); ctx.roundRect(20, 180, 360, 40, 12); ctx.fill();
+      ctx.fillStyle = '#0b1a2bdd'; rr(16, 64, 368, 34, 10); ctx.fill();
       ctx.strokeStyle = banner.color; ctx.lineWidth = 2; ctx.stroke();
-      text(banner.text, 200, 200, banner.text.length > 34 ? 12 : 14, banner.color, 800);
+      text(banner.text, 200, 81, banner.text.length > 36 ? 11 : 13, banner.color, 800);
       ctx.globalAlpha = 1;
+    }
+
+    // fight overlay
+    const biting = lines.find(L => L.state === 'bite');
+    if (fight){
+      const f = fight, name = sea.fish[f.k];
+      ctx.fillStyle = '#0b1a2bee'; rr(14, 444, 372, 104, 14); ctx.fill();
+      ctx.strokeStyle = RAR[f.k].color; ctx.lineWidth = 2; ctx.stroke();
+      text(`${RAR[f.k].name}: ${name}`, 26, 462, 13, RAR[f.k].color, 800, 'left');
+      text(`${Math.ceil(f.t)} san`, 374, 462, 12, '#93acc4', 700, 'right');
+      text('Çəkmə', 26, 484, 11, '#93acc4', 700, 'left');
+      ctx.fillStyle = '#2a4560'; rr(86, 478, 288, 12, 6); ctx.fill();
+      ctx.fillStyle = '#5fd38d'; rr(86, 478, 288 * Math.min(1, f.prog / 100), 12, 6); ctx.fill();
+      text('Gərginlik', 26, 506, 11, '#93acc4', 700, 'left');
+      ctx.fillStyle = '#2a4560'; rr(86, 500, 288, 12, 6); ctx.fill();
+      ctx.fillStyle = '#ff6b6b33'; ctx.fillRect(86 + 288 * .75, 500, 288 * .25, 12);
+      ctx.fillStyle = f.ten > 75 ? '#ff6b6b' : f.ten > 50 ? '#ffb340' : '#7cc6f2'; rr(86, 500, 288 * Math.min(1, f.ten / 100), 12, 6); ctx.fill();
+      text(holding ? 'Çəkirsən… gərginlik qırmızıya çatanda burax!' : 'Basıb saxla: çək', 200, 532, 12, f.surge > 0 ? '#ffb340' : '#e8f1fa', 700);
+    } else if (biting){
+      ctx.fillStyle = '#0b1a2bdd'; rr(40, 496, 320, 44, 12); ctx.fill();
+      ctx.strokeStyle = RAR[biting.fish].color; ctx.lineWidth = 2; ctx.stroke();
+      text(`${RAR[biting.fish].name} balıq qarmaqda! Ekrana bas`, 200, 511, 13, RAR[biting.fish].color, 800);
+      text(`${Math.ceil(biting.t)} san sonra ekipaj özü cəhd edəcək (${Math.round(autoChance() * 100)}%)`, 200, 528, 11, '#93acc4', 600);
     }
   }
 
-  // tap the golden fish
+  // input: golden fish, start a fight, hold to reel
+  function toWorld(e){ const r = cv.getBoundingClientRect(); return [(e.clientX - r.left) / r.width * W, (e.clientY - r.top) / r.height * H]; }
   cv.addEventListener('pointerdown', e => {
-    if (!gold) return;
-    const r = cv.getBoundingClientRect();
-    const x = (e.clientX - r.left) / r.width * W, y = (e.clientY - r.top) / r.height * H;
-    if (Math.hypot(x - gold.x, y - gold.y) > 36) return;
-    const prize = Math.max(50, expectedRate() * 45);
-    earn(prize); S.golds++;
-    floats.push({ x:gold.x, y:gold.y, text:'+' + fmt(prize) + ' ₼', life:1.6, color:'#ffd84a' });
-    say('QIZIL BALIQ! +' + fmt(prize) + ' ₼', '#ffd84a');
-    gold = null;
+    e.preventDefault();
+    const [x, y] = toWorld(e);
+    if (gold && Math.hypot(x - gold.x, y - gold.y) < 38){
+      const prize = Math.max(50, expectedRate() * 45) * (1 + 0.5 * S.shop.net);
+      earn(prize); S.golds++;
+      floats.push({ x:gold.x, y:gold.y, text:'+' + fmt(prize) + ' ₼', life:1.6, color:'#ffd84a' });
+      splash(gold.x, gold.y, 14, '#ffd84a');
+      say('QIZIL BALIQ! +' + fmt(prize) + ' ₼', '#ffd84a'); gold = null; return;
+    }
+    if (!fight){ const L = lines.find(l => l.state === 'bite'); if (L) startFight(L); }
+    if (fight){ holding = true; try { cv.setPointerCapture(e.pointerId); } catch (err) {} }
   });
+  ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(ev => cv.addEventListener(ev, () => { holding = false; }));
+  document.addEventListener('keydown', e => { if (e.code === 'Space' && !e.repeat){ if (!fight){ const L = lines.find(l => l.state === 'bite'); if (L) startFight(L); } if (fight){ holding = true; e.preventDefault(); } } });
+  document.addEventListener('keyup', e => { if (e.code === 'Space') holding = false; });
+
+  // ---------------- Quests & achievements ----------------
+  const counters = () => ({ caught:S.caught, rare:S.rares || 0, gold:S.golds, fight:S.fights, species:S.newSpecies || 0, earned:S.total });
+  const QT = {
+    caught:  { icon:'🐟', text:n => `${n} balıq tut`,                   n:() => 15 + Math.floor(Math.random() * 25) },
+    rare:    { icon:'💎', text:n => `${n} nadir və ya daha nadir balıq tut`, n:() => 2 + Math.floor(Math.random() * 3) },
+    gold:    { icon:'✨', text:n => `${n} qızıl balıq tut`,              n:() => 1 },
+    fight:   { icon:'💪', text:n => `Əl ilə ${n} nadir balıq tut`,       n:() => 1 + Math.floor(Math.random() * 2) },
+    species: { icon:'🔎', text:n => `${n} yeni növ tap`,                 n:() => 1 },
+    earned:  { icon:'💰', text:n => `${fmt(n)} ₼ qazan`,                 n:() => Math.max(500, expectedRate() * 200) },
+  };
+  function newQuest(){
+    const kinds = Object.keys(QT).filter(k => !S.quests.some(q => q.kind === k));
+    const unknownLeft = SEAS.slice(0, S.maxSea + 1).some(s => s.fish.some((f, k) => !S.found[s.i + ':' + k]));
+    const pool = kinds.filter(k => k !== 'species' || unknownLeft);
+    const kind = pool[Math.floor(Math.random() * pool.length)];
+    const n = QT[kind].n();
+    S.qn++;
+    return { id:S.qn, kind, n, start:counters()[kind], money:Math.max(200, expectedRate() * 150), pearls:kind === 'gold' || kind === 'fight' ? 2 : 1 };
+  }
+  function fillQuests(){ while (S.quests.length < 3) S.quests.push(newQuest()); }
+  const qProg = q => Math.min(q.n, counters()[q.kind] - q.start);
+  const achValue = key => ({ caught:S.caught, species:foundN(), seas:S.maxSea + 1, fight:S.fights, gold:S.golds, stars:totalStars(), boat:S.boat })[key];
 
   // ---------------- Panel ----------------
   const $ = id => document.getElementById(id);
-  const dirty = { fish:true, map:true, album:true, gear:true };
+  const dirty = { fish:true, map:true, album:true, quest:true, ship:true };
   let tab = 'sea', buyMode = '1';
 
   document.querySelector('.tabs').addEventListener('click', e => {
@@ -579,7 +963,7 @@
     tab = b.dataset.tab;
     document.querySelectorAll('.tabs button').forEach(x => x.classList.toggle('on', x === b));
     document.querySelectorAll('.pane[id^=pane-]').forEach(p => { p.hidden = p.id !== 'pane-' + tab; });
-    dirty[tab] = true; updatePanel();
+    dirty[tab] = true; if (tab === 'sea') dirty.fish = true; updatePanel();
   });
   $('buyMode').addEventListener('click', e => {
     const b = e.target.closest('button'); if (!b) return;
@@ -589,7 +973,7 @@
   });
 
   function plan(u){
-    const lvl = S[u.id], left = u.max - lvl;
+    const lvl = S[u.id], left = u.max() - lvl;
     if (left <= 0) return { n:0, cost:Infinity };
     const c0 = u.base * u.g ** lvl;
     let n = buyMode === 'max' ? Math.floor(Math.log(1 + S.money * (u.g - 1) / c0) / Math.log(u.g)) : +buyMode;
@@ -597,32 +981,40 @@
     return { n, cost:c0 * (u.g ** n - 1) / (u.g - 1) };
   }
 
-  // build once; costs and labels are refreshed in updatePanel
   $('ups').innerHTML = UPS.map(u => `<div class="up">
       <div class="ic">${u.icon}</div>
       <div class="nm"><b>${u.name} <span id="lv-${u.id}" style="color:var(--muted);font-weight:600"></span></b><small id="ds-${u.id}"></small></div>
       <button class="act" data-act="up" data-id="${u.id}" id="bt-${u.id}"><b id="bn-${u.id}"></b><small id="bc-${u.id}"></small></button>
     </div>`).join('');
 
-  function fishRows(i, showChance){
+  // small fish pictures in the lists
+  function fishIcon(name, known){
+    const c = document.createElement('canvas'); c.className = 'ico'; c.width = 88; c.height = 44;
+    const g = c.getContext('2d'); g.translate(44, 22); g.scale(1.6, 1.6);
+    if (!known){ g.globalAlpha = .9; g.filter = 'brightness(0) opacity(0.35)'; }
+    drawFish(g, name, 22, .5);
+    return c;
+  }
+  function fillFishRows(el, i, showChance){
     const sea = SEAS[i], w = weights(sea), sum = w.reduce((a, b) => a + b, 0);
-    return sea.fish.map((name, k) => {
+    el.innerHTML = sea.fish.map((name, k) => {
       const id = i + ':' + k, known = S.found[id];
       const sub = showChance ? `${RAR[k].name} · şans ${pct(w[k] / sum * 100)}` : RAR[k].name;
-      return `<span class="dot" style="background:${RAR[k].color}"></span>
+      return `<span data-ico="${k}"></span>
         <span class="nm ${known ? '' : 'unknown'}">${known ? name : '??? (hələ tutulmayıb)'}<small style="color:${RAR[k].color}">${sub}${known ? ' · rekord ' + kg(S.rec[id] || 0) : ''}</small></span>
         <span class="val">${fmt(fishValue(i, k))} ₼</span>`;
     }).join('');
+    el.querySelectorAll('[data-ico]').forEach(sp => { const k = +sp.dataset.ico; sp.replaceWith(fishIcon(sea.fish[k], S.found[i + ':' + k])); });
   }
   const starHtml = n => `<span class="stars">${'★'.repeat(n)}<span class="no">${'★'.repeat(3 - n)}</span></span>`;
 
   function buildMap(){
     $('mapList').innerHTML = GROUPS.map(([g, a, b]) => `<div class="ocean"><h3>${g}</h3>${
       SEAS.slice(a, b + 1).map(s => {
-        const open = s.i <= S.maxSea, n = SEAS[s.i].fish.filter((f, k) => S.found[s.i + ':' + k]).length;
+        const open = s.i <= S.maxSea, n = s.fish.filter((f, k) => S.found[s.i + ':' + k]).length, bt = boatFor(s.i);
         return `<button class="sea${s.i === S.sea ? ' cur' : ''}" data-travel="${s.i}" ${open ? '' : 'disabled'}>
           <span class="lv">LVL ${s.i + 1}</span>
-          <span class="nm">${open ? s.name : '🔒 ' + s.name}<small>${open ? `${n}/${s.fish.length} növ · ${S.catches[s.i]} balıq` : `${s.fish.length} növ`}</small></span>
+          <span class="nm">${open ? s.name : '🔒 ' + s.name}<small>${open ? `${n}/${s.fish.length} növ · ${S.catches[s.i]} balıq` : `${s.fish.length} növ${bt > 1 ? ' · ' + BOATS[bt].icon + ' ' + BOATS[bt].name + ' lazımdır' : ''}`}</small></span>
           ${open ? starHtml(seaStars(s.i)) : ''}</button>`;
       }).join('')}</div>`).join('');
     $('mapTag').textContent = `${S.maxSea + 1} / ${SEAS.length} açıq`;
@@ -631,23 +1023,75 @@
     const open = [...$('albumList').querySelectorAll('details[open]')].map(d => d.dataset.i);
     $('albumList').innerHTML = SEAS.slice(0, S.maxSea + 1).map(s => {
       const n = s.fish.filter((f, k) => S.found[s.i + ':' + k]).length;
-      return `<details data-i="${s.i}" ${open.includes(String(s.i)) ? 'open' : ''}><summary>${s.name} <small>${n}/${s.fish.length}</small></summary><div class="fish">${fishRows(s.i, false)}</div></details>`;
+      return `<details data-i="${s.i}" ${open.includes(String(s.i)) ? 'open' : ''}><summary>${s.name} <small>${n}/${s.fish.length}</small></summary><div class="fish"></div></details>`;
     }).join('');
+    $('albumList').querySelectorAll('details').forEach(d => {
+      const fill = () => { const box = d.querySelector('.fish'); if (!box.childElementCount) fillFishRows(box, +d.dataset.i, false); };
+      if (d.open) fill(); d.addEventListener('toggle', () => d.open && fill());
+    });
     $('albumTag').textContent = `${foundN()} / ${totalSpecies} növ`;
   }
+  function buildBoats(){
+    $('boats').innerHTML = BOATS.map((b, k) => {
+      const owned = S.boat >= k, cur = S.boat === k, next = k === S.boat + 1;
+      const gate = b.from > 0 ? ` · LVL ${b.from + 1}+ üçün lazımdır` : '';
+      return `<div class="up${cur ? ' cur' : ''}${owned && !cur ? ' done' : ''}">
+        <div class="ic">${b.icon}</div>
+        <div class="nm"><b>${b.name}</b><small>${b.rods} tilov · qiymət ×${b.val} · sürət ×${b.speed}${gate}</small></div>
+        ${owned ? `<span class="pill${cur ? ' hot' : ''}">${cur ? 'Sənin gəmin' : 'Alınıb'}</span>`
+          : `<button class="act" data-act="boat" data-k="${k}" data-cost="${b.cost}" ${next ? '' : 'disabled'}><b>Al</b><small>${fmt(b.cost)} ₼</small></button>`}
+      </div>`;
+    }).join('');
+    $('boatTag').textContent = `${S.boat + 1} / ${BOATS.length}`;
+  }
+  function buildQuests(){
+    fillQuests();
+    $('quests').innerHTML = S.quests.map(q => {
+      const p = qProg(q), done = p >= q.n;
+      return `<div class="up">
+        <div class="ic">${QT[q.kind].icon}</div>
+        <div class="nm"><b>${QT[q.kind].text(q.n)}</b><small><span id="qt-${q.id}"></span> · mükafat ${fmt(q.money)} ₼ + ◆${q.pearls}</small><div class="bar gold"><i id="qb-${q.id}"></i></div></div>
+        <button class="act" data-act="claim" data-q="${q.id}" ${done ? '' : 'disabled'}><b>${done ? 'Al' : '…'}</b><small>${done ? 'hazırdır' : 'gedir'}</small></button>
+      </div>`;
+    }).join('');
+    $('shop').innerHTML = SHOP.map(it => {
+      const l = S.shop[it.id], maxed = l >= it.max, c = it.cost(l);
+      return `<div class="up">
+        <div class="ic">${it.icon}</div>
+        <div class="nm"><b>${it.name} <span style="color:var(--muted);font-weight:600">${l}/${it.max}</span></b><small>${maxed ? it.desc(l) : it.desc(l) + ' → ' + it.desc(l + 1)}</small></div>
+        <button class="act pearl" data-act="shop" data-id="${it.id}" ${maxed || S.pearls < c ? 'disabled' : ''}><b>${maxed ? 'Maks.' : 'Al'}</b><small>${maxed ? '' : '◆ ' + c}</small></button>
+      </div>`;
+    }).join('');
+    $('pearlsShop').textContent = S.pearls;
+    let got = 0;
+    $('achs').innerHTML = ACHS.map(([key, n, title, desc, pr], idx) => {
+      const v = achValue(key), done = v >= n, claimed = S.ach[idx]; if (claimed) got++;
+      return `<div class="up${claimed ? ' done' : ''}">
+        <div class="ic">${claimed ? '🏆' : done ? '🎁' : '🔒'}</div>
+        <div class="nm"><b>${title}</b><small>${desc} · ${fmt(Math.min(v, n))}/${fmt(n)}</small></div>
+        ${claimed ? '<span class="pill">Alınıb</span>' : `<button class="act pearl" data-act="ach" data-i="${idx}" ${done ? '' : 'disabled'}><b>${done ? 'Al' : '…'}</b><small>◆ ${pr}</small></button>`}
+      </div>`;
+    }).join('');
+    $('achTag').textContent = `${got} / ${ACHS.length}`;
+  }
 
+  let lastQuestSig = '';
   function updatePanel(){
     const i = S.sea, sea = SEAS[i], rate = expectedRate();
     $('money').textContent = fmt(S.money) + ' ₼';
     $('rate').textContent = fmt(rate);
     $('starsTop').textContent = totalStars();
+    $('pearlsTop').textContent = S.pearls;
 
-    // gear affordability pip
-    const anyAfford = UPS.some(u => S[u.id] < u.max && S.money >= u.base * u.g ** S[u.id]);
-    $('gearPip').hidden = !anyAfford;
+    const anyAfford = UPS.some(u => S[u.id] < u.max() && S.money >= u.base * u.g ** S[u.id])
+      || (S.boat + 1 < BOATS.length && S.money >= BOATS[S.boat + 1].cost);
+    $('shipPip').hidden = !anyAfford;
+    fillQuests();
+    const claimable = S.quests.some(q => qProg(q) >= q.n) || ACHS.some((a, idx) => !S.ach[idx] && achValue(a[0]) >= a[1]);
+    $('questPip').hidden = !claimable;
 
     if (tab === 'sea'){
-      if (dirty.fish){ $('fishList').innerHTML = fishRows(i, true); dirty.fish = false;
+      if (dirty.fish){ fillFishRows($('fishList'), i, true); dirty.fish = false;
         $('seaFound').textContent = `${sea.fish.filter((f, k) => S.found[i + ':' + k]).length} / ${sea.fish.length} tapılıb`; }
       $('seaName').innerHTML = `🌊 ${sea.name} ${starHtml(seaStars(i))}<span class="tag">LVL ${i + 1} / ${SEAS.length}</span>`;
       const c = S.catches[i], all = sea.fish.every((f, k) => S.found[i + ':' + k]);
@@ -659,42 +1103,60 @@
       if (nextI >= SEAS.length){
         $('nextBtn').disabled = true; $('nextTitle').textContent = 'Bütün dənizlər açılıb!'; $('nextSub').textContent = 'Dünya okeanlarının kapitanısan';
       } else {
+        const nb = boatFor(nextI), boatOk = S.boat >= nb;
         $('nextTitle').textContent = `Yeni LVL ${nextI + 1}: ${SEAS[nextI].name}`;
-        $('nextSub').textContent = got < need(front) ? `${SEAS[front].name}: daha ${need(front) - got} balıq tut` : `Səfər: ${fmt(ticket(nextI))} ₼`;
-        $('nextBtn').disabled = got < need(front) || S.money < ticket(nextI);
+        $('nextSub').textContent = got < need(front) ? `${SEAS[front].name}: daha ${need(front) - got} balıq tut`
+          : !boatOk ? `${BOATS[nb].icon} ${BOATS[nb].name} lazımdır (Gəmi bölməsi)` : `Səfər: ${fmt(ticket(nextI))} ₼`;
+        $('nextBtn').disabled = got < need(front) || !boatOk || S.money < ticket(nextI);
       }
-      const left = DAY - (S.clock % DAY), toNight = 0.62 * DAY - (S.clock % DAY);
+      const left = DAY - (S.clock % DAY), toNight = .62 * DAY - (S.clock % DAY), wx = W_NOW();
+      const wDesc = { clear:'normal', cloud:'nadir ×1.1', rain:'balıq 25% tez tutulur', storm:'nadir ×1.7, ov bir az yavaş' }[wx.id];
       $('events').innerHTML =
-        (isNight() ? `<span class="pill hot">🌙 Gecə · nadir ×1.5 · ${fmtTime(left)}</span>` : `<span class="pill">☀️ Gündüz · gecəyə ${fmtTime(toNight)}</span>`)
+        `<span class="pill${weather >= 2 ? ' hot' : ''}">${wx.icon} ${wx.name} · ${wDesc}</span>`
+        + (isNight() ? `<span class="pill hot">🌙 Gecə · nadir ×1.5 · ${fmtTime(left)}</span>` : `<span class="pill">☀️ Gündüz · gecəyə ${fmtTime(toNight)}</span>`)
         + (schoolOn() ? `<span class="pill hot">🐟 Balıq sürüsü · ${fmtTime(schoolUntil - S.clock)}</span>` : '')
         + (gold ? `<span class="pill hot">✨ Qızıl balıq üzür, ona toxun!</span>` : '');
     }
-    if (tab === 'gear'){
+    if (tab === 'ship'){
+      if (dirty.ship){ buildBoats(); dirty.ship = false; }
+      document.querySelectorAll('#boats [data-cost]').forEach(el => { if (+el.dataset.k === S.boat + 1) el.disabled = S.money < +el.dataset.cost; });
       UPS.forEach(u => {
-        const lvl = S[u.id], p = plan(u), maxed = lvl >= u.max;
-        $('lv-' + u.id).textContent = u.max < 999 ? `${lvl}/${u.max}` : `Sv ${lvl}`;
-        $('ds-' + u.id).textContent = maxed ? u.desc(lvl) : `${u.desc(lvl)} → ${u.desc(lvl + p.n)}`;
+        const lvl = S[u.id], p = plan(u), mx = u.max(), maxed = lvl >= mx;
+        $('lv-' + u.id).textContent = mx < 999 ? `${lvl}/${mx}` : `Sv ${lvl}`;
+        $('ds-' + u.id).textContent = maxed ? u.desc(lvl) + (u.id === 'rods' && S.boat < BOATS.length - 1 ? ' · daha çox tilov üçün yeni gəmi al' : '') : `${u.desc(lvl)} → ${u.desc(lvl + p.n)}`;
         $('bn-' + u.id).textContent = maxed ? 'Maks.' : `+${p.n}`;
         $('bc-' + u.id).textContent = maxed ? '' : fmt(p.cost) + ' ₼';
         $('bt-' + u.id).disabled = maxed || S.money < p.cost;
       });
       $('bonus').innerHTML = `
+        <span>Gəmi (${BOATS[S.boat].name})</span><span>×${BOATS[S.boat].val}</span>
         <span>Bazar</span><span>×${fmt(1.25 ** S.market)}</span>
-        <span>Növlər (${foundN()} × 3%)</span><span>×${(1 + 0.03 * foundN()).toFixed(2)}</span>
-        <span>Ulduzlar (${totalStars()} × 2%)</span><span>×${(1 + 0.02 * totalStars()).toFixed(2)}</span>
+        <span>Növlər (${foundN()} × 3%)</span><span>×${(1 + .03 * foundN()).toFixed(2)}</span>
+        <span>Ulduzlar (${totalStars()} × 2%)</span><span>×${(1 + .02 * totalStars()).toFixed(2)}</span>
+        <span>Kapitan təcrübəsi</span><span>×${(1 + .1 * S.shop.exp).toFixed(1)}</span>
         <span>Ümumi qiymət çarpanı</span><span>×${fmt(valueMult())}</span>`;
+    }
+    if (tab === 'quest'){
+      // rebuild only when buttons change state; progress bars update in place so clicks are never lost
+      const sig = JSON.stringify([S.quests.map(q => q.id + ':' + (qProg(q) >= q.n)), S.pearls, S.ach, ACHS.map(a => achValue(a[0]) >= a[1])]);
+      if (dirty.quest || sig !== lastQuestSig){ buildQuests(); dirty.quest = false; lastQuestSig = sig; }
+      S.quests.forEach(q => { const p = qProg(q), b = $('qb-' + q.id), tx = $('qt-' + q.id);
+        if (b) b.style.width = p / q.n * 100 + '%';
+        if (tx) tx.textContent = q.kind === 'earned' ? fmt(p) + ' / ' + fmt(q.n) : p + ' / ' + q.n; });
     }
     if (tab === 'map' && dirty.map){ buildMap(); dirty.map = false; }
     if (tab === 'album' && dirty.album){ buildAlbum(); dirty.album = false; }
     if (tab === 'log'){
       $('log').innerHTML = `
         <span>Tutulan balıq</span><span>${fmt(S.caught)}</span>
+        <span>Əl ilə tutulan</span><span>${S.fights}</span>
+        <span>Qırılan ip</span><span>${S.snaps}</span>
         <span>Tapılan növlər</span><span>${foundN()} / ${totalSpecies}</span>
         <span>Ulduzlar</span><span>${totalStars()} / ${SEAS.length * 3}</span>
         <span>Qızıl balıqlar</span><span>${S.golds}</span>
         <span>Ən nadir ov</span><span>${S.best || '—'}</span>
         <span>Ümumi qazanc</span><span>${fmt(S.total)} ₼</span>
-        <span>Offline qazanc</span><span>${OFFLINE_RATE * 100}% · maks. ${OFFLINE_H} saat</span>`;
+        <span>Offline qazanc</span><span>${Math.round(offRate() * 100)}% · maks. ${offCap()} saat</span>`;
     }
   }
 
@@ -711,15 +1173,39 @@
         if (p.n && buy(p.cost)) S[u.id] += p.n;
         dirty.fish = true; break;
       }
+      case 'boat': {
+        const k = +a.dataset.k; if (k !== S.boat + 1 || !buy(BOATS[k].cost)) return;
+        S.boat = k; dirty.ship = dirty.fish = true;
+        ask('Yeni gəmi!', `İndi ${BOATS[k].rods} tilova qədər qura bilərsən, satış qiyməti ×${BOATS[k].val}.`, BOATS[k].icon + ' ' + BOATS[k].name);
+        break;
+      }
       case 'next': {
         const n = S.maxSea + 1;
-        if (n >= SEAS.length || S.catches[S.maxSea] < need(S.maxSea) || !buy(ticket(n))) return;
+        if (n >= SEAS.length || S.catches[S.maxSea] < need(S.maxSea) || S.boat < boatFor(n) || !buy(ticket(n))) return;
         S.maxSea = n; S.sea = n; resetSea(); dirty.fish = dirty.map = dirty.album = true;
         ask(`LVL ${n + 1}`, `${SEAS[n].ocean}. Burada ${SEAS[n].fish.length} yeni balıq növü səni gözləyir.`, SEAS[n].name);
         break;
       }
+      case 'claim': {
+        const q = S.quests.find(x => x.id === +a.dataset.q); if (!q || qProg(q) < q.n) return;
+        earn(q.money); S.pearls += q.pearls;
+        S.quests = S.quests.filter(x => x !== q); fillQuests(); dirty.quest = true;
+        say(`Tapşırıq tamam: +${fmt(q.money)} ₼ +◆${q.pearls}`, '#e9e4ff');
+        break;
+      }
+      case 'shop': {
+        const it = SHOP.find(x => x.id === a.dataset.id), l = S.shop[it.id];
+        if (l >= it.max || S.pearls < it.cost(l)) return;
+        S.pearls -= it.cost(l); S.shop[it.id]++; dirty.quest = true; break;
+      }
+      case 'ach': {
+        const idx = +a.dataset.i, ac = ACHS[idx]; if (S.ach[idx] || achValue(ac[0]) < ac[1]) return;
+        S.ach[idx] = 1; S.pearls += ac[4]; dirty.quest = true;
+        say(`🏆 ${ac[2]}: +◆${ac[4]}`, '#e9e4ff');
+        break;
+      }
       case 'wipe':
-        ask('Hər şeyi sil?', 'Bütün dənizlər, avadanlıq və tapılan növlər birdəfəlik silinəcək.', '', () => {
+        ask('Hər şeyi sil?', 'Bütün dənizlər, gəmilər, incilər və tapılan növlər birdəfəlik silinəcək.', '', () => {
           S = fresh(); resetSea(); Object.keys(dirty).forEach(k => dirty[k] = true); save(); updatePanel();
         });
         return;
@@ -748,17 +1234,24 @@
       const d = JSON.parse(raw), f = fresh();
       S = Object.assign(f, d);
       if (d.rods >= 1 && d.crew === undefined) S.rods = d.rods - 1;   // v1 stored the total rod count
-      S.rods = Math.min(Math.max(0, S.rods), 7);
+      S.shop = Object.assign(f.shop, d.shop || {});
       S.catches = SEAS.map((s, i) => (d.catches || [])[i] || 0);
-      S.found = d.found || {}; S.rec = d.rec || {};
+      S.found = d.found || {}; S.rec = d.rec || {}; S.ach = d.ach || {}; S.quests = d.quests || [];
       S.maxSea = Math.min(S.maxSea, SEAS.length - 1); S.sea = Math.min(S.sea, S.maxSea);
+      // older saves had no boats: give the boat their progress already needs
+      if (d.boat === undefined){
+        let b = boatFor(S.maxSea);
+        while (b < BOATS.length - 1 && BOATS[b].rods < S.rods + 1) b++;
+        S.boat = b;
+      }
+      S.rods = Math.min(Math.max(0, S.rods), BOATS[S.boat].rods - 1);
     } catch (e) {}
   }
   function catchUp(){
-    const away = Math.min((Date.now() - S.last) / 1000, OFFLINE_H * 3600);
+    const away = Math.min((Date.now() - S.last) / 1000, offCap() * 3600);
     S.last = Date.now();
     if (away < 15) return;
-    const gain = expectedRate() * away * OFFLINE_RATE;
+    const gain = expectedRate() * away * offRate();
     S.money += gain; S.total += gain;
     ask('Xoş gəldin, kapitan!', `Sən ${fmtTime(away)} yox idin. Ekipaj balıq tutmağa davam etdi (${SEAS[S.sea].name}):`, '+' + fmt(gain) + ' ₼');
   }
@@ -766,7 +1259,7 @@
   // ---------------- Loop ----------------
   let prev = performance.now(), panelT = 0;
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden) save(); else { catchUp(); prev = performance.now(); }
+    if (document.hidden){ holding = false; save(); } else { catchUp(); prev = performance.now(); }
   });
   window.addEventListener('pagehide', save);
   setInterval(save, 5000);
@@ -784,6 +1277,7 @@
   catchUp();
   resetSea();
   resize();
+  fillQuests();
   updatePanel();
   requestAnimationFrame(frame);
 })();
