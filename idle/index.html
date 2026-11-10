@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Universitet Idle</title>
+<style>
+  :root{
+    --bg:#0b0b16; --panel:#15152a; --panel2:#1d1d38; --line:#2a2a4d;
+    --text:#ecebff; --muted:#9a98c4; --accent:#8f7bff; --good:#4ade80; --bad:#5a5878;
+  }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body{ margin:0; height:100%; }
+  body{
+    background:radial-gradient(ellipse at top, #1b1640 0%, var(--bg) 60%);
+    color:var(--text); font-family:-apple-system, Segoe UI, Roboto, sans-serif;
+    user-select:none; overflow-x:hidden;
+  }
+  .wrap{ max-width:1000px; margin:0 auto; padding:16px; display:grid; gap:16px; grid-template-columns:1fr 1fr; }
+  @media (max-width:760px){ .wrap{ grid-template-columns:1fr; } }
+  header{ grid-column:1/-1; text-align:center; }
+  h1{ margin:4px 0 0; font-size:22px; letter-spacing:2px;
+      background:linear-gradient(90deg,#ff4d4d,#ff9f40,#ffe14d,#4ade80,#4dabff,#6b5bff,#c26bff);
+      -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .light{ font-size:40px; font-weight:800; margin-top:8px; font-variant-numeric:tabular-nums; }
+  .lps{ color:var(--muted); font-size:14px; }
+  .panel{ background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:14px; }
+  .panel h2{ font-size:14px; text-transform:uppercase; letter-spacing:1.5px; color:var(--muted); margin:0 0 10px; display:flex; justify-content:space-between; align-items:center; }
+
+  /* Prism */
+  .stage{ position:relative; height:260px; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+  #prism{ font-size:130px; line-height:1; cursor:pointer; transition:transform .08s; filter:drop-shadow(0 0 24px rgba(143,123,255,.55)); }
+  .hint{ position:absolute; bottom:12px; color:var(--muted); font-size:12px; }
+  #prism:active{ transform:scale(.93); }
+  .float{ position:absolute; pointer-events:none; font-weight:700; font-size:18px; animation:up 1s ease-out forwards; text-shadow:0 0 8px rgba(0,0,0,.8); }
+  @keyframes up{ to{ transform:translateY(-70px); opacity:0; } }
+  .ray{ position:absolute; height:3px; left:50%; top:50%; transform-origin:0 50%; opacity:.0; pointer-events:none; animation:ray .5s ease-out forwards; }
+  @keyframes ray{ 0%{opacity:.9; width:0} 100%{opacity:0; width:160px} }
+
+  .row{ display:flex; align-items:center; gap:10px; padding:10px; border-radius:12px; background:var(--panel2); margin-bottom:8px; border:1px solid transparent; cursor:pointer; transition:border-color .15s, opacity .15s; }
+  .row:hover{ border-color:var(--accent); }
+  .row.off{ opacity:.45; cursor:default; }
+  .row.off:hover{ border-color:transparent; }
+  .gem{ width:38px; height:38px; flex:none; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:22px; }
+  .info{ flex:1; min-width:0; }
+  .name{ font-weight:700; font-size:15px; }
+  .sub{ color:var(--muted); font-size:12px; margin-top:2px; }
+  .bar{ height:3px; background:#0003; border-radius:2px; margin-top:5px; overflow:hidden; }
+  .bar i{ display:block; height:100%; background:var(--accent); }
+  .cost{ text-align:right; font-variant-numeric:tabular-nums; font-size:14px; font-weight:700; }
+  .owned{ font-size:22px; font-weight:800; width:46px; text-align:center; color:var(--muted); }
+
+  .seg{ display:flex; gap:4px; }
+  .seg button{ background:var(--panel2); color:var(--muted); border:1px solid var(--line); border-radius:8px; padding:4px 9px; font-size:12px; cursor:pointer; }
+  .seg button.on{ color:var(--text); border-color:var(--accent); }
+
+  .prestige{ text-align:center; }
+  .prestige p{ color:var(--muted); font-size:13px; margin:6px 0 12px; line-height:1.5; }
+  .btn{ background:linear-gradient(90deg,#6b5bff,#c26bff); color:#fff; border:0; border-radius:12px; padding:12px 18px; font-weight:800; font-size:15px; cursor:pointer; width:100%; }
+  .btn:disabled{ background:var(--bad); cursor:default; }
+  .stats{ font-size:13px; color:var(--muted); line-height:1.8; }
+  .stats b{ color:var(--text); font-variant-numeric:tabular-nums; }
+  .small{ background:none; border:1px solid var(--line); color:var(--muted); border-radius:8px; padding:6px 10px; font-size:12px; cursor:pointer; margin-top:8px; }
+
+  .modal{ position:fixed; inset:0; background:#000a; display:none; align-items:center; justify-content:center; padding:16px; z-index:10; }
+  .modal.show{ display:flex; }
+  .modal .box{ background:var(--panel); border:1px solid var(--accent); border-radius:16px; padding:22px; max-width:340px; width:100%; text-align:center; }
+  .modal h3{ margin:0 0 8px; }
+  .modal .big{ font-size:30px; font-weight:800; color:var(--good); margin:10px 0 16px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div style="font-size:34px">🎓</div><h1>UNİVERSİTET IDLE</h1>
+    <div class="light" id="light">0</div>
+    <div class="lps"><span id="lps">0</span> bilik/san · klik: <span id="clickVal">1</span></div>
+  </header>
+
+  <div>
+    <div class="panel stage" id="stage">
+      <div id="prism" role="button" aria-label="Dərs oxu">📚</div>
+      <div class="hint">Kitaba toxun — dərs oxu!</div>
+    </div>
+
+    <div class="panel" style="margin-top:16px">
+      <h2>Təkmilləşdirmələr</h2>
+      <div id="upgrades"></div>
+    </div>
+
+    <div class="panel prestige" style="margin-top:16px">
+      <h2>Məzuniyyət (Prestij)</h2>
+      <p>Universiteti məzun et, yenidən başla və <b>Diplom</b> qazan. Hər diplom istehsalı daimi <b>+10%</b> artırır.<br>
+         Diplomlar: <b id="shards">0</b> · Bonus: <b id="shardBonus">+0%</b></p>
+      <button class="btn" id="prestigeBtn" disabled>Məzun et: +0 diplom</button>
+    </div>
+  </div>
+
+  <div>
+    <div class="panel">
+      <h2>Heyət və binalar
+        <span class="seg" id="buyMode">
+          <button data-m="1" class="on">x1</button><button data-m="10">x10</button><button data-m="100">x100</button><button data-m="max">MAX</button>
+        </span>
+      </h2>
+      <div id="gens"></div>
+    </div>
+
+    <div class="panel" style="margin-top:16px">
+      <h2>Statistika</h2>
+      <div class="stats" id="stats"></div>
+      <button class="small" id="resetBtn">Bütün irəliləyişi sil</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="modal"><div class="box">
+  <h3 id="mTitle">Xoş gəldin!</h3>
+  <div id="mText" style="color:var(--muted);font-size:14px"></div>
+  <div class="big" id="mBig"></div>
+  <button class="btn" id="mOk">Davam et</button>
+</div></div>
+
+<script>
+(() => {
+  // ---------- Data ----------
+  const GENS = [
+    { id:'student', name:'Tələbə',        icon:'🧑‍🎓', color:'#ff4d4d', cost:15,     prod:0.5 },
+    { id:'assist',  name:'Assistent',     icon:'🧑‍💼', color:'#ff9f40', cost:110,    prod:4 },
+    { id:'docent',  name:'Dosent',        icon:'👩‍🏫', color:'#ffe14d', cost:1200,   prod:30 },
+    { id:'prof',    name:'Professor',     icon:'👨‍🔬', color:'#4ade80', cost:13000,  prod:220 },
+    { id:'library', name:'Kitabxana',     icon:'🏛️', color:'#4dabff', cost:140000, prod:1500 },
+    { id:'lab',     name:'Laboratoriya',  icon:'🧪', color:'#6b5bff', cost:1.6e6,  prod:11000 },
+    { id:'faculty', name:'Fakültə',       icon:'🏫', color:'#c26bff', cost:2e7,    prod:85000 },
+    { id:'campus',  name:'Kampus',        icon:'🌆', color:'#ffffff', cost:3.3e8,  prod:700000 },
+  ];
+  const GROWTH = 1.15;
+  const MILESTONES = [25, 50, 100, 150, 200, 300, 400, 500]; // each ×2
+
+  const UPGRADES = [
+    { id:'lens',  name:'☕ Qəhvə',          desc:'Klik gücü ×2',                    base:100,  growth:8,  max:Infinity },
+    { id:'res',   name:'📝 Konspekt',       desc:'Klik +3% bilik/san əlavə edir',    base:5000, growth:12, max:20 },
+    { id:'mirror',name:'💰 Dövlət qrantı',  desc:'Bütün istehsal ×1.5',              base:2e4,  growth:25, max:Infinity },
+    { id:'night', name:'💻 Distant təhsil', desc:'Offline qazanc +10% (baza 50%)',   base:1e5,  growth:10, max:5 },
+  ];
+  const OFFLINE_CAP_H = 8;
+  const SAVE_KEY = 'uniIdle.v1';
+
+  // ---------- State ----------
+  const fresh = () => ({
+    light:0, runTotal:0, allTotal:0, clicks:0, shards:0, prestiges:0,
+    gens:Object.fromEntries(GENS.map(g => [g.id, 0])),
+    ups:Object.fromEntries(UPGRADES.map(u => [u.id, 0])),
+    start:Date.now(), last:Date.now(),
+  });
+  let S = fresh();
+  let buyMode = '1';
+
+  // ---------- Formatting ----------
+  const SUF = ['', 'K', 'M', 'B', 'T', 'Qa', 'Qi', 'Sx', 'Sp', 'Oc', 'No', 'Dc'];
+  function fmt(n){
+    if (!isFinite(n)) return '∞';
+    if (n < 1000) return n < 10 && n % 1 ? n.toFixed(1) : Math.floor(n).toString();
+    const e = Math.floor(Math.log10(n) / 3);
+    if (e < SUF.length) return (n / 10 ** (e * 3)).toFixed(2) + SUF[e];
+    return n.toExponential(2).replace('+', '');
+  }
+  function fmtTime(s){
+    s = Math.floor(s);
+    const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), sec = s % 60;
+    return h ? `${h} saat ${m} dəq` : m ? `${m} dəq ${sec} san` : `${sec} san`;
+  }
+
+  // ---------- Math ----------
+  const milestoneMult = n => 2 ** MILESTONES.filter(m => n >= m).length;
+  const nextMilestone = n => MILESTONES.find(m => n < m);
+  const globalMult = () => (1 + 0.1 * S.shards) * 1.5 ** S.ups.mirror;
+  const genRate = g => g.prod * S.gens[g.id] * milestoneMult(S.gens[g.id]) * globalMult();
+  const lps = () => GENS.reduce((a, g) => a + genRate(g), 0);
+  const clickPower = () => 2 ** S.ups.lens * (1 + 0.1 * S.shards) + lps() * 0.03 * S.ups.res;
+  const offlineRate = () => 0.5 + 0.1 * S.ups.night;
+  const genCost = g => g.cost * GROWTH ** S.gens[g.id];
+  const upCost = u => u.base * u.growth ** S.ups[u.id];
+  const shardsOnReset = () => Math.floor(Math.sqrt(S.runTotal / 1e6));
+
+  // how many to buy & total cost for the current buy mode
+  function buyPlan(g){
+    const c = genCost(g);
+    let n;
+    if (buyMode === 'max'){
+      n = Math.floor(Math.log(1 + S.light * (GROWTH - 1) / c) / Math.log(GROWTH));
+      n = Math.max(n, 1);
+    } else n = +buyMode;
+    return { n, cost: c * (GROWTH ** n - 1) / (GROWTH - 1) };
+  }
+
+  function earn(x){ S.light += x; S.runTotal += x; S.allTotal += x; }
+
+  // ---------- Build UI ----------
+  const $ = id => document.getElementById(id);
+  const genEls = {}, upEls = {};
+
+  GENS.forEach(g => {
+    const el = document.createElement('div');
+    el.className = 'row';
+    el.innerHTML = `<div class="gem" style="background:${g.color}22;border:1px solid ${g.color}">${g.icon}</div>
+      <div class="info"><div class="name">${g.name}</div><div class="sub"></div><div class="bar"><i></i></div></div>
+      <div class="cost"></div><div class="owned">0</div>`;
+    el.onclick = () => {
+      const p = buyPlan(g);
+      if (S.light < p.cost) return;
+      S.light -= p.cost; S.gens[g.id] += p.n; render(true);
+    };
+    $('gens').appendChild(el);
+    genEls[g.id] = { el, sub:el.querySelector('.sub'), cost:el.querySelector('.cost'), owned:el.querySelector('.owned'), bar:el.querySelector('.bar i') };
+  });
+
+  UPGRADES.forEach(u => {
+    const el = document.createElement('div');
+    el.className = 'row';
+    el.innerHTML = `<div class="info"><div class="name">${u.name} <span style="color:var(--muted)">Lv <span class="lv">0</span></span></div><div class="sub">${u.desc}</div></div><div class="cost"></div>`;
+    el.onclick = () => {
+      if (S.ups[u.id] >= u.max) return;
+      const c = upCost(u);
+      if (S.light < c) return;
+      S.light -= c; S.ups[u.id]++; render(true);
+    };
+    $('upgrades').appendChild(el);
+    upEls[u.id] = { el, lv:el.querySelector('.lv'), cost:el.querySelector('.cost') };
+  });
+
+  $('buyMode').onclick = e => {
+    const b = e.target.closest('button'); if (!b) return;
+    buyMode = b.dataset.m;
+    [...$('buyMode').children].forEach(x => x.classList.toggle('on', x === b));
+    render(true);
+  };
+
+  // Prism click
+  const RAINBOW = ['#ff4d4d','#ff9f40','#ffe14d','#4ade80','#4dabff','#6b5bff','#c26bff'];
+  $('prism').addEventListener('pointerdown', e => {
+    const v = clickPower();
+    earn(v); S.clicks++;
+    const r = $('stage').getBoundingClientRect();
+    const f = document.createElement('div');
+    f.className = 'float';
+    f.textContent = '+' + fmt(v);
+    f.style.color = RAINBOW[S.clicks % 7];
+    f.style.left = (e.clientX - r.left - 20) + 'px';
+    f.style.top = (e.clientY - r.top - 20) + 'px';
+    $('stage').appendChild(f);
+    setTimeout(() => f.remove(), 1000);
+    const ray = document.createElement('div');
+    ray.className = 'ray';
+    ray.style.background = RAINBOW[S.clicks % 7];
+    ray.style.transform = `rotate(${Math.random() * 360}deg)`;
+    $('stage').appendChild(ray);
+    setTimeout(() => ray.remove(), 500);
+    render();
+  });
+
+  $('prestigeBtn').onclick = () => {
+    const gain = shardsOnReset();
+    if (gain < 1) return;
+    if (!confirm(`Bütün bilik, heyət və təkmilləşdirmələr sıfırlanacaq.\n+${gain} Diplom qazanacaqsan. Davam?`)) return;
+    const keep = { shards:S.shards + gain, prestiges:S.prestiges + 1, allTotal:S.allTotal, clicks:S.clicks, start:S.start };
+    S = Object.assign(fresh(), keep);
+    save(); render(true);
+  };
+
+  $('resetBtn').onclick = () => {
+    if (!confirm('Bütün irəliləyiş (diplomlar daxil) silinəcək. Əminsən?')) return;
+    S = fresh(); save(); render(true);
+  };
+
+  function showModal(title, text, big){
+    $('mTitle').textContent = title; $('mText').textContent = text; $('mBig').textContent = big;
+    $('modal').classList.add('show');
+  }
+  $('mOk').onclick = () => $('modal').classList.remove('show');
+
+  // ---------- Render ----------
+  let lastFull = 0;
+  function render(force){
+    $('light').textContent = fmt(S.light);
+    $('lps').textContent = fmt(lps());
+    $('clickVal').textContent = fmt(clickPower());
+    const now = performance.now();
+    if (!force && now - lastFull < 120) return;
+    lastFull = now;
+
+    GENS.forEach((g, i) => {
+      const e = genEls[g.id], n = S.gens[g.id];
+      // reveal one locked tier at a time
+      const visible = i === 0 || S.gens[GENS[i - 1].id] > 0 || n > 0;
+      e.el.style.display = visible ? '' : 'none';
+      const p = buyPlan(g);
+      e.el.classList.toggle('off', S.light < p.cost);
+      e.owned.textContent = n;
+      const nm = nextMilestone(n), prev = [...MILESTONES].reverse().find(m => n >= m) || 0;
+      e.sub.textContent = `${fmt(genRate(g))}/san` + (nm ? ` · ${nm}-də ×2` : '');
+      e.bar.style.width = nm ? ((n - prev) / (nm - prev) * 100) + '%' : '100%';
+      e.cost.innerHTML = `${fmt(p.cost)}<div class="sub">x${p.n}</div>`;
+    });
+
+    UPGRADES.forEach(u => {
+      const e = upEls[u.id], lv = S.ups[u.id], maxed = lv >= u.max;
+      e.lv.textContent = lv;
+      e.cost.textContent = maxed ? 'MAX' : fmt(upCost(u));
+      e.el.classList.toggle('off', maxed || S.light < upCost(u));
+    });
+
+    const gain = shardsOnReset();
+    $('shards').textContent = fmt(S.shards);
+    $('shardBonus').textContent = '+' + fmt(S.shards * 10) + '%';
+    $('prestigeBtn').disabled = gain < 1;
+    $('prestigeBtn').textContent = gain < 1
+      ? `${fmt(1e6)} bilik lazımdır (bu dövrdə: ${fmt(S.runTotal)})`
+      : `Məzun et: +${fmt(gain)} diplom`;
+
+    $('stats').innerHTML = `
+      Bu dövrdə qazanılan: <b>${fmt(S.runTotal)}</b><br>
+      Ümumi qazanılan: <b>${fmt(S.allTotal)}</b><br>
+      Klik sayı: <b>${fmt(S.clicks)}</b><br>
+      Məzuniyyət sayı: <b>${S.prestiges}</b><br>
+      Ümumi multiplikator: <b>×${fmt(globalMult())}</b><br>
+      Offline qazanc: <b>${Math.round(offlineRate() * 100)}%</b> (maks. ${OFFLINE_CAP_H} saat)<br>
+      Oyun vaxtı: <b>${fmtTime((Date.now() - S.start) / 1000)}</b>`;
+  }
+
+  // ---------- Save / Load ----------
+  function save(){
+    S.last = Date.now();
+    try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (e) {}
+  }
+  function load(){
+    let raw = null;
+    try { raw = localStorage.getItem(SAVE_KEY); } catch (e) {}
+    if (!raw) return;
+    try {
+      const d = JSON.parse(raw), f = fresh();
+      S = Object.assign(f, d, { gens:Object.assign(f.gens, d.gens), ups:Object.assign(f.ups, d.ups) });
+    } catch (e) {}
+  }
+
+  // award time spent away (closed tab or backgrounded)
+  function catchUp(){
+    const away = Math.min((Date.now() - S.last) / 1000, OFFLINE_CAP_H * 3600);
+    S.last = Date.now();
+    if (away < 10) return;
+    const gain = lps() * away * offlineRate();
+    if (gain <= 0) return;
+    earn(gain);
+    showModal('Xoş gəldin!', `Sən ${fmtTime(away)} yox idin. Universitetin işləməyə davam etdi:`, '+' + fmt(gain) + ' bilik');
+  }
+
+  // ---------- Loop ----------
+  let prev = performance.now();
+  function tick(now){
+    const dt = Math.min((now - prev) / 1000, 1);
+    prev = now;
+    earn(lps() * dt);
+    S.last = Date.now();
+    render();
+    requestAnimationFrame(tick);
+  }
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) save();
+    else { catchUp(); prev = performance.now(); render(true); }
+  });
+  window.addEventListener('beforeunload', save);
+  setInterval(save, 5000);
+
+  load();
+  catchUp();
+  render(true);
+  requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>
