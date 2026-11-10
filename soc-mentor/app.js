@@ -13,8 +13,11 @@
   // ---------- state ----------
   let S;
   try { S = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { S = {}; }
-  S.lessons = S.lessons || {}; S.quiz = S.quiz || {}; S.tasks = S.tasks || {}; S.exams = S.exams || {}; S.labs = S.labs || {};
+  S.lessons = S.lessons || {}; S.quiz = S.quiz || {}; S.tasks = S.tasks || {}; S.exams = S.exams || {}; S.labs = S.labs || {}; S.seen = S.seen || {};
   function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+  // prosedur generator (gen.js); yoxdursa boş qaytarır
+  const genFor = (id, n) => (D.gens && D.gens.generate) ? D.gens.generate(id, n) : [];
+  function qhash(s) { let h = 5381; s = String(s); for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) >>> 0; return "q" + h; }
 
   try { const t = localStorage.getItem(KEY + ".theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
 
@@ -96,7 +99,7 @@
     <div class="kv">
       <div class="stat"><b>${D.modules.length}</b>modul</div>
       <div class="stat"><b>${doneL}/${totalLessons}</b>dərs oxunub</div>
-      <div class="stat"><b>${totalQ}</b>sual</div>
+      <div class="stat"><b>200+</b>sual / bölmə</div>
       <div class="stat"><b>${doneT}/${totalT}</b>praktiki tapşırıq</div>
     </div>`;
     if (next) {
@@ -134,13 +137,21 @@
       <div class="bar"><span style="width:${pct(modProgress(m))}"></span></div>
       <div class="tabs">
         <button class="tab ${tab === "lessons" ? "active" : ""}" data-nav="mod:${id}:lessons">📘 Nəzəriyyə (${m.lessons.length})</button>
-        <button class="tab ${tab === "quiz" ? "active" : ""}" data-nav="mod:${id}:quiz">❓ Suallar (${m.quiz.length})${qs != null ? " · " + pct(qs) : ""}</button>
+        <button class="tab ${tab === "quiz" ? "active" : ""}" data-nav="mod:${id}:quiz">❓ Suallar (200+)${qs != null ? " · " + pct(qs) : ""}</button>
         <button class="tab ${tab === "tasks" ? "active" : ""}" data-nav="mod:${id}:tasks">🛠️ Praktika (${m.tasks.length})</button>
       </div><div id="tabbody"></div>`;
     main.innerHTML = h;
     const body = $("#tabbody");
     if (tab === "lessons") lessonsTab(m, body, sub);
-    else if (tab === "quiz") quizRun(body, m.quiz, r => { S.quiz[m.id] = Math.max(S.quiz[m.id] || 0, r); save(); renderSide(m.id); }, m);
+    else if (tab === "quiz") {
+      const getPool = () => m.quiz.concat(genFor(m.id, 160));
+      const note = document.createElement("p");
+      note.className = "muted"; note.style.fontSize = "13px";
+      note.innerHTML = "🔀 Hər testdə 20 sual təsadüfi seçilir və qismən avtomatik generasiya olunur — suallar demək olar təkrarlanmır. Keçid balı 80%.";
+      body.appendChild(note);
+      const qbody = document.createElement("div"); body.appendChild(qbody);
+      quizRun(qbody, getPool, r => { S.quiz[m.id] = Math.max(S.quiz[m.id] || 0, r); save(); renderSide(m.id); }, m, { limit: 20 });
+    }
     else tasksTab(m, body);
   }
 
@@ -163,8 +174,18 @@
 
   // ---------- quiz engine ----------
   function quizRun(body, pool, onDone, m, opts = {}) {
-    if (!pool.length) { body.innerHTML = "<p>Sual yoxdur.</p>"; return; }
-    const qs = shuffle(pool).slice(0, opts.limit || pool.length).map(q => {
+    const basePool = typeof pool === "function" ? pool() : pool;
+    if (!basePool.length) { body.innerHTML = "<p>Sual yoxdur.</p>"; return; }
+    const limit = Math.min(opts.limit || basePool.length, basePool.length);
+    // "ən az görülən sual əvvəl" — rotasiya ilə təkrarları azaldır
+    const chosen = basePool
+      .map(q => ({ q, c: S.seen[qhash(q.q)] || 0, r: Math.random() }))
+      .sort((a, b) => a.c - b.c || a.r - b.r)
+      .slice(0, limit)
+      .map(x => x.q);
+    chosen.forEach(q => { const h = qhash(q.q); S.seen[h] = (S.seen[h] || 0) + 1; });
+    save();
+    const qs = chosen.map(q => {
       const order = shuffle(q.o.map((_, k) => k));
       return { ...q, order };
     });
@@ -247,13 +268,13 @@
   // ---------- exam ----------
   function examView(lvl) {
     renderSide("exam:" + lvl);
-    const pool = mods(lvl).flatMap(m => m.quiz);
-    const n = Math.min(50, pool.length);
+    const n = 50;
+    const getPool = () => mods(lvl).flatMap(m => m.quiz.concat(genFor(m.id, 12)));
     main.innerHTML = `<span class="badge b-${lvl}">${lvl}</span><h1>${lvl} Yekun İmtahanı</h1>
       <p>Bütün ${lvl} modullarından təsadüfi seçilmiş <b>${n}</b> sual. Keçid balı <b>80%</b>. Ən yaxşı nəticən: <b>${S.exams[lvl] ? pct(S.exams[lvl]) : "—"}</b></p>
-      <p class="muted">Real müsahibəyə hazırlıq kimi düşün: tələsmə, hər sualı diqqətlə oxu. Hər dəfə suallar fərqli olacaq.</p>
+      <p class="muted">Real müsahibəyə hazırlıq kimi düşün: tələsmə, hər sualı diqqətlə oxu. Hər dəfə suallar fərqli olacaq (generativ + statik qarışıq).</p>
       <button class="btn" id="start">İmtahana başla</button><div id="exbody"></div>`;
-    $("#start").onclick = () => { $("#start").remove(); quizRun($("#exbody"), pool, r => { S.exams[lvl] = Math.max(S.exams[lvl] || 0, r); save(); renderSide("exam:" + lvl); }, null, { limit: n }); };
+    $("#start").onclick = () => { $("#start").remove(); quizRun($("#exbody"), getPool, r => { S.exams[lvl] = Math.max(S.exams[lvl] || 0, r); save(); renderSide("exam:" + lvl); }, null, { limit: n }); };
   }
 
   // ---------- extras ----------
@@ -299,7 +320,7 @@
   document.addEventListener("click", e => {
     const el = e.target.closest("[data-nav]"); if (!el) return;
     const r = el.dataset.nav;
-    if (r === "reset") { if (confirm("Bütün proqres silinsin?")) { S = { lessons: {}, quiz: {}, tasks: {}, exams: {}, labs: {} }; save(); home(); } return; }
+    if (r === "reset") { if (confirm("Bütün proqres silinsin?")) { S = { lessons: {}, quiz: {}, tasks: {}, exams: {}, labs: {}, seen: {} }; save(); home(); } return; }
     go(r);
   });
   $("#menuBtn").onclick = () => side.classList.toggle("open");
