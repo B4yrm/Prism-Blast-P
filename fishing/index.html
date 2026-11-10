@@ -553,7 +553,7 @@
     rods:0, hook:0, line:0, crew:0, bait:0, market:0, sonar:0, hold:0, sell:0, boat:0,
     holdN:0, holdV:0, run:0, fame:0, exped:0, bestStreak:0,
     mgr:{ speed:{ lvl:0, ready:0, until:0 }, price:{ lvl:0, ready:0, until:0 }, rare:{ lvl:0, ready:0, until:0 } },
-    turbo:{ until:0, ready:0 }, daily:{ last:'', streak:0 }, view:'sea',
+    turbo:{ until:0, ready:0 }, daily:{ last:'', streak:0 }, view:'complex',
     mk:{ open:false, tier:0, ads:0, stalls:0, sk:0, cash:0, ck:0, aqua:0, shelf:0, clean:0, served:0, angry:0, dirt:0, dishes:0, sat:[] },
     fx:{ open:false, truck:0, wash:0, cold:0, raw:{ n:0, v:0 }, clean:{ n:0, v:0 }, washed:0, packed:0,
       lines:{ whole:1, steak:0, fillet:0, frozen:0, smoked:0, canned:0 },
@@ -1056,7 +1056,180 @@
     text(bn ? '⚠️ ' + bn : `✅ Xətlər rəvan işləyir · hazır məhsul: ${fmt(fx.packed)}`, 200, 525, 11, bn ? '#ffb340' : '#7ff0a8', 800);
   }
 
-  const VIEWS = [['sea', '🌊', () => true], ['factory', '🏭', () => S.fx.open], ['market', '🏪', () => S.mk.open], ['rest', '🍽️', () => S.rs.open]];
+  const VIEWS = [['complex', '🗺️', () => true], ['sea', '🌊', () => true], ['factory', '🏭', () => S.fx.open], ['market', '🏪', () => S.mk.open], ['rest', '🍽️', () => S.rs.open]];
+
+  // ---------------- Isometric compound overview ----------------
+  // grid gx 0..11 (to the lower right), gy 0..15 (to the lower left); a steep 28x20 tile keeps it tall for a portrait screen
+  const IS = { tw:30, th:25, ox:246, oy:108 };
+  const iso = (gx, gy, z = 0) => ({ x:IS.ox + (gx - gy) * IS.tw / 2, y:IS.oy + (gx + gy) * IS.th / 2 - z });
+  function poly(pts, fill, stroke){ ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)); ctx.closePath(); if (fill){ ctx.fillStyle = fill; ctx.fill(); } if (stroke){ ctx.strokeStyle = stroke; ctx.lineWidth = 1; ctx.stroke(); } }
+  const tile = (gx, gy, w, d, z = 0) => [iso(gx, gy, z), iso(gx + w, gy, z), iso(gx + w, gy + d, z), iso(gx, gy + d, z)];
+  function cube(gx, gy, w, d, h, top, left, right){
+    poly([iso(gx, gy + d), iso(gx + w, gy + d), iso(gx + w, gy + d, h), iso(gx, gy + d, h)], left);
+    poly([iso(gx + w, gy), iso(gx + w, gy + d), iso(gx + w, gy + d, h), iso(gx + w, gy, h)], right);
+    poly(tile(gx, gy, w, d, h), top);
+  }
+  function figure(gx, gy, col, bob = 0, hat){
+    const p = iso(gx, gy);
+    ctx.fillStyle = '#0003'; ctx.beginPath(); ctx.ellipse(p.x, p.y, 4, 2, 0, 0, 7); ctx.fill();
+    ctx.fillStyle = col; rr(p.x - 3, p.y - 10 - bob, 6, 8, 2); ctx.fill();
+    ctx.fillStyle = '#f2c9a0'; ctx.beginPath(); ctx.arc(p.x, p.y - 13 - bob, 2.8, 0, 7); ctx.fill();
+    if (hat){ ctx.fillStyle = hat; ctx.fillRect(p.x - 3, p.y - 17 - bob, 6, 2.5); }
+  }
+  function tree(gx, gy, palm){
+    const p = iso(gx, gy);
+    ctx.fillStyle = '#0002'; ctx.beginPath(); ctx.ellipse(p.x, p.y, 9, 4, 0, 0, 7); ctx.fill();
+    if (palm){ ctx.strokeStyle = '#8a6a4a'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.quadraticCurveTo(p.x - 2, p.y - 14, p.x + 2, p.y - 26); ctx.stroke();
+      ctx.fillStyle = '#3f9a4a'; for (let a = 0; a < 6; a++){ ctx.beginPath(); ctx.ellipse(p.x + 2 + Math.cos(a) * 7, p.y - 26 + Math.sin(a) * 3, 9, 3, a, 0, 7); ctx.fill(); } }
+    else { ctx.fillStyle = '#6b4a2a'; ctx.fillRect(p.x - 1.5, p.y - 10, 3, 10); ctx.fillStyle = '#3f8f45'; ctx.beginPath(); ctx.arc(p.x, p.y - 16, 9, 0, 7); ctx.fill(); ctx.fillStyle = '#56a85a'; ctx.beginPath(); ctx.arc(p.x - 3, p.y - 19, 5, 0, 7); ctx.fill(); }
+  }
+  const BUILD = [
+    { id:'sea',     name:'Liman',    icon:'⚓', gx:1, gy:3, w:3, d:3, wall:'#b07a4a', floor:'#d9c39a', open:() => true },
+    { id:'factory', name:'Sex',      icon:'🏭', gx:5, gy:3, w:6, d:4, wall:'#7f8c99', floor:'#cfd6dc', open:() => S.fx.open, tab:'factory' },
+    { id:'market',  name:'Bazar',    icon:'🏪', gx:0, gy:9, w:4, d:5, wall:'#c0874e', floor:'#ead9b5', open:() => S.mk.open, tab:'market' },
+    { id:'rest',    name:'Restoran', icon:'🍽️', gx:6, gy:9, w:5, d:5, wall:'#8d4f3a', floor:'#a8744a', open:() => S.rs.open, tab:'rest' },
+  ];
+  function inPoly(pt, pts){ let c = false; for (let i = 0, j = pts.length - 1; i < pts.length; j = i++){ const a = pts[i], b = pts[j]; if ((a.y > pt.y) !== (b.y > pt.y) && pt.x < (b.x - a.x) * (pt.y - a.y) / (b.y - a.y) + a.x) c = !c; } return c; }
+  function complexHit(x, y){
+    for (const b of BUILD) if (inPoly({ x, y }, tile(b.gx - .3, b.gy - .3, b.w + .6, b.d + .6))) return b;
+    if (inPoly({ x, y }, tile(0, -2, 12, 4.6))) return BUILD[0];
+    return null;
+  }
+
+  function room(b, t, inner){
+    const h = 16, low = 5, open = b.open();
+    poly(tile(b.gx - .25, b.gy - .25, b.w + .5, b.d + .5), '#0000001f');
+    if (!open){
+      poly(tile(b.gx, b.gy, b.w, b.d), '#c9b48a');
+      ctx.setLineDash([4, 3]); poly(tile(b.gx, b.gy, b.w, b.d), null, '#7a6a4a'); ctx.setLineDash([]);
+      for (let i = 0; i < 3; i++) cube(b.gx + .6 + i * 1.2, b.gy + b.d - 1.2, .5, .5, 6 + i * 3, '#e7b54d', '#b08530', '#c99a3a');
+      ctx.strokeStyle = '#f2c94c'; ctx.lineWidth = 2; const c1 = iso(b.gx + b.w - .6, b.gy + .6); ctx.beginPath(); ctx.moveTo(c1.x, c1.y); ctx.lineTo(c1.x, c1.y - 40); ctx.lineTo(c1.x - 22, c1.y - 40); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(c1.x - 18, c1.y - 40); ctx.lineTo(c1.x - 18, c1.y - 30 + Math.sin(t / 400) * 3); ctx.stroke();
+      return;
+    }
+    const wallTop = '#f1ece2';
+    // back walls (upper-left and upper-right edges)
+    poly([iso(b.gx, b.gy), iso(b.gx + b.w, b.gy), iso(b.gx + b.w, b.gy, h), iso(b.gx, b.gy, h)], b.wall);
+    poly([iso(b.gx, b.gy), iso(b.gx, b.gy + b.d), iso(b.gx, b.gy + b.d, h), iso(b.gx, b.gy, h)], mix(b.wall, '#000000', .18));
+    poly(tile(b.gx, b.gy, b.w, b.d), b.floor);
+    ctx.strokeStyle = '#00000014'; ctx.lineWidth = 1;
+    for (let i = 1; i < b.w; i++){ const a = iso(b.gx + i, b.gy), c = iso(b.gx + i, b.gy + b.d); ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(c.x, c.y); ctx.stroke(); }
+    for (let j = 1; j < b.d; j++){ const a = iso(b.gx, b.gy + j), c = iso(b.gx + b.w, b.gy + j); ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(c.x, c.y); ctx.stroke(); }
+    poly([iso(b.gx, b.gy, h), iso(b.gx + b.w, b.gy, h), iso(b.gx + b.w + .08, b.gy - .08, h), iso(b.gx - .08, b.gy - .08, h)], wallTop);
+    poly([iso(b.gx, b.gy, h), iso(b.gx, b.gy + b.d, h), iso(b.gx - .08, b.gy + b.d + .08, h), iso(b.gx - .08, b.gy - .08, h)], wallTop);
+    inner();
+    // low front walls (cutaway)
+    poly([iso(b.gx, b.gy + b.d), iso(b.gx + b.w, b.gy + b.d), iso(b.gx + b.w, b.gy + b.d, low), iso(b.gx, b.gy + b.d, low)], mix(b.wall, '#ffffff', .15));
+    poly([iso(b.gx + b.w, b.gy), iso(b.gx + b.w, b.gy + b.d), iso(b.gx + b.w, b.gy + b.d, low), iso(b.gx + b.w, b.gy, low)], mix(b.wall, '#000000', .05));
+    // door gap on the front wall
+    const dm = iso(b.gx + b.w / 2, b.gy + b.d); ctx.fillStyle = b.floor; ctx.fillRect(dm.x - 7, dm.y - low - 1, 14, low + 2);
+  }
+  function plate(b, line2){
+    const c = iso(b.gx + b.w / 2, b.gy + b.d / 2, 36), open = b.open();
+    const label = `${b.icon} ${b.name}`;
+    ctx.font = '800 11px Inter, system-ui, sans-serif'; const w = Math.max(ctx.measureText(label).width, 50) + 16;
+    ctx.fillStyle = open ? '#08141fdd' : '#5b4636dd'; rr(c.x - w / 2, c.y - 12, w, line2 ? 30 : 18, 8); ctx.fill();
+    text(label, c.x, c.y - 3, 11, open ? '#ecf3fa' : '#ffe08a', 800);
+    if (line2) text(line2, c.x, c.y + 10, 9, open ? '#8ea7bf' : '#ffe08a', 700);
+  }
+
+  function drawComplex(t){
+    const sea = SEAS[S.sea], dark = isNight() ? .45 : 0;
+    // background grass with subtle tile checker
+    ctx.fillStyle = '#7fbf5a'; ctx.fillRect(-10, -10, W + 20, H + 20);
+    for (let gx = -2; gx < 14; gx++) for (let gy = -2; gy < 18; gy++) if ((gx + gy) % 2 === 0) poly(tile(gx, gy, 1, 1), '#78b754');
+    // sea strip with dock and boat
+    poly([iso(-3, -3), iso(14, -3), iso(14, 1.6), iso(-3, 1.6)], WATER[sea.region][0]);
+    for (let i = 0; i < 14; i++){ const p = iso(i - 1 + (t / 3000 % 1), .6 + (i % 3) * .3); ctx.strokeStyle = '#ffffff55'; ctx.beginPath(); ctx.ellipse(p.x, p.y, 6, 2, 0, 0, 7); ctx.stroke(); }
+    poly(tile(-3, 1.6, 17, .7), '#e8d39a');
+    for (let i = 0; i < 3; i++) cube(1.6 + i * .7, .4, .55, 1.4, 3, '#a7794a', '#7a5235', '#8a6040');
+    const bp = iso(3.9, .3), bob = Math.sin(t / 700) * 1.5;
+    ctx.save(); ctx.translate(bp.x, bp.y + bob);
+    ctx.fillStyle = BOATS[S.boat].hull; ctx.beginPath(); ctx.moveTo(-26, -6); ctx.lineTo(24, -16); ctx.lineTo(30, -10); ctx.lineTo(-18, 2); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#f4f1ea'; ctx.beginPath(); ctx.moveTo(-6, -12); ctx.lineTo(8, -15); ctx.lineTo(8, -24); ctx.lineTo(-6, -21); ctx.fill();
+    ctx.restore();
+    // fence around the yard
+    const fence = (a, b) => { const n = Math.ceil(Math.hypot(b[0] - a[0], b[1] - a[1]) * 2);
+      for (let i = 0; i <= n; i++){ const gx = a[0] + (b[0] - a[0]) * i / n, gy = a[1] + (b[1] - a[1]) * i / n, p = iso(gx, gy); ctx.fillStyle = '#d9d2c3'; ctx.fillRect(p.x - 1, p.y - 9, 2, 9); }
+      const p1 = iso(...a, 7), p2 = iso(...b, 7); ctx.strokeStyle = '#efe9dc'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke(); };
+    fence([-.5, 2.4], [-.5, 15.5]); fence([12, 2.4], [12, 15.5]);
+    // roads: dock -> plant (top), main road (middle), gate road (vertical)
+    poly(tile(0, 7.4, 12, 1.2), '#8b939b'); poly(tile(4.2, 2.4, 1.2, 13.4), '#8b939b');
+    ctx.strokeStyle = '#f2f2f2aa'; ctx.setLineDash([5, 6]); ctx.lineWidth = 1.2;
+    let a1 = iso(0, 8), a2 = iso(12, 8); ctx.beginPath(); ctx.moveTo(a1.x, a1.y); ctx.lineTo(a2.x, a2.y); ctx.stroke();
+    a1 = iso(4.8, 2.4); a2 = iso(4.8, 15.8); ctx.beginPath(); ctx.moveTo(a1.x, a1.y); ctx.lineTo(a2.x, a2.y); ctx.stroke(); ctx.setLineDash([]);
+    // courtyard with a fountain
+    const fp = iso(4.8, 8); ctx.fillStyle = '#d9d2c3'; ctx.beginPath(); ctx.ellipse(fp.x, fp.y, 16, 9, 0, 0, 7); ctx.fill();
+    ctx.fillStyle = '#7cc6f2'; ctx.beginPath(); ctx.ellipse(fp.x, fp.y, 11, 6, 0, 0, 7); ctx.fill();
+    ctx.fillStyle = '#ffffffaa'; for (let i = 0; i < 4; i++){ ctx.beginPath(); ctx.arc(fp.x + Math.cos(t / 300 + i * 1.6) * 5, fp.y - 4 - Math.abs(Math.sin(t / 250 + i)) * 6, 1.4, 0, 7); ctx.fill(); }
+
+    // buildings back to front
+    const order = BUILD.slice().sort((a, b) => (a.gx + a.gy) - (b.gx + b.gy));
+    for (const b of order){
+      room(b, t, () => {
+        if (b.id === 'sea'){
+          const n = Math.min(9, Math.ceil(S.holdN / Math.max(1, holdCap()) * 9));
+          for (let i = 0; i < n; i++) cube(b.gx + .4 + (i % 3) * .8, b.gy + .4 + Math.floor(i / 3) * .8, .6, .6, 7, '#c99a5b', '#8a6a4a', '#a8794a');
+          figure(b.gx + 2.4, b.gy + 2.3 + Math.sin(t / 900) * .3, '#2f6f9f', 0, '#e7b54d');
+        }
+        if (b.id === 'factory'){
+          const busy = S.fx.raw.n >= 1 || S.fx.clean.n >= 1;
+          for (let r = 0; r < 2; r++){
+            cube(b.gx + .6, b.gy + .8 + r * 1.7, 4.6, .45, 3, '#3c4a5a', '#2b3540', '#323e4a');
+            if (busy) for (let i = 0; i < 4; i++){ const gx = b.gx + .7 + ((t / 2500 + i / 4 + r * .13) % 1) * 4.3, p = iso(gx, b.gy + 1.02 + r * 1.7, 4); ctx.fillStyle = '#b8c7d6'; ctx.beginPath(); ctx.ellipse(p.x, p.y, 3.5, 1.6, -.4, 0, 7); ctx.fill(); }
+            cube(b.gx + 2.4, b.gy + .5 + r * 1.7, .9, 1, 10, '#aab4bd', '#7f8c99', '#94a0ab');
+          }
+          const lines = PRODUCTS.filter(p => S.fx.lines[p.id]).length;
+          for (let i = 0; i < Math.min(lines, 5); i++) cube(b.gx + 5.2, b.gy + .4 + i * .7, .5, .5, 6, ['#9fc3d9', '#e74c3c', '#f1d39a', '#d6f0ff', '#8a6a4a'][i], '#5c6670', '#6b7680');
+          for (let i = 0; i < 2 + Math.min(4, Math.floor(S.fx.wash / 5)); i++) figure(b.gx + 1 + i * .9, b.gy + 1.5 + (i % 2) * 1.7, '#7d55c7', busy ? Math.abs(Math.sin(t / 200 + i)) * 1.5 : 0, '#ffffff');
+        }
+        if (b.id === 'market'){
+          for (let i = 0; i < 1 + S.mk.stalls; i++) cube(b.gx + .4 + i * .9, b.gy + .4, .7, .7, 6, '#e6f4fb', '#8fb9cc', '#a8cfdf');
+          cube(b.gx + .4, b.gy + 3.6, 1.6, .6, 6, '#3c4a5a', '#2b3540', '#323e4a');
+          if (S.mk.shelf) cube(b.gx + 3, b.gy + 1.6, .6, 1.8, 9, '#d6f0ff', '#7cc6f2', '#9fd3ea');
+          const n = Math.min(10, mkC.length);
+          for (let i = 0; i < n; i++) figure(b.gx + .6 + ((i * .37 + t / 9000 * (1 + i % 3)) % 1) * 2.8, b.gy + 1.4 + ((i * .61 + t / 13000) % 1) * 2.2, MKCOLS[i % MKCOLS.length], Math.abs(Math.sin(t / 180 + i)) * 1.2);
+        }
+        if (b.id === 'rest'){
+          cube(b.gx + .3, b.gy + .3, 4.4, .7, 7, '#e8edf1', '#aab4bd', '#c2cbd2');
+          for (let i = 0; i < 1 + S.rs.chefs; i++){ figure(b.gx + .8 + i * 1.1, b.gy + 1.3, '#ffffff', Math.abs(Math.sin(t / 220 + i)) * 1.2, '#ffffff'); }
+          const nt = 2 + S.rs.tables;
+          for (let i = 0; i < nt; i++){ const tg = { x:b.gx + .9 + (i % 4) * 1.05, y:b.gy + 2.4 + Math.floor(i / 4) * 1.3 }, p = iso(tg.x, tg.y, 5);
+            cube(tg.x - .25, tg.y - .25, .5, .5, 5, '#f6efe2', '#c9b896', '#ddd0b4'); }
+          const eat = rsC.filter(c => c.state === 'eat' || c.state === 'food' || c.state === 'order').length;
+          for (let i = 0; i < Math.min(eat, nt); i++) figure(b.gx + .9 + (i % 4) * 1.05 + .35, b.gy + 2.4 + Math.floor(i / 4) * 1.3 + .35, MKCOLS[(i + 3) % MKCOLS.length]);
+          for (let i = 0; i < 1 + S.rs.waiters; i++) figure(b.gx + 1 + ((t / 6000 + i * .4) % 1) * 3.4, b.gy + 3.1 + Math.sin(t / 800 + i) * .3, '#1f2a24', 0);
+        }
+      });
+    }
+    // trucks shuttle dock -> plant when the plant runs
+    if (S.fx.open){
+      const ph = (truckT % 1), gx = ph < .5 ? 3 + ph * 2 * 4 : 7 - (ph - .5) * 2 * 4, p = iso(gx, 7.8);
+      ctx.save(); ctx.translate(p.x, p.y); if (ph >= .5) ctx.scale(-1, 1);
+      ctx.fillStyle = '#e7b54d'; ctx.beginPath(); ctx.moveTo(-12, -4); ctx.lineTo(6, -11); ctx.lineTo(6, -20); ctx.lineTo(-12, -13); ctx.fill();
+      ctx.fillStyle = '#2f6f9f'; ctx.beginPath(); ctx.moveTo(6, -11); ctx.lineTo(13, -14); ctx.lineTo(13, -20); ctx.lineTo(6, -18); ctx.fill();
+      ctx.fillStyle = '#222'; ctx.beginPath(); ctx.arc(-6, -4, 2.5, 0, 7); ctx.arc(8, -9, 2.5, 0, 7); ctx.fill(); ctx.restore();
+    }
+    // visitors walking from the gate
+    const walkers = (S.mk.open ? 4 : 0) + (S.rs.open ? 3 : 0);
+    for (let i = 0; i < walkers; i++){
+      const toRest = S.rs.open && (i % 2 || !S.mk.open), ph = (t / 14000 + i / walkers) % 1;
+      const gy = 15.6 - ph * 4.4, gx = 4.8 + (ph > .8 ? (toRest ? 1 : -1) * (ph - .8) * 6 : 0);
+      figure(gx, gy, MKCOLS[(i + 2) % MKCOLS.length], Math.abs(Math.sin(t / 160 + i)) * 1.2);
+    }
+    // trees and gate
+    [[-1.4, 3, 1], [-1.6, 6, 0], [-1.4, 15, 0], [12.8, 4, 1], [12.9, 8.5, 0], [12.7, 13, 1], [3.4, 15.3, 0], [7.3, 15.4, 0], [11, 1.9, 1], [-.8, 1.9, 1]].forEach(([gx, gy, palm]) => tree(gx, gy, palm));
+    cube(3.9, 15.6, .3, .3, 18, '#5b4636', '#3b2615', '#4a3524'); cube(5.5, 15.6, .3, .3, 18, '#5b4636', '#3b2615', '#4a3524');
+    const g1 = iso(4.05, 15.75, 18), g2 = iso(5.65, 15.75, 18); ctx.strokeStyle = '#e7b54d'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(g1.x, g1.y); ctx.lineTo(g2.x, g2.y); ctx.stroke();
+    // name plates
+    plate(BUILD[0], `📦 ${Math.floor(S.holdN)}/${holdCap()}`);
+    plate(BUILD[1], S.fx.open ? `${PRODUCTS.filter(p => S.fx.lines[p.id]).length} xətt · ${fmt(S.fx.packed)} məhsul` : `🔒 ${fmt(fxOpenCost())} ₼`);
+    plate(BUILD[2], S.mk.open ? `${'★'.repeat(Math.floor(mkStars()))} · ${mkC.length} müştəri` : `🔒 ${fmt(mkOpenCost())} ₼`);
+    plate(BUILD[3], S.rs.open ? `${'★'.repeat(Math.floor(rsStars()))} · ${rsC.length} qonaq` : S.fx.open ? `🔒 ${fmt(rsOpenCost())} ₼` : '🔒 əvvəlcə Sex');
+    if (dark){ ctx.fillStyle = `rgba(10,20,50,${dark})`; ctx.fillRect(-10, -10, W + 20, H + 20); }
+    ctx.fillStyle = '#08141fe0'; rr(60, 534, 280, 20, 10); ctx.fill();
+    text('Binaya toxun: içinə bax', 200, 544, 10, '#ecf3fa', 800);
+  }
 
   // ---------------- Fish market ----------------
   const mkCost = u => u.base * u.g ** S.mk[u.id] * mkScale();
@@ -1570,8 +1743,8 @@
     const sx = shake > 0 ? (Math.random() - .5) * 8 * shake : 0, sy = shake > 0 ? (Math.random() - .5) * 8 * shake : 0;
     const base = () => ctx.setTransform(scale, 0, 0, scale, sx * scale, sy * scale);
     base();
-    const curView = S.view === 'market' && S.mk.open ? 'market' : S.view === 'factory' && S.fx.open ? 'factory' : S.view === 'rest' && S.rs.open ? 'rest' : 'sea';
-    if (curView === 'market'){ drawMarket(t); } else if (curView === 'factory'){ drawFactory(t); } else if (curView === 'rest'){ drawRest(t); } else {
+    const curView = S.view === 'complex' ? 'complex' : S.view === 'market' && S.mk.open ? 'market' : S.view === 'factory' && S.fx.open ? 'factory' : S.view === 'rest' && S.rs.open ? 'rest' : 'sea';
+    if (curView === 'complex'){ drawComplex(t); } else if (curView === 'market'){ drawMarket(t); } else if (curView === 'factory'){ drawFactory(t); } else if (curView === 'rest'){ drawRest(t); } else {
 
     // sky
     const sky = ctx.createLinearGradient(0, 0, 0, SURF);
@@ -1758,9 +1931,9 @@
     // sea / market toggle
     const inMk = curView !== 'sea';
     VIEWS.forEach(([v, icon, open], i) => {
-      const x = 220 + i * 43;
-      ctx.fillStyle = curView === v ? '#e7b54d' : open() ? '#24405bee' : '#08141fcc'; rr(x, 62, 41, 18, 9); ctx.fill();
-      ctx.globalAlpha = open() ? 1 : .45; ctx.font = '12px system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(icon, x + 20.5, 72); ctx.globalAlpha = 1;
+      const x = 220 + i * 34.4;
+      ctx.fillStyle = curView === v ? '#e7b54d' : open() ? '#24405bee' : '#08141fcc'; rr(x, 62, 32.4, 18, 9); ctx.fill();
+      ctx.globalAlpha = open() ? 1 : .45; ctx.font = '11px system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(icon, x + 16.2, 72); ctx.globalAlpha = 1;
     });
     // ability buttons
     const now = Date.now();
@@ -1823,12 +1996,17 @@
     e.preventDefault(); audio();
     const [x, y] = toWorld(e);
     if (x > 220 && x < 393 && y > 60 && y < 82){
-      const [v, , open] = VIEWS[Math.min(3, Math.floor((x - 220) / 43))];
+      const [v, , open] = VIEWS[Math.min(4, Math.floor((x - 220) / 34.4))];
       if (!open()){ document.querySelector(`[data-tab=${v}]`).click(); return; }
       S.view = v; save(); return;
     }
     const ab = abilityButtons().find(b => Math.hypot(x - b.x, y - b.y) < 22);
     if (ab){ useAbility(ab.id); return; }
+    if (S.view === 'complex'){
+      const b = complexHit(x, y);
+      if (b){ if (b.open()){ S.view = b.id; save(); } else document.querySelector(`[data-tab=${b.tab}]`).click(); }
+      return;
+    }
     if (S.view !== 'sea' && VIEWS.find(x => x[0] === S.view)[2]()){
       if (y > 470 && y < 508 && x > 60 && x < 340 && lines.some(l => l.state === 'bite')){ S.view = 'sea'; }
       return;
