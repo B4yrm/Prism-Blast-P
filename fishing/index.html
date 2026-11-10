@@ -2683,6 +2683,7 @@
       S.found = d.found || {}; S.rec = d.rec || {}; S.ach = d.ach || {}; S.quests = d.quests || [];
       S.rares = d.rares || 0; S.newSpecies = d.newSpecies || 0;
       S.maxSea = Math.min(S.maxSea, SEAS.length - 1); S.sea = Math.min(S.sea, S.maxSea);
+      S.view = 'complex';   // every launch opens on the compound overview
       if (d.boat === undefined){
         let b = boatFor(S.maxSea);
         while (b < BOATS.length - 1 && BOATS[b].rods < S.rods + 1) b++;
