@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Balıqçı Idle</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Inter:wght@400;600;700&display=swap">
+<style>
+  /* Layout: sea view (canvas) left, captain's log panel right; stacked on phones.
+     Single committed look: deep navy chart-room with brass accents. */
+  :root{
+    color-scheme: dark;
+    --bg:#0b1a2b; --card:#11253b; --card2:#16304c; --line:#24476b; --ink:#e8f1fa; --muted:#93acc4;
+    --brass:#e2b04a; --brass-ink:#1b1405; --off:#2a4560; --sea:#2b8fd6;
+    --r0:#b8c7d6; --r1:#5fd38d; --r2:#4aa8ff; --r3:#b77bff; --r4:#ffb340; --r5:#ff5e7a;
+    --display:'Baloo 2', 'Trebuchet MS', system-ui, sans-serif;
+    --body:'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body{ margin:0; }
+  body{ background:var(--bg); color:var(--ink); font-family:var(--body); font-size:14px; }
+  .wrap{
+    max-width:1080px; margin:0 auto; padding-block:16px;
+    padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px));
+    display:grid; gap:16px; grid-template-columns:minmax(0, auto) minmax(0, 1fr); align-items:start;
+  }
+  @media (max-width:820px){ .wrap{ grid-template-columns:minmax(0,1fr); } }
+  .view{ width:min(100%, calc(62vh * 0.714)); aspect-ratio:400/560; margin:0 auto; border-radius:18px; overflow:hidden; box-shadow:0 8px 30px #0008; max-width:100%; }
+  @media (min-width:821px){ .view{ width:calc(84vh * 0.714); max-width:460px; position:sticky; top:16px; } }
+  canvas{ width:100%; height:100%; display:block; }
+  .side{ display:flex; flex-direction:column; gap:12px; min-width:0; }
+  .top{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; justify-content:space-between; }
+  h1{ font-family:var(--display); font-weight:800; font-size:28px; margin:0; color:var(--brass); line-height:1; }
+  .money{ font-family:var(--display); font-size:32px; font-weight:800; color:var(--brass); font-variant-numeric:tabular-nums; text-align:right; line-height:1.1; }
+  .rate{ color:var(--muted); font-variant-numeric:tabular-nums; text-align:right; font-size:13px; }
+  .card{ background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px; display:flex; flex-direction:column; gap:10px; }
+  .card h2{ margin:0; font-family:var(--display); font-weight:700; font-size:19px; display:flex; align-items:center; gap:8px; line-height:1.2; }
+  .card h2 .tag{ margin-left:auto; font-family:var(--body); font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; white-space:nowrap; }
+  .hint{ color:var(--muted); font-size:13px; line-height:1.5; margin:0; }
+  .bar{ height:8px; background:var(--off); border-radius:4px; overflow:hidden; }
+  .bar i{ display:block; height:100%; background:var(--sea); transition:width .3s; }
+  .btns{ display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:8px; }
+  button.act{
+    font:inherit; border:0; border-radius:10px; padding:10px 12px; cursor:pointer; text-align:left;
+    background:var(--brass); color:var(--brass-ink); display:flex; flex-direction:column; gap:2px;
+  }
+  button.act b{ font-size:14px; }
+  button.act small{ font-variant-numeric:tabular-nums; opacity:.85; }
+  button.act:disabled{ background:var(--off); color:var(--muted); cursor:default; }
+  button:focus-visible, select:focus-visible{ outline:3px solid var(--sea); outline-offset:2px; }
+  select{ font:inherit; background:var(--card2); color:var(--ink); border:1px solid var(--line); border-radius:10px; padding:9px 10px; width:100%; }
+  .fish{ display:grid; grid-template-columns:auto 1fr auto; gap:4px 10px; align-items:center; font-size:13px; }
+  .fish .dot{ width:10px; height:10px; border-radius:50%; }
+  .fish .nm{ min-width:0; }
+  .fish .nm small{ display:block; font-size:11px; color:var(--muted); }
+  .fish .val{ text-align:right; font-variant-numeric:tabular-nums; font-weight:700; }
+  .unknown{ color:var(--muted); font-style:italic; }
+  .stats{ display:grid; grid-template-columns:1fr auto; gap:4px 12px; font-size:13px; }
+  .stats span:nth-child(odd){ color:var(--muted); }
+  .stats span:nth-child(even){ font-weight:700; text-align:right; font-variant-numeric:tabular-nums; }
+  .small{ font:inherit; font-size:12px; background:none; border:1px solid var(--line); color:var(--muted); border-radius:8px; padding:6px 10px; cursor:pointer; align-self:flex-start; }
+  .modal{ position:fixed; inset:0; background:#000a; display:none; align-items:center; justify-content:center; padding:16px; z-index:10; }
+  .modal.show{ display:flex; }
+  .box{ background:var(--card); border:1px solid var(--brass); border-radius:16px; padding:22px; max-width:340px; width:100%; text-align:center; display:flex; flex-direction:column; gap:10px; }
+  .box h3{ margin:0; font-family:var(--display); font-size:24px; }
+  .box .big{ font-family:var(--display); font-size:30px; font-weight:800; color:var(--brass); }
+  .box .big:empty{ display:none; }
+  .box .row{ display:flex; gap:8px; }
+  .box .row button{ flex:1; text-align:center; align-items:center; }
+  .box .row button.no{ background:var(--off); color:var(--ink); }
+  [hidden]{ display:none !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="view"><canvas id="cv" aria-label="Dəniz və balıqçı qayığı"></canvas></div>
+
+  <div class="side">
+    <div class="top">
+      <h1>Balıqçı Idle</h1>
+      <div>
+        <div class="money" id="money">0 ₼</div>
+        <div class="rate"><span id="rate">0</span> ₼/san · 🐟 <span id="found">0</span> növ</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 id="seaName"></h2>
+      <p class="hint" id="seaInfo"></p>
+      <div class="bar"><i id="seaBar"></i></div>
+      <div class="btns"><button class="act" data-act="next" id="nextBtn"><b id="nextTitle"></b><small id="nextSub"></small></button></div>
+      <label class="hint" for="seaSel">Açılmış dənizlər arasında keç:</label>
+      <select id="seaSel"></select>
+    </div>
+
+    <div class="card">
+      <h2>🎣 Bu dənizin balıqları <span class="tag" id="seaFound"></span></h2>
+      <div class="fish" id="fishList"></div>
+      <p class="hint">Hər yeni növ bütün qazancı daimi <b>+3%</b> artırır. Yem nadir balıq şansını artırır.</p>
+    </div>
+
+    <div class="card">
+      <h2>⚓ Avadanlıq</h2>
+      <div class="btns">
+        <button class="act" data-act="rod" id="rodBtn"><b>Tilov əlavə et</b><small id="rodSub"></small></button>
+        <button class="act" data-act="hook" id="hookBtn"><b>Qarmaq</b><small id="hookSub"></small></button>
+        <button class="act" data-act="bait" id="baitBtn"><b>Yem</b><small id="baitSub"></small></button>
+        <button class="act" data-act="market" id="marketBtn"><b>Balıq bazarı</b><small id="marketSub"></small></button>
+      </div>
+      <div class="stats" id="gear"></div>
+    </div>
+
+    <div class="card">
+      <h2>📒 Kapitan jurnalı</h2>
+      <div class="stats" id="log"></div>
+      <button class="small" data-act="wipe">Bütün irəliləyişi sil</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="modal"><div class="box">
+  <h3 id="mTitle"></h3>
+  <div class="hint" id="mText"></div>
+  <div class="big" id="mBig"></div>
+  <div class="row"><button class="act no" id="mNo">Ləğv et</button><button class="act" id="mOk">Davam et</button></div>
+</div></div>
+
+<script>
+(() => {
+  // ---------------- Seas (each one is a level) ----------------
+  // Fish are listed from most common to rarest. Region sets the water colour.
+  const SEAS = [
+    ['Xəzər dənizi',        'Daxili dəniz',  'mild',   'Kilkə|Kütüm|Xəzər siyənəyi|Çəki|Nərə balığı|Bölgə (Beluqa)'],
+    ['Azov dənizi',         'Atlantik hövzəsi', 'mild', 'Tulka|Çapaq|Sıf|Pilenqas|Uzunburun nərə'],
+    ['Qara dəniz',          'Atlantik hövzəsi', 'mild', 'Hamsi|Stavrida|Kefal|Skumbriya|Kalkan|Qara dəniz qızılbalığı'],
+    ['Mərmərə dənizi',      'Atlantik hövzəsi', 'mild', 'Sardina|Lüfer|Palamut|Barbun|Levrek'],
+    ['Egey dənizi',         'Aralıq dənizi', 'warm',   'Sardina|Çipura|Levrek|Qırmızı barbun|Rofos (qrupper)'],
+    ['İon dənizi',          'Aralıq dənizi', 'warm',   'Ançous|Boqa|Sinaqrid|Dəniz çapağı|Qılınc balığı'],
+    ['Adriatik dənizi',     'Aralıq dənizi', 'warm',   'Sardina|Dil balığı|Skorpena|Dəniz şeytanı|Mavi üzgəcli tuna'],
+    ['Tirren dənizi',       'Aralıq dənizi', 'warm',   'Ançous|Dorado|Amberjek|Qılınc balığı|Mavi üzgəcli tuna'],
+    ['Liquriya dənizi',     'Aralıq dənizi', 'warm',   'Sardina|Merluza|Dəniz çapağı|Ay balığı|Üzgəcli balina köpəkbalığı'],
+    ['Alboran dənizi',      'Aralıq dənizi', 'warm',   'Stavrida|Skumbriya|Qırmızı çapaq|Qılınc balığı|Mavi köpəkbalığı'],
+    ['Aralıq dənizi',       'Atlantik hövzəsi', 'warm', 'Sardina|Barbun|Çipura|Qrupper|Qılınc balığı|Mavi üzgəcli tuna'],
+    ['Baltik dənizi',       'Atlantik hövzəsi', 'cold', 'Baltik kilkəsi|Salaka (Baltik siyənəyi)|Kambala|Treska|Baltik qızılbalığı'],
+    ['Şimal dənizi',        'Atlantik okeanı', 'cold',  'Siyənək|Pikşa|Kambala|Dil balığı|Atlantik treskası'],
+    ['İrlandiya dənizi',    'Atlantik okeanı', 'cold',  'Merlanq|Skumbriya|Kambala|Dəniz levreki|Nəhəng köpəkbalığı'],
+    ['Kelt dənizi',         'Atlantik okeanı', 'cold',  'Skumbriya|Merluza|Dəniz şeytanı|Turbo|Mavi köpəkbalığı'],
+    ['Norveç dənizi',       'Atlantik okeanı', 'cold',  'Norveç siyənəyi|Saida|Skumbriya|Atlantik qızılbalığı|Atlantik paltusu'],
+    ['Labrador dənizi',     'Atlantik okeanı', 'arctic','Kapelin|Treska|Qırmızı levrek|Qrenlandiya paltusu|Atlantik qızılbalığı'],
+    ['Sarqasso dənizi',     'Atlantik okeanı', 'tropic','Uçan balıq|Sarqasso balığı|Dorado|Avropa ilanbalığı|Mavi marlin'],
+    ['Karib dənizi',        'Atlantik okeanı', 'tropic','Tutuquşu balığı|Qırmızı snapper|Barrakuda|Tarpon|Ağ marlin'],
+    ['Atlantik okeanı',     'Okean',         'ocean',  'Skumbriya|Atlantik treskası|Qılınc balığı|Ay balığı|Mavi üzgəcli tuna|Mavi marlin'],
+    ['Qırmızı dəniz',       'Hind okeanı',   'tropic', 'Kəpənək balığı|Klounbalığı|Şir balığı|Napoleon balığı|Ağ üzgəcli köpəkbalığı'],
+    ['Ərəb dənizi',         'Hind okeanı',   'tropic', 'Hind sardinası|Hind skumbriyası|Kral balığı|Sarıüzgəc tuna|Yelkənli balıq'],
+    ['Lakkadiv dənizi',     'Hind okeanı',   'tropic', 'Skipcek tuna|Dorado|Qırmızı snapper|Sarıüzgəc tuna|Balina köpəkbalığı'],
+    ['Andaman dənizi',      'Hind okeanı',   'tropic', 'Skad|Qrupper|Barrakuda|Manta skatı|Yelkənli balıq'],
+    ['Timor dənizi',        'Hind okeanı',   'tropic', 'Barramundi|Qırmızı emperor|Mərcan alabalığı|Narıncı qrupper|Pələng köpəkbalığı'],
+    ['Hind okeanı',         'Okean',         'ocean',  'Skipcek tuna|Sarıüzgəc tuna|Dorado|Yelkənli balıq|Balina köpəkbalığı|Latimeriya'],
+    ['Cənubi Çin dənizi',   'Sakit okean',   'tropic', 'Skad|Qırmızı snapper|Qrupper|Napoleon balığı|Çəkic köpəkbalığı'],
+    ['Şərqi Çin dənizi',    'Sakit okean',   'warm',   'Qayış balığı|Gümüş pomfret|Sarı xırıltı balığı|İspan skumbriyası|Fuqu (kirpi balığı)'],
+    ['Sarı dəniz',          'Sakit okean',   'mild',   'Ançous|Sarı xırıltı balığı|Qayış balığı|Kambala|Dəniz ilanbalığı'],
+    ['Yapon dənizi',        'Sakit okean',   'mild',   'Sayra|Yapon skumbriyası|Sarıquyruq (Buri)|Fuqu (kirpi balığı)|Mavi üzgəcli tuna'],
+    ['Oxot dənizi',         'Sakit okean',   'cold',   'Mintay|Sakit okean siyənəyi|Keta|Nerka|Kamçatka paltusu'],
+    ['Berinq dənizi',       'Sakit okean',   'arctic', 'Mintay|Sakit okean treskası|Kambala|Sakit okean paltusu|Kral qızılbalığı'],
+    ['Filippin dənizi',     'Sakit okean',   'tropic', 'Uçan balıq|Skipcek tuna|Dorado|Qılınc balığı|Ay balığı'],
+    ['Yava dənizi',         'Sakit okean',   'tropic', 'Sardina|Skad|Hind skumbriyası|Qırmızı snapper|Barramundi'],
+    ['Sulu dənizi',         'Sakit okean',   'tropic', 'Kəpənək balığı|Klounbalığı|Mavi cərrah balığı|Qrupper|Balina köpəkbalığı'],
+    ['Sulavesi dənizi',     'Sakit okean',   'tropic', 'Qırmızı snapper|Barrakuda|Sarıüzgəc tuna|Manta skatı|İndoneziya latimeriyası'],
+    ['Banda dənizi',        'Sakit okean',   'tropic', 'Skad|Skipcek tuna|Sarıüzgəc tuna|Çəkic köpəkbalığı|Mavi marlin'],
+    ['Arafura dənizi',      'Sakit okean',   'tropic', 'Barramundi|Qırmızı emperor|Qızıl snapper|Pələng köpəkbalığı|Mişar balığı'],
+    ['Mərcan dənizi',       'Sakit okean',   'tropic', 'Klounbalığı|Mavi cərrah balığı|Mərcan alabalığı|Kartof qrupperi|Qara marlin'],
+    ['Tasman dənizi',       'Sakit okean',   'mild',   'Snapper|Sarıquyruq kingfiş|Mavi treska|Mako köpəkbalığı|Zolaqlı marlin'],
+    ['Sakit okean',         'Okean',         'ocean',  'Albakor tuna|Dorado|Qılınc balığı|Ay balığı|Böyük ağ köpəkbalığı|Qara marlin'],
+    ['Ağ dəniz',            'Şimal Buzlu okeanı', 'arctic', 'Navaqa|Ağ dəniz siyənəyi|Treska|Kambala|Semqa (qızılbalıq)'],
+    ['Barents dənizi',      'Şimal Buzlu okeanı', 'arctic', 'Moyva (kapelin)|Pikşa|Treska|Dəniz pişikbalığı|Atlantik paltusu'],
+    ['Kara dənizi',         'Şimal Buzlu okeanı', 'arctic', 'Omul|Ryapuşka|Muksun|Nelma|Sibir nərəsi'],
+    ['Laptevlər dənizi',    'Şimal Buzlu okeanı', 'arctic', 'Qütb treskası|Omul|Çir|Nelma|Sibir nərəsi'],
+    ['Şərqi Sibir dənizi',  'Şimal Buzlu okeanı', 'arctic', 'Qütb treskası|Navaqa|Omul|Muksun|Arktik qızılbalığı (çar)'],
+    ['Çukot dənizi',        'Şimal Buzlu okeanı', 'arctic', 'Qütb treskası|Navaqa|Kambala|Dolli Varden|Arktik qızılbalığı (çar)'],
+    ['Bofort dənizi',       'Şimal Buzlu okeanı', 'arctic', 'Qütb treskası|Arktik siskosu|Dörd buynuzlu skulpin|Arktik qızılbalığı (çar)|Qrenlandiya köpəkbalığı'],
+    ['Qrenlandiya dənizi',  'Şimal Buzlu okeanı', 'arctic', 'Kapelin|Qütb treskası|Qırmızı levrek|Qrenlandiya paltusu|Qrenlandiya köpəkbalığı'],
+    ['Şimal Buzlu okeanı',  'Okean',         'arctic', 'Kapelin|Qütb treskası|Arktik qızılbalığı (çar)|Qrenlandiya paltusu|Qrenlandiya köpəkbalığı|Buz dişli balığı'],
+    ['Skotiya dənizi',      'Cənub okeanı',  'antarctic', 'Antarktika gümüş balığı|Skumbriya buz balığı|Mərmər nototeniyası|Patagoniya diş balığı'],
+    ['Ueddell dənizi',      'Cənub okeanı',  'antarctic', 'Antarktika gümüş balığı|Zümrüd nototeniya|Buz balığı|Antarktika diş balığı'],
+    ['Ross dənizi',         'Cənub okeanı',  'antarctic', 'Antarktika gümüş balığı|Buz balığı|Zümrüd nototeniya|Nəhəng Antarktika diş balığı'],
+    ['Cənub okeanı',        'Okean',         'antarctic', 'Antarktika gümüş balığı|Buz balığı|Patagoniya diş balığı|Antarktika diş balığı|Cənub köpəkbalığı (porbiql)'],
+  ].map(([name, ocean, region, fish], i) => ({ name, ocean, region, fish:fish.split('|'), i }));
+
+  const RAR = [
+    { name:'Adi',       color:'#b8c7d6' },
+    { name:'Qeyri-adi', color:'#5fd38d' },
+    { name:'Nadir',     color:'#4aa8ff' },
+    { name:'Epik',      color:'#b77bff' },
+    { name:'Əfsanəvi',  color:'#ffb340' },
+    { name:'Mifik',     color:'#ff5e7a' },
+  ];
+  const WATER = {
+    mild:      ['#2f7fb8', '#123a5e'],
+    warm:      ['#2a9fd0', '#0f3f66'],
+    cold:      ['#3b6f91', '#122d44'],
+    tropic:    ['#22c1c9', '#0c4a6e'],
+    ocean:     ['#1f5fa8', '#06203d'],
+    arctic:    ['#6f9fb8', '#1a3348'],
+    antarctic: ['#7fb2c9', '#173247'],
+  };
+
+  const NEED = 20;            // catches in a sea before the next one can be unlocked
+  const MAX_RODS = 8, MAX_HOOK = 20, MAX_BAIT = 25;
+  const OFFLINE_H = 8, OFFLINE_RATE = 0.5;
+  const SAVE_KEY = 'fishIdle.v1';
+  const W = 400, H = 560, SURF = 150;
+
+  const fresh = () => ({
+    money:0, total:0, caught:0, best:'', rods:1, hook:0, bait:0, market:0,
+    sea:0, maxSea:0, catches:SEAS.map(() => 0), found:{}, rate:0, last:Date.now(),
+  });
+  let S = fresh();
+
+  // ---------------- Economy ----------------
+  const seaBase  = i => 2 * 1.55 ** i;
+  const weights  = sea => sea.fish.map((f, k) => 60 * 0.42 ** k * (k ? 1.12 ** S.bait : 1));
+  const foundN   = () => Object.keys(S.found).length;
+  const totalSpecies = SEAS.reduce((a, s) => a + s.fish.length, 0);
+  const valueMult = () => 1.25 ** S.market * (1 + 0.03 * foundN());
+  const fishValue = (sea, k) => seaBase(sea.i) * 3.2 ** k * valueMult();
+  const ticket   = i => 120 * 1.55 ** i;
+  const rodCost  = () => 40 * 6 ** (S.rods - 1);
+  const hookCost = () => 30 * 2.2 ** S.hook;
+  const baitCost = () => 60 * 2.4 ** S.bait;
+  const marketCost = () => 100 * 2 ** S.market;
+  const biteTime = () => 3.5 * 0.88 ** S.hook;
+
+  const SUF = ['', 'K', 'M', 'B', 'T', 'Qa', 'Qi', 'Sx', 'Sp', 'Oc'];
+  function fmt(n){
+    if (!isFinite(n)) return '∞';
+    if (n < 1000) return n < 10 && n % 1 ? n.toFixed(1) : Math.floor(n).toString();
+    const e = Math.floor(Math.log10(n) / 3);
+    return e < SUF.length ? (n / 10 ** (e * 3)).toFixed(2) + SUF[e] : n.toExponential(2).replace('+', '');
+  }
+  const fmtTime = s => { s = Math.floor(s); const h = s / 3600 | 0, m = s % 3600 / 60 | 0;
+    return h ? `${h} saat ${m} dəq` : m ? `${m} dəq ${s % 60} san` : `${s} san`; };
+  const pct = x => x >= 10 ? x.toFixed(0) + '%' : x >= 1 ? x.toFixed(1) + '%' : x.toFixed(2) + '%';
+
+  function rollFish(sea){
+    const w = weights(sea), sum = w.reduce((a, b) => a + b, 0);
+    let r = Math.random() * sum;
+    for (let k = 0; k < w.length; k++){ r -= w[k]; if (r <= 0) return k; }
+    return 0;
+  }
+
+  // stable colour per species
+  function fishColor(name){
+    let h = 0; for (const c of name) h = (h * 31 + c.charCodeAt(0)) % 360;
+    return `hsl(${h} 55% 62%)`;
+  }
+
+  // ---------------- Simulation ----------------
+  let log = [], lines = [], swimmers = [], floats = [], banner = null;
+  const rodX = k => 200 + (k - (S.rods - 1) / 2) * Math.min(30, 200 / Math.max(1, S.rods));
+
+  function newLine(k){ return { k, y:SURF, depth:230 + Math.random() * 280, state:'sink', t:0, fish:-1 }; }
+  function syncLines(){ while (lines.length < S.rods) lines.push(newLine(lines.length)); }
+  function resetSea(){
+    lines = []; syncLines();
+    const sea = SEAS[S.sea];
+    swimmers = Array.from({ length:9 }, () => {
+      const k = rollFish(sea), dir = Math.random() < .5 ? 1 : -1;
+      return { k, x:Math.random() * W, y:200 + Math.random() * 330, v:(14 + Math.random() * 22) * dir, ph:Math.random() * 6 };
+    });
+  }
+
+  function earn(x){ S.money += x; S.total += x; log.push([performance.now(), x]); }
+
+  function land(line){
+    const sea = SEAS[S.sea], k = line.fish, name = sea.fish[k], v = fishValue(sea, k);
+    earn(v); S.caught++; S.catches[S.sea]++;
+    const id = S.sea + ':' + k;
+    const isNew = !S.found[id];
+    if (isNew) S.found[id] = 1;
+    floats.push({ x:rodX(line.k), y:SURF - 26, text:'+' + fmt(v) + ' ₼', life:1.2, color:'#ffe08a' });
+    if (k >= 2 || isNew){
+      banner = { text:(isNew ? 'YENİ NÖV: ' : RAR[k].name.toUpperCase() + ': ') + name, color:RAR[k].color, life:2.6 };
+      if (k >= 3) S.best = name;
+      fishListDirty = true;
+    }
+  }
+
+  function step(dt){
+    syncLines();
+    const sea = SEAS[S.sea];
+    for (const L of lines){
+      if (L.state === 'sink'){ L.y += 140 * dt; if (L.y >= L.depth){ L.y = L.depth; L.state = 'wait'; L.t = biteTime() * (0.6 + Math.random() * 0.8); } }
+      else if (L.state === 'wait'){ L.t -= dt; if (L.t <= 0){ L.fish = rollFish(sea); L.state = 'reel'; } }
+      else if (L.state === 'reel'){ L.y -= 170 * dt; if (L.y <= SURF){ land(L); Object.assign(L, newLine(L.k)); } }
+    }
+    for (const f of swimmers){
+      f.x += f.v * dt; f.ph += dt * 6;
+      if (f.x < -40 || f.x > W + 40){ f.v = -f.v; f.k = rollFish(sea); f.y = 200 + Math.random() * 330; }
+    }
+    floats.forEach(f => { f.life -= dt; f.y -= 24 * dt; });
+    floats = floats.filter(f => f.life > 0);
+    if (banner){ banner.life -= dt; if (banner.life <= 0) banner = null; }
+  }
+
+  // ---------------- Drawing ----------------
+  const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+  let scale = 1;
+  function resize(){
+    const r = cv.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+    cv.width = Math.max(1, Math.round(r.width * dpr)); cv.height = Math.max(1, Math.round(r.height * dpr));
+    scale = cv.width / W;
+  }
+  new ResizeObserver(resize).observe(cv);
+
+  function text(t, x, y, size, color, weight = 700, align = 'center', font = 'Inter'){
+    ctx.font = `${weight} ${size}px ${font}, system-ui, sans-serif`; ctx.fillStyle = color;
+    ctx.textAlign = align; ctx.textBaseline = 'middle'; ctx.fillText(t, x, y);
+  }
+
+  function drawFish(x, y, k, name, dir, wig, hooked){
+    const s = 0.8 + k * 0.22, col = fishColor(name);
+    ctx.save(); ctx.translate(x, y);
+    if (hooked) ctx.rotate(-Math.PI / 2 + Math.sin(wig) * 0.25);
+    else ctx.scale(dir, 1);
+    ctx.scale(s, s);
+    ctx.fillStyle = col;
+    ctx.beginPath(); ctx.moveTo(-12, 0); ctx.lineTo(-20, -7 + Math.sin(wig) * 2); ctx.lineTo(-20, 7 + Math.sin(wig) * 2); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(0, 0, 14, 7, 0, 0, 7); ctx.fill();
+    ctx.fillStyle = '#0006'; ctx.beginPath(); ctx.arc(8, -2, 1.6, 0, 7); ctx.fill();
+    if (k >= 2){ ctx.strokeStyle = RAR[k].color; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.ellipse(0, 0, 15, 8, 0, 0, 7); ctx.stroke(); }
+    ctx.restore();
+  }
+
+  function draw(t){
+    const sea = SEAS[S.sea], [w1, w2] = WATER[sea.region];
+    ctx.setTransform(scale, 0, 0, scale, 0, 0);
+    // sky
+    const sky = ctx.createLinearGradient(0, 0, 0, SURF);
+    const cold = sea.region === 'arctic' || sea.region === 'antarctic';
+    sky.addColorStop(0, cold ? '#9fc3d9' : '#7cc6f2'); sky.addColorStop(1, cold ? '#dbe9f1' : '#cfeeff');
+    ctx.fillStyle = sky; ctx.fillRect(0, 0, W, SURF);
+    ctx.fillStyle = cold ? '#f4f8fb' : '#fff3c4'; ctx.beginPath(); ctx.arc(330, 48, 20, 0, 7); ctx.fill();
+    if (cold){ ctx.fillStyle = '#f2f7fa'; [[40, 138, 50], [300, 140, 70]].forEach(([x, y, w]) => { ctx.beginPath(); ctx.moveTo(x, y + 12); ctx.lineTo(x + 10, y - 6); ctx.lineTo(x + w - 12, y - 4); ctx.lineTo(x + w, y + 12); ctx.fill(); }); }
+    // water
+    const wg = ctx.createLinearGradient(0, SURF, 0, H);
+    wg.addColorStop(0, w1); wg.addColorStop(1, w2);
+    ctx.fillStyle = wg; ctx.beginPath(); ctx.moveTo(0, SURF);
+    for (let x = 0; x <= W; x += 10) ctx.lineTo(x, SURF + Math.sin(x / 30 + t / 600) * 3);
+    ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.fill();
+    // light rays
+    ctx.fillStyle = '#ffffff0d';
+    for (let r = 0; r < 4; r++){ const x = 60 + r * 95 + Math.sin(t / 2000 + r) * 15; ctx.beginPath(); ctx.moveTo(x, SURF); ctx.lineTo(x + 30, SURF); ctx.lineTo(x - 30, H); ctx.lineTo(x - 70, H); ctx.fill(); }
+    // seabed
+    ctx.fillStyle = '#00000033'; ctx.beginPath(); ctx.moveTo(0, H);
+    for (let x = 0; x <= W; x += 20) ctx.lineTo(x, H - 18 - Math.sin(x / 40) * 6);
+    ctx.lineTo(W, H); ctx.fill();
+
+    for (const f of swimmers) drawFish(f.x, f.y + Math.sin(f.ph / 3) * 3, f.k, sea.fish[f.k], Math.sign(f.v), f.ph, false);
+
+    // boat
+    const bob = Math.sin(t / 700) * 2;
+    ctx.fillStyle = '#7a4b2a'; ctx.beginPath();
+    ctx.moveTo(90, SURF - 14 + bob); ctx.lineTo(310, SURF - 14 + bob); ctx.lineTo(285, SURF + 8 + bob); ctx.lineTo(115, SURF + 8 + bob); ctx.fill();
+    ctx.fillStyle = '#e2b04a'; ctx.fillRect(95, SURF - 16 + bob, 210, 4);
+    ctx.fillStyle = '#eee'; ctx.fillRect(170, SURF - 46 + bob, 50, 32);
+    ctx.fillStyle = '#7cc6f2'; ctx.fillRect(176, SURF - 40 + bob, 14, 10); ctx.fillRect(198, SURF - 40 + bob, 14, 10);
+
+    // rods and lines
+    for (const L of lines){
+      const x = rodX(L.k), tipY = SURF - 40 + bob;
+      ctx.strokeStyle = '#3b2615'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x, SURF - 14 + bob); ctx.lineTo(x + 6, tipY); ctx.stroke();
+      ctx.strokeStyle = '#ffffffaa'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x + 6, tipY); ctx.lineTo(x + 6, L.y); ctx.stroke();
+      if (L.state === 'reel') drawFish(x + 6, L.y + 12, L.fish, sea.fish[L.fish], 1, t / 80, true);
+      else {
+        ctx.fillStyle = '#ff5e5e'; ctx.beginPath(); ctx.arc(x + 6, L.y + (L.state === 'wait' ? Math.sin(t / 150) * 2 : 0), 3, 0, 7); ctx.fill();
+      }
+    }
+
+    // header
+    ctx.fillStyle = '#0b1a2bcc'; ctx.beginPath(); ctx.roundRect(10, 10, 230, 46, 10); ctx.fill();
+    text(`LVL ${S.sea + 1} · ${sea.ocean}`, 20, 24, 11, '#93acc4', 700, 'left');
+    text(sea.name, 20, 43, 17, '#e8f1fa', 800, 'left', "'Baloo 2'");
+
+    floats.forEach(f => { ctx.globalAlpha = Math.min(1, f.life * 2); text(f.text, f.x, f.y, 13, f.color, 800); });
+    ctx.globalAlpha = 1;
+    if (banner){
+      ctx.globalAlpha = Math.min(1, banner.life * 2);
+      ctx.fillStyle = '#0b1a2bdd'; ctx.beginPath(); ctx.roundRect(30, 180, 340, 40, 12); ctx.fill();
+      ctx.strokeStyle = banner.color; ctx.lineWidth = 2; ctx.stroke();
+      text(banner.text, 200, 200, banner.text.length > 34 ? 12 : 14, banner.color, 800);
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  // ---------------- Panel ----------------
+  const $ = id => document.getElementById(id);
+  let fishListDirty = true, seaSelDirty = true;
+
+  function buildFishList(){
+    const sea = SEAS[S.sea], w = weights(sea), sum = w.reduce((a, b) => a + b, 0);
+    let n = 0;
+    $('fishList').innerHTML = sea.fish.map((name, k) => {
+      const known = S.found[S.sea + ':' + k]; if (known) n++;
+      return `<span class="dot" style="background:${RAR[k].color}"></span>
+        <span class="nm ${known ? '' : 'unknown'}">${known ? name : '??? (hələ tutulmayıb)'}<small style="color:${RAR[k].color}">${RAR[k].name} · şans ${pct(w[k] / sum * 100)}</small></span>
+        <span class="val">${fmt(fishValue(sea, k))} ₼</span>`;
+    }).join('');
+    $('seaFound').textContent = `${n} / ${sea.fish.length} tapılıb`;
+  }
+  function buildSeaSel(){
+    $('seaSel').innerHTML = SEAS.slice(0, S.maxSea + 1).map((s, i) =>
+      `<option value="${i}" ${i === S.sea ? 'selected' : ''}>LVL ${i + 1} · ${s.name}</option>`).join('');
+  }
+  $('seaSel').addEventListener('change', e => { S.sea = +e.target.value; resetSea(); fishListDirty = true; save(); });
+
+  function setBtn(id, sub, cost, maxed, subText){
+    $(id).disabled = maxed || S.money < cost;
+    $(sub).textContent = maxed ? 'Maksimum' : fmt(cost) + ' ₼ · ' + subText;
+  }
+
+  function updatePanel(){
+    const now = performance.now();
+    log = log.filter(e => now - e[0] < 30000);
+    const span = Math.min(30, (now - started) / 1000);
+    if (span > 4) S.rate = log.reduce((a, e) => a + e[1], 0) / span;
+    if (fishListDirty){ buildFishList(); fishListDirty = false; }
+    if (seaSelDirty){ buildSeaSel(); seaSelDirty = false; }
+
+    const sea = SEAS[S.sea];
+    $('money').textContent = fmt(S.money) + ' ₼';
+    $('rate').textContent = fmt(S.rate);
+    $('found').textContent = `${foundN()}/${totalSpecies}`;
+    $('seaName').innerHTML = `🌊 ${sea.name} <span class="tag">LVL ${S.sea + 1} / ${SEAS.length}</span>`;
+
+    const nextI = S.maxSea + 1, onFrontier = S.sea === S.maxSea;
+    const got = S.catches[S.maxSea], ready = got >= NEED;
+    $('seaInfo').textContent = onFrontier
+      ? `${sea.ocean}. Növbəti dənizə keçmək üçün burada ${NEED} balıq tut: ${Math.min(got, NEED)} / ${NEED}.`
+      : `${sea.ocean}. Bu dəniz artıq keçilib. Burada tapılmamış növləri axtara bilərsən.`;
+    $('seaBar').style.width = (onFrontier ? Math.min(1, got / NEED) : 1) * 100 + '%';
+    if (nextI >= SEAS.length){
+      $('nextBtn').disabled = true; $('nextTitle').textContent = 'Bütün dənizlər açılıb!'; $('nextSub').textContent = 'Dünya okeanlarının kapitanısan';
+    } else {
+      $('nextTitle').textContent = `Yeni LVL ${nextI + 1}: ${SEAS[nextI].name}`;
+      $('nextSub').textContent = !ready ? `${SEAS[S.maxSea].name} dənizində ${NEED - got} balıq da tut` : `Səfər: ${fmt(ticket(nextI))} ₼`;
+      $('nextBtn').disabled = !ready || S.money < ticket(nextI);
+    }
+
+    setBtn('rodBtn', 'rodSub', rodCost(), S.rods >= MAX_RODS, `${S.rods} → ${S.rods + 1} tilov`);
+    setBtn('hookBtn', 'hookSub', hookCost(), S.hook >= MAX_HOOK, '−12% gözləmə');
+    setBtn('baitBtn', 'baitSub', baitCost(), S.bait >= MAX_BAIT, 'nadir şans +12%');
+    setBtn('marketBtn', 'marketSub', marketCost(), false, 'qiymət ×1.25');
+    $('gear').innerHTML = `
+      <span>Tilovlar</span><span>${S.rods} / ${MAX_RODS}</span>
+      <span>Qarmaq səviyyəsi</span><span>${S.hook} / ${MAX_HOOK} · ${biteTime().toFixed(1)} san</span>
+      <span>Yem səviyyəsi</span><span>${S.bait} / ${MAX_BAIT}</span>
+      <span>Ümumi qiymət çarpanı</span><span>×${fmt(valueMult())}</span>`;
+    $('log').innerHTML = `
+      <span>Tutulan balıq</span><span>${fmt(S.caught)}</span>
+      <span>Tapılan növlər</span><span>${foundN()} / ${totalSpecies}</span>
+      <span>Ən nadir ov</span><span>${S.best || '—'}</span>
+      <span>Ümumi qazanc</span><span>${fmt(S.total)} ₼</span>
+      <span>Offline qazanc</span><span>${OFFLINE_RATE * 100}% · maks. ${OFFLINE_H} saat</span>`;
+  }
+
+  function buy(cost){ if (S.money < cost) return false; S.money -= cost; return true; }
+  document.addEventListener('click', e => {
+    const a = e.target.closest('[data-act]'); if (!a || a.disabled) return;
+    switch (a.dataset.act){
+      case 'rod':    if (S.rods < MAX_RODS && buy(rodCost())) S.rods++; break;
+      case 'hook':   if (S.hook < MAX_HOOK && buy(hookCost())) S.hook++; break;
+      case 'bait':   if (S.bait < MAX_BAIT && buy(baitCost())) S.bait++; break;
+      case 'market': if (buy(marketCost())) S.market++; break;
+      case 'next': {
+        const n = S.maxSea + 1;
+        if (n >= SEAS.length || S.catches[S.maxSea] < NEED || !buy(ticket(n))) return;
+        S.maxSea = n; S.sea = n; resetSea(); seaSelDirty = true;
+        ask(`LVL ${n + 1}`, `${SEAS[n].ocean}. Burada yeni balıq növləri səni gözləyir.`, SEAS[n].name);
+        break;
+      }
+      case 'wipe':
+        ask('Hər şeyi sil?', 'Bütün dənizlər, avadanlıq və tapılan növlər birdəfəlik silinəcək.', '', () => {
+          S = fresh(); resetSea(); fishListDirty = seaSelDirty = true; save();
+        });
+        return;
+      default: return;
+    }
+    fishListDirty = true; save(); updatePanel();
+  });
+
+  // ---------------- Modal ----------------
+  let onYes = null;
+  function ask(title, txt, big, yes){
+    $('mTitle').textContent = title; $('mText').textContent = txt; $('mBig').textContent = big;
+    onYes = yes || null; $('mNo').hidden = !yes; $('mOk').textContent = yes ? 'Bəli' : 'Davam et';
+    $('modal').classList.add('show');
+  }
+  const closeModal = () => $('modal').classList.remove('show');
+  $('mOk').onclick = () => { closeModal(); if (onYes) onYes(); };
+  $('mNo').onclick = closeModal;
+
+  // ---------------- Save / offline ----------------
+  function save(){ S.last = Date.now(); try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (e) {} }
+  function load(){
+    let raw = null; try { raw = localStorage.getItem(SAVE_KEY); } catch (e) {}
+    if (!raw) return;
+    try {
+      const d = JSON.parse(raw), f = fresh();
+      S = Object.assign(f, d);
+      S.catches = SEAS.map((s, i) => (d.catches || [])[i] || 0);
+      S.found = d.found || {};
+      S.maxSea = Math.min(S.maxSea, SEAS.length - 1); S.sea = Math.min(S.sea, S.maxSea);
+    } catch (e) {}
+  }
+  function catchUp(){
+    const away = Math.min((Date.now() - S.last) / 1000, OFFLINE_H * 3600);
+    S.last = Date.now();
+    if (away < 15 || !(S.rate > 0)) return;
+    const gain = S.rate * away * OFFLINE_RATE;
+    S.money += gain; S.total += gain;
+    ask('Xoş gəldin, kapitan!', `Sən ${fmtTime(away)} yox idin. Ekipaj balıq tutmağa davam etdi:`, '+' + fmt(gain) + ' ₼');
+  }
+
+  // ---------------- Loop ----------------
+  let prev = performance.now(), started = performance.now(), panelT = 0;
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) save(); else { catchUp(); prev = performance.now(); }
+  });
+  window.addEventListener('pagehide', save);
+  setInterval(save, 5000);
+
+  function frame(now){
+    const dt = Math.min((now - prev) / 1000, 0.25); prev = now;
+    for (let k = 0; k < 3; k++) step(dt / 3);
+    S.last = Date.now();
+    draw(now);
+    if (now - panelT > 150){ panelT = now; updatePanel(); }
+    requestAnimationFrame(frame);
+  }
+
+  load();
+  catchUp();
+  resetSea();
+  resize();
+  updatePanel();
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
