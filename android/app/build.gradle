@@ -1,0 +1,25 @@
+plugins { id "com.android.application" }
+
+android {
+    namespace "az.universitet.tycoon"
+    compileSdk 34
+    defaultConfig {
+        applicationId "az.universitet.tycoon"
+        minSdk 21
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    // The game page lives in ../idle; it is copied in as the app's only asset.
+    sourceSets { main { assets.srcDirs = ["$buildDir/gameAssets"] } }
+}
+
+tasks.register("copyGame", Copy) {
+    from("$rootDir/../idle/index.html")
+    into("$buildDir/gameAssets")
+}
+preBuild.dependsOn("copyGame")
