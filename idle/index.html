@@ -2,388 +2,464 @@
 <html lang="az">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Universitet Idle</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Universitet Tycoon</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Inter:wght@400;600;700&display=swap">
 <style>
+  /* Layout: campus map on the left, management panel on the right; stacked on phones.
+     Single committed daytime look (light). */
   :root{
-    --bg:#0b0b16; --panel:#15152a; --panel2:#1d1d38; --line:#2a2a4d;
-    --text:#ecebff; color-scheme:dark; --muted:#9a98c4; --accent:#8f7bff; --good:#4ade80; --bad:#5a5878;
+    color-scheme: light;
+    --bg:#eef3e6; --ink:#1f2a24; --muted:#5e6b62; --card:#ffffff; --line:#d7e0cf;
+    --accent:#2f7d5b; --accent-ink:#ffffff; --money:#b37a0c; --warn:#d6453d; --off:#d3dbce; --chip-on:#e3f1e9;
+    --display:'Fredoka', 'Trebuchet MS', system-ui, sans-serif;
+    --body:'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   }
   *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-  html,body{ margin:0; height:100%; }
-  body{
-    background:radial-gradient(ellipse at top, #1b1640 0%, var(--bg) 60%);
-    color:var(--text); font-family:-apple-system, Segoe UI, Roboto, sans-serif;
-    user-select:none; overflow-x:hidden;
+  html,body{ margin:0; }
+  body{ background:var(--bg); color:var(--ink); font-family:var(--body); font-size:14px; }
+  .wrap{
+    max-width:1060px; margin:0 auto; padding-block:16px;
+    padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px));
+    display:grid; gap:16px; grid-template-columns:minmax(0, auto) minmax(0, 1fr); align-items:start;
   }
-  .wrap{ max-width:1000px; margin:0 auto; padding-block:16px; padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)); display:grid; gap:16px; grid-template-columns:1fr 1fr; }
-  @media (max-width:760px){ .wrap{ grid-template-columns:1fr; } }
-  header{ grid-column:1/-1; text-align:center; }
-  h1{ margin:4px 0 0; font-size:22px; letter-spacing:2px;
-      background:linear-gradient(90deg,#ff4d4d,#ff9f40,#ffe14d,#4ade80,#4dabff,#6b5bff,#c26bff);
-      -webkit-background-clip:text; background-clip:text; color:transparent; }
-  .light{ font-size:40px; font-weight:800; margin-top:8px; font-variant-numeric:tabular-nums; }
-  .lps{ color:var(--muted); font-size:14px; }
-  .panel{ background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:14px; }
-  .panel h2{ font-size:14px; text-transform:uppercase; letter-spacing:1.5px; color:var(--muted); margin:0 0 10px; display:flex; justify-content:space-between; align-items:center; }
-
-  /* Prism */
-  .stage{ position:relative; height:260px; display:flex; align-items:center; justify-content:center; overflow:hidden; }
-  #prism{ font-size:130px; line-height:1; cursor:pointer; transition:transform .08s; filter:drop-shadow(0 0 24px rgba(143,123,255,.55)); }
-  .hint{ position:absolute; bottom:12px; color:var(--muted); font-size:12px; }
-  #prism:active{ transform:scale(.93); }
-  .float{ position:absolute; pointer-events:none; font-weight:700; font-size:18px; animation:up 1s ease-out forwards; text-shadow:0 0 8px rgba(0,0,0,.8); }
-  @keyframes up{ to{ transform:translateY(-70px); opacity:0; } }
-  .ray{ position:absolute; height:3px; left:50%; top:50%; transform-origin:0 50%; opacity:.0; pointer-events:none; animation:ray .5s ease-out forwards; }
-  @keyframes ray{ 0%{opacity:.9; width:0} 100%{opacity:0; width:160px} }
-
-  .row{ display:flex; align-items:center; gap:10px; padding:10px; border-radius:12px; background:var(--panel2); margin-bottom:8px; border:1px solid transparent; cursor:pointer; transition:border-color .15s, opacity .15s; }
-  .row:hover{ border-color:var(--accent); }
-  .row.off{ opacity:.45; cursor:default; }
-  .row.off:hover{ border-color:transparent; }
-  .gem{ width:38px; height:38px; flex:none; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:22px; }
-  .info{ flex:1; min-width:0; }
-  .name{ font-weight:700; font-size:15px; }
-  .sub{ color:var(--muted); font-size:12px; margin-top:2px; }
-  .bar{ height:3px; background:#0003; border-radius:2px; margin-top:5px; overflow:hidden; }
-  .bar i{ display:block; height:100%; background:var(--accent); }
-  .cost{ text-align:right; font-variant-numeric:tabular-nums; font-size:14px; font-weight:700; }
-  .owned{ font-size:22px; font-weight:800; width:46px; text-align:center; color:var(--muted); }
-
-  .seg{ display:flex; gap:4px; }
-  .seg button{ background:var(--panel2); color:var(--muted); border:1px solid var(--line); border-radius:8px; padding:4px 9px; font-size:12px; cursor:pointer; }
-  .seg button.on{ color:var(--text); border-color:var(--accent); }
-
-  .prestige{ text-align:center; }
-  .prestige p{ color:var(--muted); font-size:13px; margin:6px 0 12px; line-height:1.5; }
-  .btn{ background:linear-gradient(90deg,#6b5bff,#c26bff); color:#fff; border:0; border-radius:12px; padding:12px 18px; font-weight:800; font-size:15px; cursor:pointer; width:100%; }
-  .btn[hidden]{ display:none; }
-  .btn:disabled{ background:var(--bad); cursor:default; }
-  .stats{ font-size:13px; color:var(--muted); line-height:1.8; }
-  .stats b{ color:var(--text); font-variant-numeric:tabular-nums; }
-  .small{ background:none; border:1px solid var(--line); color:var(--muted); border-radius:8px; padding:6px 10px; font-size:12px; cursor:pointer; margin-top:8px; }
-
-  .modal{ position:fixed; inset:0; background:#000a; display:none; align-items:center; justify-content:center; padding:16px; z-index:10; }
+  @media (max-width:820px){ .wrap{ grid-template-columns:minmax(0,1fr); } }
+  .map{ width:min(100%, calc(70vh * 0.625)); aspect-ratio:400/640; margin:0 auto; border-radius:18px; overflow:hidden; box-shadow:0 6px 24px #2f7d5b33; max-width:100%; }
+  @media (min-width:821px){ .map{ width:calc(86vh * 0.625); max-width:440px; } }
+  canvas{ width:100%; height:100%; display:block; touch-action:manipulation; cursor:pointer; }
+  .side{ display:flex; flex-direction:column; gap:12px; min-width:0; }
+  .top{ display:flex; gap:12px; flex-wrap:wrap; align-items:baseline; justify-content:space-between; }
+  h1{ font-family:var(--display); font-weight:700; font-size:24px; margin:0; color:var(--accent); }
+  .money{ font-family:var(--display); font-size:34px; font-weight:700; color:var(--money); font-variant-numeric:tabular-nums; }
+  .rate{ color:var(--muted); font-variant-numeric:tabular-nums; }
+  .card{ background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px; display:flex; flex-direction:column; gap:10px; }
+  .card h2{ margin:0; font-family:var(--display); font-weight:600; font-size:18px; display:flex; align-items:center; gap:8px; }
+  .card h2 .lv{ margin-left:auto; font-family:var(--body); font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; }
+  .hint{ color:var(--muted); font-size:13px; line-height:1.5; margin:0; }
+  .stats{ display:grid; grid-template-columns:1fr auto; gap:4px 12px; font-size:13px; }
+  .stats span:nth-child(odd){ color:var(--muted); }
+  .stats span:nth-child(even){ font-weight:700; text-align:right; font-variant-numeric:tabular-nums; }
+  .btns{ display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:8px; }
+  button.act{
+    font:inherit; border:0; border-radius:10px; padding:10px 12px; cursor:pointer; text-align:left;
+    background:var(--accent); color:var(--accent-ink); display:flex; flex-direction:column; gap:2px;
+  }
+  button.act b{ font-size:14px; }
+  button.act small{ font-variant-numeric:tabular-nums; opacity:.9; }
+  button.act:disabled{ background:var(--off); color:var(--muted); cursor:default; }
+  button:focus-visible{ outline:3px solid var(--money); outline-offset:2px; }
+  .chips{ display:flex; flex-wrap:wrap; gap:6px; }
+  .chip{ font:inherit; font-size:12px; border:1px solid var(--line); background:var(--card); color:var(--ink); border-radius:999px; padding:5px 10px; cursor:pointer; }
+  .chip.on{ border-color:var(--accent); background:var(--chip-on); }
+  .chip.warn{ border-color:var(--warn); color:var(--warn); }
+  .small{ font:inherit; font-size:12px; background:none; border:1px solid var(--line); color:var(--muted); border-radius:8px; padding:6px 10px; cursor:pointer; align-self:flex-start; }
+  .modal{ position:fixed; inset:0; background:#1f2a2499; display:none; align-items:center; justify-content:center; padding:16px; z-index:10; }
   .modal.show{ display:flex; }
-  .modal .box{ background:var(--panel); border:1px solid var(--accent); border-radius:16px; padding:22px; max-width:340px; width:100%; text-align:center; }
-  .modal h3{ margin:0 0 8px; }
-  .modal .big{ font-size:30px; font-weight:800; color:var(--good); margin:10px 0 16px; }
+  .box{ background:var(--card); border-radius:16px; padding:22px; max-width:340px; width:100%; text-align:center; display:flex; flex-direction:column; gap:10px; }
+  .box h3{ margin:0; font-family:var(--display); font-size:22px; }
+  .box .big{ font-family:var(--display); font-size:30px; font-weight:700; color:var(--money); }
+  .box .big:empty{ display:none; }
+  .box .row{ display:flex; gap:8px; }
+  .box .row button{ flex:1; text-align:center; align-items:center; }
+  .box .row button.no{ background:var(--off); color:var(--ink); }
+  [hidden]{ display:none !important; }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <div style="font-size:34px">🎓</div><h1>UNİVERSİTET IDLE</h1>
-    <div class="light" id="light">0</div>
-    <div class="lps"><span id="lps">0</span> bilik/san · klik: <span id="clickVal">1</span></div>
-  </header>
+  <div class="map"><canvas id="cv" aria-label="Kampus xəritəsi"></canvas></div>
 
-  <div>
-    <div class="panel stage" id="stage">
-      <div id="prism" role="button" aria-label="Dərs oxu">📚</div>
-      <div class="hint">Kitaba toxun — dərs oxu!</div>
+  <div class="side">
+    <div class="top">
+      <h1>Universitet Tycoon</h1>
+      <div style="text-align:right">
+        <div class="money" id="money">0 ₼</div>
+        <div class="rate"><span id="rate">0</span> ₼/san · ⭐ <span id="stars">0</span> · 🎓 <span id="grads">0</span></div>
+      </div>
     </div>
 
-    <div class="panel" style="margin-top:16px">
-      <h2>Təkmilləşdirmələr</h2>
-      <div id="upgrades"></div>
+    <p class="hint">Binaya toxunun və onu idarə edin. Qırmızı nişan növbənin uzandığını göstərir: həmin binaya yer əlavə edin və ya onu sürətləndirin.</p>
+    <div class="chips" id="chips"></div>
+    <div class="card" id="detail"></div>
+
+    <div class="card">
+      <h2>🚌 Qəbul kampaniyası <span class="lv" id="adsLv"></span></h2>
+      <p class="hint">Reklam daha çox abituriyent gətirir. Hazırda hər <b id="adsInt"></b> saniyədə bir tələbə gəlir.</p>
+      <div class="btns"><button class="act" data-act="ads" id="adsBtn"><b>Reklam ver</b><small id="adsCost"></small></button></div>
     </div>
 
-    <div class="panel prestige" style="margin-top:16px">
-      <h2>Məzuniyyət (Prestij)</h2>
-      <p>Universiteti məzun et, yenidən başla və <b>Diplom</b> qazan. Hər diplom istehsalı daimi <b>+10%</b> artırır.<br>
-         Diplomlar: <b id="shards">0</b> · Bonus: <b id="shardBonus">+0%</b></p>
-      <button class="btn" id="prestigeBtn" disabled>Məzun et: +0 diplom</button>
-    </div>
-  </div>
-
-  <div>
-    <div class="panel">
-      <h2>Heyət və binalar
-        <span class="seg" id="buyMode">
-          <button data-m="1" class="on">x1</button><button data-m="10">x10</button><button data-m="100">x100</button><button data-m="max">MAX</button>
-        </span>
-      </h2>
-      <div id="gens"></div>
-    </div>
-
-    <div class="panel" style="margin-top:16px">
-      <h2>Statistika</h2>
-      <div class="stats" id="stats"></div>
-      <button class="small" id="resetBtn">Bütün irəliləyişi sil</button>
+    <div class="card">
+      <h2>⭐ Akkreditasiya</h2>
+      <p class="hint">Kampusu sıfırla və reytinq ulduzu qazan. Hər ulduz bütün ödənişləri daimi <b>+25%</b> artırır. Bu dövrdə qazanılan: <b id="run"></b></p>
+      <div class="btns"><button class="act" data-act="prestige" id="presBtn"><b id="presTitle"></b><small id="presSub"></small></button></div>
+      <button class="small" data-act="wipe">Bütün irəliləyişi sil</button>
     </div>
   </div>
 </div>
 
 <div class="modal" id="modal"><div class="box">
-  <h3 id="mTitle">Xoş gəldin!</h3>
-  <div id="mText" style="color:var(--muted);font-size:14px"></div>
+  <h3 id="mTitle"></h3>
+  <div class="hint" id="mText"></div>
   <div class="big" id="mBig"></div>
-  <div style="display:flex;gap:8px"><button class="btn" id="mNo" style="background:var(--bad)" hidden>Ləğv et</button><button class="btn" id="mOk">Davam et</button></div>
+  <div class="row"><button class="act no" id="mNo">Ləğv et</button><button class="act" id="mOk">Davam et</button></div>
 </div></div>
 
 <script>
 (() => {
-  // ---------- Data ----------
-  const GENS = [
-    { id:'student', name:'Tələbə',        icon:'🧑‍🎓', color:'#ff4d4d', cost:15,     prod:0.5 },
-    { id:'assist',  name:'Assistent',     icon:'🧑‍💼', color:'#ff9f40', cost:110,    prod:4 },
-    { id:'docent',  name:'Dosent',        icon:'👩‍🏫', color:'#ffe14d', cost:1200,   prod:30 },
-    { id:'prof',    name:'Professor',     icon:'👨‍🔬', color:'#4ade80', cost:13000,  prod:220 },
-    { id:'library', name:'Kitabxana',     icon:'🏛️', color:'#4dabff', cost:140000, prod:1500 },
-    { id:'lab',     name:'Laboratoriya',  icon:'🧪', color:'#6b5bff', cost:1.6e6,  prod:11000 },
-    { id:'faculty', name:'Fakültə',       icon:'🏫', color:'#c26bff', cost:2e7,    prod:85000 },
-    { id:'campus',  name:'Kampus',        icon:'🌆', color:'#ffffff', cost:3.3e8,  prod:700000 },
+  // ---------------- Data ----------------
+  const DEF = [
+    { name:'Qəbul ofisi',     icon:'📝', pay:3,    time:2, unlock:0,     color:'#d9603f', what:'Abituriyentlər sənəd verir.' },
+    { name:'Auditoriya',      icon:'🎤', pay:10,   time:4, unlock:45,    color:'#d0832f', what:'Mühazirələr burada keçir.' },
+    { name:'Kitabxana',       icon:'📚', pay:30,   time:5, unlock:800,   color:'#24877b', what:'Tələbələr kurs işinə hazırlaşır.' },
+    { name:'Laboratoriya',    icon:'🧪', pay:120,  time:6, unlock:9000,  color:'#3f78a8', what:'Praktiki məşğələlər.' },
+    { name:'Kafeteriya',      icon:'🍔', pay:400,  time:3, unlock:1e5,   color:'#b8901c', what:'Fasilədə nahar.' },
+    { name:'Məzuniyyət zalı', icon:'🎓', pay:1500, time:5, unlock:1.2e6, color:'#7d55c7', what:'Diplom təqdimatı. Buradan çıxan tələbə məzun olur.' },
   ];
-  const GROWTH = 1.15;
-  const MILESTONES = [25, 50, 100, 150, 200, 300, 400, 500]; // each ×2
+  const MAX_SEATS = 5, MAX_SPD = 8, MAX_ADS = 20, OFFLINE_H = 8, OFFLINE_RATE = 0.5;
+  const SAVE_KEY = 'uniTycoon.v1';
+  const W = 400, H = 640, ROAD = 200, SPEED = 85;
 
-  const UPGRADES = [
-    { id:'lens',  name:'☕ Qəhvə',          desc:'Klik gücü ×2',                    base:100,  growth:8,  max:Infinity },
-    { id:'res',   name:'📝 Konspekt',       desc:'Klik +3% bilik/san əlavə edir',    base:5000, growth:12, max:20 },
-    { id:'mirror',name:'💰 Dövlət qrantı',  desc:'Bütün istehsal ×1.5',              base:2e4,  growth:25, max:Infinity },
-    { id:'night', name:'💻 Distant təhsil', desc:'Offline qazanc +10% (baza 50%)',   base:1e5,  growth:10, max:5 },
-  ];
-  const OFFLINE_CAP_H = 8;
-  const SAVE_KEY = 'uniIdle.v1';
-
-  // ---------- State ----------
   const fresh = () => ({
-    light:0, runTotal:0, allTotal:0, clicks:0, shards:0, prestiges:0,
-    gens:Object.fromEntries(GENS.map(g => [g.id, 0])),
-    ups:Object.fromEntries(UPGRADES.map(u => [u.id, 0])),
-    start:Date.now(), last:Date.now(),
+    money:15, run:0, total:0, stars:0, resets:0, grads:0, ads:0, rate:0, last:Date.now(), sel:0,
+    b:DEF.map((d, i) => ({ open:i === 0, lvl:1, seats:1, spd:0 })),
   });
   let S = fresh();
-  let buyMode = '1';
 
-  // ---------- Formatting ----------
-  const SUF = ['', 'K', 'M', 'B', 'T', 'Qa', 'Qi', 'Sx', 'Sp', 'Oc', 'No', 'Dc'];
+  // ---------------- Economy ----------------
+  const starMult = () => 1 + 0.25 * S.stars;
+  const pay      = i => DEF[i].pay * S.b[i].lvl * 2 ** Math.floor(S.b[i].lvl / 25) * starMult();
+  const svc      = i => DEF[i].time * 0.85 ** S.b[i].spd;
+  const lvlCost  = i => DEF[i].pay * 5 * 1.15 ** (S.b[i].lvl - 1);
+  const seatCost = i => Math.max(DEF[i].unlock, 40) * 1.2 * 3.2 ** (S.b[i].seats - 1);
+  const spdCost  = i => Math.max(DEF[i].unlock, 40) * 2 * 3 ** S.b[i].spd;
+  const adsInt   = () => Math.max(0.2, 2.5 * 0.86 ** S.ads);
+  const adsCost  = () => 20 * 2.1 ** S.ads;
+  const starsOnReset = () => Math.floor(Math.sqrt(S.run / 1e6));
+
+  const SUF = ['', 'K', 'M', 'B', 'T', 'Qa', 'Qi', 'Sx', 'Sp', 'Oc'];
   function fmt(n){
     if (!isFinite(n)) return '∞';
     if (n < 1000) return n < 10 && n % 1 ? n.toFixed(1) : Math.floor(n).toString();
     const e = Math.floor(Math.log10(n) / 3);
-    if (e < SUF.length) return (n / 10 ** (e * 3)).toFixed(2) + SUF[e];
-    return n.toExponential(2).replace('+', '');
+    return e < SUF.length ? (n / 10 ** (e * 3)).toFixed(2) + SUF[e] : n.toExponential(2).replace('+', '');
   }
-  function fmtTime(s){
-    s = Math.floor(s);
-    const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), sec = s % 60;
-    return h ? `${h} saat ${m} dəq` : m ? `${m} dəq ${sec} san` : `${sec} san`;
-  }
+  const fmtTime = s => { s = Math.floor(s); const h = s / 3600 | 0, m = s % 3600 / 60 | 0;
+    return h ? `${h} saat ${m} dəq` : m ? `${m} dəq ${s % 60} san` : `${s} san`; };
 
-  // ---------- Math ----------
-  const milestoneMult = n => 2 ** MILESTONES.filter(m => n >= m).length;
-  const nextMilestone = n => MILESTONES.find(m => n < m);
-  const globalMult = () => (1 + 0.1 * S.shards) * 1.5 ** S.ups.mirror;
-  const genRate = g => g.prod * S.gens[g.id] * milestoneMult(S.gens[g.id]) * globalMult();
-  const lps = () => GENS.reduce((a, g) => a + genRate(g), 0);
-  const clickPower = () => 2 ** S.ups.lens * (1 + 0.1 * S.shards) + lps() * 0.03 * S.ups.res;
-  const offlineRate = () => 0.5 + 0.1 * S.ups.night;
-  const genCost = g => g.cost * GROWTH ** S.gens[g.id];
-  const upCost = u => u.base * u.growth ** S.ups[u.id];
-  const shardsOnReset = () => Math.floor(Math.sqrt(S.runTotal / 1e6));
-
-  // how many to buy & total cost for the current buy mode
-  function buyPlan(g){
-    const c = genCost(g);
-    let n;
-    if (buyMode === 'max'){
-      n = Math.floor(Math.log(1 + S.light * (GROWTH - 1) / c) / Math.log(GROWTH));
-      n = Math.max(n, 1);
-    } else n = +buyMode;
-    return { n, cost: c * (GROWTH ** n - 1) / (GROWTH - 1) };
+  // income log feeds the ₼/san readout and the offline estimate
+  let log = [];
+  function earn(x){
+    S.money += x; S.run += x; S.total += x;
+    log.push([performance.now(), x]);
   }
 
-  function earn(x){ S.light += x; S.runTotal += x; S.allTotal += x; }
+  // ---------------- Geometry ----------------
+  function geo(i){
+    const left = i % 2 === 0, y = 528 - i * 88;
+    return { x:left ? 14 : 222, y, w:164, h:72, left, doorX:left ? 178 : 222, doorY:y + 36 };
+  }
+  const seatPos  = (i, j) => { const g = geo(i); return { x:g.x + 21 + j * 30, y:g.y + 50 }; };
+  const queuePos = (i, k) => { const g = geo(i); k = Math.min(k, 5); return { x:g.left ? 190 : 210, y:g.doorY + 12 + k * 8 }; };
 
-  // ---------- Build UI ----------
-  const $ = id => document.getElementById(id);
-  const genEls = {}, upEls = {};
+  // ---------------- Simulation ----------------
+  let students = [], stations = [], floats = [], spawnT = 0;
+  const resetSim = () => { students = []; floats = []; stations = DEF.map(() => ({ queue:[], seats:Array(MAX_SEATS).fill(null) })); };
+  resetSim();
+  const COLORS = ['#264653','#e63946','#457b9d','#f4a261','#6a4c93','#2a9d8f','#ef476f','#118ab2','#8d6e63','#ff7f11'];
 
-  GENS.forEach(g => {
-    const el = document.createElement('div');
-    el.className = 'row';
-    el.innerHTML = `<div class="gem" style="background:${g.color}22;border:1px solid ${g.color}">${g.icon}</div>
-      <div class="info"><div class="name">${g.name}</div><div class="sub"></div><div class="bar"><i></i></div></div>
-      <div class="cost"></div><div class="owned">0</div>`;
-    el.onclick = () => {
-      const p = buyPlan(g);
-      if (S.light < p.cost) return;
-      S.light -= p.cost; S.gens[g.id] += p.n; render(true);
-    };
-    $('gens').appendChild(el);
-    genEls[g.id] = { el, sub:el.querySelector('.sub'), cost:el.querySelector('.cost'), owned:el.querySelector('.owned'), bar:el.querySelector('.bar i') };
-  });
+  function spawn(){
+    const g = geo(0);
+    students.push({ x:ROAD + (Math.random() * 10 - 5), y:H + 10, path:[{ x:ROAD, y:g.doorY }, { x:g.doorX, y:g.doorY }],
+      state:'walk', next:'enqueue', bi:0, seat:-1, t:0, dur:1, color:COLORS[Math.random() * COLORS.length | 0], grad:false });
+  }
+  function layoutQueue(i){ stations[i].queue.forEach((s, k) => { s.path = [queuePos(i, k)]; }); }
+  function arrive(s){
+    const n = s.next; s.next = 'none';
+    if (n === 'enqueue'){ s.state = 'queue'; stations[s.bi].queue.push(s); layoutQueue(s.bi); }
+    else if (n === 'serve'){ s.state = 'serve'; s.t = s.dur = svc(s.bi); }
+    else if (n === 'leave'){ s.gone = true; if (s.grad) S.grads++; }
+  }
+  function finish(s){
+    const i = s.bi, g = geo(i);
+    stations[i].seats[s.seat] = null;
+    const p = pay(i); earn(p);
+    floats.push({ x:seatPos(i, s.seat).x, y:g.y + 38, text:'+' + fmt(p), life:1 });
+    const ni = i + 1, back = [{ x:g.doorX, y:g.doorY }, { x:ROAD, y:g.doorY }];
+    s.state = 'walk'; s.seat = -1;
+    if (ni < DEF.length && S.b[ni].open){
+      const ng = geo(ni);
+      s.path = [...back, { x:ROAD, y:ng.doorY }, { x:ng.doorX, y:ng.doorY }]; s.next = 'enqueue'; s.bi = ni;
+    } else {
+      s.grad = i === DEF.length - 1;
+      s.path = [...back, { x:ROAD, y:H + 20 }]; s.next = 'leave';
+    }
+  }
 
-  UPGRADES.forEach(u => {
-    const el = document.createElement('div');
-    el.className = 'row';
-    el.innerHTML = `<div class="info"><div class="name">${u.name} <span style="color:var(--muted)">Lv <span class="lv">0</span></span></div><div class="sub">${u.desc}</div></div><div class="cost"></div>`;
-    el.onclick = () => {
-      if (S.ups[u.id] >= u.max) return;
-      const c = upCost(u);
-      if (S.light < c) return;
-      S.light -= c; S.ups[u.id]++; render(true);
-    };
-    $('upgrades').appendChild(el);
-    upEls[u.id] = { el, lv:el.querySelector('.lv'), cost:el.querySelector('.cost') };
-  });
-
-  $('buyMode').onclick = e => {
-    const b = e.target.closest('button'); if (!b) return;
-    buyMode = b.dataset.m;
-    [...$('buyMode').children].forEach(x => x.classList.toggle('on', x === b));
-    render(true);
-  };
-
-  // Prism click
-  const RAINBOW = ['#ff4d4d','#ff9f40','#ffe14d','#4ade80','#4dabff','#6b5bff','#c26bff'];
-  $('prism').addEventListener('pointerdown', e => {
-    const v = clickPower();
-    earn(v); S.clicks++;
-    const r = $('stage').getBoundingClientRect();
-    const f = document.createElement('div');
-    f.className = 'float';
-    f.textContent = '+' + fmt(v);
-    f.style.color = RAINBOW[S.clicks % 7];
-    f.style.left = (e.clientX - r.left - 20) + 'px';
-    f.style.top = (e.clientY - r.top - 20) + 'px';
-    $('stage').appendChild(f);
-    setTimeout(() => f.remove(), 1000);
-    const ray = document.createElement('div');
-    ray.className = 'ray';
-    ray.style.background = RAINBOW[S.clicks % 7];
-    ray.style.transform = `rotate(${Math.random() * 360}deg)`;
-    $('stage').appendChild(ray);
-    setTimeout(() => ray.remove(), 500);
-    render();
-  });
-
-  $('prestigeBtn').onclick = () => {
-    const gain = shardsOnReset();
-    if (gain < 1) return;
-    ask('Məzun et?', 'Bütün bilik, heyət və təkmilləşdirmələr sıfırlanacaq. Qazanacaqsan:', '+' + gain + ' diplom', () => {
-    const keep = { shards:S.shards + gain, prestiges:S.prestiges + 1, allTotal:S.allTotal, clicks:S.clicks, start:S.start };
-    S = Object.assign(fresh(), keep);
-    save(); render(true);
+  function step(dt){
+    // arrivals pause while the admissions queue is jammed
+    spawnT += dt;
+    if (spawnT >= adsInt()){
+      spawnT = 0;
+      if (stations[0].queue.length < 10 && students.length < 90) spawn();
+    }
+    DEF.forEach((d, i) => {
+      if (!S.b[i].open) return;
+      const st = stations[i], g = geo(i);
+      for (let j = 0; j < S.b[i].seats && st.queue.length; j++){
+        if (st.seats[j]) continue;
+        const s = st.queue.shift(); st.seats[j] = s; s.seat = j; s.state = 'walk';
+        s.path = [{ x:g.doorX, y:g.doorY }, seatPos(i, j)]; s.next = 'serve';
+        layoutQueue(i);
+      }
     });
-  };
+    for (const s of students){
+      if (s.state === 'serve'){ s.t -= dt; if (s.t <= 0) finish(s); continue; }
+      let move = SPEED * dt;
+      while (s.path.length && move > 0){
+        const p = s.path[0], dx = p.x - s.x, dy = p.y - s.y, d = Math.hypot(dx, dy);
+        if (d <= move){ s.x = p.x; s.y = p.y; s.path.shift(); move -= d; }
+        else { s.x += dx / d * move; s.y += dy / d * move; move = 0; }
+      }
+      if (!s.path.length && s.next !== 'none') arrive(s);
+    }
+    students = students.filter(s => !s.gone);
+    floats.forEach(f => { f.life -= dt; f.y -= 22 * dt; });
+    floats = floats.filter(f => f.life > 0);
+  }
 
-  $('resetBtn').onclick = () => {
-    ask('Hər şeyi sil?', 'Bütün irəliləyiş, diplomlar da daxil, birdəfəlik silinəcək.', '', () => { S = fresh(); save(); render(true); });
-  };
+  // ---------------- Drawing ----------------
+  const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+  let scale = 1;
+  function resize(){
+    const r = cv.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+    cv.width = Math.max(1, Math.round(r.width * dpr)); cv.height = Math.max(1, Math.round(r.height * dpr));
+    scale = cv.width / W;
+  }
+  new ResizeObserver(resize).observe(cv);
 
+  let seed = 7; const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+  const grass = Array.from({ length:140 }, () => ({ x:rnd() * W, y:rnd() * H, r:1 + rnd() * 2 }));
+  const trees = [[36,40],[86,62],[318,40],[366,64],[150,26],[252,24]].map(([x, y]) => ({ x, y, r:12 + rnd() * 6 }));
+
+  function rr(x, y, w, h, r){ ctx.beginPath(); ctx.roundRect(x, y, w, h, r); }
+  function text(t, x, y, size, color, weight = 600, align = 'left', font = 'Inter'){
+    ctx.font = `${weight} ${size}px ${font}, system-ui, sans-serif`; ctx.fillStyle = color;
+    ctx.textAlign = align; ctx.textBaseline = 'middle'; ctx.fillText(t, x, y);
+  }
+
+  function draw(t){
+    ctx.setTransform(scale, 0, 0, scale, 0, 0);
+    ctx.fillStyle = '#9ccf7f'; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = '#8cc472'; grass.forEach(g => { ctx.beginPath(); ctx.arc(g.x, g.y, g.r, 0, 7); ctx.fill(); });
+    ctx.fillStyle = '#ead9b5'; ctx.fillRect(ROAD - 20, 78, 40, H);
+    ctx.strokeStyle = '#d9c294'; ctx.setLineDash([8, 10]); ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(ROAD, 84); ctx.lineTo(ROAD, H); ctx.stroke(); ctx.setLineDash([]);
+    trees.forEach(tr => {
+      ctx.fillStyle = '#5c9e4a'; ctx.beginPath(); ctx.arc(tr.x, tr.y, tr.r, 0, 7); ctx.fill();
+      ctx.fillStyle = '#6fb35a'; ctx.beginPath(); ctx.arc(tr.x - 3, tr.y - 3, tr.r * .6, 0, 7); ctx.fill();
+    });
+    rr(120, 50, 160, 30, 8); ctx.fillStyle = '#2f7d5b'; ctx.fill();
+    text('UNİVERSİTET', ROAD, 66, 15, '#fff', 700, 'center', 'Fredoka');
+
+    DEF.forEach((d, i) => drawBuilding(d, i, t));
+
+    ctx.fillStyle = '#7a6a58'; ctx.fillRect(ROAD - 30, H - 26, 8, 26); ctx.fillRect(ROAD + 22, H - 26, 8, 26);
+    ctx.fillStyle = '#5b4d3f'; ctx.fillRect(ROAD - 32, H - 30, 64, 6);
+
+    for (const s of students){
+      ctx.fillStyle = '#0002'; ctx.beginPath(); ctx.ellipse(s.x, s.y + 5, 5, 2, 0, 0, 7); ctx.fill();
+      ctx.fillStyle = s.color; ctx.beginPath(); ctx.arc(s.x, s.y, 5, 0, 7); ctx.fill();
+      ctx.fillStyle = '#f2c9a0'; ctx.beginPath(); ctx.arc(s.x, s.y - 6, 3.2, 0, 7); ctx.fill();
+      if (s.grad){ ctx.fillStyle = '#222'; ctx.fillRect(s.x - 4, s.y - 11, 8, 2); }
+      if (s.state === 'serve'){
+        ctx.fillStyle = '#0003'; ctx.fillRect(s.x - 9, s.y - 15, 18, 3);
+        ctx.fillStyle = '#2f7d5b'; ctx.fillRect(s.x - 9, s.y - 15, 18 * (1 - s.t / s.dur), 3);
+      }
+    }
+    floats.forEach(f => { ctx.globalAlpha = Math.min(1, f.life * 2); text(f.text + ' ₼', f.x, f.y, 12, '#8a5a00', 700, 'center'); });
+    ctx.globalAlpha = 1;
+  }
+
+  function drawBuilding(d, i, t){
+    const g = geo(i), b = S.b[i], sel = S.sel === i;
+    const prevOpen = i === 0 || S.b[i - 1].open;
+    ctx.fillStyle = '#ead9b5'; ctx.fillRect(g.left ? g.x + g.w - 2 : ROAD + 18, g.doorY - 7, g.left ? 10 : 6, 14);
+    ctx.fillStyle = '#0000001f'; rr(g.x + 3, g.y + 4, g.w, g.h, 10); ctx.fill();
+    if (!b.open){
+      rr(g.x, g.y, g.w, g.h, 10); ctx.fillStyle = '#ffffff80'; ctx.fill();
+      const can = prevOpen && S.money >= d.unlock;
+      ctx.setLineDash([6, 5]); ctx.lineWidth = sel ? 3 : 2;
+      ctx.strokeStyle = can ? `rgba(47,125,91,${0.6 + 0.4 * Math.sin(t / 250)})` : '#6b7a6f'; ctx.stroke(); ctx.setLineDash([]);
+      text(d.icon + ' ' + d.name, g.x + g.w / 2, g.y + 24, 13, '#33413a', 700, 'center');
+      text(prevOpen ? '🔒 ' + fmt(d.unlock) + ' ₼' : '🔒', g.x + g.w / 2, g.y + 48, 13, can ? '#2f7d5b' : '#55635a', 700, 'center');
+      return;
+    }
+    rr(g.x, g.y, g.w, g.h, 10); ctx.fillStyle = '#fbf6ec'; ctx.fill();
+    ctx.save(); rr(g.x, g.y, g.w, g.h, 10); ctx.clip();
+    ctx.fillStyle = d.color; ctx.fillRect(g.x, g.y, g.w, 26); ctx.restore();
+    text(d.icon + ' ' + d.name, g.x + 8, g.y + 13, 12, '#fff', 700);
+    text('Sv ' + b.lvl, g.x + g.w - 8, g.y + 13, 11, '#ffffffe0', 700, 'right');
+    for (let j = 0; j < MAX_SEATS; j++){
+      const p = seatPos(i, j);
+      if (j < b.seats){ ctx.fillStyle = '#c8a67a'; rr(p.x - 11, p.y + 6, 22, 8, 2); ctx.fill(); }
+      else { ctx.strokeStyle = '#ddd2bf'; ctx.lineWidth = 1; rr(p.x - 11, p.y + 6, 22, 8, 2); ctx.stroke(); }
+    }
+    ctx.fillStyle = '#8a6a4a'; ctx.fillRect(g.left ? g.x + g.w - 4 : g.x, g.doorY - 8, 4, 16);
+    if (sel){ ctx.lineWidth = 3; ctx.strokeStyle = '#1d3557'; rr(g.x, g.y, g.w, g.h, 10); ctx.stroke(); }
+    const q = stations[i].queue.length;
+    if (q >= 4){
+      const bx = g.left ? g.x + g.w - 12 : g.x + 12, by = g.y + g.h - 4;
+      ctx.fillStyle = '#d6453d'; ctx.beginPath(); ctx.arc(bx, by, 9, 0, 7); ctx.fill();
+      text(q > 9 ? '9+' : String(q), bx, by + 1, 10, '#fff', 700, 'center');
+    }
+  }
+
+  cv.addEventListener('click', e => {
+    const r = cv.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width * W, y = (e.clientY - r.top) / r.height * H;
+    DEF.forEach((d, i) => { const g = geo(i); if (x >= g.x && x <= g.x + g.w && y >= g.y && y <= g.y + g.h) select(i); });
+  });
+
+  // ---------------- Panel ----------------
+  const $ = id => document.getElementById(id);
+  function select(i){ S.sel = i; buildPanel(); }
+
+  function buildPanel(){
+    const i = S.sel, d = DEF[i], b = S.b[i];
+    $('chips').innerHTML = DEF.map((x, k) =>
+      `<button class="chip${k === i ? ' on' : ''}" data-sel="${k}" id="chip${k}">${x.icon} ${x.name}${S.b[k].open ? '' : ' 🔒'}</button>`).join('');
+    if (!b.open){
+      const prevOpen = i === 0 || S.b[i - 1].open;
+      $('detail').innerHTML = `<h2>${d.icon} ${d.name} <span class="lv">bağlı</span></h2>
+        <p class="hint">${d.what} Ödəniş: <b>${fmt(d.pay * starMult())} ₼</b> hər tələbədən.</p>
+        <div class="btns">${prevOpen
+          ? `<button class="act" data-act="open" data-cost="${d.unlock}"><b>Binanı aç</b><small>${fmt(d.unlock)} ₼</small></button>`
+          : `<p class="hint">Əvvəlcə <b>${DEF[i - 1].name}</b> binasını açın.</p>`}</div>`;
+      return;
+    }
+    const seatsMax = b.seats >= MAX_SEATS, spdMax = b.spd >= MAX_SPD, nextMs = 25 * (Math.floor(b.lvl / 25) + 1);
+    $('detail').innerHTML = `<h2>${d.icon} ${d.name} <span class="lv">Səviyyə ${b.lvl}</span></h2>
+      <p class="hint">${d.what}</p>
+      <div class="stats">
+        <span>Ödəniş</span><span>${fmt(pay(i))} ₼ / tələbə</span>
+        <span>Xidmət müddəti</span><span>${svc(i).toFixed(1)} san</span>
+        <span>Yerlər</span><span>${b.seats} / ${MAX_SEATS}</span>
+        <span>Maksimum gəlir</span><span>${fmt(pay(i) * b.seats / svc(i))} ₼/san</span>
+        <span>Növbədə</span><span id="qLen">0</span>
+      </div>
+      <div class="btns">
+        <button class="act" data-act="lvl" data-cost="${lvlCost(i)}"><b>Səviyyə +1</b><small>${fmt(lvlCost(i))} ₼ · ${nextMs}-də ödəniş ×2</small></button>
+        <button class="act" data-act="seat" ${seatsMax ? 'disabled' : `data-cost="${seatCost(i)}"`}><b>Yer əlavə et</b><small>${seatsMax ? 'Maksimum' : fmt(seatCost(i)) + ' ₼'}</small></button>
+        <button class="act" data-act="spd" ${spdMax ? 'disabled' : `data-cost="${spdCost(i)}"`}><b>Sürətləndir</b><small>${spdMax ? 'Maksimum' : fmt(spdCost(i)) + ' ₼ · −15% vaxt'}</small></button>
+      </div>`;
+  }
+
+  function buy(cost){ if (S.money < cost) return false; S.money -= cost; return true; }
+  document.addEventListener('click', e => {
+    const c = e.target.closest('[data-sel]'); if (c){ select(+c.dataset.sel); return; }
+    const a = e.target.closest('[data-act]'); if (!a || a.disabled) return;
+    const i = S.sel, b = S.b[i];
+    switch (a.dataset.act){
+      case 'open': if (buy(DEF[i].unlock)) b.open = true; break;
+      case 'lvl':  if (buy(lvlCost(i))) b.lvl++; break;
+      case 'seat': if (b.seats < MAX_SEATS && buy(seatCost(i))) b.seats++; break;
+      case 'spd':  if (b.spd < MAX_SPD && buy(spdCost(i))) b.spd++; break;
+      case 'ads':  if (S.ads < MAX_ADS && buy(adsCost())) S.ads++; break;
+      case 'prestige': {
+        const gain = starsOnReset(); if (gain < 1) return;
+        ask('Akkreditasiya?', 'Pul, binalar və təkmilləşdirmələr sıfırlanacaq. Qazanacaqsan:', '+' + gain + ' ⭐', () => {
+          const keep = { stars:S.stars + gain, resets:S.resets + 1, total:S.total, grads:S.grads };
+          S = Object.assign(fresh(), keep); resetSim(); save(); buildPanel();
+        });
+        return;
+      }
+      case 'wipe':
+        ask('Hər şeyi sil?', 'Bütün irəliləyiş, ulduzlar da daxil, birdəfəlik silinəcək.', '', () => { S = fresh(); resetSim(); save(); buildPanel(); });
+        return;
+      default: return;
+    }
+    buildPanel(); save();
+  });
+
+  function updatePanel(){
+    const now = performance.now();
+    log = log.filter(e => now - e[0] < 20000);
+    const span = Math.min(20, (now - started) / 1000);
+    if (span > 3) S.rate = log.reduce((a, e) => a + e[1], 0) / span;
+    $('money').textContent = fmt(S.money) + ' ₼';
+    $('rate').textContent = fmt(S.rate);
+    $('stars').textContent = S.stars;
+    $('grads').textContent = fmt(S.grads);
+    $('run').textContent = fmt(S.run) + ' ₼';
+    document.querySelectorAll('[data-cost]').forEach(el => { el.disabled = S.money < +el.dataset.cost; });
+    const q = $('qLen'); if (q) q.textContent = stations[S.sel].queue.length + ' nəfər';
+    DEF.forEach((d, k) => { const ch = $('chip' + k); if (ch) ch.classList.toggle('warn', stations[k].queue.length >= 4); });
+    const adsMax = S.ads >= MAX_ADS;
+    $('adsLv').textContent = 'Səviyyə ' + S.ads;
+    $('adsInt').textContent = adsInt().toFixed(2);
+    $('adsCost').textContent = adsMax ? 'Maksimum' : fmt(adsCost()) + ' ₼ · −14% interval';
+    $('adsBtn').disabled = adsMax || S.money < adsCost();
+    const gain = starsOnReset();
+    $('presBtn').disabled = gain < 1;
+    $('presTitle').textContent = gain < 1 ? 'Hələ tezdir' : `Akkreditasiya: +${gain} ⭐`;
+    $('presSub').textContent = gain < 1 ? 'Bu dövrdə 1M ₼ qazanmaq lazımdır' : `Ödənişlər ×${(1 + 0.25 * (S.stars + gain)).toFixed(2)} olacaq`;
+  }
+
+  // ---------------- Modal ----------------
   let onYes = null;
-  function showModal(title, text, big, yes){
-    $('mTitle').textContent = title; $('mText').textContent = text; $('mBig').textContent = big;
-    onYes = yes || null;
-    $('mNo').hidden = !yes;
-    $('mOk').textContent = yes ? 'Bəli' : 'Davam et';
+  function ask(title, txt, big, yes){
+    $('mTitle').textContent = title; $('mText').textContent = txt; $('mBig').textContent = big;
+    onYes = yes || null; $('mNo').hidden = !yes; $('mOk').textContent = yes ? 'Bəli' : 'Davam et';
     $('modal').classList.add('show');
   }
-  const ask = (t, x, b, yes) => showModal(t, x, b, yes);
   const closeModal = () => $('modal').classList.remove('show');
   $('mOk').onclick = () => { closeModal(); if (onYes) onYes(); };
   $('mNo').onclick = closeModal;
 
-  // ---------- Render ----------
-  let lastFull = 0;
-  function render(force){
-    $('light').textContent = fmt(S.light);
-    $('lps').textContent = fmt(lps());
-    $('clickVal').textContent = fmt(clickPower());
-    const now = performance.now();
-    if (!force && now - lastFull < 120) return;
-    lastFull = now;
-
-    GENS.forEach((g, i) => {
-      const e = genEls[g.id], n = S.gens[g.id];
-      // reveal one locked tier at a time
-      const visible = i === 0 || S.gens[GENS[i - 1].id] > 0 || n > 0;
-      e.el.style.display = visible ? '' : 'none';
-      const p = buyPlan(g);
-      e.el.classList.toggle('off', S.light < p.cost);
-      e.owned.textContent = n;
-      const nm = nextMilestone(n), prev = [...MILESTONES].reverse().find(m => n >= m) || 0;
-      e.sub.textContent = `${fmt(genRate(g))}/san` + (nm ? ` · ${nm}-də ×2` : '');
-      e.bar.style.width = nm ? ((n - prev) / (nm - prev) * 100) + '%' : '100%';
-      e.cost.innerHTML = `${fmt(p.cost)}<div class="sub">x${p.n}</div>`;
-    });
-
-    UPGRADES.forEach(u => {
-      const e = upEls[u.id], lv = S.ups[u.id], maxed = lv >= u.max;
-      e.lv.textContent = lv;
-      e.cost.textContent = maxed ? 'MAX' : fmt(upCost(u));
-      e.el.classList.toggle('off', maxed || S.light < upCost(u));
-    });
-
-    const gain = shardsOnReset();
-    $('shards').textContent = fmt(S.shards);
-    $('shardBonus').textContent = '+' + fmt(S.shards * 10) + '%';
-    $('prestigeBtn').disabled = gain < 1;
-    $('prestigeBtn').textContent = gain < 1
-      ? `${fmt(1e6)} bilik lazımdır (bu dövrdə: ${fmt(S.runTotal)})`
-      : `Məzun et: +${fmt(gain)} diplom`;
-
-    $('stats').innerHTML = `
-      Bu dövrdə qazanılan: <b>${fmt(S.runTotal)}</b><br>
-      Ümumi qazanılan: <b>${fmt(S.allTotal)}</b><br>
-      Klik sayı: <b>${fmt(S.clicks)}</b><br>
-      Məzuniyyət sayı: <b>${S.prestiges}</b><br>
-      Ümumi multiplikator: <b>×${fmt(globalMult())}</b><br>
-      Offline qazanc: <b>${Math.round(offlineRate() * 100)}%</b> (maks. ${OFFLINE_CAP_H} saat)<br>
-      Oyun vaxtı: <b>${fmtTime((Date.now() - S.start) / 1000)}</b>`;
-  }
-
-  // ---------- Save / Load ----------
-  function save(){
-    S.last = Date.now();
-    try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (e) {}
-  }
+  // ---------------- Save / offline ----------------
+  function save(){ S.last = Date.now(); try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (e) {} }
   function load(){
-    let raw = null;
-    try { raw = localStorage.getItem(SAVE_KEY); } catch (e) {}
+    let raw = null; try { raw = localStorage.getItem(SAVE_KEY); } catch (e) {}
     if (!raw) return;
     try {
       const d = JSON.parse(raw), f = fresh();
-      S = Object.assign(f, d, { gens:Object.assign(f.gens, d.gens), ups:Object.assign(f.ups, d.ups) });
+      S = Object.assign(f, d, { b:f.b.map((x, i) => Object.assign(x, (d.b || [])[i])) });
     } catch (e) {}
   }
-
-  // award time spent away (closed tab or backgrounded)
   function catchUp(){
-    const away = Math.min((Date.now() - S.last) / 1000, OFFLINE_CAP_H * 3600);
+    const away = Math.min((Date.now() - S.last) / 1000, OFFLINE_H * 3600);
     S.last = Date.now();
-    if (away < 10) return;
-    const gain = lps() * away * offlineRate();
-    if (gain <= 0) return;
-    earn(gain);
-    showModal('Xoş gəldin!', `Sən ${fmtTime(away)} yox idin. Universitetin işləməyə davam etdi:`, '+' + fmt(gain) + ' bilik');
+    if (away < 15 || !(S.rate > 0)) return;
+    const gain = S.rate * away * OFFLINE_RATE;
+    S.money += gain; S.run += gain; S.total += gain;
+    ask('Xoş gəldin, rektor!', `Sən ${fmtTime(away)} yox idin. Universitet işləməyə davam etdi:`, '+' + fmt(gain) + ' ₼');
   }
 
-  // ---------- Loop ----------
-  let prev = performance.now();
-  function tick(now){
-    const dt = Math.min((now - prev) / 1000, 1);
-    prev = now;
-    earn(lps() * dt);
-    S.last = Date.now();
-    render();
-    requestAnimationFrame(tick);
-  }
-
+  // ---------------- Loop ----------------
+  let prev = performance.now(), started = performance.now(), panelT = 0;
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden) save();
-    else { catchUp(); prev = performance.now(); render(true); }
+    if (document.hidden) save(); else { catchUp(); prev = performance.now(); }
   });
-  window.addEventListener('beforeunload', save);
+  window.addEventListener('pagehide', save);
   setInterval(save, 5000);
+
+  function frame(now){
+    const dt = Math.min((now - prev) / 1000, 0.25); prev = now;
+    for (let k = 0; k < 4; k++) step(dt / 4);   // sub-steps keep movement stable on slow frames
+    S.last = Date.now();
+    draw(now);
+    if (now - panelT > 150){ panelT = now; updatePanel(); }
+    requestAnimationFrame(frame);
+  }
 
   load();
   catchUp();
-  render(true);
-  requestAnimationFrame(tick);
+  resize();
+  buildPanel();
+  updatePanel();
+  requestAnimationFrame(frame);
 })();
 </script>
 </body>
