@@ -188,6 +188,9 @@
   .tabs button.on{ background:none; box-shadow:none; color:var(--brass2); }
   .tabs button.on span{ background:radial-gradient(circle at 35% 30%, #ffe3a0, #e7b54d 70%); border-color:#fff6; transform:translateY(-3px); }
   .tabs .badge{ top:-2px; right:6px; box-shadow:0 0 0 2px #08141f; }
+  .tabs button.goal span{ animation:goalPulse 1.2s ease-in-out infinite; }
+  @keyframes goalPulse{ 0%,100%{ box-shadow:0 3px 0 #0b1d2e, 0 0 0 0 #5fd38daa; } 50%{ box-shadow:0 3px 0 #0b1d2e, 0 0 0 7px #5fd38d00; transform:translateY(-3px); } }
+  @media (prefers-reduced-motion: reduce){ .tabs button.goal span{ animation:none; outline:2px solid var(--good); } }
   .sheet{ position:absolute; left:0; right:0; bottom:calc(76px + env(safe-area-inset-bottom, 0px)); max-height:calc(100% - 170px); z-index:6; display:flex; flex-direction:column;
     background:linear-gradient(180deg, #16304c, #0c1c2c 30%); border-radius:22px 22px 0 0; box-shadow:0 -12px 40px #000b, 0 -1px 0 #ffffff22; animation:sheetIn .22s ease-out; }
   @keyframes sheetIn{ from{ transform:translateY(40px); opacity:0; } }
@@ -562,6 +565,25 @@
   ];
   const mgrDur = id => 30 + 10 * Math.max(0, S.mgr[id].lvl - 1);
   const DAILY_PEARLS = [1, 1, 2, 1, 2, 3, 6];
+  const GOALS = [
+    { text:'5 balıq tut',                         tab:'sea',     done:() => S.caught >= 5 },
+    { text:'İkinci tilovu al',                    tab:'ship',    done:() => S.rods >= 1 },
+    { text:'Anbarı və ya liman satışını artır',   tab:'ship',    done:() => S.hold >= 1 || S.sell >= 1 },
+    { text:'Növbəti dənizə üz (LVL 2)',           tab:'sea',     done:() => S.maxSea >= 1 },
+    { text:'🏭 Sexi aç',                           tab:'factory', done:() => S.fx.open },
+    { text:'🥩 Dilim xəttini aç',                  tab:'factory', done:() => S.fx.lines.steak >= 1 },
+    { text:'🏪 Bazarı aç',                         tab:'market',  done:() => S.mk.open },
+    { text:'🏠 Yataqxananı böyüt',                 tab:'cx',      done:() => S.cx.dorm >= 1 },
+    { text:'🍽️ Restoranı aç',                     tab:'rest',    done:() => S.rs.open },
+    { text:'🍢 Menyuya balıq kababı əlavə et',     tab:'rest',    done:() => !!S.rs.menu.kebab },
+    { text:'LVL 6-ya çat',                        tab:'sea',     done:() => S.maxSea >= 5 },
+    { text:'🏢 Baş ofisi tik',                     tab:'cx',      done:() => S.cx.hq >= 1 },
+    { text:'Bazarı Şəhər bazarına böyüt',         tab:'market',  done:() => S.mk.tier >= 1 },
+    { text:'🔥 Hisə verilmiş balıq xəttini aç',    tab:'factory', done:() => S.fx.lines.smoked >= 1 },
+    { text:'LVL 15-ə çat',                        tab:'sea',     done:() => S.maxSea >= 14 },
+    { text:'🧭 İlk ekspedisiyaya çıx',              tab:'map',     done:() => S.exped >= 1 },
+  ];
+  const goalReward = () => Math.max(150, expectedRate() * 90);
   // fish market: tiers unlock by star rating; zone costs scale with the furthest sea reached
   const TIERS = [
     { name:'Kənd bazarı',   stalls:3, mult:1,   cost:0,   need:0,   color:'#8a5a32' },
@@ -601,7 +623,7 @@
     rods:0, hook:0, line:0, crew:0, bait:0, market:0, sonar:0, hold:0, sell:0, boat:0,
     holdN:0, holdV:0, run:0, fame:0, exped:0, bestStreak:0,
     mgr:{ speed:{ lvl:0, ready:0, until:0 }, price:{ lvl:0, ready:0, until:0 }, rare:{ lvl:0, ready:0, until:0 } },
-    turbo:{ until:0, ready:0 }, daily:{ last:'', streak:0 }, view:'complex',
+    turbo:{ until:0, ready:0 }, daily:{ last:'', streak:0 }, view:'complex', goal:0,
     mk:{ open:false, tier:0, ads:0, stalls:0, sk:0, cash:0, ck:0, aqua:0, shelf:0, clean:0, served:0, angry:0, dirt:0, dishes:0, sat:[] },
     fx:{ open:false, truck:0, wash:0, cold:0, raw:{ n:0, v:0 }, clean:{ n:0, v:0 }, washed:0, packed:0,
       lines:{ whole:1, steak:0, fillet:0, frozen:0, smoked:0, canned:0 },
@@ -1019,7 +1041,7 @@
     if (S.holdN < 1) return 0;
     const v = S.holdV / S.holdN; S.holdN--; S.holdV -= v;
     if (S.holdN <= 0){ S.holdN = 0; S.holdV = 0; }
-    const got = v * saleMult(); earn(got); return got;
+    const got = v * saleMult(); earn(got); addIncome('sea', got); return got;
   }
   function useAbility(id){
     const now = Date.now();
@@ -1265,9 +1287,13 @@
     poly([iso(b.gx, b.gy), iso(b.gx + b.w, b.gy), iso(b.gx + b.w, b.gy, h), iso(b.gx, b.gy, h)], b.wall);
     poly([iso(b.gx, b.gy), iso(b.gx, b.gy + b.d), iso(b.gx, b.gy + b.d, h), iso(b.gx, b.gy, h)], mix(b.wall, '#000000', .18));
     poly(tile(b.gx, b.gy, b.w, b.d), b.floor);
+    poly(tile(b.gx, b.gy, b.w, .35), '#00000014'); poly(tile(b.gx, b.gy, .35, b.d), '#00000010');
     ctx.strokeStyle = '#00000014'; ctx.lineWidth = 1;
     for (let i = 1; i < b.w; i++){ const a = iso(b.gx + i, b.gy), c = iso(b.gx + i, b.gy + b.d); ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(c.x, c.y); ctx.stroke(); }
     for (let j = 1; j < b.d; j++){ const a = iso(b.gx, b.gy + j), c = iso(b.gx + b.w, b.gy + j); ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(c.x, c.y); ctx.stroke(); }
+    const lit = isNight(), wc = lit ? '#ffd76a' : '#9fd3ea';
+    for (let i = .6; i < b.w - .3; i += 1.1) poly([iso(b.gx + i, b.gy, 6), iso(b.gx + i + .5, b.gy, 6), iso(b.gx + i + .5, b.gy, 13), iso(b.gx + i, b.gy, 13)], wc);
+    for (let j = .6; j < b.d - .3; j += 1.1) poly([iso(b.gx, b.gy + j, 6), iso(b.gx, b.gy + j + .5, 6), iso(b.gx, b.gy + j + .5, 13), iso(b.gx, b.gy + j, 13)], lit ? '#f2c94c' : '#86bfd9');
     poly([iso(b.gx, b.gy, h), iso(b.gx + b.w, b.gy, h), iso(b.gx + b.w + .08, b.gy - .08, h), iso(b.gx - .08, b.gy - .08, h)], wallTop);
     poly([iso(b.gx, b.gy, h), iso(b.gx, b.gy + b.d, h), iso(b.gx - .08, b.gy + b.d + .08, h), iso(b.gx - .08, b.gy - .08, h)], wallTop);
     inner();
@@ -1286,45 +1312,84 @@
     if (line2) text(line2, c.x, c.y + 10, 9, open ? '#8ea7bf' : '#ffe08a', 700);
   }
 
+  const cxStatic = document.createElement('canvas'); let cxStaticKey = '', cxBox = { x:0, y:0, w:1, h:1 };
+  function buildCxStatic(key){
+    const sea = SEAS[S.sea], pts = [iso(-6, -6), iso(22, -6), iso(22, 26), iso(-6, 26)];
+    const x0 = Math.min(...pts.map(p => p.x)) - 20, x1 = Math.max(...pts.map(p => p.x)) + 20, y0 = Math.min(...pts.map(p => p.y)) - 40, y1 = Math.max(...pts.map(p => p.y)) + 20;
+    const res = S.set.hq ? 3 : 1.6;
+    cxBox = { x:x0, y:y0, w:x1 - x0, h:y1 - y0 };
+    cxStatic.width = Math.ceil(cxBox.w * res); cxStatic.height = Math.ceil(cxBox.h * res);
+    const keep = ctx; ctx = cxStatic.getContext('2d'); ctx.setTransform(res, 0, 0, res, -x0 * res, -y0 * res);
+    try {
+      poly([iso(-6, -4), iso(22, -4), iso(22, 26), iso(-6, 26)], '#7fbf5a');
+      for (let gx = -6; gx < 22; gx++) for (let gy = -4; gy < 26; gy++){
+        const n = (hash(gx * 31 + gy * 17) % 100) / 100;
+        poly(tile(gx, gy, 1, 1), (gx + gy) % 2 === 0 ? mix('#78b754', '#6faa4c', n * .6) : mix('#7fbf5a', '#86c562', n * .6));
+        if (n > .82 && gy > 2){ const p = iso(gx + .5, gy + .5); ctx.fillStyle = n > .93 ? '#f2d34f' : '#ffffff'; ctx.beginPath(); ctx.arc(p.x, p.y, 1.2, 0, 7); ctx.fill(); }
+      }
+      const sp1 = iso(8, -6), sp2 = iso(8, 1.6), sg = ctx.createLinearGradient(sp1.x, sp1.y, sp2.x, sp2.y);
+      sg.addColorStop(0, WATER[sea.region][1]); sg.addColorStop(.75, WATER[sea.region][0]); sg.addColorStop(1, mix(WATER[sea.region][0], '#ffffff', .25));
+      poly([iso(-6, -6), iso(22, -6), iso(22, 1.6), iso(-6, 1.6)], sg);
+      poly(tile(-6, 1.6, 28, .75), '#e8d39a'); poly(tile(-6, 2.2, 28, .2), '#d9c08a');
+      for (let i = 0; i < 40; i++){ const p = iso(-6 + (hash(i * 7) % 280) / 10, 1.7 + (hash(i * 13) % 50) / 100); ctx.fillStyle = '#c9b07a'; ctx.fillRect(p.x, p.y, 1.5, 1); }
+      for (let i = 0; i < 3; i++) cube(1.6 + i * .7, .4, .55, 1.4, 3, '#a7794a', '#7a5235', '#8a6040');
+      const road = (gx, gy, w, d) => { poly(tile(gx - .08, gy - .08, w + .16, d + .16), '#c9c4b8'); poly(tile(gx, gy, w, d), '#7c848c'); };
+      road(0, 7.4, 16.6, 1.2); road(4.2, 2.4, 1.2, 18.4); road(0, 15.2, 16.6, 1.2);
+      ctx.strokeStyle = '#f2f2f2cc'; ctx.setLineDash([5, 6]); ctx.lineWidth = 1.2;
+      [[[0, 8], [16.6, 8]], [[4.8, 2.4], [4.8, 20.6]], [[0, 15.8], [16.6, 15.8]]].forEach(([a, b]) => { const p1 = iso(...a), p2 = iso(...b); ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke(); });
+      ctx.setLineDash([]);
+      for (let k = 0; k < 4; k++){ const z = iso(4.25 + k * .3, 8.7); ctx.fillStyle = '#f2f2f2'; ctx.fillRect(z.x - 2, z.y - 1, 6, 2); }
+      const fence = (a, b) => { const n = Math.ceil(Math.hypot(b[0] - a[0], b[1] - a[1]) * 2);
+        for (let i = 0; i <= n; i++){ const p = iso(a[0] + (b[0] - a[0]) * i / n, a[1] + (b[1] - a[1]) * i / n); ctx.fillStyle = '#00000022'; ctx.fillRect(p.x, p.y - 1, 3, 2); ctx.fillStyle = '#e9e3d6'; ctx.fillRect(p.x - 1, p.y - 9, 2, 9); }
+        [7, 3.5].forEach(h => { const p1 = iso(...a, h), p2 = iso(...b, h); ctx.strokeStyle = '#efe9dc'; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke(); }); };
+      fence([-.5, 2.4], [-.5, 20.5]); fence([16.6, 2.4], [16.6, 20.5]); fence([-.5, 20.5], [3.9, 20.5]); fence([5.7, 20.5], [16.6, 20.5]);
+      poly(tile(.2, 16.8, 3.6, 3.2), '#6f7780');
+      for (let i = 0; i < 5; i++){ const p1 = iso(.2 + i * .9, 16.8), p2 = iso(.2 + i * .9, 20); ctx.strokeStyle = '#ffffffaa'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke(); }
+      poly(tile(6, 16.8, 6, 3.2), '#6fb34e'); poly(tile(6, 18.2, 6, .35), '#d9cba8'); poly(tile(8.8, 16.8, .35, 3.2), '#d9cba8');
+      const pp = iso(9, 18.4), pg = ctx.createRadialGradient(pp.x, pp.y, 4, pp.x, pp.y, 34); pg.addColorStop(0, '#3f8fc4'); pg.addColorStop(1, '#6db8e2');
+      ctx.fillStyle = '#c9b07a'; ctx.beginPath(); ctx.ellipse(pp.x, pp.y, 37, 18, 0, 0, 7); ctx.fill(); ctx.fillStyle = pg; ctx.beginPath(); ctx.ellipse(pp.x, pp.y, 34, 16, 0, 0, 7); ctx.fill();
+      cube(6.6, 17.1, 1, .3, 3, '#8a6a4a', '#5b3a1c', '#6b4a2a'); cube(11, 19.2, .3, 1, 3, '#8a6a4a', '#5b3a1c', '#6b4a2a');
+      for (let i = 0; i < 9; i++){ const p = iso(6.3 + (hash(i * 5) % 55) / 10, 16.9 + (hash(i * 11) % 30) / 10); if (Math.hypot(p.x - pp.x, (p.y - pp.y) * 2) < 40) continue; ctx.fillStyle = ['#e74c3c', '#f2d34f', '#c38bff'][i % 3]; ctx.beginPath(); ctx.arc(p.x, p.y, 1.8, 0, 7); ctx.fill(); }
+      const fp = iso(4.8, 8); ctx.fillStyle = '#bdb6a6'; ctx.beginPath(); ctx.ellipse(fp.x, fp.y + 1, 17, 9.5, 0, 0, 7); ctx.fill();
+      ctx.fillStyle = '#d9d2c3'; ctx.beginPath(); ctx.ellipse(fp.x, fp.y, 16, 9, 0, 0, 7); ctx.fill();
+      ctx.fillStyle = '#5fb3e6'; ctx.beginPath(); ctx.ellipse(fp.x, fp.y, 11, 6, 0, 0, 7); ctx.fill();
+      LAMPS.forEach(([gx, gy]) => { const p = iso(gx, gy); ctx.fillStyle = '#00000030'; ctx.beginPath(); ctx.ellipse(p.x + 3, p.y, 4, 1.5, 0, 0, 7); ctx.fill(); ctx.fillStyle = '#3c4a5a'; ctx.fillRect(p.x - .8, p.y - 22, 1.6, 22); ctx.fillStyle = '#e8edf1'; ctx.beginPath(); ctx.arc(p.x, p.y - 23, 2.4, 0, 7); ctx.fill(); });
+    } finally { ctx = keep; }
+    cxStaticKey = key;
+  }
+  const LAMPS = [[3.9, 3], [3.9, 6.8], [5.7, 9.2], [3.9, 12], [5.7, 14.6], [3.9, 18], [5.7, 20], [9, 7.1], [12.5, 7.1], [9, 9], [12.5, 9.1], [2, 14.9], [9, 14.9], [13, 16.7], [1.5, 9.1]];
+  const cxClouds = Array.from({ length:4 }, (v, i) => ({ gx:-8 + i * 8, gy:2 + i * 5, s:1 + (i % 2) * .6 }));
+  let coins = [], cxIncome = {}, cxIncomeT = 0, confetti = [];
+  function addIncome(id, amt){ cxIncome[id] = (cxIncome[id] || 0) + amt; }
+  function party(n = 90){ for (let i = 0; i < n; i++) confetti.push({ x:W / 2 + (Math.random() - .5) * 120, y:H * .35, vx:(Math.random() - .5) * 260, vy:-140 - Math.random() * 240, r:Math.random() * 6, c:['#e7b54d', '#5fd38d', '#3aa0e8', '#ff6b6b', '#b77bff', '#ffffff'][i % 6], life:2.4 + Math.random() }); }
+
   function drawComplex(t){
     const sea = SEAS[S.sea], dark = isNight() ? .45 : 0;
     IS.oy = H / 2 - 250;
     cxDt = Math.min(.05, (t - cxLast) / 1000 || 0); cxLast = t;
     ctx.fillStyle = '#6aa84a'; ctx.fillRect(-10, -10, W + 20, H + 20);
     ctx.save(); ctx.translate(cam.x, cam.y); ctx.scale(cam.z, cam.z);
-    ctx.fillStyle = '#7fbf5a'; poly([iso(-6, -4), iso(22, -4), iso(22, 26), iso(-6, 26)], '#7fbf5a');
-    for (let gx = -4; gx < 20; gx++) for (let gy = -2; gy < 24; gy++) if ((gx + gy) % 2 === 0) poly(tile(gx, gy, 1, 1), '#78b754');
-    // sea strip with dock and boat
-    poly([iso(-6, -6), iso(22, -6), iso(22, 1.6), iso(-6, 1.6)], WATER[sea.region][0]);
-    for (let i = 0; i < 22; i++){ const p = iso(i - 3 + (t / 3000 % 1), .6 + (i % 3) * .3); ctx.strokeStyle = '#ffffff55'; ctx.beginPath(); ctx.ellipse(p.x, p.y, 6, 2, 0, 0, 7); ctx.stroke(); }
-    poly(tile(-6, 1.6, 28, .7), '#e8d39a');
-    for (let i = 0; i < 3; i++) cube(1.6 + i * .7, .4, .55, 1.4, 3, '#a7794a', '#7a5235', '#8a6040');
+    // ground, sea bed colour, beach, roads, fences, parking, park: drawn once into a high-resolution cache
+    const sk = [S.sea, Math.round(IS.oy), S.set.hq].join(':');
+    if (cxStaticKey !== sk) buildCxStatic(sk);
+    ctx.drawImage(cxStatic, cxBox.x, cxBox.y, cxBox.w, cxBox.h);
+    // moving water: wave crests, foam along the beach, sailing boats
+    for (let i = 0; i < 26; i++){ const p = iso(i - 5 + (t / 3000 % 1), -.6 + (i % 4) * .55); ctx.strokeStyle = '#ffffff55'; ctx.lineWidth = 1; ctx.beginPath(); ctx.ellipse(p.x, p.y, 6, 2, 0, 0, 7); ctx.stroke(); }
+    ctx.strokeStyle = `rgba(255,255,255,${.55 + .25 * Math.sin(t / 700)})`; ctx.lineWidth = 2; ctx.beginPath();
+    for (let gx = -6; gx <= 22; gx += .5){ const p = iso(gx, 1.55 + Math.sin(gx * 1.7 + t / 600) * .05); gx === -6 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y); } ctx.stroke();
+    for (let k = 0; k < 2; k++){ const gx = ((t / 400 * (k ? .6 : 1) + k * 9) % 30) - 6, sp = iso(gx, -2.5 - k * 1.5), sb = Math.sin(t / 500 + k) * 1.2;
+      ctx.fillStyle = '#00000022'; ctx.beginPath(); ctx.ellipse(sp.x, sp.y + 2, 12, 3, 0, 0, 7); ctx.fill();
+      ctx.fillStyle = '#f4f1ea'; ctx.beginPath(); ctx.moveTo(sp.x - 10, sp.y + sb); ctx.lineTo(sp.x + 10, sp.y - 3 + sb); ctx.lineTo(sp.x + 7, sp.y + 2 + sb); ctx.lineTo(sp.x - 7, sp.y + 4 + sb); ctx.fill();
+      ctx.fillStyle = k ? '#e74c3c' : '#ffffff'; ctx.beginPath(); ctx.moveTo(sp.x, sp.y - 1 + sb); ctx.lineTo(sp.x, sp.y - 20 + sb); ctx.lineTo(sp.x + 9, sp.y - 4 + sb); ctx.fill(); }
     const bp = iso(3.9, .3), bob = Math.sin(t / 700) * 1.5;
     ctx.save(); ctx.translate(bp.x, bp.y + bob);
     ctx.fillStyle = BOATS[S.boat].hull; ctx.beginPath(); ctx.moveTo(-26, -6); ctx.lineTo(24, -16); ctx.lineTo(30, -10); ctx.lineTo(-18, 2); ctx.closePath(); ctx.fill();
     ctx.fillStyle = '#f4f1ea'; ctx.beginPath(); ctx.moveTo(-6, -12); ctx.lineTo(8, -15); ctx.lineTo(8, -24); ctx.lineTo(-6, -21); ctx.fill();
     ctx.restore();
-    // fence around the yard
-    const fence = (a, b) => { const n = Math.ceil(Math.hypot(b[0] - a[0], b[1] - a[1]) * 2);
-      for (let i = 0; i <= n; i++){ const gx = a[0] + (b[0] - a[0]) * i / n, gy = a[1] + (b[1] - a[1]) * i / n, p = iso(gx, gy); ctx.fillStyle = '#d9d2c3'; ctx.fillRect(p.x - 1, p.y - 9, 2, 9); }
-      const p1 = iso(...a, 7), p2 = iso(...b, 7); ctx.strokeStyle = '#efe9dc'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke(); };
-    fence([-.5, 2.4], [-.5, 20.5]); fence([16.6, 2.4], [16.6, 20.5]); fence([-.5, 20.5], [3.9, 20.5]); fence([5.7, 20.5], [16.6, 20.5]);
-    // roads: main road (middle), gate road (vertical), back road
-    poly(tile(0, 7.4, 16.6, 1.2), '#8b939b'); poly(tile(4.2, 2.4, 1.2, 18.4), '#8b939b'); poly(tile(0, 15.2, 16.6, 1.2), '#8b939b');
-    // parking lot with cars
-    poly(tile(.2, 16.8, 3.6, 3.2), '#6f7780');
-    for (let i = 0; i < 4; i++){ const p1 = iso(.2 + i * .9, 16.8), p2 = iso(.2 + i * .9, 20); ctx.strokeStyle = '#ffffffaa'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke(); }
     ['#e74c3c', '#3f78a8', '#f2f2f2', '#5fd38d', '#e7b54d'].slice(0, 2 + Math.min(3, Math.floor((mkC.length + rsC.length) / 4))).forEach((c, i) => cube(.4 + (i % 4) * .9, 17.4 + Math.floor(i / 4) * 1.4, .55, 1, 6, c, mix(c, '#000000', .35), mix(c, '#000000', .2)));
-    // park with benches and a pond
-    poly(tile(6, 16.8, 6, 3.2), '#6fb34e');
-    const pp = iso(9, 18.4); ctx.fillStyle = '#5aa7d6'; ctx.beginPath(); ctx.ellipse(pp.x, pp.y, 34, 16, 0, 0, 7); ctx.fill(); ctx.strokeStyle = '#ffffff55'; ctx.beginPath(); ctx.ellipse(pp.x - 6, pp.y - 2, 10, 4, 0, 0, 7); ctx.stroke();
-    cube(6.6, 17.1, 1, .3, 3, '#8a6a4a', '#5b3a1c', '#6b4a2a'); cube(11, 19.2, .3, 1, 3, '#8a6a4a', '#5b3a1c', '#6b4a2a');
-    ctx.strokeStyle = '#f2f2f2aa'; ctx.setLineDash([5, 6]); ctx.lineWidth = 1.2;
-    let a1 = iso(0, 8), a2 = iso(12, 8); ctx.beginPath(); ctx.moveTo(a1.x, a1.y); ctx.lineTo(a2.x, a2.y); ctx.stroke();
-    a1 = iso(4.8, 2.4); a2 = iso(4.8, 15.8); ctx.beginPath(); ctx.moveTo(a1.x, a1.y); ctx.lineTo(a2.x, a2.y); ctx.stroke(); ctx.setLineDash([]);
-    // courtyard with a fountain
-    const fp = iso(4.8, 8); ctx.fillStyle = '#d9d2c3'; ctx.beginPath(); ctx.ellipse(fp.x, fp.y, 16, 9, 0, 0, 7); ctx.fill();
-    ctx.fillStyle = '#7cc6f2'; ctx.beginPath(); ctx.ellipse(fp.x, fp.y, 11, 6, 0, 0, 7); ctx.fill();
+    // pond ripple and fountain spray
+    const pp = iso(9, 18.4); ctx.strokeStyle = `rgba(255,255,255,${.3 + .2 * Math.sin(t / 500)})`; ctx.lineWidth = 1; ctx.beginPath(); ctx.ellipse(pp.x - 6, pp.y - 2, 8 + (t / 120 % 10), 3 + (t / 300 % 4), 0, 0, 7); ctx.stroke();
+    const fp = iso(4.8, 8);
     ctx.fillStyle = '#ffffffaa'; for (let i = 0; i < 4; i++){ ctx.beginPath(); ctx.arc(fp.x + Math.cos(t / 300 + i * 1.6) * 5, fp.y - 4 - Math.abs(Math.sin(t / 250 + i)) * 6, 1.4, 0, 7); ctx.fill(); }
 
     // buildings back to front
@@ -1444,10 +1509,35 @@
     plate(BUILD[3], S.rs.open ? `${'★'.repeat(Math.floor(rsStars()))} · ${rsC.length} qonaq · 👷 ${S.wk.rest}/${maxW('rest')}` : S.fx.open ? `🔒 ${fmt(rsOpenCost())} ₼` : '🔒 əvvəlcə Sex');
     plate(BUILD[4], `🛏️ ${wkTotal()}/${beds()} işçi`);
     plate(BUILD[5], S.cx.hq ? `Sv ${S.cx.hq} · qazanc +${5 * S.cx.hq}%` : `🔒 ${fmt(cxCost(CXUPS[1]))} ₼`);
+    cxIncomeT += cxDt;
+    if (cxIncomeT > .9){ cxIncomeT = 0; for (const id in cxIncome){ if (cxIncome[id] > 0){ const b = BUILD.find(x => x.id === id); if (b) coins.push({ b, amt:cxIncome[id], t:0 }); } cxIncome[id] = 0; } }
+    coins = coins.filter(c => (c.t += cxDt) < 1.6);
+    for (const c of coins){ const p = iso(c.b.gx + c.b.w / 2, c.b.gy + c.b.d / 2, 56 + c.t * 34), a = Math.min(1, (1.6 - c.t) * 2);
+      ctx.globalAlpha = a; ctx.fillStyle = '#f2c94c'; ctx.beginPath(); ctx.arc(p.x - 22, p.y, 6, 0, 7); ctx.fill(); ctx.strokeStyle = '#b8860b'; ctx.lineWidth = 1.2; ctx.stroke();
+      text('₼', p.x - 22, p.y + .5, 8, '#8a5a00', 900); ctx.lineWidth = 3; ctx.strokeStyle = '#08141fcc'; ctx.font = '800 12px Inter, system-ui'; ctx.textAlign = 'left'; ctx.strokeText('+' + fmt(c.amt), p.x - 13, p.y + 1); text('+' + fmt(c.amt), p.x - 13, p.y + 1, 12, '#ffe08a', 800, 'left'); ctx.globalAlpha = 1; }
+    for (const c of cxClouds){ c.gx += cxDt * .25; if (c.gx > 24) c.gx = -10; const p = iso(c.gx, c.gy); ctx.fillStyle = '#0a1a2a18'; ctx.beginPath(); ctx.ellipse(p.x, p.y, 70 * c.s, 30 * c.s, 0, 0, 7); ctx.fill(); }
+    if (!isNight()) for (let i = 0; i < 3; i++){ const gx = ((t / 900 + i * 7) % 30) - 6, p = iso(gx, 4 + i * 4, 90 + i * 10), f = Math.sin(t / 120 + i) * 3;
+      ctx.strokeStyle = '#2a3440'; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(p.x - 6, p.y - f); ctx.quadraticCurveTo(p.x - 3, p.y - 3, p.x, p.y); ctx.quadraticCurveTo(p.x + 3, p.y - 3, p.x + 6, p.y - f); ctx.stroke(); }
     ctx.restore();
-    if (dark){ ctx.fillStyle = `rgba(10,20,50,${dark})`; ctx.fillRect(-10, -10, W + 20, H + 20); }
+    if (dark){
+      ctx.fillStyle = `rgba(8,16,44,${dark + .1})`; ctx.fillRect(-10, -10, W + 20, H + 20);
+      ctx.save(); ctx.translate(cam.x, cam.y); ctx.scale(cam.z, cam.z); ctx.globalCompositeOperation = 'lighter';
+      LAMPS.forEach(([gx, gy], i) => { const p = iso(gx, gy), fl = .9 + Math.sin(t / 90 + i * 3) * .05, g = ctx.createRadialGradient(p.x, p.y - 20, 1, p.x, p.y - 4, 34);
+        g.addColorStop(0, `rgba(255,214,140,${.75 * fl})`); g.addColorStop(.25, 'rgba(255,190,110,.28)'); g.addColorStop(1, 'rgba(255,170,90,0)'); ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(p.x, p.y - 4, 36, 22, 0, 0, 7); ctx.fill(); });
+      BUILD.forEach(b => { if (!b.open()) return; const c = iso(b.gx + b.w / 2, b.gy + b.d / 2), g = ctx.createRadialGradient(c.x, c.y, 4, c.x, c.y, 60);
+        g.addColorStop(0, 'rgba(255,220,150,.28)'); g.addColorStop(1, 'rgba(255,200,120,0)'); ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(c.x, c.y, 70, 40, 0, 0, 7); ctx.fill(); });
+      const fp2 = iso(4.8, 8), fg = ctx.createRadialGradient(fp2.x, fp2.y, 2, fp2.x, fp2.y, 20); fg.addColorStop(0, 'rgba(120,200,255,.5)'); fg.addColorStop(1, 'rgba(120,200,255,0)'); ctx.fillStyle = fg; ctx.beginPath(); ctx.ellipse(fp2.x, fp2.y, 22, 12, 0, 0, 7); ctx.fill();
+      ctx.restore();
+    }
     ctx.fillStyle = '#08141fe0'; rr(10, 86, 128, 20, 10); ctx.fill();
     text(`👷 ${wkTotal()}/${beds()} işçi${S.wk.pool ? ' · ' + S.wk.pool + ' boş' : ''}`, 74, 96, 10, wkTotal() >= beds() && wkWanted() ? '#ffb340' : '#ecf3fa', 800);
+    const G = GOALS[S.goal];
+    if (G){ const ok = G.done(), pulse = ok ? .5 + .5 * Math.sin(t / 180) : 0, gy0 = H - 168;
+      ctx.fillStyle = ok ? '#2f7d5be6' : '#08141fe8'; rr(16, gy0, 368, 32, 16); ctx.fill();
+      ctx.strokeStyle = ok ? `rgba(127,240,168,${.5 + pulse * .5})` : '#e7b54d88'; ctx.lineWidth = 2; ctx.stroke();
+      text(`🎯 ${S.goal + 1}/${GOALS.length}`, 30, gy0 + 16, 11, '#f6d48a', 800, 'left');
+      text(G.text, 205, gy0 + 16, 12, '#ecf3fa', 800);
+      text(ok ? 'AL ✓' : '›', 372, gy0 + 16, ok ? 12 : 16, ok ? '#7ff0a8' : '#8ea7bf', 900, 'right'); }
     if (S.clock < 60){ ctx.fillStyle = '#08141fe0'; rr(40, H - 132, 320, 20, 10); ctx.fill();
       text('Binaya toxun · sürüşdür · iki barmaqla böyüt', 200, H - 122, 10, '#ecf3fa', 800); }
   }
@@ -1539,7 +1629,7 @@
   function mkDone(c){
     const mk = S.mk, s = c.stage; occ[s][c.slot] = null;
     if (s === 'cash'){
-      earn(c.buy); mk.served++; mkLog.push([performance.now(), c.buy]);
+      earn(c.buy); addIncome('market', c.buy); mk.served++; mkLog.push([performance.now(), c.buy]);
       floats.push({ x:c.x, y:c.y - 18, text:'+' + fmt(c.buy) + ' ₼', life:1.1, color:'#ffe08a', view:'market' });
       c.mood = '😊'; c.moodT = 1.5; leaveWith(mk.sat, c, 100 - c.tw * 1.5 - mk.dirt * 0.4, MK.door); return;
     }
@@ -1682,7 +1772,7 @@
         const lim = c.state === 'wq' ? 30 : 45;
         if (c.wait > lim){ c.mood = '😠'; c.moodT = 2; rs.angry++; if (c.table !== undefined && rsTables[c.table] === c) rsTables[c.table] = null; rsTasks = rsTasks.filter(x => x.c !== c); rsCook = rsCook.filter(x => x.c !== c); leaveWith(rs.sat, c, 15, RS.door); continue; } }
       if (c.state === 'eat'){ c.t -= dt; if (c.t <= 0){
-        rsTables[c.table] = null; earn(c.bill); rs.served++; rsLog.push([performance.now(), c.bill]);
+        rsTables[c.table] = null; earn(c.bill); addIncome('rest', c.bill); rs.served++; rsLog.push([performance.now(), c.bill]);
         floats.push({ x:c.x, y:c.y - 18, text:'+' + fmt(c.bill) + ' ₼', life:1.2, color:'#ffe08a', view:'rest' });
         c.mood = '😋'; c.moodT = 1.5; leaveWith(rs.sat, c, 100 - c.tw * 1.2, RS.door);
       } continue; }
@@ -1880,7 +1970,7 @@
   }
 
   // ---------------- Drawing ----------------
-  const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+  const cv = document.getElementById('cv'); let ctx = cv.getContext('2d');
   let scale = 1;
   function resize(){
     const r = cv.getBoundingClientRect(), dpr = Math.min(2.5, window.devicePixelRatio || 1);
@@ -1975,9 +2065,9 @@
     ctx.restore();
   }
 
-  let nowT = 0;
+  let nowT = 0, shownMoney = 0, cxDtAll = 0;
   function draw(t){
-    nowT = t;
+    cxDtAll = Math.min(.05, (t - nowT) / 1000 || 0); nowT = t;
     const sea = SEAS[S.sea], [w1, w2] = WATER[sea.region], wx = WEATHER[weather], hq = S.set.hq;
     const cold = sea.region === 'arctic' || sea.region === 'antarctic';
     const ph = (S.clock % DAY) / DAY;
@@ -2165,7 +2255,8 @@
     ctx.strokeStyle = '#ffffff18'; ctx.lineWidth = 1; rr(10, 10, 204, 48, 12); ctx.stroke(); rr(220, 10, 170, 48, 12); ctx.stroke();
     text(`LVL ${S.sea + 1}  ${'★'.repeat(seaStars(S.sea))}${'☆'.repeat(3 - seaStars(S.sea))}`, 20, 25, 11, '#e7b54d', 800, 'left');
     text(sea.name, 20, 44, sea.name.length > 18 ? 14 : 17, '#ecf3fa', 800, 'left', "'Baloo 2'");
-    text(fmt(S.money) + ' ₼', 380, 28, 18, '#f6d48a', 800, 'right', "'Baloo 2'");
+    shownMoney += (S.money - shownMoney) * Math.min(1, cxDtAll * 8); if (Math.abs(S.money - shownMoney) < .5 || S.money < shownMoney * .5) shownMoney = S.money;
+    text(fmt(shownMoney) + ' ₼', 380, 28, 18, S.money > shownMoney + 1 ? '#fff3c4' : '#f6d48a', 800, 'right', "'Baloo 2'");
     text(`◆${S.pearls} · ${fmt(expectedRate() * saleMult())}/san ${isNight() ? '🌙' : ''}${wx.icon}${schoolOn() ? '🐟' : ''}${turboOn() ? '⚡' : ''}`, 380, 46, 11, '#8ea7bf', 700, 'right');
 
     // hold gauge under the sea name
@@ -2207,6 +2298,9 @@
       ctx.globalAlpha = 1;
     }
 
+    confetti = confetti.filter(p => (p.life -= cxDtAll) > 0);
+    for (const p of confetti){ p.vy += 420 * cxDtAll; p.vx *= .99; p.x += p.vx * cxDtAll; p.y += p.vy * cxDtAll; p.r += cxDtAll * 8;
+      ctx.save(); ctx.globalAlpha = Math.min(1, p.life); ctx.translate(p.x, p.y); ctx.rotate(p.r); ctx.fillStyle = p.c; ctx.fillRect(-3, -1.5, 6, 3); ctx.restore(); }
     const biting = lines.find(L => L.state === 'bite');
     ctx.save(); ctx.translate(0, H - 648);
     if (fight){
@@ -2253,6 +2347,13 @@
     const ab = abilityButtons().find(b => Math.hypot(x - b.x, y - b.y) < 22);
     if (ab){ useAbility(ab.id); return; }
     if (S.view === 'complex' && y > 110 && y < 148 && x > 60 && x < 340 && lines.some(l => l.state === 'bite')){ S.view = 'sea'; return; }
+    if (S.view === 'complex' && GOALS[S.goal] && y > H - 170 && y < H - 134 && x > 14 && x < 386){
+      const G = GOALS[S.goal];
+      if (G.done()){ const m = goalReward(), pr = (S.goal + 1) % 3 === 0 ? 1 : 0; earn(m); S.pearls += pr; S.goal++; SFX.rare(); party(70);
+        toast(`🎯 Məqsəd tamamlandı: +${fmt(m)} ₼${pr ? ' +◆1' : ''}`, '#5fd38d'); save(); }
+      else openSheet(G.tab);
+      return;
+    }
     if (S.view === 'complex'){
       ptrs.set(e.pointerId, { x, y }); try { cv.setPointerCapture(e.pointerId); } catch (err) {}
       if (ptrs.size === 1) drag = { x, y, cx:cam.x, cy:cam.y, moved:false };
@@ -2711,6 +2812,7 @@
     $('pearlsTop').textContent = S.pearls;
     $('speciesTop').textContent = foundN();
 
+    const G = GOALS[S.goal]; document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('goal', !!G && !G.done() && b.dataset.tab === G.tab && $('sheet').hidden));
     const affordN = UPS.filter(u => S[u.id] < u.max() && S.money >= u.base * u.g ** S[u.id]).length
       + (S.boat + 1 < BOATS.length && S.money >= BOATS[S.boat + 1].cost ? 1 : 0);
     $('shipBadge').hidden = !affordN; $('shipBadge').textContent = affordN;
@@ -2853,7 +2955,7 @@
       }
       case 'boat': {
         const k = +a.dataset.k; if (k !== S.boat + 1 || !buy(BOATS[k].cost)) return;
-        S.boat = k; dirty.ship = dirty.fish = true; SFX.rare();
+        S.boat = k; dirty.ship = dirty.fish = true; SFX.rare(); party(60);
         ask('Yeni gəmi!', `İndi ${BOATS[k].rods} tilova qədər qura bilərsən, satış qiyməti ×${BOATS[k].val}.`, BOATS[k].icon + ' ' + BOATS[k].name);
         break;
       }
@@ -2865,7 +2967,7 @@
           `Səfər ${fmt(ticket(n))} ₼. Yeni səviyyəyə keçəndə qalan pul sıfırlanır` + (lost >= 1 ? `: ${fmt(lost)} ₼ itəcək. İstəsən, əvvəlcə Gəmi bölməsində xərclə.` : '.'),
           'Keçək?', () => {
             if (S.money < ticket(n) || S.maxSea + 1 !== n) return;
-            S.money = 0; S.maxSea = n; S.sea = n; resetSea(); dirty.fish = dirty.map = dirty.album = true; SFX.rare();
+            S.money = 0; S.maxSea = n; S.sea = n; resetSea(); dirty.fish = dirty.map = dirty.album = true; SFX.rare(); party();
             toast(`⛵ LVL ${n + 1}: ${SEAS[n].name} · ${SEAS[n].fish.length} yeni növ səni gözləyir`);
             save(); updatePanel();
           });
@@ -2898,7 +3000,7 @@
       }
       case 'fxopen': {
         if (S.fx.open || !buy(fxOpenCost())) return;
-        S.fx.open = true; SFX.rare(); toast('🏭 Sex açıldı! Yük maşını balığı gətirməyə başladı'); break;
+        S.fx.open = true; SFX.rare(); party(); closeSheet(); S.view = 'complex'; toast('🏭 Sex açıldı! Yük maşını balığı gətirməyə başladı'); break;
       }
       case 'wkplus': {
         const id = a.dataset.id; if (S.wk[id] >= maxW(id)) return;
@@ -2918,7 +3020,7 @@
       }
       case 'rsopen': {
         if (S.rs.open || !S.fx.open || !buy(rsOpenCost())) return;
-        S.rs.open = true; SFX.rare(); toast('🍽️ Restoran açıldı! İlk qonaqlar yoldadır'); break;
+        S.rs.open = true; SFX.rare(); party(); closeSheet(); S.view = 'complex'; toast('🍽️ Restoran açıldı! İlk qonaqlar yoldadır'); break;
       }
       case 'rsup': {
         const u = RSUPS.find(x => x.id === a.dataset.id), c = rsCost(u);
@@ -2937,7 +3039,7 @@
       }
       case 'mkopen': {
         const mk = S.mk;
-        if (!mk.open){ if (!buy(mkOpenCost())) return; mk.open = true; SFX.rare(); toast('🏪 Bazar açıldı! Müştərilər gəlməyə başlayır'); break; }
+        if (!mk.open){ if (!buy(mkOpenCost())) return; mk.open = true; SFX.rare(); party(); closeSheet(); S.view = 'complex'; toast('🏪 Bazar açıldı! Müştərilər gəlməyə başlayır'); break; }
         const nx = TIERS[mk.tier + 1]; if (!nx || mkStars() < nx.need || !buy(nx.cost * mkScale())) return;
         mk.tier++; SFX.rare(); ask('Bazar böyüdü!', `Qiymət ×${nx.mult}, ${nx.stalls} piştaxtaya qədər yer.`, '🏪 ' + nx.name);
         break;
@@ -2969,7 +3071,7 @@
           const f = fresh(), keep = ['pearls', 'shop', 'ach', 'found', 'rec', 'set', 'mgr', 'daily', 'total', 'caught', 'golds', 'fights', 'snaps', 'rares', 'newSpecies', 'best', 'bestK', 'bestStreak', 'qn', 'clock'];
           keep.forEach(k => { f[k] = S[k]; });
           f.fame = S.fame + g; f.exped = S.exped + 1; f.quests = [];
-          f.wk = { pool:0, port:2, plant:0, market:0, rest:0, timer:0 };
+          f.wk = { pool:0, port:2, plant:0, market:0, rest:0, timer:0 }; f.goal = S.goal;
           S = f; resetSea(); mkReset(); rsReset(); fillQuests(); closeSheet(); Object.keys(dirty).forEach(k => dirty[k] = true); save(); updatePanel();
           toast(`🧭 Ekspedisiya başladı: ⚓ ${S.fame}, qazanc ×${(1 + .25 * S.fame).toFixed(2)}`);
         });
@@ -3021,6 +3123,7 @@
       if (ofx.pack && !(ofx.lines || {}).fillet) S.fx.lines.fillet = ofx.pack;      // the old packing line becomes the fillet line
       ['rawN', 'rawV', 'cleanN', 'cleanV', 'packN', 'packV', 'pack'].forEach(k => delete S.fx[k]);
       S.cx = Object.assign(fresh().cx, d.cx || {});
+      S.goal = d.goal || 0;
       S.wk = Object.assign(fresh().wk, d.wk || {});
       if (!d.wk){ S.wk.port = 0; for (let i = 0; i < beds(); i++) if (!assignWorker()) break; }   // older saves start with a full crew up to the free beds
       const D2 = fresh(); S.rs = Object.assign(D2.rs, d.rs || {}); S.rs.menu = Object.assign({ soup:true }, (d.rs || {}).menu || {}); S.rs.sat = Array.isArray(S.rs.sat) ? S.rs.sat.slice(-30) : [];
