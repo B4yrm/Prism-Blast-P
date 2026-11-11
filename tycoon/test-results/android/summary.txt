@@ -1,10 +1,10 @@
-Total frames rendered: 421
-Janky frames: 418 (99.29%)
+Total frames rendered: 1572
+Janky frames: 1547 (98.41%)
 50th percentile: 150ms
-90th percentile: 200ms
-           Java Heap:     8348                          23900
-         Native Heap:    21128                          22384
+90th percentile: 250ms
+           Java Heap:     8568                          24876
+         Native Heap:    21356                          22660
             Graphics:        0                              0
-           TOTAL PSS:    91320            TOTAL RSS:   215640       TOTAL SWAP PSS:      176
-11-11 17:56:10.249  6950  6950 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=214 level=2 caught=108 fps=12.2 textureMB=37.8 heapMB=42.6 preset=low canvas=866x412
-11-11 17:56:15.283  6950  6950 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=214 level=2 caught=108 fps=11.4 textureMB=37.8 heapMB=42.6 preset=low canvas=866x412
+           TOTAL PSS:   119710            TOTAL RSS:   279744       TOTAL SWAP PSS:      170
+11-11 19:12:38.534  7117  7117 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.577 money=214 level=2 caught=156 fps=8.0 textureMB=91.5 heapMB=40.1 preset=high canvas=1732x824
+11-11 19:12:43.461  7117  7117 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.577 money=214 level=2 caught=156 fps=7.8 textureMB=91.5 heapMB=40.1 preset=high canvas=1732x824
