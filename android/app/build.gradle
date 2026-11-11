@@ -22,21 +22,22 @@ android {
             applicationId "az.universitet.tycoon"
             resValue "string", "app_name", "Universitet Tycoon"
             resValue "bool", "fullscreen", "false"
-            manifestPlaceholders = [orientation: "unspecified"]
+            manifestPlaceholders = [orientation: "unspecified", configChanges: "orientation|screenSize|keyboardHidden"]
         }
         fish {
             dimension "game"
             applicationId "az.baliqci.idle"
             resValue "string", "app_name", "Balıqçı Idle"
             resValue "bool", "fullscreen", "false"
-            manifestPlaceholders = [orientation: "unspecified"]
+            manifestPlaceholders = [orientation: "unspecified", configChanges: "orientation|screenSize|keyboardHidden"]
         }
         tycoon {
             dimension "game"
             applicationId "az.fishing.tycoon"
             resValue "string", "app_name", "Fishing Tycoon"
             resValue "bool", "fullscreen", "true"
-            manifestPlaceholders = [orientation: "sensorLandscape"]
+            // never recreate the activity (a second WebView would keep running)
+            manifestPlaceholders = [orientation: "sensorLandscape", configChanges: "orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden|navigation|uiMode|density"]
         }
     }
     sourceSets {

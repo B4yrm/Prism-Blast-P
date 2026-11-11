@@ -37,6 +37,11 @@ public class MainActivity extends Activity {
 
     // The page saves on visibilitychange; pausing the WebView triggers it.
     @Override protected void onPause() { super.onPause(); web.onPause(); }
+    @Override protected void onDestroy() {
+        // Fishing Tycoon: tear the WebView down so no hidden game keeps running.
+        if (getResources().getBoolean(R.bool.fullscreen) && web != null) { web.loadUrl("about:blank"); web.destroy(); web = null; }
+        super.onDestroy();
+    }
     @Override protected void onResume() {
         super.onResume(); web.onResume();
         if (getResources().getBoolean(R.bool.fullscreen)) hideBars();

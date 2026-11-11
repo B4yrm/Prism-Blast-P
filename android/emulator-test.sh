@@ -11,9 +11,16 @@ adb shell wm size >> "$OUT/device.txt"
 adb shell wm density >> "$OUT/device.txt"
 adb shell dumpsys package com.google.android.webview | grep -m1 versionName >> "$OUT/device.txt"
 adb install -r "$APK"
+# no first-run "Viewing full screen" bubble (it would swallow the test taps)
+adb shell settings put secure immersive_mode_confirmations confirmed
 adb logcat -c
 adb shell am start -W -n az.fishing.tycoon/az.universitet.tycoon.MainActivity | tee "$OUT/start.txt"
 sleep 40
+adb exec-out screencap -p > "$OUT/0-welcome.png"
+read W0 H0 < <(adb shell wm size | tail -1 | sed 's/.*: //; s/x/ /' | awk '{ if ($1 < $2) print $2, $1; else print $1, $2 }')
+# press "Başla" on the welcome card (centre of the screen, lower half)
+adb shell input tap $((W0/2)) $((H0/2 + H0/7))
+sleep 3
 adb exec-out screencap -p > "$OUT/1-start.png"
 adb shell dumpsys gfxinfo az.fishing.tycoon reset > /dev/null
 # screen size in landscape
@@ -46,7 +53,8 @@ adb shell input tap $(px 30) $(px 66)
 sleep 40
 adb shell dumpsys gfxinfo az.fishing.tycoon > "$OUT/gfxinfo.txt"
 adb shell dumpsys meminfo az.fishing.tycoon > "$OUT/meminfo.txt"
-adb logcat -d -s FishingTycoon:I AndroidRuntime:E chromium:E > "$OUT/logcat.txt"
+adb logcat -d -s FishingTycoon:I AndroidRuntime:E > "$OUT/logcat.txt"
+adb shell dumpsys activity activities | grep -c "az.fishing.tycoon/az.universitet.tycoon.MainActivity" > "$OUT/activity-count.txt"
 adb exec-out screencap -p > "$OUT/6-end.png"
 grep -E "Total frames|Janky|50th|90th|99th" "$OUT/gfxinfo.txt" > "$OUT/summary.txt"
 grep -E "TOTAL PSS|TOTAL RSS|Graphics:|GL mtrack|EGL mtrack|Native Heap|Java Heap" "$OUT/meminfo.txt" >> "$OUT/summary.txt"

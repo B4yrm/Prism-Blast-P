@@ -35,7 +35,17 @@ if (!isNew && away > 60) {
   if (amt > 0) offline = { secs, amt };
 }
 
-const game = new Phaser.Game({
+window.addEventListener('error', e => console.log('ERR ' + e.message + ' @' + (e.filename || '').slice(-20) + ':' + e.lineno));
+window.addEventListener('unhandledrejection', e => console.log('ERR promise ' + (e.reason && e.reason.message)));
+
+// Start only once the page has a real size (a WebView can report 0×0 at first).
+function whenSized(cb) {
+  if (innerWidth > 0 && innerHeight > 0) return cb();
+  const t = setInterval(() => { if (innerWidth > 0 && innerHeight > 0) { clearInterval(t); cb(); } }, 50);
+}
+let game;
+whenSized(() => {
+game = new Phaser.Game({
   type: Phaser.AUTO,
   parent: 'game',
   backgroundColor: '#1b8bd0',
@@ -49,16 +59,19 @@ const game = new Phaser.Game({
 });
 window.__game = game;
 window.__quality = G.quality;
+});
 
 // Periodic performance line (visible in Android logcat via the WebView console bridge).
 setInterval(() => {
+  if (!game) return;
   let px = 0;
   try { for (const k of game.textures.getTextureKeys()) { const src = game.textures.get(k).source[0]; if (src) px += src.width * src.height; } } catch (e) { /* ignore */ }
   const heap = performance.memory ? (performance.memory.usedJSHeapSize / 1048576).toFixed(1) : 'n/a';
-  console.log(`PERF fps=${game.loop.actualFps.toFixed(1)} textureMB=${(px * 4 / 1048576).toFixed(1)} heapMB=${heap} preset=${G.quality.name} canvas=${game.canvas.width}x${game.canvas.height}`);
+  console.log(`PERF renderer=${game.renderer ? (game.renderer.type === 2 ? 'webgl' : 'canvas') : 'none'} world=${!!G.world} size=${innerWidth}x${innerHeight} fps=${game.loop.actualFps.toFixed(1)} textureMB=${(px * 4 / 1048576).toFixed(1)} heapMB=${heap} preset=${G.quality.name} canvas=${game.canvas.width}x${game.canvas.height}`);
 }, 10000);
 
 window.addEventListener('resize', () => {
+  if (!game || !innerWidth || !innerHeight) return;
   game.scale.resize(Math.round(innerWidth * dpr), Math.round(innerHeight * dpr));
   game.scale.setZoom(1 / dpr);
 });
