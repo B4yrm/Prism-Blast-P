@@ -1,19 +1,10 @@
-Total frames rendered: 1091
-Janky frames: 1091 (100.00%)
-Janky frames (legacy): 1091 (100.00%)
-50th percentile: 250ms
-90th percentile: 350ms
-99th percentile: 450ms
-50th gpu percentile: 15ms
-90th gpu percentile: 4950ms
-99th gpu percentile: 4950ms
-  Native Heap    29174    29164        0     4433    30372    43888    37352     2188
-           Java Heap:     3324                          19384
-         Native Heap:    29164                          30372
+Total frames rendered: 335
+Janky frames: 335 (100.00%)
+50th percentile: 200ms
+90th percentile: 250ms
+           Java Heap:     8312                          23536
+         Native Heap:    21232                          22244
             Graphics:        0                              0
-           TOTAL PSS:    83505            TOTAL RSS:   192100       TOTAL SWAP PSS:    10582
-11-11 13:00:29.628  3490  3490 I FishingTycoon: PERF renderer=webgl world=true size=866x412 fps=7.3 textureMB=37.8 heapMB=19.6 preset=low canvas=866x412
-11-11 13:00:39.581  3490  3490 I FishingTycoon: PERF renderer=webgl world=true size=866x412 fps=8.0 textureMB=37.8 heapMB=19.6 preset=low canvas=866x412
-11-11 13:00:49.459  3490  3490 I FishingTycoon: PERF renderer=webgl world=true size=866x412 fps=7.6 textureMB=37.8 heapMB=19.6 preset=low canvas=866x412
-11-11 13:00:59.536  3490  3490 I FishingTycoon: PERF renderer=webgl world=true size=866x412 fps=7.3 textureMB=37.8 heapMB=19.6 preset=low canvas=866x412
-11-11 13:01:09.569  3490  3490 I FishingTycoon: PERF renderer=webgl world=true size=866x412 fps=8.0 textureMB=37.8 heapMB=19.6 preset=low canvas=866x412
+           TOTAL PSS:    91069            TOTAL RSS:   213528       TOTAL SWAP PSS:      186
+11-11 16:34:11.528  6553  6553 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=120 level=1 caught=40 fps=9.5 textureMB=37.8 heapMB=42.6 preset=low canvas=866x412
+11-11 16:34:16.501  6553  6553 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=120 level=1 caught=40 fps=9.0 textureMB=37.8 heapMB=42.6 preset=low canvas=866x412

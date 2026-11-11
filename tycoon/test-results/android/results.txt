@@ -1,0 +1,11 @@
+INFO  app window is inset 127px from the display cutout (UI is not under the notch)
+PASS  left rail opens (notch-safe position)
+PASS  left rail closes
+PASS  centre button
+PASS  dock button opens panel
+PASS  panel close button
+PASS  mission chip expands
+PASS  mission card collapses
+INFO  double tap via adb: 3/3 recognised (adb cannot send two taps with exact timing)
+PASS  save/load after force-stop (money=120 level=1)
+INFO  crashes: 0

@@ -1,41 +1,17 @@
---------- beginning of crash
-11-11 12:57:25.679   835   835 E AndroidRuntime: FATAL EXCEPTION: main
-11-11 12:57:25.679   835   835 E AndroidRuntime: Process: com.android.systemui, PID: 835
-11-11 12:57:25.679   835   835 E AndroidRuntime: java.lang.RuntimeException: Error receiving broadcast Intent { act=android.intent.action.PACKAGE_CHANGED dat=package: flg=0x5000010 (has extras) } in com.android.systemui.recents.OverviewProxyService$2@2c68394
-11-11 12:57:25.679   835   835 E AndroidRuntime: 	at android.app.LoadedApk$ReceiverDispatcher$Args.lambda$getRunnable$0(LoadedApk.java:1810)
-11-11 12:57:25.679   835   835 E AndroidRuntime: 	at android.app.LoadedApk$ReceiverDispatcher$Args.$r8$lambda$gDuJqgxY6Zb-ifyeubKeivTLAwk(Unknown Source:0)
-11-11 12:57:25.679   835   835 E AndroidRuntime: 	at android.app.LoadedApk$ReceiverDispatcher$Args$$ExternalSyntheticLambda0.run(Unknown Source:2)
-11-11 12:57:25.679   835   835 E AndroidRuntime: 	at android.os.Handler.handleCallback(Handler.java:958)
-11-11 12:57:25.679   835   835 E AndroidRuntime: 	at android.os.Handler.dispatchMessage(Handler.java:99)
-11-11 12:57:25.679   835   835 E AndroidRuntime: 	at android.os.Looper.loopOnce(Looper.java:205)
-11-11 12:57:25.679   835   835 E AndroidRuntime: 	at android.os.Looper.loop(Looper.java:294)
-11-11 12:57:25.679   835   835 E AndroidRuntime: 	at android.app.ActivityThread.main(ActivityThread.java:8177)
-11-11 12:57:25.679   835   835 E AndroidRuntime: 	at java.lang.reflect.Method.invoke(Native Method)
-11-11 12:57:25.679   835   835 E AndroidRuntime: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:552)
-11-11 12:57:25.679   835   835 E AndroidRuntime: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:971)
-11-11 12:57:25.679   835   835 E AndroidRuntime: Caused by: java.lang.NullPointerException: Attempt to read from field 'android.content.pm.ServiceInfo android.content.pm.ResolveInfo.serviceInfo' on a null object reference in method 'void com.android.systemui.recents.OverviewProxyService$2.onReceive(android.content.Context, android.content.Intent)'
-11-11 12:57:25.679   835   835 E AndroidRuntime: 	at com.android.systemui.recents.OverviewProxyService$2.onReceive(go/retraceme 19693c2b0a8439b7183751b64d60893829dbf56dc1e08e0669fc0cfc55754948:44)
-11-11 12:57:25.679   835   835 E AndroidRuntime: 	at android.app.LoadedApk$ReceiverDispatcher$Args.lambda$getRunnable$0(LoadedApk.java:1802)
-11-11 12:57:25.679   835   835 E AndroidRuntime: 	... 10 more
 --------- beginning of main
-11-11 12:57:41.015  3490  3490 I FishingTycoon: PERF renderer=webgl world=false size=866x412 fps=18.1 textureMB=14.1 heapMB=19.6 preset=low canvas=866x412
-11-11 12:57:59.523  3490  3490 I FishingTycoon: PERF renderer=webgl world=true size=866x412 fps=14.8 textureMB=37.8 heapMB=19.6 preset=low canvas=866x412
-11-11 12:58:09.519  3490  3490 I FishingTycoon: PERF renderer=webgl world=true size=866x412 fps=9.9 textureMB=37.8 heapMB=19.6 preset=low canvas=866x412
-11-11 12:58:19.507  3490  3490 I FishingTycoon: PERF renderer=webgl world=true size=866x412 fps=6.9 textureMB=37.8 heapMB=19.6 preset=low canvas=866x412
-11-11 12:58:29.514  3490  3490 I FishingTycoon: PERF renderer=webgl world=true size=866x412 fps=11.8 textureMB=37.8 heapMB=19.6 preset=low canvas=866x412
-11-11 12:58:39.502  3490  3490 I FishingTycoon: PERF renderer=webgl world=true size=866x412 fps=7.3 textureMB=37.8 heapMB=19.6 preset=low canvas=866x412
-11-11 12:58:49.519  3490  3490 I FishingTycoon: PERF renderer=webgl world=true size=866x412 fps=7.9 textureMB=37.8 heapMB=19.6 preset=low canvas=866x412
-11-11 12:58:59.488  3490  3490 I FishingTycoon: PERF renderer=webgl world=true size=866x412 fps=8.2 textureMB=37.8 heapMB=19.6 preset=low canvas=866x412
-11-11 12:59:09.550  3490  3490 I FishingTycoon: PERF renderer=webgl world=true size=866x412 fps=8.0 textureMB=37.8 heapMB=19.6 preset=low canvas=866x412
-11-11 12:59:19.565  3490  3490 I FishingTycoon: PERF renderer=webgl world=true size=866x412 fps=8.0 textureMB=37.8 heapMB=19.6 preset=low canvas=866x412
-11-11 12:59:29.711  3490  3490 I FishingTycoon: PERF renderer=webgl world=true size=866x412 fps=7.3 textureMB=37.8 heapMB=19.6 preset=low canvas=866x412
-11-11 12:59:39.586  3490  3490 I FishingTycoon: PERF renderer=webgl world=true size=866x412 fps=8.0 textureMB=37.8 heapMB=19.6 preset=low canvas=866x412
-11-11 12:59:49.810  3490  3490 I FishingTycoon: PERF renderer=webgl world=true size=866x412 fps=7.7 textureMB=37.8 heapMB=19.6 preset=low canvas=866x412
-11-11 12:59:59.558  3490  3490 I FishingTycoon: PERF renderer=webgl world=true size=866x412 fps=8.1 textureMB=37.8 heapMB=19.6 preset=low canvas=866x412
-11-11 13:00:09.561  3490  3490 I FishingTycoon: PERF renderer=webgl world=true size=866x412 fps=7.2 textureMB=37.8 heapMB=19.6 preset=low canvas=866x412
-11-11 13:00:19.506  3490  3490 I FishingTycoon: PERF renderer=webgl world=true size=866x412 fps=6.9 textureMB=37.8 heapMB=19.6 preset=low canvas=866x412
-11-11 13:00:29.628  3490  3490 I FishingTycoon: PERF renderer=webgl world=true size=866x412 fps=7.3 textureMB=37.8 heapMB=19.6 preset=low canvas=866x412
-11-11 13:00:39.581  3490  3490 I FishingTycoon: PERF renderer=webgl world=true size=866x412 fps=8.0 textureMB=37.8 heapMB=19.6 preset=low canvas=866x412
-11-11 13:00:49.459  3490  3490 I FishingTycoon: PERF renderer=webgl world=true size=866x412 fps=7.6 textureMB=37.8 heapMB=19.6 preset=low canvas=866x412
-11-11 13:00:59.536  3490  3490 I FishingTycoon: PERF renderer=webgl world=true size=866x412 fps=7.3 textureMB=37.8 heapMB=19.6 preset=low canvas=866x412
-11-11 13:01:09.569  3490  3490 I FishingTycoon: PERF renderer=webgl world=true size=866x412 fps=8.0 textureMB=37.8 heapMB=19.6 preset=low canvas=866x412
+11-11 16:33:41.503  6553  6553 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[796,381],"rail0":[26,149],"missionX":null,"start":null}
+11-11 16:33:41.503  6553  6553 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=120 level=1 caught=30 fps=19.1 textureMB=37.8 heapMB=42.6 preset=low canvas=866x412
+11-11 16:33:46.503  6553  6553 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[796,381],"rail0":[26,149],"missionX":null,"start":null}
+11-11 16:33:46.505  6553  6553 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=120 level=1 caught=30 fps=18.4 textureMB=37.8 heapMB=42.6 preset=low canvas=866x412
+11-11 16:33:51.560  6553  6553 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[796,381],"rail0":[26,149],"missionX":null,"start":null}
+11-11 16:33:51.561  6553  6553 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=120 level=1 caught=30 fps=12.2 textureMB=37.8 heapMB=42.6 preset=low canvas=866x412
+11-11 16:33:56.577  6553  6553 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[796,381],"rail0":[26,149],"missionX":null,"start":null}
+11-11 16:33:56.577  6553  6553 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=120 level=1 caught=30 fps=10.4 textureMB=37.8 heapMB=42.6 preset=low canvas=866x412
+11-11 16:34:01.520  6553  6553 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[796,381],"rail0":[26,149],"missionX":null,"start":null}
+11-11 16:34:01.520  6553  6553 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=120 level=1 caught=40 fps=9.6 textureMB=37.8 heapMB=42.6 preset=low canvas=866x412
+11-11 16:34:06.575  6553  6553 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[796,381],"rail0":[26,149],"missionX":null,"start":null}
+11-11 16:34:06.575  6553  6553 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=120 level=1 caught=40 fps=9.3 textureMB=37.8 heapMB=42.6 preset=low canvas=866x412
+11-11 16:34:11.528  6553  6553 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[796,381],"rail0":[26,149],"missionX":null,"start":null}
+11-11 16:34:11.528  6553  6553 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=120 level=1 caught=40 fps=9.5 textureMB=37.8 heapMB=42.6 preset=low canvas=866x412
+11-11 16:34:16.501  6553  6553 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[796,381],"rail0":[26,149],"missionX":null,"start":null}
+11-11 16:34:16.501  6553  6553 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=120 level=1 caught=40 fps=9.0 textureMB=37.8 heapMB=42.6 preset=low canvas=866x412
