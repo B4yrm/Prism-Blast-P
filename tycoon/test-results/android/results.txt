@@ -4,12 +4,12 @@ PASS  left rail closes
 PASS  centre button
 PASS  dock button opens panel
 PASS  panel close button
-PASS  mission chip expands
-PASS  mission card collapses
-INFO  closed a game pop-up before: double-tap
+FAIL  mission chip expands  (expected: UI mission open)
+INFO  closed a game pop-up before: mission-close
+FAIL  mission card collapses  (expected: UI mission mini)
 INFO  double tap via adb: 3/3 recognised (adb cannot send two taps with exact timing)
 PASS  collect button
-PASS  save/load after real play + force-stop: 13 fields equal (level 2, money 214, upgrades 2-0-0-0-0, workers 1)
-INFO  preset medium: water mode=layers requested=layers; fps=12.6 textureMB=89.2 heapMB=40.1 preset=medium
-INFO  preset high: water mode=shader requested=shader; fps=8.0 textureMB=91.5 heapMB=40.1 preset=high
+PASS  save/load after real play + force-stop: 13 fields equal (level 2, money 246, upgrades 2-0-0-0-0, workers 1)
+INFO  preset medium: water mode=layers requested=layers; fps=11.2 textureMB=89.2 heapMB=40.1 preset=medium
+INFO  preset high: water mode=shader requested=shader; fps=8.4 textureMB=91.5 heapMB=40.1 preset=high
 INFO  crashes: 0
