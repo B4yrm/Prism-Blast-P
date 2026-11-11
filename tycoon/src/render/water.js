@@ -65,7 +65,18 @@ function shoreField(rocks) {
     if (y < H - 1) { v = Math.min(v, d[(y + 1) * W + x] + a); if (x < W - 1) v = Math.min(v, d[(y + 1) * W + x + 1] + b); if (x > 0) v = Math.min(v, d[(y + 1) * W + x - 1] + b); }
     d[y * W + x] = v;
   }
-  return { d, W, H, gx0, gy0, at(gx, gy) {        // distance in tiles, bilinear
+  // static low-frequency patches (smoothed hash noise) for an uneven shoreline colour
+  const patch = new Float32Array(W * H), cell = 3 * RES;
+  const hv = (a, b) => hash(a * 7 + 3, b * 13 + 5);
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const fx = x / cell, fy = y / cell, x0 = Math.floor(fx), y0 = Math.floor(fy), tx = fx - x0, ty = fy - y0;
+    const sx = tx * tx * (3 - 2 * tx), sy = ty * ty * (3 - 2 * ty);
+    patch[y * W + x] = (hv(x0, y0) * (1 - sx) + hv(x0 + 1, y0) * sx) * (1 - sy) + (hv(x0, y0 + 1) * (1 - sx) + hv(x0 + 1, y0 + 1) * sx) * sy;
+  }
+  return { d, patch, W, H, gx0, gy0, patchAt(gx, gy) {
+    const x = Math.max(0, Math.min(W - 1, Math.round((gx - gx0) * RES))), y = Math.max(0, Math.min(H - 1, Math.round((gy - gy0) * RES)));
+    return patch[y * W + x];
+  }, at(gx, gy) {        // distance in tiles, bilinear
     if (gx < gx0 || gy < gy0 || gx >= gx0 + W / RES || gy >= gy0 + H / RES) return 99;   // beyond the map: open sea
     const fx = (gx - gx0) * RES - 0.5, fy = (gy - gy0) * RES - 0.5;
     const x = Math.max(0, Math.min(W - 2, Math.floor(fx))), y = Math.max(0, Math.min(H - 2, Math.floor(fy)));
@@ -76,7 +87,7 @@ function shoreField(rocks) {
 }
 const MAXD = 7;                                  // tiles from shore that count as "deep"
 const seaColor = t => {                          // t: 0 shore … 1 deep
-  const k1 = Math.min(1, t * 2.2), k2 = Math.max(0, (t - 0.35) / 0.65);
+  const k1 = Math.min(1, t * 2.0), k2 = Math.max(0, (t - 0.32) / 0.68);
   const c = SEA.shallow.map((v, i) => v + (SEA.mid[i] - v) * k1);
   return c.map((v, i) => Math.round(v + (SEA.deep[i] - v) * k2 * k2 * (3 - 2 * k2)));
 };
@@ -88,55 +99,58 @@ uniform vec4 uRect;      // world x, y, w, h of the quad
 uniform vec4 uGrid;      // grid x0, y0, width, height of the field texture
 uniform float uTime;
 uniform vec3 uShallow, uMid, uDeep;
-uniform sampler2D iChannel0;   // distance field (r = distance / MAXD)
-uniform sampler2D iChannel1;   // tiling value noise
+uniform sampler2D iChannel0;   // field: r = distance to shore / MAXD, g = static patch noise
+uniform sampler2D iChannel1;   // noise: r = value, g/b = slope
 varying vec2 outTexCoord;
-float n(vec2 p) { return texture2D(iChannel1, p).r; }
 void main() {
   vec2 w = uRect.xy + vec2(outTexCoord.x, 1.0 - outTexCoord.y) * uRect.zw;
   float sy = w.y - 18.0;                       // water plane sits below the land
   vec2 g = vec2((w.x / 32.0 + sy / 16.0) * 0.5, (sy / 16.0 - w.x / 32.0) * 0.5);
   vec2 fuv = (g - uGrid.xy) / uGrid.zw;
   float inside = step(0.0, fuv.x) * step(0.0, fuv.y) * step(fuv.x, 1.0) * step(fuv.y, 1.0);
-  float d = mix(1.0, texture2D(iChannel0, fuv).r, inside);   // beyond the map: open sea
+  vec4 F = texture2D(iChannel0, fuv);
+  float d = mix(1.0, F.r, inside);             // beyond the map: open sea
+  float patchN = mix(0.5, F.g, inside);
   float t = uTime;
-  // wave height field: two long swells + two noise chop layers
-  float s1 = sin(dot(g, vec2(0.62, 0.28)) * 2.1 + t * 1.15);
-  float s2 = sin(dot(g, vec2(-0.25, 0.70)) * 2.9 + t * 1.55);
-  float c1 = n(g * 0.11 + vec2(t * 0.012, t * 0.007));
-  float c2 = n(g * 0.27 - vec2(t * 0.020, -t * 0.015));
-  float h = s1 * 0.35 + s2 * 0.25 + (c1 - 0.5) * 0.9 + (c2 - 0.5) * 0.6;
-  // slope from the analytic swell derivatives + noise differences
-  vec2 sl = vec2(0.62, 0.28) * cos(dot(g, vec2(0.62, 0.28)) * 2.1 + t * 1.15) * 0.7
-          + vec2(-0.25, 0.70) * cos(dot(g, vec2(-0.25, 0.70)) * 2.9 + t * 1.55) * 0.7
-          + vec2(n(g * 0.27 + vec2(0.02, 0.0) - vec2(t * 0.020, -t * 0.015)) - c2, n(g * 0.27 + vec2(0.0, 0.02) - vec2(t * 0.020, -t * 0.015)) - c2) * 9.0;
-  vec3 nrm = normalize(vec3(-sl * mix(0.18, 0.42, d), 1.0));
-  // depth colour
-  float k1 = clamp(d * 2.2, 0.0, 1.0), k2 = smoothstep(0.35, 1.0, d);
+  // two long swells (analytic) + two chop layers (value + slope in one fetch each)
+  float a1 = dot(g, vec2(0.62, 0.28)) * 2.1 + t * 1.15;
+  float a2 = dot(g, vec2(-0.25, 0.70)) * 2.9 + t * 1.55;
+  vec4 C1 = texture2D(iChannel1, g * 0.11 + vec2(t * 0.012, t * 0.007));
+  vec4 C2 = texture2D(iChannel1, g * 0.27 - vec2(t * 0.020, -t * 0.015));
+  float h = sin(a1) * 0.30 + sin(a2) * 0.20 + (C1.r - 0.5) * 0.5 + (C2.r - 0.5) * 0.3;
+  vec2 sl = vec2(0.62, 0.28) * cos(a1) * 0.6 + vec2(-0.25, 0.70) * cos(a2) * 0.6
+          + (C1.gb - 0.5) * 0.55 + (C2.gb - 0.5) * 0.7;
+  vec3 nrm = normalize(vec3(-sl * mix(0.12, 0.30, d), 1.0));
+  // depth colour; near the shore the turquoise follows irregular patches
+  float dc = clamp(d + (patchN - 0.5) * 0.22 * (1.0 - d), 0.0, 1.0);
+  float k1 = clamp(dc * 2.0, 0.0, 1.0), k2 = smoothstep(0.32, 1.0, dc);
   vec3 col = mix(mix(uShallow, uMid, k1), uDeep, k2);
-  col *= 0.93 + h * 0.06;
-  // soft sky reflection + sun glitter (sun from the upper left)
-  vec3 sun = normalize(vec3(-0.45, -0.55, 0.70));
-  float diff = dot(nrm, sun);
-  col += vec3(0.10, 0.13, 0.16) * smoothstep(0.55, 1.0, diff);
-  float spec = pow(max(dot(reflect(-sun, nrm), vec3(0.0, 0.0, 1.0)), 0.0), 140.0);
-  // glitter only where a slow mask lets the sun through (patches, not confetti)
-  float gm = smoothstep(0.55, 0.75, n(g * 0.05 + vec2(t * 0.004, 0.0)));
-  col += vec3(1.0, 0.97, 0.88) * spec * (0.18 + 0.35 * d) * (0.35 + 0.65 * gm);
-  // light pattern on shallow sand
-  float caus = smoothstep(0.62, 0.78, n(g * 0.55 + vec2(t * 0.05, -t * 0.03)) * 0.5 + n(g * 0.9 - vec2(t * 0.04, t * 0.06)) * 0.5);
-  col += vec3(0.16, 0.20, 0.18) * caus * (1.0 - smoothstep(0.0, 0.22, d));
-  // foam: a broken white edge at the waterline + wash lines rolling in
-  float edge = (1.0 - smoothstep(0.03, 0.085, d)) * (0.6 + 0.4 * c1);
-  float wash = sin(d * 42.0 + t * 1.35 + c1 * 3.0) * 0.5 + 0.5;
+  col *= 0.96 + h * 0.035;
+  // soft sky light + sun glitter in slow patches (sun from the upper left)
+  vec3 sun = vec3(-0.484, -0.592, 0.753);
+  col += vec3(0.07, 0.09, 0.11) * smoothstep(0.6, 1.0, dot(nrm, sun));
+  float r = max(dot(reflect(-sun, nrm), vec3(0.0, 0.0, 1.0)), 0.0);
+  float r2 = r * r, r4 = r2 * r2, r8 = r4 * r4, r16 = r8 * r8;
+  float spec = r16 * r8;                       // r^24: a broad, soft sheen (no hard flecks)
+  float gm = smoothstep(0.55, 0.8, C1.r);     // slow layer → glitter in patches
+  col += vec3(1.0, 0.97, 0.9) * spec * (0.07 + 0.12 * d) * (0.3 + 0.7 * gm);
+  // shallow water: light pattern on the sand (only where it can show)
+  if (d < 0.22) {
+    float cs = texture2D(iChannel1, g * 0.6 + vec2(t * 0.05, -t * 0.035)).r;
+    float caus = smoothstep(0.66, 0.8, cs * 0.6 + C1.r * 0.4);
+    col += vec3(0.13, 0.16, 0.14) * caus * (1.0 - d / 0.22);
+  }
+  // foam: a broken edge at the waterline + wash lines rolling in
+  float edge = (1.0 - smoothstep(0.03, 0.085, d)) * (0.6 + 0.4 * C1.r);
+  float wash = sin(d * 42.0 + t * 1.35 + C1.r * 3.0) * 0.5 + 0.5;
   float band = 1.0 - smoothstep(0.04, 0.2, d);
-  float foam = max(edge, band * smoothstep(0.72, 0.95, wash) * (0.45 + 0.55 * c2));
-  col = mix(col, vec3(0.97, 0.99, 1.0), foam * 0.85);
+  float foam = max(edge, band * smoothstep(0.72, 0.95, wash) * (0.45 + 0.55 * C2.r));
+  col = mix(col, vec3(0.97, 0.99, 1.0), foam * 0.82);
   gl_FragColor = vec4(col, 1.0);
 }`;
 
 function noiseCanvas(size = 128) {
-  // smooth tiling value noise (bilinear-interpolated lattice, 2 octaves)
+  // tiling value noise: r = value (2 octaves), g/b = its slope
   const c = document.createElement('canvas'); c.width = c.height = size;
   const g = c.getContext('2d'), img = g.createImageData(size, size);
   let seed = 9; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
@@ -146,9 +160,11 @@ function noiseCanvas(size = 128) {
     const sx = tx * tx * (3 - 2 * tx), sy = ty * ty * (3 - 2 * ty);
     return (v(x0, y0) * (1 - sx) + v(x0 + 1, y0) * sx) * (1 - sy) + (v(x0, y0 + 1) * (1 - sx) + v(x0 + 1, y0 + 1) * sx) * sy; }; };
   const o1 = oct(8), o2 = oct(16);
+  const val = (x, y) => o1(x, y) * 0.65 + o2(x, y) * 0.35;
   for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
-    const v = Math.round((o1(x, y) * 0.65 + o2(x, y) * 0.35) * 255), k = (y * size + x) * 4;
-    img.data[k] = img.data[k + 1] = img.data[k + 2] = v; img.data[k + 3] = 255;
+    const v = val(x, y), dx = (val(x + 1, y) - val(x - 1, y)) * size / 16, dy = (val(x, y + 1) - val(x, y - 1)) * size / 16;
+    const k = (y * size + x) * 4, cl = q => Math.max(0, Math.min(255, Math.round(q * 255)));
+    img.data[k] = cl(v); img.data[k + 1] = cl(0.5 + dx); img.data[k + 2] = cl(0.5 + dy); img.data[k + 3] = 255;   // alpha must stay opaque (canvas premultiplies)
   }
   g.putImageData(img, 0, 0);
   return c;
@@ -180,7 +196,7 @@ export class Water {
       // field texture: r = distance / MAXD
       const c = document.createElement('canvas'); c.width = f.W; c.height = f.H;
       const g = c.getContext('2d'), img = g.createImageData(f.W, f.H);
-      for (let i = 0; i < f.W * f.H; i++) { const v = Math.min(255, Math.round(f.d[i] / RES / MAXD * 255)); img.data[i * 4] = img.data[i * 4 + 1] = img.data[i * 4 + 2] = v; img.data[i * 4 + 3] = 255; }
+      for (let i = 0; i < f.W * f.H; i++) { img.data[i * 4] = Math.min(255, Math.round(f.d[i] / RES / MAXD * 255)); img.data[i * 4 + 1] = Math.round(f.patch[i] * 255); img.data[i * 4 + 2] = 0; img.data[i * 4 + 3] = 255; }
       g.putImageData(img, 0, 0);
       if (sc.textures.exists('seaField')) sc.textures.remove('seaField');
       sc.textures.addCanvas('seaField', c);
@@ -214,7 +230,7 @@ export class Water {
     for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
       const wx = R.x + x / S, sy = R.y + y / S + SEA_Z;
       const gx = (wx / 32 + sy / 16) / 2, gy = (sy / 16 - wx / 32) / 2;
-      const col = seaColor(Math.min(1, f.at(gx, gy) / MAXD)), k = (y * W + x) * 4;
+      const dd = Math.min(1, f.at(gx, gy) / MAXD), col = seaColor(Math.max(0, Math.min(1, dd + (f.patchAt(gx, gy) - 0.5) * 0.22 * (1 - dd)))), k = (y * W + x) * 4;
       img.data[k] = col[0]; img.data[k + 1] = col[1]; img.data[k + 2] = col[2]; img.data[k + 3] = 255;
     }
     g.putImageData(img, 0, 0);
@@ -223,7 +239,7 @@ export class Water {
     sc.add.image(R.x, R.y, 'seaDepth').setOrigin(0).setScale(1 / S).setDepth(D_WATER - 1);
     // wave layers (TileSprites allocate their own size, so keep them small and scale up)
     const K = 8, n = this.mode === 'layers' ? 3 : 2;
-    const L = [['waves', 0.6, 0.62, 7, 2], ['waves', 1.1, 0.34, -4, 3], ['swell', 1.0, 0.30, 2, -3]];
+    const L = [['waves', 0.6, 0.44, 7, 2], ['waves', 1.1, 0.22, -4, 3], ['swell', 1.0, 0.24, 2, -3]];
     this.layers = L.slice(0, n).map(([key, ts, a, vx, vy], i) =>
       ({ s: sc.add.tileSprite(R.x, R.y, R.w / K, R.h / K, key).setOrigin(0).setScale(K).setTileScale(ts / K).setDepth(D_WATER + i).setAlpha(a).setFlipX(i === 1), vx: vx / K, vy: vy / K }));
   }
@@ -319,38 +335,43 @@ export class Wake {
   }
   update(t, boats, speedRef) {
     const g = this.g; g.clear();
+    const KELVIN = 0.354;                                  // tan(19.5°): half-angle of a ship wake
     for (const b of boats) {
       let tr = this.trails.get(b); if (!tr) this.trails.set(b, tr = { pts: [], last: 0 });
       const m = b.m, moving = (b.state === 'out' || b.state === 'back') && m.speed > 0.05;
       if (moving && t - tr.last >= this.every) {
         tr.last = t;
         const len = 1.3 * (b.scale || 1.45) + 0.05;          // stern of the baked hull
-        tr.pts.unshift({ x: m.x - m.dx * len, y: m.y - m.dy * len, dx: m.dx, dy: m.dy, v: Math.min(1.4, m.speed / Math.max(0.1, speedRef)), t });
+        tr.pts.unshift({ x: m.x - m.dx * len, y: m.y - m.dy * len, dx: m.dx, dy: m.dy, sp: m.speed, v: Math.min(1.2, m.speed / Math.max(0.1, speedRef)), t });
       }
       while (tr.pts.length && t - tr.pts[tr.pts.length - 1].t > this.life) tr.pts.pop();
       if (tr.pts.length < 2) continue;
       const P = tr.pts, L = [], R = [], C = [];
       for (const p of P) {
-        const a = (t - p.t) / this.life, spread = 0.18 + a * 1.25 * p.v;
+        const age = t - p.t, a = age / this.life;
+        // the boat has moved sp·age away from this point; the arms open at the Kelvin angle
+        const behind = p.sp * age, spread = 0.16 * (b.scale || 1.45) / 1.45 + behind * KELVIN;
         const px = -p.dy, py = p.dx;
-        const back = a * 0.35 * p.v;                // arms trail slightly behind the centre
-        L.push([iso(p.x + px * spread - p.dx * back, p.y + py * spread - p.dy * back, SEA_Z), a, p.v]);
-        R.push([iso(p.x - px * spread - p.dx * back, p.y - py * spread - p.dy * back, SEA_Z), a, p.v]);
+        L.push([iso(p.x + px * spread, p.y + py * spread, SEA_Z), a, p.v]);
+        R.push([iso(p.x - px * spread, p.y - py * spread, SEA_Z), a, p.v]);
         C.push([iso(p.x, p.y, SEA_Z), a, p.v]);
       }
-      // churned water behind the stern
+      // churned water behind the stern: wide and soft, fades quickly
       for (let i = 1; i < C.length; i++) {
         const [q0, a0, v] = C[i - 1], [q1] = C[i];
-        const fade = Math.pow(1 - a0, 1.6);
-        g.lineStyle(16 * (1 - a0 * 0.4), 0xffffff, 0.14 * fade * v).lineBetween(q0.x, q0.y, q1.x, q1.y);
-        g.lineStyle(6 * (1 - a0 * 0.5), 0xffffff, 0.38 * fade * v).lineBetween(q0.x, q0.y, q1.x, q1.y);
+        const fade = Math.pow(1 - a0, 2.2) * v;
+        if (fade < 0.02) break;
+        g.lineStyle(10 + a0 * 14, 0xffffff, 0.12 * fade).lineBetween(q0.x, q0.y, q1.x, q1.y);
+        g.lineStyle(4 + a0 * 4, 0xffffff, 0.32 * fade).lineBetween(q0.x, q0.y, q1.x, q1.y);
       }
       if (!this.arms) continue;
+      // the two arms: thin and bright near the boat, wider and fainter as they spread
       for (const side of [L, R]) for (let i = 1; i < side.length; i++) {
         const [q0, a0, v] = side[i - 1], [q1] = side[i];
-        const fade = Math.pow(1 - a0, 1.4);
-        g.lineStyle(7 - a0 * 3, 0xffffff, 0.16 * fade * Math.min(1, v)).lineBetween(q0.x, q0.y, q1.x, q1.y);
-        g.lineStyle(3 - a0 * 1.5, 0xffffff, 0.6 * fade * Math.min(1, v)).lineBetween(q0.x, q0.y, q1.x, q1.y);
+        const fade = Math.pow(1 - a0, 1.5) * Math.min(1, v);
+        if (fade < 0.02) break;
+        g.lineStyle(3 + a0 * 9, 0xffffff, 0.14 * fade).lineBetween(q0.x, q0.y, q1.x, q1.y);
+        g.lineStyle(1.6 + a0 * 2.4, 0xffffff, 0.5 * fade * (1 - a0 * 0.5)).lineBetween(q0.x, q0.y, q1.x, q1.y);
       }
     }
   }

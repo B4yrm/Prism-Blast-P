@@ -1,0 +1,68 @@
+{
+ "low/fit": {
+  "frames": 301,
+  "frameMsAvg": 16.6,
+  "frameMsP90": 16.7,
+  "fps": 60.1,
+  "updateMsAvg": 0.23,
+  "drawCallsPerFrame": 1.1,
+  "textureMB": 35.7,
+  "heapMB": 40.6,
+  "objects": 728
+ },
+ "low/harbour": {
+  "frames": 301,
+  "frameMsAvg": 16.7,
+  "frameMsP90": 16.7,
+  "fps": 60.1,
+  "updateMsAvg": 0.16,
+  "drawCallsPerFrame": 1.1,
+  "textureMB": 35.7,
+  "heapMB": 39.5,
+  "objects": 728
+ },
+ "medium/fit": {
+  "frames": 73,
+  "frameMsAvg": 69.3,
+  "frameMsP90": 116.7,
+  "fps": 14.4,
+  "updateMsAvg": 0.36,
+  "drawCallsPerFrame": 5,
+  "textureMB": 89.2,
+  "heapMB": 53.9,
+  "objects": 801
+ },
+ "medium/harbour": {
+  "frames": 73,
+  "frameMsAvg": 68.8,
+  "frameMsP90": 133.4,
+  "fps": 14.5,
+  "updateMsAvg": 0.33,
+  "drawCallsPerFrame": 5,
+  "textureMB": 89.2,
+  "heapMB": 52.3,
+  "objects": 802
+ },
+ "high/fit": {
+  "frames": 60,
+  "frameMsAvg": 84.6,
+  "frameMsP90": 149.9,
+  "fps": 11.8,
+  "updateMsAvg": 0.44,
+  "drawCallsPerFrame": 5,
+  "textureMB": 91.5,
+  "heapMB": 57.5,
+  "objects": 732
+ },
+ "high/harbour": {
+  "frames": 60,
+  "frameMsAvg": 84.1,
+  "frameMsP90": 150,
+  "fps": 11.9,
+  "updateMsAvg": 0.41,
+  "drawCallsPerFrame": 5,
+  "textureMB": 91.5,
+  "heapMB": 57,
+  "objects": 732
+ }
+}
