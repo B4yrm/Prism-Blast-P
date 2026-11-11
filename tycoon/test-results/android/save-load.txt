@@ -1,0 +1,2 @@
+SAVED  {"money":120,"register":192,"gems":15,"level":2,"xp":25,"tiers":"111100","upgrades":"0-0-0-0-0","workers":1,"boats":1,"caught":70,"sold":48,"mission":0,"research":0}
+LOADED {"money":120,"register":192,"gems":15,"level":2,"xp":25,"tiers":"111100","upgrades":"0-0-0-0-0","workers":1,"boats":1,"caught":70,"sold":48,"mission":0,"research":0}
