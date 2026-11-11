@@ -2,14 +2,16 @@ INFO  app window is inset 127px from the display cutout (UI is not under the not
 PASS  left rail opens (notch-safe position)
 PASS  left rail closes
 PASS  centre button
-INFO  closed a game pop-up before: dock button opens panel
 PASS  dock button opens panel
 PASS  panel close button
+INFO  closed a game pop-up before: mission chip expands
 PASS  mission chip expands
 PASS  mission card collapses
 INFO  double tap via adb: 3/3 recognised (adb cannot send two taps with exact timing)
 PASS  collect button
-PASS  save/load after real play + force-stop: 13 fields equal (level 2, money 282, upgrades 2-0-0-0-0, workers 1)
-INFO  preset medium: water mode=layers requested=layers; fps=11.7 textureMB=89.2 heapMB=40.1 preset=medium
-INFO  preset high: water mode=shader requested=shader; fps=8.8 textureMB=91.5 heapMB=40.1 preset=high
+PASS  save/load after real play + force-stop: 13 fields equal (level 2, money 238, upgrades 2-0-0-0-0, workers 1)
+INFO  preset medium: water mode=layers requested=layers; fps=10.9 textureMB=96.6 heapMB=42.6 preset=medium
+INFO  preset medium: boats n=1 phases=docked arrivals=1 lagMean=-0.18 lagMax=0.00 waits=0 fx=1
+INFO  preset high: water mode=shader requested=shader; fps=8.3 textureMB=98.9 heapMB=42.6 preset=high
+INFO  preset high: boats n=1 phases=return arrivals=0 lagMean=n/a lagMax=n/a waits=0 fx=2
 INFO  crashes: 0
