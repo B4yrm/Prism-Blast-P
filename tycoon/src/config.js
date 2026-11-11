@@ -44,7 +44,7 @@ export const ROADS = [
   [25, 10, 25, 21],   // east street
 ];
 export const PAVE = [
-  [3, 9, 13, 9],      // HQ front
+  [1, 9, 13, 9],      // HQ front
   [15, 9, 24, 9],     // factory front
   [26, 9, 34, 9],     // farm front
   [3, 19, 13, 20],    // market front & queue
@@ -61,12 +61,12 @@ export const PIERS = [
 ];
 
 export const BUILDINGS = {
-  hq:        { x: 3,  y: 2,  w: 7, d: 6, door: [6, 9] },
-  factory:   { x: 15, y: 1,  w: 8, d: 7, door: [17, 9] },
-  farm:      { x: 27, y: 1,  w: 7, d: 7, door: [30, 9] },
-  market:    { x: 7,  y: 12, w: 7, d: 6, door: [10, 19] },
-  warehouse: { x: 16, y: 11, w: 8, d: 7, door: [19, 19] },
-  harbor:    { x: 3,  y: 14, w: 4, d: 4, door: [4, 19] },
+  hq:        { x: 2,  y: 1,  w: 8, d: 8, door: [6, 9] },
+  factory:   { x: 15, y: 1,  w: 9, d: 8, door: [17, 9] },
+  farm:      { x: 26, y: 1,  w: 9, d: 8, door: [30, 9] },
+  market:    { x: 6,  y: 11, w: 8, d: 8, door: [10, 19] },
+  warehouse: { x: 15, y: 11, w: 10, d: 8, door: [19, 19] },
+  harbor:    { x: 3,  y: 14, w: 3, d: 5, door: [4, 19] },
 };
 
 // Points of interest used by the simulation (tile coords, walkable).
@@ -78,7 +78,7 @@ export const POI = {
 };
 
 // Conveyor from warehouse up to the factory, elevated over the avenue.
-export const CONVEYOR = { x: 21.5, y0: 11, y1: 8, z: 0.75 };
+export const CONVEYOR = { x: 21.5, y0: 11, y1: 9, z: 0.75 };
 
 // Boat berths and their sailing routes out to the fishing grounds.
 export const BERTHS = [
@@ -88,7 +88,7 @@ export const BERTHS = [
   { at: [22.6, 26.0], route: [[24, 30], [29, 33], [33, 36]] },
 ];
 
-export const CRANES = [[8, 23], [15, 23]];
+export const CRANES = [[9, 23], [16, 23]];
 export const LIGHTHOUSE = [37.5, 15.5];
 
 // Background town (Kenney CC0 houses) and dense decoration.
@@ -98,5 +98,5 @@ export const DECOR = {
     ['c', 27, 15, 1], ['garage', 30, 15, 0], ['a', 33, 15, 0],
   ],
   lots: [[26, 17, 34, 18]],       // parking rows
-  parks: [[3, 11, 5, 13], [15, 18, 15, 18]],
+  parks: [[3, 11, 5, 13]],
 };

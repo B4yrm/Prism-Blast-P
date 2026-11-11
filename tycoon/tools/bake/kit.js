@@ -238,3 +238,76 @@ export function bench(g, x, z, axis = 'x') {
   box(g, x, 0.14, z, w, 0.04, d, C.wood); box(g, x, 0, z, 0.04, 0.14, 0.04, C.dark); box(g, x + w - 0.04, 0, z + d - 0.04, 0.04, 0.14, 0.04, C.dark);
   if (axis === 'x') box(g, x, 0.18, z, w, 0.14, 0.03, C.wood); else box(g, x, 0.18, z, 0.03, 0.14, d, C.wood);
 }
+
+// ---- extra architectural detail ---------------------------------------------
+export function roofVent(g, x, y, z) {      // turbine ventilator
+  cyl(g, x, y, z, 0.07, 0.12, C.steel, { seg: 10 });
+  sphere(g, x, y + 0.16, z, 0.1, '#c9d1d8', { seg: 10, sy: 0.8 });
+}
+export function duct(g, x, y, z, len, axis = 'x', col = C.steel2, s = 0.18) {
+  if (axis === 'x') box(g, x, y, z, len, s, s, col); else if (axis === 'z') box(g, x, y, z, s, s, len, col); else box(g, x, y, z, s, len, s, col);
+}
+export function pipe(g, x, y, z, len, axis = 'x', r = 0.06, col = '#d9dee3') {
+  const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, len, 10), mat(col, { r: 0.4 }));
+  if (axis === 'x') { m.rotation.z = Math.PI / 2; m.position.set(x + len / 2, y, z); }
+  else if (axis === 'z') { m.rotation.x = Math.PI / 2; m.position.set(x, y, z + len / 2); }
+  else m.position.set(x, y + len / 2, z);
+  g.add(m); return m;
+}
+export function skylight(g, x, y, z, w, d) {
+  box(g, x, y, z, w, 0.06, d, C.white);
+  box(g, x + 0.04, y + 0.06, z + 0.04, w - 0.08, 0.05, d - 0.08, '#9fd8fb', { r: 0.15 });
+}
+export function dish(g, x, y, z) {
+  cyl(g, x, y, z, 0.02, 0.18, C.dark, { seg: 6 });
+  const m = new THREE.Mesh(new THREE.SphereGeometry(0.16, 14, 6, 0, Math.PI * 2, 0, Math.PI / 2.6), mat(C.white));
+  m.material.side = THREE.DoubleSide; m.position.set(x, y + 0.28, z); m.rotation.x = -2.2; m.rotation.z = 0.5; g.add(m);
+}
+export function railing(g, x0, z0, x1, z1, y, col = '#f2c230') {
+  const len = Math.hypot(x1 - x0, z1 - z0), n = Math.max(1, Math.round(len / 0.25));
+  for (let k = 0; k <= n; k++) { const t = k / n; box(g, x0 + (x1 - x0) * t - 0.012, y, z0 + (z1 - z0) * t - 0.012, 0.024, 0.18, 0.024, col); }
+  const r = new THREE.Mesh(new THREE.BoxGeometry(len, 0.025, 0.025), mat(col));
+  r.position.set((x0 + x1) / 2, y + 0.18, (z0 + z1) / 2); r.rotation.y = -Math.atan2(z1 - z0, x1 - x0); g.add(r);
+}
+export function solar(g, x, y, z, nx, nz) {
+  for (let i = 0; i < nx; i++) for (let j = 0; j < nz; j++) {
+    const m = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.02, 0.22), mat('#24407a', { r: 0.25, m: 0.3 }));
+    m.position.set(x + i * 0.36 + 0.16, y + 0.08, z + j * 0.26 + 0.11); m.rotation.x = -0.35; g.add(m);
+    box(g, x + i * 0.36 + 0.15, y, z + j * 0.26 + 0.1, 0.02, 0.06, 0.02, C.steel);
+  }
+}
+export function downpipe(g, x, y, z, h) { box(g, x, y, z, 0.05, h, 0.05, '#c3ccd4'); }
+export function planter(g, x, z, w = 0.6) { box(g, x, 0, z, w, 0.14, 0.3, '#9aa3ab'); for (let k = 0; k < w * 4; k++) sphere(g, x + 0.1 + k * 0.14, 0.2, z + 0.15, 0.09, k % 2 ? '#4fae45' : '#3f9a3a', { seg: 6, seg2: 4 }); }
+// Big billboard with fish logo + text, on two posts, facing +z.
+export function billboard(g, cx, y, cz, w, h, text, o = {}) {
+  box(g, cx - w / 2 + 0.15, y, cz, 0.06, 0.35, 0.06, C.dark); box(g, cx + w / 2 - 0.21, y, cz, 0.06, 0.35, 0.06, C.dark);
+  box(g, cx - w / 2 - 0.04, y + 0.33, cz - 0.04, w + 0.08, h + 0.08, 0.06, o.frame || C.white);
+  sign(g, '+z', cx + h * 0.3, y + 0.37 + h / 2, cz + 0.03, w - h * 0.6, h * 0.8, text, { bg: o.bg || C.blue, fg: o.fg || C.yellow, stroke: o.stroke || '#5a3000', border: o.bg || C.blue });
+  fishBadge(g, '+z', cx - w / 2 + h * 0.45, y + 0.37 + h / 2, cz + 0.04, h * 0.42, C.white, o.bg || C.blue);
+}
+export function fishBox(g, x, y, z, s = 0.22) {      // blue plastic fish crate with ice + fish
+  box(g, x, y, z, s, s * 0.45, s * 0.7, '#2f8ee0');
+  box(g, x + 0.015, y + s * 0.45, z + 0.015, s - 0.03, 0.01, s * 0.7 - 0.03, '#e3f4ff');
+  for (let k = 0; k < 3; k++) sphere(g, x + s * (0.25 + k * 0.25), y + s * 0.47, z + s * 0.35, s * 0.11, k % 2 ? '#c6d4dd' : '#9fb8c8', { sy: 0.4, seg: 7 });
+}
+export function fishBoxStack(g, x, z, nx = 2, nz = 2, layers = 3) {
+  for (let l = 0; l < layers; l++) for (let i = 0; i < nx; i++) for (let j = 0; j < nz - (l > 1 ? 1 : 0); j++) fishBox(g, x + i * 0.24, l * 0.1, z + j * 0.17);
+}
+export function container(g, x, y, z, col, axis = 'z') {
+  const w = axis === 'z' ? 0.5 : 1.3, d = axis === 'z' ? 1.3 : 0.5;
+  box(g, x, y, z, w, 0.5, d, col);
+  const rib = new THREE.Color(col).multiplyScalar(0.78).getStyle();
+  const n = 10;
+  for (let k = 1; k < n; k++) {
+    if (axis === 'z') box(g, x + w, y + 0.03, z + d * k / n - 0.012, 0.012, 0.44, 0.024, rib);
+    else box(g, x + w * k / n - 0.012, y + 0.03, z + d, 0.024, 0.44, 0.012, rib);
+  }
+  // doors on the short end
+  if (axis === 'z') box(g, x + 0.04, y + 0.04, z + d, w - 0.08, 0.42, 0.014, rib);
+  else box(g, x + w, y + 0.04, z + 0.04, 0.014, 0.42, d - 0.08, rib);
+}
+export function netPile(g, x, z, s = 1) {
+  sphere(g, x, 0.05 * s, z, 0.32 * s, '#3c8f4a', { sy: 0.38, seg: 9 });
+  sphere(g, x + 0.15 * s, 0.1 * s, z + 0.08 * s, 0.18 * s, '#e0662b', { sy: 0.5, seg: 7 });
+  sphere(g, x - 0.12 * s, 0.1 * s, z - 0.1 * s, 0.1 * s, '#f6c22f', { sy: 0.8, seg: 7 });
+}

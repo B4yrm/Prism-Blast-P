@@ -4,8 +4,9 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
-export const B = 2;                         // bake scale: a tile is 128 px wide
-const PPU = 32 * B * Math.SQRT2;            // pixels per world unit along screen axes
+export let B = 2;                           // bake scale: 2 → a tile is 128 px wide
+let PPU = 32 * B * Math.SQRT2;              // pixels per world unit along screen axes
+export function setBakeScale(b) { B = b; PPU = 32 * B * Math.SQRT2; }
 const ELEV = Math.asin(Math.tan(Math.atan(0.5)));  // 30° → exact 2:1 tiles
 
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
@@ -30,7 +31,7 @@ const fill = new THREE.DirectionalLight(0xcfe6ff, 0.55);
 fill.position.set(10, 6, 3);
 scene.add(fill);
 
-const ground = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.ShadowMaterial({ opacity: 0.26 }));
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.ShadowMaterial({ opacity: 0.34 }));
 ground.rotation.x = -Math.PI / 2;
 ground.receiveShadow = true;
 scene.add(ground);
@@ -80,22 +81,25 @@ export function renderSprite(obj, opts = {}) {
   cam.updateProjectionMatrix();
   renderer.setSize(W, H, false);
   renderer.render(scene, cam);
-  const full = copy(renderer.domElement);
+  const full = copy(renderer.domElement, opts.grade !== false);
   let out = full;
   if (opts.outline !== 0) {
     ground.visible = false;
     renderer.render(scene, cam);
     const mask = copy(renderer.domElement);
-    out = outline(full, mask, opts.outline ?? 2, opts.outlineColor || '#1c2a3f');
+    out = outline(full, mask, opts.outline ?? 2.5, opts.outlineColor || '#172036');
   }
   const a = toCam((opts.anchor || new THREE.Vector3()).clone());
   scene.remove(obj);
   return trim(out, (a.x - x0) * PPU, (y1 - a.y) * PPU);
 }
 
-function copy(src) {
+// Copy the WebGL frame; 'grade' adds the saturated cartoon colour grade.
+function copy(src, grade) {
   const c = document.createElement('canvas'); c.width = src.width; c.height = src.height;
-  c.getContext('2d').drawImage(src, 0, 0); return c;
+  const g = c.getContext('2d');
+  if (grade) g.filter = 'saturate(1.25) contrast(1.06) brightness(1.03)';
+  g.drawImage(src, 0, 0); return c;
 }
 
 function outline(full, mask, r, col) {
@@ -126,7 +130,7 @@ function trim(cv, ax, ay) {
 }
 
 // ---- atlas packing (shelf packer, pages of 2048²) ---------------------------
-export function pack(sprites, prefix, size = 2048) {
+export function pack(sprites, prefix, scale, size = 2048) {
   const list = Object.entries(sprites).sort((a, b) => b[1].canvas.height - a[1].canvas.height);
   const pages = [];
   let page = null;
@@ -153,7 +157,7 @@ export function pack(sprites, prefix, size = 2048) {
     const name = `${prefix}-${i}`;
     return {
       name, webp: c.toDataURL('image/webp', 0.9),
-      json: { frames: p.frames, meta: { app: 'fishing-tycoon-bake', image: name + '.webp', size: { w: size, h: hPow }, scale: B } },
+      json: { frames: p.frames, meta: { app: 'fishing-tycoon-bake', image: name + '.webp', size: { w: size, h: hPow }, scale } },
     };
   });
 }

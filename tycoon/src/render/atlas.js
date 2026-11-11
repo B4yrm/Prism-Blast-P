@@ -9,7 +9,6 @@
 
 export const A = {
   ready: false,
-  scale: 0.5,          // world px per atlas px (atlases are baked at 2×)
   frames: {},          // name → { key, img, x, y, w, h, px, py }
 };
 
@@ -37,9 +36,8 @@ export function loadAtlases(scene, quality) {
       if (scene.textures.exists(key)) scene.textures.remove(key);
       scene.textures.addAtlasJSONHash(key, src, json);
       for (const [n, f] of Object.entries(json.frames)) {
-        A.frames[n] = { key, img: src, x: f.frame.x, y: f.frame.y, w: f.frame.w, h: f.frame.h, px: f.pivot.x * f.frame.w, py: f.pivot.y * f.frame.h };
+        A.frames[n] = { key, img: src, x: f.frame.x, y: f.frame.y, w: f.frame.w, h: f.frame.h, px: f.pivot.x * f.frame.w, py: f.pivot.y * f.frame.h, s: (1 / (pg.json.meta.scale || 2)) / k };
       }
-      A.scale = (1 / (pg.json.meta.scale || 2)) / k;
       res();
     };
     img.onerror = () => res();
@@ -52,14 +50,24 @@ export const has = name => !!A.frames[name];
 // Adds an image anchored by the frame pivot at world (x, y).
 export function addSprite(scene, x, y, name, scale = 1) {
   const f = A.frames[name];
-  return scene.add.image(x, y, f.key, name).setScale(A.scale * scale);
+  const img = scene.add.image(x, y, f.key, name).setScale(f.s * scale);
+  img.atlasScale = f.s * scale;
+  return img;
 }
 
 // Draws a frame into a 2D canvas so that its pivot lands on (dx, dy); s = world→canvas scale.
 export function drawFrame(ctx, name, dx, dy, s, scale = 1) {
   const f = A.frames[name];
   if (!f) return false;
-  const k = A.scale * s * scale;
+  const k = f.s * s * scale;
   ctx.drawImage(f.img, f.x, f.y, f.w, f.h, dx - f.px * k, dy - f.py * k, f.w * k, f.h * k);
   return true;
+}
+
+// Switches a sprite to another atlas frame (possibly on another page).
+export function setSprite(img, name, scale = 1) {
+  const f = A.frames[name];
+  if (!f) return img;
+  if (img.texture.key !== f.key) img.setTexture(f.key, name); else img.setFrame(name);
+  return img.setScale(f.s * scale);
 }

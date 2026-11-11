@@ -1,15 +1,15 @@
 // Boats, people, props and ground tiles.
 import * as THREE from 'three';
-import { C, mat, group, box, cyl, sphere, cone, windows, crate, pallet, barrel, tree, lamp, bench, bush, flowerbed, fence, umbrella } from './kit.js';
+import { C, mat, group, box, cyl, sphere, cone, windows, crate, pallet, barrel, tree, lamp, bench, bush, flowerbed, fence, umbrella, railing, fishBox, fishBoxStack, container, netPile, dish, pipe } from './kit.js';
 
 // Facing: dir 0:+x 1:+y(grid) 2:-x 3:-y → rotation about up axis.
 export const yaw = dir => [0, -Math.PI / 2, Math.PI, Math.PI / 2][dir];
 
 // ---- boats (modelled along +x, centred on the origin at the waterline) ------
 export const BOAT_LOOKS = [
-  { hull: '#2f63c8', stripe: '#e6463c', cabin: '#ffffff', roof: '#2f63c8', s: 1.0 },
-  { hull: '#d8423a', stripe: '#ffffff', cabin: '#ffffff', roof: '#d8423a', s: 1.25 },
-  { hull: '#2a9a6a', stripe: '#f3c533', cabin: '#f5f5f5', roof: '#24734f', s: 1.5 },
+  { hull: '#2f63c8', stripe: '#e6463c', cabin: '#ffffff', roof: '#2f63c8', s: 1.45 },
+  { hull: '#d8423a', stripe: '#ffffff', cabin: '#ffffff', roof: '#d8423a', s: 1.7 },
+  { hull: '#2a9a6a', stripe: '#f3c533', cabin: '#f5f5f5', roof: '#24734f', s: 2.0 },
 ];
 export function boat(cls) {
   const L = BOAT_LOOKS[cls], s = L.s, g = group();
@@ -52,6 +52,21 @@ export function boat(cls) {
     const arm = new THREE.Mesh(new THREE.BoxGeometry(0.9 * s, 0.05, 0.05), mat(C.yellow)); arm.position.set(0.2 * s, dy + 1.25 * s, 0); arm.rotation.z = -0.35; g.add(arm);
     box(g, -0.32 * s, dy, -0.36 * s, 0.24 * s, 0.24 * s, 0.24 * s, '#e2453c');
   }
+  // stern A-frame gantry with net drum, outrigger booms, radar, life rafts, rails
+  const sx = -1.25 * s;
+  for (const zz of [-0.32, 0.28]) box(g, sx + 0.02, dy, zz * s, 0.05, 0.75 * s, 0.05, '#f28c28');
+  box(g, sx + 0.02, dy + 0.72 * s, -0.32 * s, 0.05, 0.06, 0.65 * s, '#f28c28');
+  cyl(g, sx + 0.35 * s, dy + 0.12, 0, 0.13, 0.5 * s, '#3c8f4a', { seg: 12 }).rotation.x = Math.PI / 2;
+  for (const side of [-1, 1]) {
+    const boom = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.02, 1.1 * s, 6), mat('#e6e6e6'));
+    boom.position.set(0.15 * s, dy + 0.75 * s, side * 0.45 * s); boom.rotation.x = side * 0.85; g.add(boom);
+    sphere(g, 0.15 * s, dy + 0.42 * s, side * 0.86 * s, 0.05, '#f28c28', { seg: 8 });
+  }
+  cyl(g, -0.72 * s, dy + 0.67 * s, 0.15 * s, 0.015, 0.25, C.dark, { seg: 6 });
+  box(g, -0.82 * s, dy + 0.92 * s, 0.12 * s, 0.2, 0.025, 0.05, C.dark);
+  for (const zz of [-0.36, 0.3]) { const raft = cyl(g, -0.35 * s, dy + 0.08, zz * s, 0.07, 0.24, C.white, { seg: 10 }); raft.rotation.z = Math.PI / 2; raft.position.x = -0.35 * s; }
+  railing(g, 0.1 * s, -0.4 * s, 0.75 * s, -0.4 * s, dy, C.white); railing(g, 0.1 * s, 0.4 * s, 0.75 * s, 0.4 * s, dy, C.white);
+  for (let k = 0; k < 3; k++) fishBox(g, -0.1 * s + k * 0.24, dy, -0.05 * s, 0.22);
   // tyre fenders
   for (const k of [-0.6, 0, 0.5]) { cyl(g, k * s, 0.12 * s, 0.43 * s, 0.06, 0.04, '#222', { seg: 10 }).rotation.x = Math.PI / 2; }
   return g;
@@ -102,17 +117,38 @@ export function person(look, frame, carry) {
 
 // ---- props ------------------------------------------------------------------
 export const PROPS = {
-  crane() {
+  crane() {      // tall harbour crane, jib reaching over the berth (+z)
     const g = group();
-    box(g, -0.4, 0, -0.4, 0.8, 0.25, 0.8, '#e0b320');
-    const H = 2.8;
-    for (const [x, z] of [[-0.18, -0.18], [0.14, -0.18], [-0.18, 0.14], [0.14, 0.14]]) box(g, x, 0.25, z, 0.04, H, 0.04, C.yellow);
-    for (let y = 0.4; y < H; y += 0.3) { box(g, -0.18, y, 0.14, 0.36, 0.03, 0.03, '#d9a514'); box(g, 0.14, y, -0.18, 0.03, 0.03, 0.36, '#d9a514'); }
-    box(g, -0.25, H + 0.25, -0.25, 0.5, 0.35, 0.5, C.yellow);
-    windows(g, '+x', -0.25, H + 0.25, -0.25, 0.5, 0.35, 0.5, 1, 1, { mv: 0.08, gap: 0.2, mull: false });
-    box(g, -0.07, H + 0.6, -1.0, 0.14, 0.12, 3.4, C.yellow);   // jib out over +z (water)
-    box(g, -0.15, H + 0.4, -1.1, 0.3, 0.3, 0.35, '#8a8f96');     // counterweight
-    cyl(g, 0, H + 0.72, 0, 0.03, 0.6, '#d9a514', { seg: 6 });
+    box(g, -0.55, 0, -0.55, 1.1, 0.3, 1.1, '#e0b320');
+    for (const [x, z] of [[-0.45, -0.45], [0.35, -0.45], [-0.45, 0.35], [0.35, 0.35]]) box(g, x, 0.3, z, 0.1, 0.2, 0.1, C.dark);
+    const H = 3.6;
+    for (const [x, z] of [[-0.22, -0.22], [0.16, -0.22], [-0.22, 0.16], [0.16, 0.16]]) box(g, x, 0.5, z, 0.06, H, 0.06, C.yellow);
+    for (let y = 0.7; y < H + 0.4; y += 0.32) { box(g, -0.22, y, 0.16, 0.44, 0.035, 0.035, '#d9a514'); box(g, 0.16, y, -0.22, 0.035, 0.035, 0.44, '#d9a514'); }
+    box(g, -0.32, H + 0.5, -0.32, 0.64, 0.45, 0.64, C.yellow);
+    windows(g, '+x', -0.32, H + 0.5, -0.32, 0.64, 0.45, 0.64, 1, 1, { mv: 0.08, gap: 0.15, mull: false });
+    windows(g, '+z', -0.32, H + 0.5, -0.32, 0.64, 0.45, 0.64, 1, 1, { mv: 0.08, gap: 0.15, mull: false });
+    box(g, -0.09, H + 0.95, -1.2, 0.18, 0.16, 4.2, C.yellow);
+    for (let k = 0; k < 12; k++) box(g, -0.1, H + 0.95, -1.1 + k * 0.34, 0.2, 0.17, 0.03, '#d9a514');
+    box(g, -0.2, H + 0.7, -1.35, 0.4, 0.4, 0.45, '#8a8f96');
+    cyl(g, 0, H + 1.1, 0, 0.035, 0.7, '#d9a514', { seg: 6 });
+    box(g, -0.12, H + 0.85, 2.7, 0.24, 0.1, 0.24, C.dark);          // trolley
+    return g;
+  },
+  container_yard() {
+    const g = group(), cols = ['#c8463c', '#2f6fd6', '#2a9a6a', '#f0a422', '#7d55c7'];
+    let k = 0;
+    for (let i = 0; i < 3; i++) for (let l = 0; l < (i === 1 ? 3 : 2); l++) container(g, -0.9 + i * 0.6, l * 0.5, -0.65, cols[(k++) % 5], 'z');
+    return g;
+  },
+  fishbox_stack() { const g = group(); fishBoxStack(g, -0.25, -0.2, 2, 3, 3); return g; },
+  netpile() { const g = group(); netPile(g, 0, 0, 1.2); return g; },
+  forklift_parked() {
+    const g = group();
+    for (const [x, z] of [[-0.25, -0.2], [-0.25, 0.14], [0.15, -0.2], [0.15, 0.14]]) cyl(g, x, 0, z + 0.03, 0.07, 0.06, '#222', { seg: 10 }).rotation.x = Math.PI / 2;
+    box(g, -0.35, 0.05, -0.2, 0.62, 0.25, 0.4, C.yellow); box(g, -0.35, 0.3, -0.18, 0.18, 0.14, 0.36, '#3a3f46');
+    for (const z of [-0.18, 0.15]) box(g, -0.2, 0.3, z, 0.03, 0.4, 0.03, '#3a3f46');
+    box(g, -0.22, 0.7, -0.2, 0.36, 0.03, 0.4, '#3a3f46'); box(g, 0.28, 0.02, -0.15, 0.04, 0.6, 0.3, '#5c636b');
+    box(g, 0.32, 0.05, -0.12, 0.32, 0.03, 0.06, '#8a8f96'); box(g, 0.32, 0.05, 0.06, 0.32, 0.03, 0.06, '#8a8f96');
     return g;
   },
   hook() { const g = group(); box(g, -0.08, 0, -0.08, 0.16, 0.12, 0.16, C.dark); box(g, -0.06, 0.12, -0.06, 0.12, 0.04, 0.12, C.yellow); return g; },

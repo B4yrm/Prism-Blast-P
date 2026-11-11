@@ -39,7 +39,7 @@ if (mode === 'preview') {
 } else {
   const pages = await p.evaluate(f => window.bakeAtlas(f.length ? f : null), filter);
   const dir = path.join(root, 'assets/atlas'); fs.mkdirSync(dir, { recursive: true });
-  for (const f of fs.readdirSync(dir)) if (f.startsWith('world-')) fs.unlinkSync(path.join(dir, f));
+  for (const f of fs.readdirSync(dir)) if (/^(world|bld)-/.test(f)) fs.unlinkSync(path.join(dir, f));
   for (const pg of pages) {
     fs.writeFileSync(path.join(dir, pg.name + '.webp'), Buffer.from(pg.webp.split(',')[1], 'base64'));
     fs.writeFileSync(path.join(dir, pg.name + '.json'), JSON.stringify(pg.json));

@@ -1,10 +1,10 @@
 // Bake entry (runs in headless Chromium). Builds every sprite and packs atlases.
 import * as THREE from 'three';
-import { renderSprite, pack, glb } from './render.js';
+import { renderSprite, pack, glb, setBakeScale } from './render.js';
 import { BUILD } from './buildings.js';
 import { boat, person, PEOPLE, PROPS, TILES, yaw } from './units.js';
 
-const FOOT = { hq: [7, 6], factory: [8, 7], farm: [7, 7], market: [7, 6], warehouse: [8, 7], harbor: [4, 4] };
+const FOOT = { hq: [8, 8], factory: [9, 8], farm: [9, 8], market: [8, 8], warehouse: [10, 8], harbor: [3, 5] };
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
 
 // Kenney tiles are centred 1×1 models; move them so the tile's min corner is the origin.
@@ -56,18 +56,23 @@ function jobs() {
   return J;
 }
 
-window.bake = async (filter) => {
+// Large buildings are baked at 1.5× (96 px tiles) to keep GPU memory low;
+// everything else at 2× (128 px tiles). Each atlas page records its scale.
+const BIG = 1.5, SMALL = 2;
+const isBig = n => n.startsWith('b/') && !/b\/(cafe|shed|icehouse)/.test(n);
+window.bake = async (filter, only) => {
   const sprites = {};
-  const list = jobs().filter(j => !filter || filter.some(f => j.name.startsWith(f)));
+  const list = jobs().filter(j => (!filter || filter.some(f => j.name.startsWith(f))) && (!only || only(j.name)));
   for (const j of list) {
+    setBakeScale(isBig(j.name) ? BIG : SMALL);
     const obj = await j.make();
     sprites[j.name] = renderSprite(obj, { anchor: V(0, 0, 0), ...j.opts });
   }
   return sprites;
 };
 window.bakeAtlas = async (filter) => {
-  const sprites = await window.bake(filter);
-  return pack(sprites, 'world');
+  const big = await window.bake(filter, isBig), small = await window.bake(filter, n => !isBig(n));
+  return [...pack(big, 'bld', BIG), ...pack(small, 'world', SMALL)];
 };
 window.preview = async (filter) => {
   const sprites = await window.bake(filter);

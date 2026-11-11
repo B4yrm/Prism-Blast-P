@@ -1,7 +1,7 @@
 // Renders the island, buildings and every moving unit; owns the camera.
 import { iso, unIso, BOUNDS, BUILDINGS, isLand, hash, SEA_Z, POI, CONVEYOR, CRANES, LIGHTHOUSE, BERTHS, DECOR, PAVE } from '../config.js';
 import { addGround, groundBounds } from '../render/ground.js';
-import { A, has, addSprite } from '../render/atlas.js';
+import { A, has, addSprite, setSprite } from '../render/atlas.js';
 import { isRoad, isWalk } from '../sim/path.js';
 import { Sim, CONVEY_TIME } from '../sim/sim.js';
 import { G } from '../core/economy.js';
@@ -81,7 +81,7 @@ export class WorldScene extends Phaser.Scene {
       s = this.bspr[id] = addSprite(this, p.x, p.y, name);
       s.setDepth(depthAt(def.x + def.w / 2, def.y + def.d / 2));
     } else {
-      s.setFrame(name);
+      setSprite(s, name);
       this.tweens.add({ targets: s, scaleY: { from: s.scaleX * 0.85, to: s.scaleX }, duration: 500, ease: 'Back.Out' });
       this.burst(def.x + def.w / 2, def.y + def.d / 2, 30);
     }
@@ -95,7 +95,7 @@ export class WorldScene extends Phaser.Scene {
       if (i >= 25 && i <= 35 && j >= 11 && j <= 20) return true;   // town & parking
       if (j >= 21) return true;                                     // harbour strip
       if (i >= 36 && j >= 12 && j <= 19) return true;              // lighthouse cape
-      if (i >= 20 && i <= 23 && j >= 7 && j <= 11) return true;    // conveyor
+      if (i >= 20 && i <= 23 && j >= 8 && j <= 11) return true;    // conveyor
       return false;
     };
     const prop = (name, x, y, sc = 1) => has(name) ? addSprite(this, iso(x, y).x, iso(x, y).y, name, sc).setDepth(depthAt(x, y)) : null;
@@ -103,16 +103,18 @@ export class WorldScene extends Phaser.Scene {
     // forest belt and scattered trees
     for (let i = BOUNDS.x0; i < BOUNDS.x1; i++) for (let j = BOUNDS.y0; j < BOUNDS.y1; j++) {
       if (!isLand(i, j) || !isLand(i + 1, j) || !isLand(i, j + 1) || blocked(i, j)) continue;
-      const forest = i < 1 || j < 0, h = hash(i * 13, j * 17);
+      const forest = i < -1 || j < -1, h = hash(i * 13, j * 17);
       if (forest) {
-        if (h < 0.55) prop(`k/grass-trees${h < 0.25 ? '-tall' : ''}/${(i + j) & 1}`, i, j);
-        else if (h < 0.85) this.trees.push(prop('prop/tree' + Math.floor(hash(i, j) * 3), i + 0.5, j + 0.5, 1.3));
+        if (h < 0.28) prop(`k/grass-trees${h < 0.12 ? '-tall' : ''}/${(i + j) & 1}`, i, j);
+        else if (h < 0.55) { const t = prop('prop/tree' + Math.floor(hash(i, j) * 6), i + 0.3 + hash(j, i) * 0.4, j + 0.3 + hash(i + 3, j) * 0.4, 1.05 + hash(i, j + 9) * 0.5); if (t) { t.setFlipX(hash(i, j + 4) > 0.5); this.trees.push(t); } }
+        else if (h < 0.62) prop('prop/rock', i + 0.5, j + 0.5, 1.2);
+        else if (h < 0.7) prop('prop/bush', i + 0.5, j + 0.5, 1.3);
         continue;
       }
       if (h > 0.3) continue;
       const x = i + 0.25 + hash(i, j * 3) * 0.5, y = j + 0.25 + hash(i * 5, j) * 0.5;
       const k = hash(j, i);
-      if (k < 0.5) this.trees.push(prop('prop/tree' + (3 + Math.floor(hash(i + 1, j) * 3)), x, y, 1.1));
+      if (k < 0.5) { const t = prop('prop/tree' + (3 + Math.floor(hash(i + 1, j) * 3)), x, y, 0.95 + hash(i, j + 2) * 0.4); if (t) t.setFlipX(hash(j, i + 1) > 0.5); this.trees.push(t); }
       else if (k < 0.75) this.trees.push(prop('prop/tree' + Math.floor(hash(i, j + 1) * 3), x, y, 1.1));
       else if (k < 0.9) prop('prop/bush', x, y);
       else prop('prop/rock', x, y);
@@ -136,11 +138,12 @@ export class WorldScene extends Phaser.Scene {
     for (const [x, y] of [[14.6, 18.6], [24.6, 18.4], [24.6, 8.5], [13.6, 8.5], [2.6, 8.5], [34.6, 8.4]]) prop('prop/bush', x, y);
     for (const [x, y] of [[11.5, 8.4], [21, 18.4], [31, 8.4]]) prop('prop/flowers', x, y);
     // harbour: containers, pallets, barrels, cones, life on the quay
-    prop('prop/container_b', 21.2, 22.8); prop('prop/container_r', 22.2, 22.8);
-    for (const [x, y, n] of [[3.6, 22.5, 'pallet_raw'], [5.1, 22.5, 'pallet_raw'], [18.2, 22.5, 'pallet_prod'], [19.4, 22.5, 'barrels'], [16.8, 22.6, 'cones']]) prop('prop/' + n, x, y);
+    prop('prop/container_yard', 20.9, 23.45);
+    for (const [x, y, n] of [[3.6, 22.5, 'pallet_raw'], [5.0, 22.45, 'fishbox_stack'], [6.6, 22.45, 'fishbox_stack'], [16.6, 22.45, 'fishbox_stack'], [18.3, 22.5, 'forklift_parked'],
+      [19.4, 22.5, 'barrels'], [11.6, 23.5, 'cones'], [6.5, 25.6, 'netpile'], [13.5, 26.8, 'netpile'], [20.5, 25.2, 'netpile'], [2.6, 23.5, 'pallet_prod']]) prop('prop/' + n, x, y);
     // moored boats keep the harbour busy (decorative)
     this.moored = [];
-    for (const [x, y, c, d, sc] of [[11.6, 24.6, 1, 0, 0.55], [18.4, 24.8, 2, 2, 0.5], [2.2, 25.4, 0, 1, 0.6], [21.8, 28.6, 1, 3, 0.7]]) {
+    for (const [x, y, c, d, sc] of [[24.6, 24.6, 1, 0, 0.55], [2.0, 25.6, 0, 1, 0.6], [22.4, 29.2, 1, 3, 0.7], [27.5, 23.6, 2, 2, 0.5]]) {
       const p = iso(x, y, SEA_Z);
       if (has(`boat/${c}/${d}`)) this.moored.push({ s: addSprite(this, p.x, p.y, `boat/${c}/${d}`, sc).setDepth(depthAt(x, y) + 8), y0: p.y, ph: x });
     }
@@ -148,10 +151,12 @@ export class WorldScene extends Phaser.Scene {
     this.cranes = CRANES.map(([x, y]) => {
       const c = iso(x + 0.5, y + 0.5);
       prop('prop/crane', x + 0.5, y + 0.5);
-      const top = iso(x + 0.5, y + 0.5 + 2.2, 3.35 * UZ);
-      const line = this.add.graphics().setDepth(depthAt(x + 0.5, y + 2.7) + 30);
-      const hook = has('prop/hook') ? addSprite(this, top.x, top.y + 40, 'prop/hook').setDepth(depthAt(x + 0.5, y + 2.7) + 31) : this.add.image(0, 0, 'dot');
-      return { hook, line, top, drop: 40, t: 0 };
+      const top = iso(x + 0.5, y + 0.5 + 2.8, 4.5 * UZ);
+      const dz = depthAt(x + 0.5, y + 3.3);
+      const line = this.add.graphics().setDepth(dz + 30);
+      const hook = addSprite(this, top.x, top.y + 60, 'prop/hook').setDepth(dz + 31);
+      const load = addSprite(this, top.x, top.y + 60, 'prop/crate_raw', 1.6).setDepth(dz + 32).setVisible(false);
+      return { hook, line, load, top, drop: 60, t: 0, ph: 0 };
     });
     // lighthouse + rocks on the cape
     const lp = iso(LIGHTHOUSE[0], LIGHTHOUSE[1]);
@@ -194,10 +199,10 @@ export class WorldScene extends Phaser.Scene {
     };
     this.piles = {
       quay: { spr: mk('prop/crate_raw', grid(11.1, 22.2, 8, 2, 2)), per: () => 40 / 32 },
-      wh: { spr: mk('prop/crate_raw', grid(23.2, 12.2, 2, 16, 2)), per: () => 4 },
-      facOut: { spr: mk('prop/crate_prod', grid(17.2, 7.25, 8, 1, 3)), per: () => 2 },
-      mProd: { spr: mk('prop/crate_prod', grid(7.2, 18.15, 5, 2, 2)), per: () => 2 },
-      mRaw: { spr: mk('prop/crate_raw', grid(8.6, 18.15, 4, 2, 2)), per: () => 2 },
+      wh: { spr: mk('prop/crate_raw', grid(22.2, 19.15, 8, 2, 2)), per: () => 3 },
+      facOut: { spr: mk('prop/crate_prod', grid(17.3, 8.35, 8, 1, 3)), per: () => 2 },
+      mProd: { spr: mk('prop/crate_prod', grid(6.2, 19.15, 5, 2, 2)), per: () => 2 },
+      mRaw: { spr: mk('prop/crate_raw', grid(7.7, 19.15, 4, 2, 2)), per: () => 2 },
     };
   }
   syncStocks() {
@@ -210,7 +215,7 @@ export class WorldScene extends Phaser.Scene {
 
   // ---------------------------------------------------------------- effects
   makeFx() {
-    const chims = [[1.0, 0.8, 3.5 * UZ], [2.0, 0.8, 3.1 * UZ]];
+    const chims = [[1.0, 0.9, 4.0 * UZ], [2.1, 0.9, 3.4 * UZ]];
     this.smoke = chims.map(([x, y, z], i) => {
       const p = iso(BUILDINGS.factory.x + x, BUILDINGS.factory.y + y, z);
       return this.add.particles(p.x, p.y, 'puff', {
@@ -387,7 +392,7 @@ export class WorldScene extends Phaser.Scene {
     sim.boats.forEach((b, i) => {
       const s = this.boatSpr[i], m = b.m;
       const dir = Math.abs(m.dx) > Math.abs(m.dy) ? (m.dx > 0 ? 0 : 2) : (m.dy > 0 ? 1 : 3);
-      s.setFrame(`boat/0/${dir}`);
+      if (s.frame.name !== `boat/0/${dir}`) setSprite(s, `boat/0/${dir}`);
       const bob = Math.sin(b.bob * 2.2) * 1.6;
       const p = iso(m.x, m.y, SEA_Z + bob);
       s.setPosition(p.x, p.y).setDepth(depthAt(m.x, m.y) + 8).setAngle(Math.sin(b.bob * 1.7) * 1.5);
@@ -424,7 +429,7 @@ export class WorldScene extends Phaser.Scene {
     ent.walkT = (ent.walkT || 0) + (m.moving ? 1 : 0);
     const k = m.moving ? Math.floor(ent.walkT / 7) % 4 : 0;
     const name = `p/${s.look}/${carry}/${dir}/${k}`;
-    if (s.frame.name !== name && has(name)) s.setFrame(name);
+    if (s.frame.name !== name && has(name)) setSprite(s, name);
     s.setPosition(p.x, p.y).setDepth(depthAt(m.x, m.y) + 1);
   }
 
@@ -441,13 +446,18 @@ export class WorldScene extends Phaser.Scene {
   }
 
   drawCranes(dt) {
+    // while a boat unloads, the hook dips into the hold and lifts a crate up
     for (const c of this.cranes) {
       c.t = Math.max(0, c.t - dt);
-      const target = c.t > 0 ? 70 : 34;
-      c.drop += (target - c.drop) * Math.min(1, dt * 3);
+      if (c.t > 0 || Math.sin(c.ph) > -0.95) c.ph += dt * 2.2;
+      const dip = c.t > 0 || Math.cos(c.ph) < 0.99 ? 0.5 - 0.5 * Math.cos(c.ph) : 0;
+      c.drop = 55 + dip * 110;
       const hy = c.top.y + c.drop;
       c.hook.setPosition(c.top.x, hy);
-      c.line.clear().lineStyle(1, 0x333333, 0.8).lineBetween(c.top.x, c.top.y, c.top.x, hy - 3);
+      const rising = Math.sin(c.ph) < 0 && dip > 0.05;
+      c.load.setVisible(rising).setPosition(c.top.x, hy + 14);
+      c.line.clear().lineStyle(1.2, 0x2b2f35, 0.9).lineBetween(c.top.x, c.top.y, c.top.x, hy - 4);
     }
   }
+
 }
