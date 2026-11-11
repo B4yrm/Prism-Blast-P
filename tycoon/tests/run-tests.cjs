@@ -158,6 +158,44 @@ const hit = (a, b) => a && b && !(a.r <= b.l || a.l >= b.r || a.b <= b.t || a.t 
     await p.context().close();
   }
 
+  // 6b. real play → close → reopen: every progress value survives
+  {
+    const ctx = await browser.newContext({ viewport: { width: 844, height: 390 }, deviceScaleFactor: 2, hasTouch: true });
+    const open = async () => {
+      const p = await ctx.newPage(); p.logs = []; p.on('console', m => p.logs.push(m.text()));
+      await p.goto(URL);
+      await p.waitForFunction(() => window.__game && __game.scene.getScene('world') && __game.scene.getScene('world').sim && document.getElementById('loader') === null, null, { timeout: 60000 });
+      return p;
+    };
+    let p = await open();
+    await p.evaluate(() => document.querySelectorAll('[data-m=ok]').forEach(b => b.click()));
+    // play: let the business run, collect cash, level up, buy upgrades and a worker through the UI
+    const dismiss = () => p.evaluate(() => document.querySelectorAll('#mcard [data-m=ok]').forEach(b => b.click()));
+    await p.evaluate(() => { const w = __game.scene.getScene('world'); for (let i = 0; i < 3000; i++) w.sim.update(0.1); });
+    await p.waitForTimeout(300); await dismiss();
+    await p.click('#collect');
+    await p.evaluate(() => document.querySelector('[data-open=boats]').click());
+    await p.waitForTimeout(300);
+    for (let k = 0; k < 2; k++) { await p.evaluate(() => document.querySelector('#pbody [data-act=track]:not([disabled])')?.click()); await p.waitForTimeout(150); }
+    await p.evaluate(() => document.getElementById('pclose').click());
+    await p.evaluate(() => document.querySelector('[data-open=workers]').click()); await p.waitForTimeout(300);
+    await p.evaluate(() => document.querySelector('#pbody [data-act=hire]:not([disabled])')?.click()); await p.waitForTimeout(150);
+    await p.evaluate(() => document.getElementById('pclose').click());
+    await p.evaluate(() => { const w = __game.scene.getScene('world'); for (let i = 0; i < 600; i++) w.sim.update(0.1); });
+    await p.waitForTimeout(300); await dismiss();
+    // close the game the way Android does (page hidden → closed)
+    await p.evaluate(() => { Object.defineProperty(document, 'hidden', { value: true, configurable: true }); document.dispatchEvent(new Event('visibilitychange')); });
+    const saved = JSON.parse(p.logs.filter(l => l.startsWith('SAVED ')).pop().slice(6));
+    await p.evaluate(() => { window.__noSave = true; });        // nothing may be written after the snapshot
+    await p.close();
+    p = await open();
+    const loaded = JSON.parse(p.logs.find(l => l.startsWith('LOADED ')).slice(7));
+    const diff = Object.keys(saved).filter(k => saved[k] !== loaded[k]);
+    const progressed = saved.level >= 2 && saved.upgrades !== '0-0-0-0-0' && saved.workers >= 2 && saved.money !== 120;
+    ok('save_load_after_real_play', diff.length === 0 && progressed, { saved, loaded, differentFields: diff, progressed });
+    await ctx.close();
+  }
+
   // 7. offline earnings = half the steady rate × time away (capped), and corrupt save recovery
   {
     const seed = JSON.stringify({ v: 1, money: 1000, gems: 10, level: 4, workers: 3, boats: 1, lastSeen: Date.now() - 2 * 3600e3, stats: { caught: 500, sold: 400 }, tier: { harbor: 1, warehouse: 1, market: 1, hq: 1, factory: 0, farm: 0 } });

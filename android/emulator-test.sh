@@ -62,14 +62,34 @@ for k in 1 2 3; do
 done
 echo "INFO  double tap via adb: $DT/3 recognised (adb cannot send two taps with exact timing)" >> "$RES"
 shot 6-after-doubletap
-# 9. save / load on the device: kill the app, start again, compare money and level
-sleep 8
-BEFORE=$(log | grep PERF | tail -1 | grep -oE "money=[0-9]+ level=[0-9]+")
+# 9. real play, then close and reopen: every progress value must survive
+shot 8-dock-before-restart
+mark; read X Y < <(pos collect); tapcss $X $Y; sleep 2; check "collect button" "UI collect"
+read X Y < <(pos boats); tapcss $X $Y; sleep 6
+for k in 1 2; do read X Y < <(pos upg); [ -n "$X" ] && tapcss $X $Y; sleep 6; done
+read X Y < <(pos pclose); [ -n "$X" ] && tapcss $X $Y; sleep 20
+adb shell input keyevent KEYCODE_HOME; sleep 3          # page hidden → game saves
+SAVED=$(log | grep "SAVED " | tail -1 | sed 's/.*SAVED //')
 adb shell am force-stop $PKG; sleep 2; adb logcat -c
 adb shell am start -W -n $PKG/az.universitet.tycoon.MainActivity > /dev/null; sleep 40; nodialog
-AFTER=$(log | grep PERF | tail -1 | grep -oE "money=[0-9]+ level=[0-9]+")
-if [ -n "$BEFORE" ] && [ "$BEFORE" = "$AFTER" ]; then echo "PASS  save/load after force-stop ($BEFORE)" >> "$RES"; else echo "FAIL  save/load after force-stop (before: $BEFORE, after: $AFTER)" >> "$RES"; fi
+LOADED=$(log | grep "LOADED " | head -1 | sed 's/.*LOADED //')
+echo "SAVED  $SAVED"  > "$OUT/save-load.txt"; echo "LOADED $LOADED" >> "$OUT/save-load.txt"
+python3 - "$SAVED" "$LOADED" >> "$RES" <<'PY'
+import json, sys
+try:
+    s, l = json.loads(sys.argv[1]), json.loads(sys.argv[2])
+except Exception as e:
+    print("FAIL  save/load after real play (could not read snapshots: %s)" % e); sys.exit()
+diff = [k for k in s if s[k] != l.get(k)]
+played = s["money"] != 120 or s["upgrades"] != "0-0-0-0-0"
+print(("PASS" if not diff and played else "FAIL") + "  save/load after real play + force-stop: %d fields equal%s (level %s, money %s, upgrades %s, workers %s)"
+      % (len(s) - len(diff), "" if not diff else ", different: " + ",".join(diff), s["level"], s["money"], s["upgrades"], s["workers"]))
+PY
 shot 7-after-restart
+# second restart: icons must still render the same
+adb shell am force-stop $PKG; sleep 2
+adb shell am start -W -n $PKG/az.universitet.tycoon.MainActivity > /dev/null; sleep 40; nodialog
+shot 9-after-second-restart
 # 10. performance & memory
 adb shell dumpsys gfxinfo $PKG > "$OUT/gfxinfo.txt"
 adb shell dumpsys meminfo $PKG > "$OUT/meminfo.txt"

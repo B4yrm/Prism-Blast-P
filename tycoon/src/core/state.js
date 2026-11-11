@@ -68,3 +68,15 @@ export function save(S) {
 export function wipe() {
   try { localStorage.removeItem(SAVE_KEY); } catch (e) { /* ignore */ }
 }
+
+// Compact progress fingerprint, logged on save / load so device tests can
+// prove nothing is lost across a restart.
+export function snapshot(S) {
+  const sum = o => Object.values(o).reduce((a, b) => a + b, 0);
+  return {
+    money: Math.floor(S.money), register: Math.floor(S.register), gems: S.gems, level: S.level, xp: S.xp,
+    tiers: Object.values(S.tier).join(''), upgrades: Object.values(S.up).map(sum).join('-'),
+    workers: S.workers, boats: S.boats, caught: S.stats.caught, sold: S.stats.sold, mission: S.mission,
+    research: Object.values(S.research.lv).reduce((a, b) => a + b, 0),
+  };
+}

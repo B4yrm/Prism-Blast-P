@@ -1,12 +1,13 @@
 // Entry: load the save, pick a quality profile, boot Phaser and the DOM UI.
 import { G, steadyRate, stat, addXp } from './core/economy.js';
-import { load } from './core/state.js';
+import { load, snapshot } from './core/state.js';
 import { BootScene } from './scenes/BootScene.js';
 import { WorldScene } from './scenes/WorldScene.js';
 import { initUI, showModal } from './ui/ui.js';
 import { bus } from './core/bus.js';
 
 G.S = load();
+console.log('LOADED ' + JSON.stringify(snapshot(G.S)));
 // Graphics presets. 'auto' picks one from the device's memory / CPU cores.
 export const PRESETS = {
   high:   { dprMax: 2,   ground: 1.25, atlasHalf: false, fps: 60, cars: 5, glints: 22, foam: 1, sway: true,  wake: 1 },
@@ -68,7 +69,7 @@ setInterval(() => {
   try { for (const k of game.textures.getTextureKeys()) { const src = game.textures.get(k).source[0]; if (src) px += src.width * src.height; } } catch (e) { /* ignore */ }
   const heap = performance.memory ? (performance.memory.usedJSHeapSize / 1048576).toFixed(1) : 'n/a';
   const r = sel => { const e = document.querySelector(sel); if (!e) return null; const b = e.getBoundingClientRect(); return [Math.round(b.left + b.width / 2), Math.round(b.top + b.height / 2)]; };
-  console.log('UIPOS ' + JSON.stringify({ w: innerWidth, h: innerHeight, sideTog: r('#sideTog'), recenter: r('#recenter'), boats: r('#dock [data-open=boats]'), pclose: r('#pclose'), mission: r('#mission'), gear: r('#hud .gear'), collect: r('#collect'), rail0: r('#side .items button'), missionX: r('#mission .mx'), start: r('#mcard [data-m]') }));
+  console.log('UIPOS ' + JSON.stringify({ w: innerWidth, h: innerHeight, sideTog: r('#sideTog'), recenter: r('#recenter'), boats: r('#dock [data-open=boats]'), pclose: r('#pclose'), mission: r('#mission'), gear: r('#hud .gear'), collect: r('#collect'), rail0: r('#side .items button'), missionX: r('#mission .mx'), start: r('#mcard [data-m]'), upg: r('#pbody [data-act=track]:not([disabled])') }));
   console.log(`PERF renderer=${game.renderer ? (game.renderer.type === 2 ? 'webgl' : 'canvas') : 'none'} world=${!!G.world} size=${innerWidth}x${innerHeight} zoom=${G.world ? G.world.cameras.main.zoom.toFixed(3) : 0} money=${Math.floor(G.S.money)} level=${G.S.level} caught=${G.S.stats.caught} fps=${game.loop.actualFps.toFixed(1)} textureMB=${(px * 4 / 1048576).toFixed(1)} heapMB=${heap} preset=${G.quality.name} canvas=${game.canvas.width}x${game.canvas.height}`);
 }, 5000);
 

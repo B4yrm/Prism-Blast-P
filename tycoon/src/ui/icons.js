@@ -56,7 +56,13 @@ export const ICONS = {
   lock: `<rect ${W} x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 018 0v3" stroke="#fff" stroke-width="2.2" fill="none"/>`,
 };
 
-export const icon = (name, cls = '') => `<svg class="ic ${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICONS[name] || ''}</svg>`;
+// Icons are shown as <img> (data-URI SVG) rather than inline SVG: an image is
+// rasterised once and stays stable, while inline SVG inside composited layers
+// was seen drawing stroke paths as solid blocks in an Android WebView.
+const urlCache = {};
+export const iconUrl = name => urlCache[name] || (urlCache[name] =
+  'data:image/svg+xml,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">${ICONS[name] || ''}</svg>`));
+export const icon = (name, cls = '') => `<img class="ic ${cls}" src="${iconUrl(name)}" alt="" draggable="false">`;
 
 // Fill every [data-ic] element with its icon.
 export function hydrateIcons(root = document) {

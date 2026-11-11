@@ -7,7 +7,7 @@ import {
 } from '../core/economy.js';
 import { bus } from '../core/bus.js';
 import { sfx, buzz, unlockAudio } from '../core/audio.js';
-import { save, wipe } from '../core/state.js';
+import { save, wipe, snapshot } from '../core/state.js';
 import { icon, hydrateIcons } from './icons.js';
 
 const $ = id => document.getElementById(id);
@@ -71,7 +71,7 @@ export function initUI() {
 
   setInterval(tick, 250);
   setInterval(() => save(S()), 5000);
-  const persist = () => save(S());
+  const persist = () => { save(S()); console.log('SAVED ' + JSON.stringify(snapshot(S()))); };
   document.addEventListener('visibilitychange', () => { if (document.hidden) persist(); });
   window.addEventListener('pagehide', persist);
   tick();
@@ -478,6 +478,7 @@ function claimDaily() {
 // ------------------------------------------------------------------ collect
 function collect() {
   const v = G.sim.collect(false);
+  console.log('UI collect ' + v);
   if (!v) { sfx.error(); toast('Kassa boşdur — müştərilər alış-veriş edir'); }
 }
 function flyCoins() {
