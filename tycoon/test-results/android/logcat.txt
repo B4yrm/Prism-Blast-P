@@ -1,0 +1,24 @@
+--------- beginning of main
+11-11 12:35:46.085  2493  2860 E chromium: [ERROR:simple_file_enumerator.cc(21)] opendir /data/user/0/az.fishing.tycoon/cache/WebView/Default/HTTP Cache/Code Cache/wasm: No such file or directory (2)
+11-11 12:35:46.086  2493  2860 E chromium: [ERROR:simple_index_file.cc(614)] Could not reconstruct index from disk
+11-11 12:35:46.088  2493  2858 E chromium: [ERROR:simple_file_enumerator.cc(21)] opendir /data/user/0/az.fishing.tycoon/cache/WebView/Default/HTTP Cache/Code Cache/js: No such file or directory (2)
+11-11 12:35:46.088  2493  2858 E chromium: [ERROR:simple_index_file.cc(614)] Could not reconstruct index from disk
+11-11 12:35:54.335  2493  2493 I FishingTycoon: Uncaught Error: Framebuffer status: Incomplete Attachment
+11-11 12:36:02.896  2493  2493 I FishingTycoon: PERF fps=17.0 textureMB=37.8 heapMB=45.2 preset=low canvas=866x412
+11-11 12:36:03.200  2493  2493 I FishingTycoon: PERF fps=30.0 textureMB=0.0 heapMB=45.2 preset=low canvas=0x0
+11-11 12:36:12.928  2493  2493 I FishingTycoon: PERF fps=10.9 textureMB=37.8 heapMB=45.2 preset=low canvas=866x412
+11-11 12:36:13.282  2493  2493 I FishingTycoon: PERF fps=30.0 textureMB=0.0 heapMB=45.2 preset=low canvas=0x0
+11-11 12:36:22.946  2493  2493 I FishingTycoon: PERF fps=11.4 textureMB=37.8 heapMB=45.2 preset=low canvas=866x412
+11-11 12:36:23.245  2493  2493 I FishingTycoon: PERF fps=30.0 textureMB=0.0 heapMB=45.2 preset=low canvas=0x0
+11-11 12:36:32.891  2493  2493 I FishingTycoon: PERF fps=12.1 textureMB=37.8 heapMB=45.2 preset=low canvas=866x412
+11-11 12:36:33.334  2493  2493 I FishingTycoon: PERF fps=30.0 textureMB=0.0 heapMB=45.2 preset=low canvas=0x0
+11-11 12:36:42.887  2493  2493 I FishingTycoon: PERF fps=16.2 textureMB=37.8 heapMB=45.2 preset=low canvas=866x412
+11-11 12:36:43.288  2493  2493 I FishingTycoon: PERF fps=30.0 textureMB=0.0 heapMB=45.2 preset=low canvas=0x0
+11-11 12:36:52.959  2493  2493 I FishingTycoon: PERF fps=11.2 textureMB=37.8 heapMB=45.2 preset=low canvas=866x412
+11-11 12:36:53.231  2493  2493 I FishingTycoon: PERF fps=30.0 textureMB=0.0 heapMB=45.2 preset=low canvas=0x0
+11-11 12:37:02.992  2493  2493 I FishingTycoon: PERF fps=11.1 textureMB=37.8 heapMB=45.2 preset=low canvas=866x412
+11-11 12:37:04.057  2493  2493 I FishingTycoon: PERF fps=30.0 textureMB=0.0 heapMB=45.2 preset=low canvas=0x0
+11-11 12:37:13.004  2493  2493 I FishingTycoon: PERF fps=11.6 textureMB=37.8 heapMB=45.2 preset=low canvas=866x412
+11-11 12:37:14.089  2493  2493 I FishingTycoon: PERF fps=30.0 textureMB=0.0 heapMB=45.2 preset=low canvas=0x0
+11-11 12:37:22.966  2493  2493 I FishingTycoon: PERF fps=11.1 textureMB=37.8 heapMB=45.2 preset=low canvas=866x412
+11-11 12:37:24.080  2493  2493 I FishingTycoon: PERF fps=30.0 textureMB=0.0 heapMB=45.2 preset=low canvas=0x0

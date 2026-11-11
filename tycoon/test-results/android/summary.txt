@@ -1,0 +1,19 @@
+Total frames rendered: 594
+Janky frames: 594 (100.00%)
+Janky frames (legacy): 594 (100.00%)
+50th percentile: 150ms
+90th percentile: 200ms
+99th percentile: 300ms
+50th gpu percentile: 16ms
+90th gpu percentile: 4950ms
+99th gpu percentile: 4950ms
+  Native Heap    11567    11468       92    16154    12812    37744    31253     2225
+           Java Heap:     3320                          18776
+         Native Heap:    11468                          12812
+            Graphics:        0                              0
+           TOTAL PSS:    79349            TOTAL RSS:   170244       TOTAL SWAP PSS:    23712
+11-11 12:37:04.057  2493  2493 I FishingTycoon: PERF fps=30.0 textureMB=0.0 heapMB=45.2 preset=low canvas=0x0
+11-11 12:37:13.004  2493  2493 I FishingTycoon: PERF fps=11.6 textureMB=37.8 heapMB=45.2 preset=low canvas=866x412
+11-11 12:37:14.089  2493  2493 I FishingTycoon: PERF fps=30.0 textureMB=0.0 heapMB=45.2 preset=low canvas=0x0
+11-11 12:37:22.966  2493  2493 I FishingTycoon: PERF fps=11.1 textureMB=37.8 heapMB=45.2 preset=low canvas=866x412
+11-11 12:37:24.080  2493  2493 I FishingTycoon: PERF fps=30.0 textureMB=0.0 heapMB=45.2 preset=low canvas=0x0
