@@ -1,7 +1,7 @@
 // Persistent game state with versioned saves.
 
 export const SAVE_KEY = 'fishingTycoon.save';
-export const SAVE_VERSION = 1;
+export const SAVE_VERSION = 2;
 
 export function fresh() {
   return {
@@ -12,13 +12,14 @@ export function fresh() {
     up: {
       harbor: { cap: 0, speed: 0, net: 0 },
       warehouse: { cap: 0, load: 0, cold: 0 },
-      factory: { speed: 0, out: 0, qual: 0 },
+      factory: { speed: 0, out: 0, qual: 0, can: 0 },
       market: { price: 0, ads: 0, till: 0 },
       hq: { train: 0, carry: 0 },
     },
     workers: 1, boats: 1,
-    stock: { quay: 0, wh: 0, facOut: 0, mRaw: 0, mProd: 0 },
-    stats: { caught: 0, sold: 0, soldProd: 0, earned: 0, collected: 0, research: 0 },
+    boatTypes: [0], trucks: 0, forklifts: 0, roles: [],
+    stock: { quay: 0, wh: 0, facOut: 0, facCan: 0, mRaw: 0, mProd: 0, mCan: 0 },
+    stats: { caught: 0, sold: 0, soldProd: 0, soldCan: 0, exported: 0, earned: 0, collected: 0, research: 0 },
     mission: 0,
     ach: {},                      // id -> number of claimed steps
     daily: { day: 0, last: '' },
@@ -33,7 +34,9 @@ export function fresh() {
 
 // Each migration upgrades a save from version k to k+1.
 const MIGRATIONS = {
-  // 1: s => { ...; s.v = 2; return s; },
+  // v1 → v2: stage 2 (vehicles, boat classes, canning line). New fields are
+  // filled from defaults by deepFill; boats bought in v1 start as small trawlers.
+  1: s => { s.boatTypes = Array.from({ length: s.boats || 1 }, () => 0); s.v = 2; return s; },
 };
 
 function deepFill(dst, def) {

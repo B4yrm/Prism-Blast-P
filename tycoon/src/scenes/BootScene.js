@@ -1,5 +1,5 @@
 // Generates every texture procedurally, showing progress in the DOM loader.
-import { makeBoats, makePeople, makeProps, makeFx } from '../render/sprites.js';
+import { makeBoats, makePeople, makeProps, makeFx, makeVehicles } from '../render/sprites.js';
 import { G } from '../core/economy.js';
 
 export class BootScene extends Phaser.Scene {
@@ -13,6 +13,7 @@ export class BootScene extends Phaser.Scene {
       () => makeProps(this, G.quality.tex),
       () => makePeople(this, G.quality.ppl),
       () => makeBoats(this, G.quality.tex),
+      () => makeVehicles(this, G.quality.tex),
     ];
     let i = 0;
     const next = async () => {

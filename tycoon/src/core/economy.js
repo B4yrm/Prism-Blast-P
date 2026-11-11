@@ -1,5 +1,5 @@
 // Derived stats and money helpers. Everything reads the shared state G.S.
-import { TRACKS, TIER, MAX_WORKERS, MAX_BOATS, BOAT_COST, workerCost, RESEARCH, MISSIONS, ACHIEVEMENTS, ACH_GEMS } from '../data/defs.js';
+import { TRACKS, TIER, MAX_WORKERS, MAX_BOATS, BOAT_COST, BOAT_TYPES, VEHICLES, EXPORT_MUL, workerCost, RESEARCH, MISSIONS, ACHIEVEMENTS, ACH_GEMS } from '../data/defs.js';
 import { bus } from './bus.js';
 
 export const G = { S: null };
@@ -16,6 +16,11 @@ export const stat = {
   loadTime: () => 0.9 * Math.pow(0.9, up('warehouse', 'load')),
   facRate: () => G.S.tier.factory ? 0.6 * Math.pow(1.15, up('factory', 'speed')) * G.S.tier.factory : 0,
   facOutCap: () => 30 + 20 * up('factory', 'out'),
+  canRate: () => G.S.tier.factory >= 2 ? 0.35 * Math.pow(1.15, up('factory', 'can')) * (G.S.tier.factory - 1) : 0,
+  boatType: i => G.S.boatTypes[i] || 0,
+  boatCapOf: i => Math.round(stat.boatCap() * BOAT_TYPES[stat.boatType(i)].capMul),
+  boatSpeedOf: i => stat.boatSpeed() * BOAT_TYPES[stat.boatType(i)].speedMul,
+  fleetCap: () => { let c = 0; for (let i = 0; i < G.S.boats; i++) c += stat.boatCapOf(i); return c; },
   shelfCap: () => 30 + 25 * (G.S.tier.market - 1),
   custEvery: () => 3.6 / ((1 + 0.12 * up('market', 'ads')) * (1 + 0.15 * rl('mkt')) * (1 + 0.35 * (G.S.tier.market - 1))),
   tillCap: () => 400 * Math.pow(1.4, up('market', 'till')) * G.S.tier.market,
@@ -24,6 +29,8 @@ export const stat = {
   priceMul: () => (1 + 0.1 * up('market', 'price')) * (1 + 0.1 * rl('brand')) * (Date.now() < G.S.boostUntil ? 2 : 1),
   rawPrice: () => 4 * (1 + 0.05 * up('warehouse', 'cold')) * stat.priceMul(),
   prodPrice: () => 11 * (1 + 0.08 * up('factory', 'qual')) * stat.priceMul(),
+  canPrice: () => 24 * (1 + 0.08 * up('factory', 'qual')) * stat.priceMul(),
+  exportMul: () => EXPORT_MUL,
   maxWorkers: () => MAX_WORKERS[G.S.tier.hq],
   maxBoats: () => MAX_BOATS[G.S.tier.harbor],
   offlineCapH: () => 8 + 2 * rl('night'),
@@ -55,8 +62,9 @@ export function addXp(n) {
   }
 }
 
+export const trackOpen = (b, tr) => !tr.minTier || G.S.tier[b] >= tr.minTier;
 export function buyTrack(b, tr) {
-  if (up(b, tr.id) >= trackMax(b)) return false;
+  if (!trackOpen(b, tr) || up(b, tr.id) >= trackMax(b)) return false;
   if (!spend(trackCost(b, tr))) return false;
   G.S.up[b][tr.id]++;
   addXp(2 + G.S.up[b][tr.id]);
@@ -86,20 +94,42 @@ export function hire() {
 export function boatCost() { return BOAT_COST[G.S.boats + 1] || Infinity; }
 export function buyBoat() {
   if (G.S.boats >= stat.maxBoats() || !spend(boatCost())) return false;
+  G.S.boatTypes[G.S.boats] = 0;
   G.S.boats++; bus.emit('boats'); return true;
+}
+
+// ---- vehicles & boat classes -------------------------------------------
+export function vehicleMax(kind) { const v = VEHICLES[kind]; return v.max(G.S.tier[v.need] || 0); }
+export function vehicleCost(kind) { return VEHICLES[kind].cost(G.S[kind + 's']); }
+export function buyVehicle(kind) {
+  const key = kind + 's';
+  if (G.S[key] >= vehicleMax(kind) || !spend(vehicleCost(kind))) return false;
+  G.S[key]++; addXp(10); bus.emit('vehicles', kind); return true;
+}
+export function boatRefit(i) {
+  const t = stat.boatType(i), nx = BOAT_TYPES[t + 1];
+  if (!nx) return null;
+  return { next: t + 1, cost: nx.cost, tier: nx.tier, name: nx.name };
+}
+export function refitBoat(i) {
+  const r = boatRefit(i);
+  if (!r || G.S.tier.harbor < r.tier || !spend(r.cost)) return false;
+  G.S.boatTypes[i] = r.next; addXp(15 * r.next);
+  bus.emit('refit', i); return true;
 }
 
 // Steady-state income estimate ($/s): the slowest stage of the chain wins.
 export function steadyRate() {
   const S = G.S;
   const trip = 2 * 13 / stat.boatSpeed() + stat.fishTime() + 3;
-  const fishRate = S.boats * stat.boatCap() / trip;
+  const fishRate = stat.fleetCap() / trip;
   const haulTrip = 2 * 20 / stat.workerSpeed() + 2 * stat.loadTime();
-  const haul = S.workers * stat.carry() / haulTrip / 2;  // two legs share the haulers
+  const haul = (S.workers * stat.carry() + S.forklifts * 14) / haulTrip / 2 + S.trucks * 24 / 25;  // legs share the haulers
   const demand = 2 / stat.custEvery();
   let flow = Math.min(fishRate, haul, demand);
   if (S.tier.factory) {
-    return Math.min(flow, stat.facRate()) * stat.prodPrice();
+    const can = Math.min(flow, stat.canRate()), fil = Math.min(flow - can, stat.facRate());
+    return can * stat.canPrice() + fil * stat.prodPrice();
   }
   return flow * stat.rawPrice();
 }
@@ -117,6 +147,9 @@ export function metric(k) {
   if (k.startsWith('tier.')) return S.tier[k.slice(5)];
   if (k === 'workers') return S.workers;
   if (k === 'boats') return S.boats;
+  if (k === 'trucks') return S.trucks;
+  if (k === 'forklifts') return S.forklifts;
+  if (k === 'bestBoat') return Math.max(0, ...S.boatTypes.slice(0, S.boats));
   if (k === 'level') return S.level;
   return S.stats[k] || 0;
 }

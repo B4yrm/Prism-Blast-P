@@ -12,11 +12,14 @@ walk.add(key(POI.spawn[0], POI.spawn[1]));
 export const isWalk = (i, j) => walk.has(key(i, j));
 export const isRoad = (i, j) => ROADS.some(([x0, y0, x1, y1]) => i >= x0 && i <= x1 && j >= y0 && j <= y1);
 
+const road = new Set();
+for (const [x0, y0, x1, y1] of ROADS) for (let i = x0; i <= x1; i++) for (let j = y0; j <= y1; j++) road.add(key(i, j));
+
 const cache = new Map();
 
 // Returns tile-centre waypoints from a to b (inclusive), or null.
-export function findPath(a, b) {
-  const k = key(a[0], a[1]) * 100000 + key(b[0], b[1]);
+export function findPath(a, b, roadOnly = false) {
+  const k = (key(a[0], a[1]) * 100000 + key(b[0], b[1])) * 2 + (roadOnly ? 1 : 0);
   if (cache.has(k)) return cache.get(k);
   const start = key(a[0], a[1]), goal = key(b[0], b[1]);
   const open = [start], g = new Map([[start, 0]]), came = new Map();
@@ -36,7 +39,7 @@ export function findPath(a, b) {
     const ci = Math.floor(cur / 1000), cj = cur % 1000;
     for (const [di, dj] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
       const ni = ci + di, nj = cj + dj, nk = key(ni, nj);
-      if (!walk.has(nk)) continue;
+      if (!walk.has(nk) || (roadOnly && !road.has(nk) && nk !== goal)) continue;
       const ng = g.get(cur) + 1;
       if (ng < (g.has(nk) ? g.get(nk) : Infinity)) {
         came.set(nk, cur); g.set(nk, ng); f.set(nk, ng + h(nk));

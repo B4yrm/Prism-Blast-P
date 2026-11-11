@@ -5,7 +5,8 @@ import { buildingTexture } from '../render/buildings.js';
 import { Painter } from '../render/paint.js';
 import { isRoad, isWalk } from '../sim/path.js';
 import { Sim, CONVEY_TIME } from '../sim/sim.js';
-import { G } from '../core/economy.js';
+import { G, stat } from '../core/economy.js';
+import { BOAT_TEX, VEH_TEX } from '../render/sprites.js';
 import { bus } from '../core/bus.js';
 
 const D_WATER = -100, D_GROUND = -50;
@@ -195,8 +196,10 @@ export class WorldScene extends Phaser.Scene {
       quay: { spr: mk('crate_raw', grid(12.9, 28.25, 6, 1, 3)), per: () => 40 / 18 },
       wh: { spr: mk('crate_raw', grid(34.6, 18.4, 3, 9, 2)), per: () => 4 },
       facOut: { spr: mk('crate_prod', grid(26.1, 10.6, 4, 1, 3)), per: () => 3 },
-      mProd: { spr: mk('crate_prod', grid(14.0, 21.7, 2, 3, 2)), per: () => 3 },
-      mRaw: { spr: mk('crate_raw', grid(15.2, 21.7, 2, 3, 2)), per: () => 3 },
+      mProd: { spr: mk('crate_prod', grid(13.15, 24.15, 2, 2, 2)), per: () => 3 },
+      mRaw: { spr: mk('crate_raw', grid(14.35, 24.15, 2, 2, 2)), per: () => 3 },
+      facCan: { spr: mk('crate_can', grid(26.1, 10.1, 4, 1, 3)), per: () => 3 },
+      mCan: { spr: mk('crate_can', grid(15.55, 24.15, 2, 2, 2)), per: () => 3 },
     };
   }
   syncStocks() {
@@ -243,6 +246,7 @@ export class WorldScene extends Phaser.Scene {
     if (cr) cr.t = 1.2;
   }
 
+  floatAt(x, y, str, col) { this.floatText(x, y, str, col); }
   floatText(x, y, str, col) {
     if (this.floats.length > 18) return;
     const p = iso(x, y, 40);
@@ -370,12 +374,12 @@ export class WorldScene extends Phaser.Scene {
     const sim = this.sim;
     while (this.boatSpr.length < sim.boats.length) {
       const i = this.boatSpr.length;
-      this.boatSpr.push(this.add.image(0, 0, `boat_${i % 4}_3`).setOrigin(0.5, 100 / 150).setScale(1 / this.TS));
+      this.boatSpr.push(this.add.image(0, 0, 'boat_0_3').setOrigin(BOAT_TEX.ox / BOAT_TEX.W, BOAT_TEX.oy / BOAT_TEX.H).setScale(1 / this.TS));
     }
     sim.boats.forEach((b, i) => {
       const s = this.boatSpr[i], m = b.m;
       const dir = Math.abs(m.dx) > Math.abs(m.dy) ? (m.dx > 0 ? 0 : 2) : (m.dy > 0 ? 1 : 3);
-      s.setTexture(`boat_${i % 4}_${dir}`);
+      s.setTexture(`boat_${stat.boatType(i)}_${dir}`);
       const bob = Math.sin(b.bob * 2.2) * 1.6;
       const p = iso(m.x, m.y, SEA_Z + bob);
       s.setPosition(p.x, p.y).setDepth(depthAt(m.x, m.y) + 8).setAngle(Math.sin(b.bob * 1.7) * 1.5);
@@ -392,7 +396,17 @@ export class WorldScene extends Phaser.Scene {
     const sim = this.sim;
     // haulers
     while (this.workerSpr.length < sim.workers.length) this.workerSpr.push(this.add.sprite(0, 0, 'p_worker', 'none_0_0').setOrigin(0.5, 33 / 36).setScale(1 / G.quality.ppl));
-    sim.workers.forEach((w, i) => this.placeWalker(this.workerSpr[i], w.m, w.carry > 0 ? w.kind : 'none', w, t));
+    sim.workers.forEach((w, i) => this.placeWalker(this.workerSpr[i], w.m, w.carry > 0 ? w.cargo : 'none', w, t));
+    // forklifts & trucks
+    this.vehSpr = this.vehSpr || [];
+    while (this.vehSpr.length < sim.vehicles.length) this.vehSpr.push(this.add.image(0, 0, 'truck_0_0').setOrigin(VEH_TEX.ox / VEH_TEX.W, VEH_TEX.oy / VEH_TEX.H).setScale(1 / this.TS));
+    sim.vehicles.forEach((v, i) => {
+      const s = this.vehSpr[i], m = v.m;
+      const dir = Math.abs(m.dx) > Math.abs(m.dy) ? (m.dx > 0 ? 0 : 2) : (m.dy > 0 ? 1 : 3);
+      s.setTexture(`${v.kind === 'truck' ? 'truck' : 'fork'}_${dir}_${v.carry > 0 ? 1 : 0}`);
+      const p = iso(m.x, m.y, m.moving ? Math.sin(t * 20 + i) * 0.4 : 0);
+      s.setPosition(p.x, p.y).setDepth(depthAt(m.x, m.y) + 2).setVisible(!v.hidden);
+    });
     // customers (pooled sprites)
     const used = new Set();
     for (const c of sim.customers) {

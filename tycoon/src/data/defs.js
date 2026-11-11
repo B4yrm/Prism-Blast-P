@@ -26,6 +26,7 @@ export const TRACKS = {
     { id: 'speed', name: 'Emal xətti',     icon: '⚙️', base: 120, g: 1.2,  fx: l => `${(0.6 * Math.pow(1.15, l)).toFixed(2)} /s` },
     { id: 'out',   name: 'Qablaşdırma',    icon: '🥫', base: 100, g: 1.18, fx: l => `${30 + 20 * l} yer` },
     { id: 'qual',  name: 'Keyfiyyət',      icon: '⭐', base: 160, g: 1.23, fx: l => `+${8 * l}% məhsul qiyməti` },
+    { id: 'can',   name: 'Konserv xətti',  icon: '🥫', base: 900, g: 1.21, minTier: 2, fx: l => `${(0.35 * Math.pow(1.15, l)).toFixed(2)} /s konserv` },
   ],
   market: [
     { id: 'price', name: 'Qiymətlər',      icon: '🏷️', base: 40,  g: 1.2,  fx: l => `+${10 * l}% qiymət` },
@@ -52,6 +53,27 @@ export const TIER = {
 export const MAX_WORKERS = [0, 3, 6, 10];   // by HQ tier
 export const MAX_BOATS = [0, 1, 2, 4];      // by harbor tier
 export const BOAT_COST = [0, 0, 1200, 9000, 60000];
+// Boat classes: a berth can be refitted to a bigger class.
+export const BOAT_TYPES = [
+  { name: 'Kiçik trauler', capMul: 1,   speedMul: 1,    scale: 1,    cost: 0,     tier: 1 },
+  { name: 'Seyner',        capMul: 1.8, speedMul: 0.95, scale: 1.18, cost: 4000,  tier: 2 },
+  { name: 'Böyük trauler', capMul: 3,   speedMul: 0.9,  scale: 1.38, cost: 30000, tier: 3 },
+];
+
+// Vehicles (stage 2): forklifts haul quay → warehouse, trucks haul factory → market / export.
+export const VEHICLES = {
+  forklift: { name: 'Forklift',      icon: '🚜', cap: 14, speed: 2.4, cost: n => Math.round(700 * Math.pow(2.6, n)), max: t => [0, 0, 2, 4][t], need: 'warehouse', desc: 'İskələdən anbara palet daşıyır' },
+  truck:    { name: 'Yük maşını',    icon: '🚚', cap: 24, speed: 4.2, cost: n => Math.round(2500 * Math.pow(2.8, n)), max: t => [0, 1, 2, 4][t], need: 'factory', desc: 'Zavoddan bazara, artığı topdan satışa aparır' },
+};
+export const EXPORT_MUL = 0.7;   // wholesale price factor for trucked-out goods
+
+// Hauler roles.
+export const ROLES = [
+  { id: 'any',  name: 'Universal', icon: '🔁' },
+  { id: 'port', name: 'Liman',     icon: '⚓', desc: 'Yalnız iskələ → anbar' },
+  { id: 'shop', name: 'Bazar',     icon: '🏪', desc: 'Yalnız bazara daşıyır' },
+];
+
 export const workerCost = n => Math.round(60 * Math.pow(2.3, n - 1));
 
 export const RESEARCH = [
@@ -90,7 +112,14 @@ export const MISSIONS = [
   { t: 'Ümumi qazanc $25K',           k: 'earned',   n: 25000, r: { g: 25 } },
   { t: 'Zavodu Lv 2-yə genişləndir',  k: 'tier.factory', n: 2, r: { g: 20 } },
   { t: 'Oyunçu səviyyəsi 8',          k: 'level',    n: 8,     r: { g: 30 } },
+  { t: 'İlk yük maşınını al',         k: 'trucks',   n: 1,     r: { c: 3000, g: 15 } },
+  { t: 'Anbarı Lv 2-yə genişləndir',  k: 'tier.warehouse', n: 2, r: { g: 15 } },
+  { t: 'Forklift al',                 k: 'forklifts', n: 1,    r: { g: 15 } },
+  { t: 'Qayığı Seynerə yenilə',       k: 'bestBoat', n: 1,     r: { c: 5000, g: 20 } },
+  { t: '200 konserv sat',             k: 'soldCan',  n: 200,   r: { g: 25 } },
   { t: 'Ümumi qazanc $250K',          k: 'earned',   n: 250000, r: { g: 40 } },
+  { t: '3 qayıq',                     k: 'boats',    n: 3,     r: { g: 30 } },
+  { t: 'Oyunçu səviyyəsi 12',         k: 'level',    n: 12,    r: { g: 50 } },
 ];
 
 export const ACHIEVEMENTS = [
@@ -99,6 +128,8 @@ export const ACHIEVEMENTS = [
   { id: 'earned', name: 'Milyonçu',    icon: '💰', steps: [1000, 100000, 1e6, 1e7] },
   { id: 'workers',name: 'Komanda',     icon: '👷', steps: [3, 6, 10] },
   { id: 'boats',  name: 'Donanma',     icon: '🚢', steps: [2, 3, 4] },
+  { id: 'trucks', name: 'Logistika',   icon: '🚚', steps: [1, 2, 4] },
+  { id: 'exported', name: 'Topdançı',  icon: '📦', steps: [100, 1000, 10000] },
   { id: 'level',  name: 'Təcrübə',     icon: '⭐', steps: [5, 10, 20, 30] },
 ];
 export const ACH_GEMS = [5, 10, 20, 40];

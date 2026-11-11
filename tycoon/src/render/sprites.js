@@ -19,22 +19,23 @@ export const BOAT_LOOKS = [
   { hull: '#f0a422', stripe: '#2f63c8', cabin: '#ffffff', roof: '#2f63c8' },
 ];
 
+export const BOAT_TEX = { W: 280, H: 200, ox: 140, oy: 136 };
+const BOAT_SCALE = [1, 1.18, 1.38];
 export function makeBoats(scene, S) {
-  const W = 200, H = 150, ox = 100, oy = 100;
-  BOAT_LOOKS.forEach((look, li) => {
+  const { W, H, ox, oy } = BOAT_TEX;
+  BOAT_LOOKS.slice(0, 3).forEach((look, li) => {
     DIRS.forEach(([dx, dy], di) => {
       canvasTex(scene, `boat_${li}_${di}`, W * S, H * S, c => {
         const P = new Painter(c, ox * S, oy * S, S);
-        drawBoat(P, dx, dy, look);
+        drawBoat(P, dx, dy, look, BOAT_SCALE[li], li);
       });
     });
   });
-  return { ox: ox / W, oy: oy / H };
 }
 
-function drawBoat(P, dx, dy, L) {
+function drawBoat(P, dx, dy, L, sc = 1, cls = 0) {
   const px = -dy, py = dx;                 // perpendicular
-  const g = (u, v) => [u * dx + v * px, u * dy + v * py];
+  const g = (u, v) => [u * dx * sc + v * px * sc, u * dy * sc + v * py * sc];
   const deck = [[-1.25, -0.42], [0.75, -0.46], [1.35, 0], [0.75, 0.46], [-1.25, 0.42]];
   const top = deck.map(([u, v]) => [...g(u, v), 12]);
   const bot = deck.map(([u, v]) => [...g(u * 0.9, v * 0.75), -2]);
@@ -80,6 +81,8 @@ function drawBoat(P, dx, dy, L) {
     { b: boxAt(0.2, 0.62, -0.25, 0.25), z: 12, h: 5, col: '#3f8f4a', net: true },
     { b: boxAt(0.05, 0.12, -0.04, 0.03), z: 12, h: 38, col: '#f2f2f2', mast: true },
   ];
+  if (cls >= 1) parts.push({ b: boxAt(0.7, 0.95, -0.2, 0.2), z: 12, h: 8, col: '#8a8f96', drum: true });
+  if (cls >= 2) parts.push({ b: boxAt(-1.2, -1.08, -0.06, 0.06), z: 12, h: 46, col: '#f6c531', mast2: true });
   parts.sort((p, q) => (p.b[0] + p.b[2] / 2 + p.b[1] + p.b[3] / 2) - (q.b[0] + q.b[2] / 2 + q.b[1] + q.b[3] / 2));
   for (const pt of parts) {
     const [x, y, w, d] = pt.b;
@@ -98,6 +101,14 @@ function drawBoat(P, dx, dy, L) {
       const cx = P.c; cx.strokeStyle = 'rgba(20,60,20,0.5)'; cx.lineWidth = 0.6 * P.S;
       for (let k = 1; k < 5; k++) { const a = P.p(x + w * k / 5, y, pt.z + pt.h), b = P.p(x + w * k / 5, y + d, pt.z + pt.h); cx.beginPath(); cx.moveTo(a[0], a[1]); cx.lineTo(b[0], b[1]); cx.stroke(); }
     }
+    if (pt.drum) {
+      const [sx, sy] = P.p(x + w / 2, y + d / 2, pt.z + pt.h);
+      c.fillStyle = '#3f8f4a'; c.beginPath(); c.ellipse(sx, sy, 7 * P.S, 4 * P.S, 0, 0, 7); c.fill();
+    }
+    if (pt.mast2) {
+      const top = P.p(x, y, pt.z + pt.h), end = P.p(...g(0.2, 0), 40);
+      c.strokeStyle = '#d9a514'; c.lineWidth = 2 * P.S; c.beginPath(); c.moveTo(top[0], top[1]); c.lineTo(end[0], end[1]); c.stroke();
+    }
     if (pt.mast) {
       // boom & rigging
       const top = P.p(x, y, pt.z + pt.h), bow = P.p(...g(1.3, 0), 14), st = P.p(...g(-1.2, 0), 30);
@@ -113,6 +124,74 @@ function drawBoat(P, dx, dy, L) {
   }
 }
 
+// ---- vehicles --------------------------------------------------------------
+export const VEH_TEX = { W: 120, H: 100, ox: 60, oy: 68 };
+export function makeVehicles(scene, S) {
+  const { W, H, ox, oy } = VEH_TEX;
+  DIRS.forEach(([dx, dy], di) => {
+    for (const loaded of [0, 1]) {
+      canvasTex(scene, `truck_${di}_${loaded}`, W * S, H * S, c => drawTruck(new Painter(c, ox * S, oy * S, S), dx, dy, loaded));
+      canvasTex(scene, `fork_${di}_${loaded}`, W * S, H * S, c => drawFork(new Painter(c, ox * S, oy * S, S), dx, dy, loaded));
+    }
+  });
+}
+function partsBox(dx, dy) {
+  const px = -dy, py = dx, g = (u, v) => [u * dx + v * px, u * dy + v * py];
+  return (u0, u1, v0, v1) => {
+    const A = g(u0, v0), B = g(u1, v1);
+    return [Math.min(A[0], B[0]), Math.min(A[1], B[1]), Math.abs(B[0] - A[0]), Math.abs(B[1] - A[1])];
+  };
+}
+function drawParts(P, parts) {
+  parts.sort((p, q) => (p.b[0] + p.b[2] / 2 + p.b[1] + p.b[3] / 2 + (p.z || 0) * 0.004) - (q.b[0] + q.b[2] / 2 + q.b[1] + q.b[3] / 2 + (q.z || 0) * 0.004));
+  for (const pt of parts) {
+    const [x, y, w, d] = pt.b;
+    P.box(x, y, pt.z || 0, w, d, pt.h, pt.col, { lf: 0.95, rf: 0.76, edge: pt.edge !== false });
+    if (pt.after) pt.after(x, y, w, d);
+  }
+}
+function wheels(P, B, list) {
+  for (const [u, v] of list) { const [x, y, w, d] = B(u - 0.09, u + 0.09, v - 0.05, v + 0.05); P.box(x, y, 0, w, d, 5, '#22262b', { edge: false }); }
+}
+function drawTruck(P, dx, dy, loaded) {
+  const B = partsBox(dx, dy);
+  P.shadow(...B(-0.8, 0.85, -0.33, 0.33), 0.3);
+  wheels(P, B, [[-0.55, -0.3], [-0.55, 0.3], [0.55, -0.3], [0.55, 0.3], [-0.25, -0.3], [-0.25, 0.3]]);
+  drawParts(P, [
+    { b: B(-0.8, 0.82, -0.3, 0.3), z: 3, h: 4, col: '#3a3f46', edge: false },
+    { b: B(0.38, 0.82, -0.28, 0.28), z: 7, h: 15, col: '#2f6fd6', after: (x, y, w, d) => {
+      const f = dx + dy > 0 ? (Math.abs(dx) ? P.fR(x, y, 7, w, d, 15) : P.fL(x, y, 7, w, d, 15)) : null;
+      if (f) P.quad(f, 0.12, 0.45, 0.88, 0.9, P.vgrad(P.p(...f(0, 0.9)), P.p(...f(0, 0.45)), '#d6f0ff', '#4a86c4'));
+      P.windows(Math.abs(dx) ? P.fL(x, y, 7, w, d, 15) : P.fR(x, y, 7, w, d, 15), 1, 1, { mv: 0.5, gv: 0.1, frame: null });
+    } },
+    { b: B(-0.8, 0.34, -0.3, 0.3), z: 7, h: 24, col: '#f4f6f8', after: (x, y, w, d) => {
+      const side = Math.abs(dx) ? P.fL(x, y, 7, w, d, 24) : P.fR(x, y, 7, w, d, 24);
+      P.quad(side, 0, 0.1, 1, 0.24, '#2f6fd6');
+      const [sx, sy] = P.p(...side(0.5, 0.6));
+      fishGlyph(P.c, sx, sy, 0.75 * P.S, '#2f6fd6');
+    } },
+  ]);
+}
+function drawFork(P, dx, dy, loaded) {
+  const B = partsBox(dx, dy);
+  P.shadow(...B(-0.35, 0.55, -0.25, 0.25), 0.28);
+  wheels(P, B, [[-0.25, -0.22], [-0.25, 0.22], [0.2, -0.22], [0.2, 0.22]]);
+  const parts = [
+    { b: B(-0.35, 0.3, -0.22, 0.22), z: 3, h: 9, col: '#f6c531' },
+    { b: B(-0.35, -0.2, -0.2, 0.2), z: 12, h: 6, col: '#3a3f46' },
+    { b: B(-0.2, 0.15, -0.2, -0.16), z: 12, h: 18, col: '#3a3f46', edge: false },
+    { b: B(-0.2, 0.15, 0.16, 0.2), z: 12, h: 18, col: '#3a3f46', edge: false },
+    { b: B(-0.22, 0.18, -0.22, 0.22), z: 30, h: 2, col: '#3a3f46' },
+    { b: B(0.3, 0.36, -0.18, 0.18), z: 2, h: 30, col: '#5c636b' },
+    { b: B(0.36, 0.7, -0.15, 0.15), z: loaded ? 8 : 2, h: 1.5, col: '#8a8f96', edge: false },
+  ];
+  if (loaded) {
+    parts.push({ b: B(0.37, 0.69, -0.17, 0.17), z: 9.5, h: 3, col: '#b98546', edge: false });
+    parts.push({ b: B(0.39, 0.67, -0.15, 0.15), z: 12.5, h: 9, col: '#3b95d9' });
+  }
+  drawParts(P, parts);
+}
+
 // ---- people --------------------------------------------------------------
 export const FW = 22, FH = 36;      // frame size at 1×
 export const PEOPLE = {
@@ -125,10 +204,10 @@ export const PEOPLE = {
   c5: { shirt: '#ffffff', pants: '#283593', skin: '#e0ac85', hair: '#3a2a1a', cap: '#e53935' },
 };
 // frames: [carry variant][facing 0=front,1=back][step 0..3]
-export const CARRY = ['none', 'raw', 'prod', 'bag'];
+export const CARRY = ['none', 'raw', 'prod', 'bag', 'can'];
 export function makePeople(scene, S) {
   for (const [name, L] of Object.entries(PEOPLE)) {
-    const variants = name === 'worker' ? [0, 1, 2] : [0, 3];
+    const variants = name === 'worker' ? [0, 1, 2, 4] : [0, 3];
     const t = canvasTex(scene, `p_${name}`, FW * S * 8, FH * S * variants.length, c => {
       variants.forEach((cv, row) => {
         for (let f = 0; f < 2; f++) for (let k = 0; k < 4; k++) {
@@ -206,7 +285,11 @@ function drawPerson(c, L, back, step, carry) {
   // carried crate in front (front view) / mostly hidden (back view)
   if (holding) {
     const by = ty + (back ? -1 : 2);
-    if (carry === 'raw') {
+    if (carry === 'can') {
+      c.fillStyle = back ? '#8d99a6' : '#b8c4cf'; rr(c, cx - 6, by, 12, 7.5, 1); c.fill();
+      c.fillStyle = '#e2453c'; c.fillRect(cx - 6, by + 3, 12, 2);
+      if (!back) { c.fillStyle = 'rgba(255,255,255,0.6)'; c.fillRect(cx - 5, by + 1, 10, 1); }
+    } else if (carry === 'raw') {
       c.fillStyle = back ? '#2f7fbf' : '#3b95d9'; rr(c, cx - 6, by, 12, 7, 1.2); c.fill();
       c.fillStyle = 'rgba(255,255,255,0.35)'; c.fillRect(cx - 5, by + 1, 10, 1);
       if (!back) { fishGlyph(c, cx - 2, by + 0.5, 0.22, '#c9d6df'); fishGlyph(c, cx + 2, by + 0.2, 0.2, '#e3a07a'); }
@@ -269,6 +352,7 @@ export function makeProps(scene, S) {
   });
   crate('crate_raw', '#3b95d9', '#2a6fa8', true);
   crate('crate_prod', '#d39b57', '#f1d39f', false);
+  crate('crate_can', '#b8c4cf', '#e2453c', false);
   // conveyor box
   canvasTex(scene, 'cbox', 20 * S, 20 * S, c => {
     const P = new Painter(c, 10 * S, 12 * S, S);

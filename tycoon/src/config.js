@@ -73,6 +73,10 @@ export const POI = {
   quay: [14, 28],        // where boats drop the catch and haulers pick up
   spawn: [1, 13],        // tunnel mouth: customers come and go here
   rest: [11, 11],        // idle haulers wait at the HQ
+  facRoad: [29, 13],     // truck stops on the avenue in front of the factory
+  mktRoad: [19, 26],     // truck stops on the harbour road in front of the market
+  garage: [34, 13],      // idle trucks park here
+  lift: [32, 25],        // idle forklifts wait at the warehouse
   queue: [[19, 24], [20, 24], [21, 24], [21, 25], [20, 25], [19, 25]],
 };
 

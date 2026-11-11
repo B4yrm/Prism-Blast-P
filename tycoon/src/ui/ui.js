@@ -1,8 +1,9 @@
 // DOM interface: HUD, side rail, dock, building labels, sheets and modals.
-import { BINFO, TRACKS, TIER, RESEARCH, SHOP, MISSIONS, ACHIEVEMENTS, DAILY, STAGES, BOAT_COST, FREE_CHEST_EVERY, fmt } from '../data/defs.js';
+import { BINFO, TRACKS, TIER, RESEARCH, SHOP, MISSIONS, ACHIEVEMENTS, DAILY, STAGES, BOAT_COST, BOAT_TYPES, VEHICLES, ROLES, FREE_CHEST_EVERY, fmt } from '../data/defs.js';
 import { BUILDINGS } from '../config.js';
 import {
   G, stat, trackCost, trackMax, buyTrack, tierInfo, buyTier, hire, hireCost, buyBoat, boatCost, xpNeed, addMoney, addGems, spend,
+  trackOpen, vehicleMax, vehicleCost, buyVehicle, boatRefit, refitBoat,
   currentMission, claimMission, achState, claimAch, anyAchReady, startResearch, finishResearchIfDone, rushCost, steadyRate, stage, reward,
 } from '../core/economy.js';
 import { bus } from '../core/bus.js';
@@ -43,6 +44,7 @@ export function initUI() {
   bus.on('horn', () => { if (Math.random() < 0.3) sfx.horn(); });
   bus.on('collect', e => { if (!e.auto) { sfx.coin(); flyCoins(); } });
   bus.on('mission', () => log('📋 Missiya tamamlandı'));
+  bus.on('export', e => { G.world.floatAt(1.5, 13.5, '+$' + fmt(e.v), '#8ff07c'); });
 
   setInterval(tick, 250);
   setInterval(() => save(S()), 5000);
@@ -89,7 +91,7 @@ function setDot(id, on, n) { const d = $(id); d.classList.toggle('on', !!on); d.
 function affordable(b) {
   const s = S();
   if (!s.tier[b]) { const ti = tierInfo(b); return ti && s.level >= ti.lvl && s.money >= ti.cost; }
-  if (TRACKS[b].some(tr => s.up[b][tr.id] < trackMax(b) && s.money >= trackCost(b, tr))) return true;
+  if (TRACKS[b].some(tr => trackOpen(b, tr) && s.up[b][tr.id] < trackMax(b) && s.money >= trackCost(b, tr))) return true;
   const ti = tierInfo(b);
   return !!(ti && s.level >= ti.lvl && s.money >= ti.cost);
 }
@@ -112,7 +114,7 @@ function renderStage() {
   const info = STAGES[st - 1];
   let pct, txt;
   if (st === 1) { pct = Math.min(1, s.level / 3) * 0.5 + Math.min(1, s.money / TIER.factory.cost[1]) * 0.5; txt = 'Növbəti: Emal zavodu'; }
-  else if (st === 2) { pct = Math.min(1, (s.boats - 1) / 1) * 0.3 + Math.min(1, s.tier.factory / 3) * 0.4 + Math.min(1, s.level / 12) * 0.3; txt = 'Növbəti: Mərhələ 3'; }
+  else if (st === 2) { pct = Math.min(1, (s.boats - 1) / 2) * 0.25 + Math.min(1, s.tier.factory / 3) * 0.25 + Math.min(1, s.trucks / 2) * 0.2 + Math.min(1, s.level / 12) * 0.3; txt = 'Növbəti: Mərhələ 3 (ferma)'; }
   else { pct = 1; txt = 'Maksimum'; }
   const sig = `${st}|${Math.round(pct * 100)}`;
   if (el.dataset.sig === sig) return;
@@ -189,6 +191,7 @@ const pips = (n, max) => `<span class="pips">${Array.from({ length: Math.min(max
 function trackRows(b) {
   const s = S(), max = trackMax(b);
   return TRACKS[b].map(tr => {
+    if (!trackOpen(b, tr)) return `<div class="row"><span class="ri">${tr.icon}</span><span class="rt"><b>${tr.name}</b><small>🔒 ${BINFO[b].name} Lv ${tr.minTier} lazımdır</small></span><span></span></div>`;
     const l = s.up[b][tr.id], c = trackCost(b, tr), done = l >= max;
     return `<div class="row"><span class="ri">${tr.icon}</span>
       <span class="rt"><b>${tr.name} <span class="lv">Lv ${l}/${max}</span></b>
@@ -207,15 +210,17 @@ function tierCard(b) {
 }
 
 const BOAT_STATE = { dock: 'Limanda', out: 'Dənizə gedir', fish: 'Balıq tutur', back: 'Qayıdır' };
-const WORK_STATE = { idle: 'Gözləyir', toRest: 'Ofisə qayıdır', toSrc: 'Yük götürməyə gedir', pick: 'Yükləyir', toDst: 'Daşıyır', drop: 'Boşaldır' };
-const PLACE = { quay: 'iskələ', wh: 'anbar', facOut: 'zavod', mRaw: 'bazar', mProd: 'bazar' };
+const WORK_STATE = { away: 'Topdan satışda', idle: 'Gözləyir', toRest: 'Dincəlməyə gedir', toSrc: 'Yük götürməyə gedir', pick: 'Yükləyir', toDst: 'Daşıyır', drop: 'Boşaldır' };
+const PLACE = { quay: 'iskələ', wh: 'anbar', facOut: 'zavod', facCan: 'zavod', mRaw: 'bazar', mProd: 'bazar', mCan: 'bazar', export: 'topdan satış' };
 
 function boatRows() {
   const sim = G.sim;
   return sim.boats.map((b, i) => {
-    const p = b.state === 'fish' ? 1 - Math.max(0, b.t) / stat.fishTime() : b.state === 'dock' ? (b.load ? 1 - b.load / stat.boatCap() : 1) : b.m.path ? b.m.idx / b.m.path.length : 0;
-    return `<div class="row"><span class="ri">🚢</span><span class="rt"><b>Qayıq #${i + 1} · ${BOAT_STATE[b.state]}${b.blocked ? ' ⚠️ iskələ dolub' : ''}</b>
-      <small>Yük: ${fmt(b.load)} / ${stat.boatCap()} balıq</small>${bar(p * 100, 100, 'blue', b.state === 'fish' ? Math.ceil(Math.max(0, b.t)) + ' s' : '')}</span><span></span></div>`;
+    const p = b.state === 'fish' ? 1 - Math.max(0, b.t) / stat.fishTime() : b.state === 'dock' ? (b.load ? 1 - b.load / stat.boatCapOf(i) : 1) : b.m.path ? b.m.idx / b.m.path.length : 0;
+    const rf = boatRefit(i), s = S();
+    const btn = rf ? `<button class="btn gold" data-act="refit" data-i="${i}" ${s.tier.harbor < rf.tier || s.money < rf.cost ? 'disabled' : ''}>${s.tier.harbor < rf.tier ? '🔒 Liman ' + rf.tier : '⬆ ' + money(rf.cost)}</button>` : '<span>🏆</span>';
+    return `<div class="row"><span class="ri">🚢</span><span class="rt"><b>#${i + 1} ${BOAT_TYPES[stat.boatType(i)].name} · ${BOAT_STATE[b.state]}${b.blocked ? ' ⚠️ iskələ dolub' : ''}</b>
+      <small>Yük: ${fmt(b.load)} / ${stat.boatCapOf(i)} balıq${rf ? ` · növbəti: ${rf.name} (×${BOAT_TYPES[rf.next].capMul})` : ''}</small>${bar(p * 100, 100, 'blue', b.state === 'fish' ? Math.ceil(Math.max(0, b.t)) + ' s' : '')}</span>${btn}</div>`;
   }).join('');
 }
 
@@ -241,11 +246,13 @@ const VIEWS = {
       body += `<div class="stats">${statBox('Yükləmə', stat.loadTime().toFixed(2) + ' s')}${statBox('Təzə balıq qiyməti', money(stat.rawPrice()))}</div>`;
     } else if (id === 'factory') {
       body += `<div class="stats">${statBox('Emal sürəti', stat.facRate().toFixed(2) + ' /s')}${statBox('Məhsul qiyməti', money(stat.prodPrice()))}${statBox('Konveyerdə', G.sim.convey.length)}${statBox('Hazır məhsul', fmt(st.facOut))}</div>`;
-      body += `<div class="card"><b>Çıxış anbarı</b>${bar(st.facOut, stat.facOutCap(), 'gold')}</div>`;
+      body += `<div class="card"><b>Fileto qutuları</b>${bar(st.facOut, stat.facOutCap(), 'gold')}</div>`;
+      body += t >= 2 ? `<div class="stats">${statBox('Konserv xətti', stat.canRate().toFixed(2) + ' /s')}${statBox('Konserv qiyməti', money(stat.canPrice()))}</div><div class="card"><b>Konserv qutuları</b>${bar(st.facCan, stat.facOutCap(), 'blue')}</div>`
+        : `<p class="note">🥫 Zavodu Lv 2-yə genişləndir: ikinci xətt — konserv (${money(stat.canPrice())}) açılır.</p>`;
     } else if (id === 'market') {
       body += `<div class="card"><b>Kassa</b>${bar(s.register, stat.tillCap(), 'gold', `${money(s.register)} / ${money(stat.tillCap())}`)}
         <button class="btn wide" data-act="collect" ${s.register < 1 ? 'disabled' : ''}>Topla ${money(s.register)}</button></div>`;
-      body += `<div class="stats">${statBox('Təzə balıq', `${fmt(st.mRaw)} · ${money(stat.rawPrice())}`)}${statBox('Məhsul', `${fmt(st.mProd)} · ${money(stat.prodPrice())}`)}${statBox('Müştəri', 'hər ' + stat.custEvery().toFixed(1) + ' s')}${statBox('Növbədə', G.sim.queue.length)}</div>`;
+      body += `<div class="stats">${statBox('Təzə balıq', `${fmt(st.mRaw)} · ${money(stat.rawPrice())}`)}${statBox('Fileto', `${fmt(st.mProd)} · ${money(stat.prodPrice())}`)}${statBox('Konserv', `${fmt(st.mCan)} · ${money(stat.canPrice())}`)}${statBox('Müştəri', 'hər ' + stat.custEvery().toFixed(1) + ' s')}${statBox('Növbədə', G.sim.queue.length)}</div>`;
       if (stat.autoCollect()) body += `<p class="note">🧾 Kassir kassanı özü toplayır.</p>`;
     } else if (id === 'hq') {
       body += `<div class="stats">${statBox('İşçilər', `${s.workers} / ${stat.maxWorkers()}`)}${statBox('Sürət', stat.workerSpeed().toFixed(1) + ' kv/s')}${statBox('Daşıma', stat.carry() + ' qutu')}${statBox('Tədqiqat', s.research.active ? 'Gedir' : 'Boş')}</div>`;
@@ -275,10 +282,24 @@ const VIEWS = {
     body += G.sim.workers.map((w, i) => {
       const j = w.job;
       const what = j ? `${WORK_STATE[w.state]}: ${PLACE[j.src]} → ${PLACE[j.dst]}` : WORK_STATE[w.state];
-      return `<div class="row"><span class="ri">👷</span><span class="rt"><b>Daşıyıcı #${i + 1}</b><small>${what}${w.carry ? ` · ${w.carry} qutu` : ''}</small></span><span></span></div>`;
+      const role = ROLES.find(r => r.id === (s.roles[i] || 'any'));
+      return `<div class="row"><span class="ri">👷</span><span class="rt"><b>Daşıyıcı #${i + 1}</b><small>${what}${w.carry ? ` · ${w.carry} qutu` : ''}</small></span>
+        <button class="btn blue" data-act="role" data-i="${i}" title="Rolu dəyiş">${role.icon} ${role.name}</button></div>`;
     }).join('');
+    body += `<p class="note">Rol: <b>Universal</b> hər işi görür, <b>Liman</b> yalnız iskələdən anbara, <b>Bazar</b> yalnız bazara daşıyır.</p>`;
+    body += `<div class="sec">Nəqliyyat</div>`;
+    for (const kind of ['forklift', 'truck']) {
+      const V = VEHICLES[kind], have = s[kind + 's'], vmax = vehicleMax(kind), vc = vehicleCost(kind);
+      const lock = vmax === 0 ? (kind === 'truck' ? 'Emal zavodu lazımdır' : 'Anbar Lv 2 lazımdır') : have >= vmax ? `Limit: ${BINFO[V.need].name}-ı genişləndir` : `${V.desc} · ${V.cap} qutu`;
+      body += `<div class="row"><span class="ri">${V.icon}</span><span class="rt"><b>${V.name} <span class="lv">${have}/${vmax}</span></b><small>${lock}</small></span>
+        <button class="btn gold" data-act="vehicle" data-k="${kind}" ${have >= vmax || s.money < vc ? 'disabled' : ''}>${have >= vmax ? 'Limit' : money(vc)}</button></div>`;
+    }
+    G.sim.vehicles.forEach(v => {
+      const j = v.job, what = j ? `${WORK_STATE[v.state]}: ${PLACE[j.src]} → ${PLACE[j.dst]}` : WORK_STATE[v.state];
+      body += `<div class="row"><span class="ri">${VEHICLES[v.kind].icon}</span><span class="rt"><b>${VEHICLES[v.kind].name} #${v.i + 1}</b><small>${what}${v.carry ? ` · ${v.carry} qutu` : ''}</small></span><span></span></div>`;
+    });
     body += `<div class="sec">Baş Ofis təkmilləşdirmələri</div>` + trackRows('hq');
-    return { icon: '👷', title: 'İşçilər', sub: 'Daşıyıcılar və təlim', body };
+    return { icon: '👷', title: 'İşçilər və nəqliyyat', sub: 'Daşıyıcılar, rollar, forklift, yük maşını', body };
   },
 
   boats() {
@@ -399,6 +420,9 @@ function onPanelClick(e) {
     case 'hire': ok = hire(); if (ok) { sfx.buy(); buzz(); log('👷 Yeni işçi işə başladı'); toast('Yeni işçi yoldadır!', 'good'); } break;
     case 'boat': ok = buyBoat(); if (ok) { sfx.horn(); buzz(40); log('🚢 Yeni qayıq alındı'); toast('Yeni qayıq limanda!', 'good'); } break;
     case 'collect': collect(); break;
+    case 'role': { const i = +d.i, cur = ROLES.findIndex(r => r.id === (s.roles[i] || 'any')); s.roles[i] = ROLES[(cur + 1) % ROLES.length].id; sfx.click(); break; }
+    case 'vehicle': ok = buyVehicle(d.k); if (ok) { sfx.horn(); buzz(30); log(`${VEHICLES[d.k].icon} Yeni ${VEHICLES[d.k].name}`); toast(`${VEHICLES[d.k].name} işə başladı!`, 'good'); } break;
+    case 'refit': ok = refitBoat(+d.i); if (ok) { sfx.tier(); buzz(40); log(`🚢 Qayıq #${+d.i + 1} → ${BOAT_TYPES[stat.boatType(+d.i)].name}`); toast(`${BOAT_TYPES[stat.boatType(+d.i)].name} hazırdır!`, 'good'); } break;
     case 'open': open(d.v); return;
     case 'research': ok = startResearch(d.id); if (ok) sfx.buy(); break;
     case 'rush': { const c = rushCost(); if (s.gems >= c) { s.gems -= c; finishResearchIfDone(true); } else ok = false; break; }
