@@ -186,6 +186,9 @@
   .tabs button span{ width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:22px;
     background:radial-gradient(circle at 35% 30%, #3f78a8, #1d3a57 70%); box-shadow:0 3px 0 #0b1d2e, 0 6px 12px #0008, inset 0 1px 0 #ffffff33; border:2px solid #ffffff22; }
   .tabs button.on{ background:none; box-shadow:none; color:var(--brass2); }
+  .tabs button:active span{ transform:scale(.9); }
+  button.act:not(:disabled):hover{ filter:brightness(1.06); }
+  .sheet-head b{ display:flex; align-items:center; gap:8px; }
   .tabs button.on span{ background:radial-gradient(circle at 35% 30%, #ffe3a0, #e7b54d 70%); border-color:#fff6; transform:translateY(-3px); }
   .tabs .badge{ top:-2px; right:6px; box-shadow:0 0 0 2px #08141f; }
   .tabs button.goal span{ animation:goalPulse 1.2s ease-in-out infinite; }
@@ -1244,11 +1247,16 @@
   const mkAg = (x, y, col, i) => ({ x, y, tx:x, ty:y, wait:Math.random() * 2, wd:0, dir:1, moving:false, col, seed:i * 5 + 3, carry:null });
   function drawAg(list, extra = {}){ list.slice().sort((a, b) => (a.x + a.y) - (b.x + b.y)).forEach(a => { const p = iso(a.x, a.y); person(p.x, p.y, Object.assign({ col:a.col, scale:.95, seed:a.seed, wd:a.wd, moving:a.moving, dir:a.dir, carry:a.carry, work:!a.moving && extra.workIdle }, extra.o || {})); }); }
   function tree(gx, gy, palm){
-    const p = iso(gx, gy);
-    ctx.fillStyle = '#0002'; ctx.beginPath(); ctx.ellipse(p.x, p.y, 9, 4, 0, 0, 7); ctx.fill();
-    if (palm){ ctx.strokeStyle = '#8a6a4a'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.quadraticCurveTo(p.x - 2, p.y - 14, p.x + 2, p.y - 26); ctx.stroke();
-      ctx.fillStyle = '#3f9a4a'; for (let a = 0; a < 6; a++){ ctx.beginPath(); ctx.ellipse(p.x + 2 + Math.cos(a) * 7, p.y - 26 + Math.sin(a) * 3, 9, 3, a, 0, 7); ctx.fill(); } }
-    else { ctx.fillStyle = '#6b4a2a'; ctx.fillRect(p.x - 1.5, p.y - 10, 3, 10); ctx.fillStyle = '#3f8f45'; ctx.beginPath(); ctx.arc(p.x, p.y - 16, 9, 0, 7); ctx.fill(); ctx.fillStyle = '#56a85a'; ctx.beginPath(); ctx.arc(p.x - 3, p.y - 19, 5, 0, 7); ctx.fill(); }
+    const p = iso(gx, gy), wind = Math.sin(nowT / 1100 + gx * .7 + gy * .3) * 2.2 + Math.sin(nowT / 380 + gx) * .6;
+    ctx.fillStyle = '#0002'; ctx.beginPath(); ctx.ellipse(p.x + 3, p.y + 1, 10, 4, 0, 0, 7); ctx.fill();
+    if (palm){ ctx.strokeStyle = '#8a6a4a'; ctx.lineWidth = 2.6; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.quadraticCurveTo(p.x - 2, p.y - 14, p.x + 2 + wind, p.y - 26); ctx.stroke();
+      for (let a = 0; a < 7; a++){ const ang = a * .9 + wind * .05; ctx.fillStyle = a % 2 ? '#3f9a4a' : '#4fae58';
+        ctx.beginPath(); ctx.ellipse(p.x + 2 + wind + Math.cos(ang) * 7.5, p.y - 26 + Math.sin(ang) * 3 + (Math.cos(ang) > 0 ? 1.5 : 0), 9.5, 2.8, ang + wind * .03, 0, 7); ctx.fill(); }
+      ctx.fillStyle = '#7a5235'; ctx.beginPath(); ctx.arc(p.x + 2 + wind, p.y - 25, 1.8, 0, 7); ctx.fill(); }
+    else { ctx.fillStyle = '#6b4a2a'; ctx.fillRect(p.x - 1.5, p.y - 10, 3, 10);
+      ctx.fillStyle = '#357c3c'; ctx.beginPath(); ctx.arc(p.x + wind * .6, p.y - 15, 9.5, 0, 7); ctx.fill();
+      ctx.fillStyle = '#3f8f45'; ctx.beginPath(); ctx.arc(p.x + wind * .8 - 1, p.y - 17, 8, 0, 7); ctx.fill();
+      ctx.fillStyle = '#5bb15f'; ctx.beginPath(); ctx.arc(p.x + wind - 3.5, p.y - 20, 4.5, 0, 7); ctx.fill(); }
   }
   const BUILD = [
     { id:'sea',     name:'Liman',    icon:'⚓', gx:1, gy:3, w:3, d:3, wall:'#b07a4a', floor:'#d9c39a', open:() => true, tab:'ship' },
@@ -1273,7 +1281,7 @@
 
   function room(b, t, inner){
     const h = 16, low = 5, open = b.open();
-    poly(tile(b.gx - .25, b.gy - .25, b.w + .5, b.d + .5), '#0000001f');
+    poly(tile(b.gx - .1, b.gy + .15, b.w + .75, b.d + .55), '#0000002a');
     if (!open){
       poly(tile(b.gx, b.gy, b.w, b.d), '#c9b48a');
       ctx.setLineDash([4, 3]); poly(tile(b.gx, b.gy, b.w, b.d), null, '#7a6a4a'); ctx.setLineDash([]);
@@ -1362,6 +1370,50 @@
   let coins = [], cxIncome = {}, cxIncomeT = 0, confetti = [];
   function addIncome(id, amt){ cxIncome[id] = (cxIncome[id] || 0) + amt; }
   function party(n = 90){ for (let i = 0; i < n; i++) confetti.push({ x:W / 2 + (Math.random() - .5) * 120, y:H * .35, vx:(Math.random() - .5) * 260, vy:-140 - Math.random() * 240, r:Math.random() * 6, c:['#e7b54d', '#5fd38d', '#3aa0e8', '#ff6b6b', '#b77bff', '#ffffff'][i % 6], life:2.4 + Math.random() }); }
+
+  let tapFx = null;
+  function exteriors(t){
+    const by = id => BUILD.find(b => b.id === id);
+    // dock crane swinging crates from the boat
+    { const base = iso(2.9, 1.25), sw = Math.sin(t / 1600) * .7, up = (Math.sin(t / 800) + 1) / 2;
+      cube(2.75, 1.1, .3, .3, 46, '#e7b54d', '#b08530', '#c99a3a');
+      const top = { x:base.x, y:base.y - 46 }, tip = { x:top.x + Math.cos(sw) * 34, y:top.y - 4 + Math.sin(sw) * 12 };
+      ctx.strokeStyle = '#c99a3a'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(top.x, top.y); ctx.lineTo(tip.x, tip.y); ctx.stroke();
+      ctx.strokeStyle = '#3c4a5a'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(tip.x, tip.y); ctx.lineTo(tip.x, tip.y + 14 + up * 18); ctx.stroke();
+      ctx.fillStyle = '#c99a5b'; ctx.fillRect(tip.x - 5, tip.y + 14 + up * 18, 10, 8); ctx.strokeStyle = '#8a6a4a'; ctx.strokeRect(tip.x - 5, tip.y + 14 + up * 18, 10, 8); }
+    const pl = by('factory');
+    if (pl.open()) [[pl.gx + .3, pl.gy - .1], [pl.gx + 1.2, pl.gy - .1]].forEach(([gx, gy], k) => {
+      cube(gx, gy, .45, .45, 38, '#b8c2cc', '#7f8c99', '#94a0ab'); poly(tile(gx, gy, .45, .45, 38), '#c94a3a');
+      const tp = iso(gx + .22, gy + .22, 40);
+      for (let i = 0; i < 4; i++){ const age = ((t / 1400 + i / 4 + k * .37) % 1); ctx.fillStyle = `rgba(210,214,220,${.55 * (1 - age)})`;
+        ctx.beginPath(); ctx.arc(tp.x + age * 18 + Math.sin(t / 500 + i) * 2, tp.y - age * 34, 3 + age * 7, 0, 7); ctx.fill(); } });
+    const mk = by('market');
+    if (mk.open()){ const n = 8;
+      for (let i = 0; i < n; i++){ const a0 = mk.gx + i * mk.w / n, a1 = a0 + mk.w / n;
+        poly([iso(a0, mk.gy + mk.d, 11), iso(a1, mk.gy + mk.d, 11), iso(a1, mk.gy + mk.d + .45, 7), iso(a0, mk.gy + mk.d + .45, 7)], i % 2 ? '#ffffff' : '#e74c3c'); }
+      ctx.strokeStyle = '#5b4636'; ctx.lineWidth = 1; const f1 = iso(mk.gx, mk.gy, 24), f2 = iso(mk.gx + mk.w, mk.gy, 24); ctx.beginPath(); ctx.moveTo(f1.x, f1.y); ctx.quadraticCurveTo((f1.x + f2.x) / 2, (f1.y + f2.y) / 2 + 8, f2.x, f2.y); ctx.stroke();
+      for (let i = 1; i < 10; i++){ const u = i / 10, x = f1.x + (f2.x - f1.x) * u, y = f1.y + (f2.y - f1.y) * u + Math.sin(u * Math.PI) * 8 * .5 + 4 * Math.sin(u * Math.PI), fl = Math.sin(t / 250 + i) * 1.5;
+        ctx.fillStyle = ['#e74c3c', '#f2d34f', '#3aa0e8', '#5fd38d'][i % 4]; ctx.beginPath(); ctx.moveTo(x - 3, y); ctx.lineTo(x + 3, y); ctx.lineTo(x + fl, y + 7); ctx.fill(); } }
+    const rs = by('rest');
+    if (rs.open()) [[rs.gx + .8, rs.gy + rs.d + .55, '#e74c3c'], [rs.gx + 2.6, rs.gy + rs.d + .55, '#2a9d8f'], [rs.gx + 4.3, rs.gy + rs.d + .55, '#e7b54d']].forEach(([gx, gy, c], k) => {
+      cube(gx - .2, gy - .2, .4, .4, 4, '#f6efe2', '#c9b896', '#ddd0b4');
+      const p = iso(gx, gy, 4); ctx.strokeStyle = '#ddd'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x, p.y - 16); ctx.stroke();
+      ctx.fillStyle = c; ctx.beginPath(); ctx.ellipse(p.x, p.y - 17, 14, 5, 0, Math.PI, 0); ctx.fill(); ctx.fillStyle = '#ffffff55'; ctx.beginPath(); ctx.ellipse(p.x - 4, p.y - 18, 5, 2, 0, Math.PI, 0); ctx.fill();
+      if (k < 2 && rsC.length > 3 + k * 2) figure(gx + .3, gy + .1, MKCOLS[(k + 5) % MKCOLS.length], { seated:true, eat:true });
+      const pot = iso(gx + .9, gy - .1); ctx.fillStyle = '#b5603a'; ctx.fillRect(pot.x - 3, pot.y - 5, 6, 5); ctx.fillStyle = '#4fae58'; ctx.beginPath(); ctx.arc(pot.x, pot.y - 8, 4.5, 0, 7); ctx.fill(); });
+    const hq = by('hq');
+    if (hq.open()){ const p = iso(hq.gx + hq.w - .2, hq.gy - .2); ctx.strokeStyle = '#d9dee3'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x, p.y - 52); ctx.stroke();
+      ctx.fillStyle = '#2f6f9f'; ctx.beginPath(); ctx.moveTo(p.x, p.y - 52);
+      for (let i = 0; i <= 6; i++) ctx.lineTo(p.x + i * 4, p.y - 52 + Math.sin(t / 220 - i * .7) * 2 * i / 6);
+      for (let i = 6; i >= 0; i--) ctx.lineTo(p.x + i * 4, p.y - 40 + Math.sin(t / 220 - i * .7) * 2 * i / 6);
+      ctx.fill(); ctx.fillStyle = '#e7b54d'; ctx.beginPath(); ctx.ellipse(p.x + 12, p.y - 46 + Math.sin(t / 220 - 2) * .7, 4, 2, 0, 0, 7); ctx.fill(); }
+    const dm = by('dorm');
+    { const a = iso(dm.gx + dm.w + .5, dm.gy + .5), b = iso(dm.gx + dm.w + .5, dm.gy + 3.2);
+      [a, b].forEach(q => { ctx.fillStyle = '#8a6a4a'; ctx.fillRect(q.x - 1, q.y - 18, 2, 18); });
+      ctx.strokeStyle = '#ddd'; ctx.lineWidth = .8; ctx.beginPath(); ctx.moveTo(a.x, a.y - 17); ctx.quadraticCurveTo((a.x + b.x) / 2, (a.y + b.y) / 2 - 12, b.x, b.y - 17); ctx.stroke();
+      ['#e74c3c', '#ffffff', '#3aa0e8', '#f2d34f', '#5fd38d'].forEach((c, i) => { const u = (i + 1) / 6, x = a.x + (b.x - a.x) * u, y = a.y - 17 + (b.y - a.y) * u + Math.sin(u * Math.PI) * 5, sw = Math.sin(t / 300 + i) * 1.5;
+        ctx.fillStyle = c; ctx.beginPath(); ctx.moveTo(x - 3, y); ctx.lineTo(x + 3, y); ctx.lineTo(x + 3 + sw, y + 7); ctx.lineTo(x - 3 + sw, y + 7); ctx.fill(); }); }
+  }
 
   function drawComplex(t){
     const sea = SEAS[S.sea], dark = isNight() ? .45 : 0;
@@ -1462,6 +1514,10 @@
         }
       });
     }
+    // signature exteriors: dock crane, plant chimneys, market awning, restaurant terrace, office flag, dorm laundry
+    exteriors(t);
+    if (tapFx){ tapFx.t += cxDt; const b = tapFx.b, a = 1 - tapFx.t / .5;
+      if (a <= 0) tapFx = null; else { ctx.save(); ctx.globalAlpha = a; ctx.lineWidth = 3 + (1 - a) * 4; poly(tile(b.gx - .1, b.gy - .1, b.w + .2, b.d + .2), null, '#ffe08a'); ctx.restore(); } }
     // trucks shuttle dock -> plant when the plant runs
     if (S.fx.open){
       // eased drive with a loading stop at each end
@@ -2386,7 +2442,7 @@
     if (ev === 'pointerup' && drag && !drag.moved && ptrs.size === 0){
       const [x, y] = toWorld(e), b = complexHit(x, y);
       if (b && b.id === 'seaview'){ S.view = 'sea'; save(); }
-      else if (b) openSheet(b.tab);
+      else if (b){ tapFx = { b, t:0 }; SFX.tick(); setTimeout(() => openSheet(b.tab), 140); }
     }
     if (ptrs.size === 0) drag = null;
   }));
