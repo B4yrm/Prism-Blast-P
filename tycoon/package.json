@@ -1,0 +1,7 @@
+{
+  "name": "fishing-tycoon",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": { "build": "node build.mjs" },
+  "devDependencies": { "esbuild": "0.24.2", "phaser": "3.90.0" }
+}

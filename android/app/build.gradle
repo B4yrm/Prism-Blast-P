@@ -21,16 +21,28 @@ android {
             dimension "game"
             applicationId "az.universitet.tycoon"
             resValue "string", "app_name", "Universitet Tycoon"
+            resValue "bool", "fullscreen", "false"
+            manifestPlaceholders = [orientation: "unspecified"]
         }
         fish {
             dimension "game"
             applicationId "az.baliqci.idle"
             resValue "string", "app_name", "Balıqçı Idle"
+            resValue "bool", "fullscreen", "false"
+            manifestPlaceholders = [orientation: "unspecified"]
+        }
+        tycoon {
+            dimension "game"
+            applicationId "az.fishing.tycoon"
+            resValue "string", "app_name", "Fishing Tycoon"
+            resValue "bool", "fullscreen", "true"
+            manifestPlaceholders = [orientation: "sensorLandscape"]
         }
     }
     sourceSets {
         uni  { assets.srcDirs = ["$buildDir/gameAssets/uni"] }
         fish { assets.srcDirs = ["$buildDir/gameAssets/fish"] }
+        tycoon { assets.srcDirs = ["$buildDir/gameAssets/tycoon"] }
     }
 }
 
@@ -42,4 +54,8 @@ tasks.register("copyFish", Copy) {
     from("$rootDir/../fishing/index.html")
     into("$buildDir/gameAssets/fish")
 }
-preBuild.dependsOn("copyUni", "copyFish")
+tasks.register("copyTycoon", Copy) {
+    from("$rootDir/../tycoon/index.html")
+    into("$buildDir/gameAssets/tycoon")
+}
+preBuild.dependsOn("copyUni", "copyFish", "copyTycoon")

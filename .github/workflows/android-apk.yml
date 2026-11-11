@@ -2,7 +2,7 @@ name: Build Android APK
 
 on:
   push:
-    paths: ["idle/**", "fishing/**", "android/**", ".github/workflows/android-apk.yml"]
+    paths: ["idle/**", "fishing/**", "tycoon/index.html", "android/**", ".github/workflows/android-apk.yml"]
   workflow_dispatch:
 
 permissions:
@@ -32,6 +32,7 @@ jobs:
           mkdir -p apk
           cp android/app/build/outputs/apk/uni/debug/app-uni-debug.apk apk/UniversitetTycoon.apk
           cp android/app/build/outputs/apk/fish/debug/app-fish-debug.apk apk/BaliqciIdle.apk
+          cp android/app/build/outputs/apk/tycoon/debug/app-tycoon-debug.apk apk/FishingTycoon.apk
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add apk/

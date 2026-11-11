@@ -1,0 +1,67 @@
+<!--DOC-->
+<title>Fishing Tycoon</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;800;900&display=swap">
+<style>/*CSS*/</style>
+<!--BODY-->
+<div id="game"></div>
+
+<div id="loader">
+  <div class="ld-logo"><span>FISHING</span><b>TYCOON</b></div>
+  <div class="ld-track"><div id="loadbar"></div></div>
+  <p>Ada qurulur…</p>
+</div>
+
+<div id="ui">
+  <div id="labels"></div>
+
+  <header id="hud">
+    <div class="logo" aria-hidden="true"><span>FISHING</span><b>TYCOON</b></div>
+    <button class="profile" data-open="map" aria-label="Səviyyə və mərhələlər">
+      <span class="avatar">🧑‍✈️</span>
+      <span class="pinfo"><b id="lvl">Lv. 1</b><span class="xpbar"><i id="xpfill"></i><em id="xptxt">0/30</em></span></span>
+    </button>
+    <div class="res coin"><span class="ico">🪙</span><b id="money">0</b><button class="plus" data-open="shop" aria-label="Mağaza">+</button></div>
+    <div class="res gem"><span class="ico">💎</span><b id="gems">0</b><button class="plus" data-open="shop" aria-label="Mağaza">+</button></div>
+    <div class="res fish"><span class="ico">🐟</span><b id="fishn">0</b></div>
+    <div class="income"><span class="ico">📈</span><span><small>Gəlir / dəq</small><b id="ipm">+0</b></span></div>
+    <button class="gear" data-open="settings" aria-label="Ayarlar">⚙️</button>
+  </header>
+
+  <nav id="side">
+    <button data-open="missions"><span>📋</span><em>Missiyalar</em><i class="dot" id="dotMis"></i></button>
+    <button data-open="daily"><span>🎁</span><em>Gündəlik</em><i class="dot" id="dotDaily"></i></button>
+    <button data-open="ach"><span>🏆</span><em>Nailiyyətlər</em><i class="dot" id="dotAch"></i></button>
+    <button data-open="log"><span>🔔</span><em>Bildirişlər</em><i class="dot" id="dotLog"></i></button>
+    <button data-open="map"><span>🗺️</span><em>Xəritə</em></button>
+  </nav>
+
+  <aside id="mission"></aside>
+
+  <button id="stage" data-open="map"></button>
+
+  <nav id="dock">
+    <button data-open="upgrades"><span>🔨</span><em>Təkmilləşdirmə</em><i class="dot" id="dotUp"></i></button>
+    <button data-open="workers"><span>👷</span><em>İşçilər</em></button>
+    <button data-open="boats"><span>🚢</span><em>Gəmilər</em></button>
+    <button data-open="research"><span>🧪</span><em>Tədqiqat</em><i class="dot" id="dotRes"></i></button>
+    <button data-open="shop"><span>🛒</span><em>Mağaza</em><i class="dot" id="dotShop"></i></button>
+  </nav>
+
+  <button id="collect"><span class="crate">🧺</span><span class="ct"><b>Topla</b><em id="regamt">$0</em></span></button>
+
+  <div id="toasts" aria-live="polite"></div>
+
+  <div id="scrim" hidden></div>
+  <section id="panel" hidden role="dialog" aria-modal="true">
+    <header class="ph"><span class="pico" id="pico"></span><div class="ptitle"><h2 id="ptitle"></h2><small id="psub"></small></div><button class="x" id="pclose" aria-label="Bağla">✕</button></header>
+    <div class="pbody" id="pbody"></div>
+  </section>
+
+  <div id="modal" hidden><div class="mcard" id="mcard"></div></div>
+  <div id="flyer"></div>
+</div>
+
+<script>/*PHASER*/</script>
+<script>/*GAME*/</script>
