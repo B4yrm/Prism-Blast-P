@@ -1,19 +1,19 @@
-Total frames rendered: 373
-Janky frames: 373 (100.00%)
-Janky frames (legacy): 373 (100.00%)
+Total frames rendered: 392
+Janky frames: 392 (100.00%)
+Janky frames (legacy): 392 (100.00%)
 50th percentile: 300ms
 90th percentile: 400ms
-99th percentile: 500ms
-50th gpu percentile: 25ms
+99th percentile: 550ms
+50th gpu percentile: 24ms
 90th gpu percentile: 4950ms
 99th gpu percentile: 4950ms
-  Native Heap    21523    21452       64     3902    22720    35696    29289     1885
-           Java Heap:     3420                          18936
-         Native Heap:    21452                          22720
+  Native Heap    19167    19144        0    11214    20396    40304    34343     1700
+           Java Heap:     4636                          20604
+         Native Heap:    19144                          20396
             Graphics:        0                              0
-           TOTAL PSS:    74866            TOTAL RSS:   179012       TOTAL SWAP PSS:     9127
-11-11 12:44:53.353  3368  3368 I FishingTycoon: PERF renderer=webgl world=true size=866x412 fps=6.8 textureMB=37.8 heapMB=42.6 preset=low canvas=866x412
-11-11 12:45:03.513  3368  3368 I FishingTycoon: PERF renderer=webgl world=true size=866x412 fps=6.1 textureMB=37.8 heapMB=42.6 preset=low canvas=866x412
-11-11 12:45:13.391  3368  3368 I FishingTycoon: PERF renderer=webgl world=true size=866x412 fps=6.8 textureMB=37.8 heapMB=42.6 preset=low canvas=866x412
-11-11 12:45:23.375  3368  3368 I FishingTycoon: PERF renderer=webgl world=true size=866x412 fps=7.2 textureMB=37.8 heapMB=42.6 preset=low canvas=866x412
-11-11 12:45:33.326  3368  3368 I FishingTycoon: PERF renderer=webgl world=true size=866x412 fps=7.0 textureMB=37.8 heapMB=42.6 preset=low canvas=866x412
+           TOTAL PSS:    86969            TOTAL RSS:   202636       TOTAL SWAP PSS:    15937
+11-11 12:50:53.944  3142  3142 I FishingTycoon: PERF renderer=webgl world=true size=866x412 fps=6.3 textureMB=37.8 heapMB=16.3 preset=low canvas=866x412
+11-11 12:51:03.969  3142  3142 I FishingTycoon: PERF renderer=webgl world=true size=866x412 fps=6.1 textureMB=37.8 heapMB=16.3 preset=low canvas=866x412
+11-11 12:51:13.860  3142  3142 I FishingTycoon: PERF renderer=webgl world=true size=866x412 fps=6.9 textureMB=37.8 heapMB=16.3 preset=low canvas=866x412
+11-11 12:51:23.898  3142  3142 I FishingTycoon: PERF renderer=webgl world=true size=866x412 fps=6.8 textureMB=37.8 heapMB=16.3 preset=low canvas=866x412
+11-11 12:51:34.261  3142  3142 I FishingTycoon: PERF renderer=webgl world=true size=866x412 fps=6.7 textureMB=37.8 heapMB=16.3 preset=low canvas=866x412
