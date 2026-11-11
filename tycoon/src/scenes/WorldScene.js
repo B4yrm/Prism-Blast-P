@@ -256,7 +256,7 @@ export class WorldScene extends Phaser.Scene {
     if (this.floats.length > 18) return;
     const p = iso(x, y, 40);
     const t = this.add.text(p.x, p.y, str, {
-      fontFamily: '"Lilita One","Arial Black",system-ui,sans-serif', fontSize: '22px', color: col,
+      fontFamily: '"Baloo 2","Arial Black",system-ui,sans-serif', fontSize: '22px', color: col,
       stroke: '#3b2a00', strokeThickness: 5, resolution: G.quality.dpr,
     }).setOrigin(0.5).setDepth(9800).setScale(1 / this.cameras.main.zoom * G.quality.dpr * 0.8);
     this.floats.push(t);
@@ -298,18 +298,22 @@ export class WorldScene extends Phaser.Scene {
     });
     inp.on('wheel', (p, objs, dx, dy) => this.zoomTo(cam.zoom * (dy > 0 ? 0.9 : 1.1), p.x, p.y));
   }
+  // Opening view: landscape shows the whole complex between the HUD and the
+  // dock; portrait fills the screen height and lets the player pan sideways.
   fitZoom(keep) {
     const cam = this.cameras.main, dpr = G.quality.dpr;
-    const w = this.scale.width / dpr, h = this.scale.height / dpr;
-    // the complex spans grid x −1..39, y 0..30; leave room for the HUD and dock
-    const L = iso(0, 29).x, R = iso(38, 0).x, T = iso(0, 0, 2.5 * UZ).y, Bt = iso(37, 29).y;
-    const usableH = h * (h > w ? 0.62 : 0.98), usableW = w * (h > w ? 1.45 : 0.95);
-    this.fitZ = Math.min(usableW / (R - L), usableH / (Bt - T)) * dpr;
-    this.minZ = this.fitZ * (h > w ? 0.7 : 0.8);
+    const w = this.scale.width / dpr, h = this.scale.height / dpr, port = h > w;
+    const L = iso(2, 27).x, R = iso(36, 1).x, T = iso(1, 1, 2.5 * UZ).y, Bt = iso(35, 28).y;
+    const top = port ? 76 : 44, bottom = port ? 118 : 58;
+    const usableH = h - top - bottom, usableW = w * 0.98;
+    const zW = usableW / (R - L), zH = usableH / (Bt - T);
+    this.fitZ = (port ? Math.min(zH, zW * 2.5) : Math.min(zW, zH)) * dpr;
+    this.minZ = (port ? zW * 1.2 : Math.min(zW, zH) * 0.8) * dpr;
     this.maxZ = 2.6 * dpr;
     if (!keep) {
       cam.setZoom(this.fitZ);
-      const cx = (L + R) / 2 + (h > w ? -40 / this.fitZ * dpr : 0), cy = (T + Bt) / 2 - (h > w ? -20 : 22) / this.fitZ * dpr;
+      const cx = port ? iso(17, 14).x : (L + R) / 2;
+      const cy = (T + Bt) / 2 - ((top - bottom) / 2) / this.fitZ * dpr + (port ? 70 / this.fitZ * dpr : 0);
       cam.centerOn(cx, cy);
     } else cam.setZoom(Phaser.Math.Clamp(cam.zoom, this.minZ, this.maxZ));
   }

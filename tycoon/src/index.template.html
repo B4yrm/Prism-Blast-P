@@ -1,8 +1,6 @@
 <!--DOC-->
 <title>Fishing Tycoon</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;800;900&display=swap">
 <style>/*CSS*/</style>
 <!--BODY-->
 <div id="game"></div>
@@ -17,45 +15,46 @@
   <div id="labels"></div>
 
   <header id="hud">
-    <div class="logo" aria-hidden="true"><span>FISHING</span><b>TYCOON</b></div>
-    <button class="profile" data-open="map" aria-label="Səviyyə və mərhələlər">
-      <span class="avatar">🧑‍✈️</span>
-      <span class="pinfo"><b id="lvl">Lv. 1</b><span class="xpbar"><i id="xpfill"></i><em id="xptxt">0/30</em></span></span>
+    <button class="lvl" data-open="map" aria-label="Səviyyə və mərhələlər">
+      <span class="ava" data-ic="captain"></span>
+      <span class="lvn" id="lvl">1</span>
+      <span class="xp"><i id="xpfill"></i></span>
     </button>
-    <div class="res coin"><span class="ico">🪙</span><b id="money">0</b><button class="plus" data-open="shop" aria-label="Mağaza">+</button></div>
-    <div class="res gem"><span class="ico">💎</span><b id="gems">0</b><button class="plus" data-open="shop" aria-label="Mağaza">+</button></div>
-    <div class="res fish"><span class="ico">🐟</span><b id="fishn">0</b></div>
-    <div class="income"><span class="ico">📈</span><span><small>Gəlir / dəq</small><b id="ipm">+0</b></span></div>
-    <button class="gear" data-open="settings" aria-label="Ayarlar">⚙️</button>
+    <div class="pill coin"><span class="pi" data-ic="coin"></span><b id="money">0</b><button class="plus" data-open="shop" aria-label="Mağaza">+</button></div>
+    <div class="pill gem"><span class="pi" data-ic="gem"></span><b id="gems">0</b><button class="plus" data-open="shop" aria-label="Mağaza">+</button></div>
+    <div class="pill fish" title="Anbar və iskələdəki balıq"><span class="pi" data-ic="fish"></span><b id="fishn">0</b></div>
+    <div class="pill inc" title="Gəlir / dəqiqə"><span class="pi" data-ic="income"></span><b id="ipm">+0</b><small>/dəq</small></div>
+    <button class="ibtn gear" data-open="settings" aria-label="Ayarlar"><span data-ic="gear"></span></button>
   </header>
 
-  <nav id="side">
-    <button data-open="missions"><span>📋</span><em>Missiyalar</em><i class="dot" id="dotMis"></i></button>
-    <button data-open="daily"><span>🎁</span><em>Gündəlik</em><i class="dot" id="dotDaily"></i></button>
-    <button data-open="ach"><span>🏆</span><em>Nailiyyətlər</em><i class="dot" id="dotAch"></i></button>
-    <button data-open="log"><span>🔔</span><em>Bildirişlər</em><i class="dot" id="dotLog"></i></button>
-    <button data-open="map"><span>🗺️</span><em>Xəritə</em></button>
+  <nav id="side" class="closed" aria-label="Menyu">
+    <button class="ibtn tog" id="sideTog" aria-expanded="false" aria-label="Menyunu aç"><span data-ic="menu"></span><i class="dot" id="dotSide"></i></button>
+    <div class="items">
+      <button data-open="missions"><span data-ic="missions"></span><em>Missiyalar</em><i class="dot" id="dotMis"></i></button>
+      <button data-open="daily"><span data-ic="daily"></span><em>Gündəlik</em><i class="dot" id="dotDaily"></i></button>
+      <button data-open="ach"><span data-ic="trophy"></span><em>Nailiyyət</em><i class="dot" id="dotAch"></i></button>
+      <button data-open="log"><span data-ic="bell"></span><em>Bildiriş</em><i class="dot" id="dotLog"></i></button>
+      <button data-open="map"><span data-ic="map"></span><em>Xəritə</em></button>
+    </div>
   </nav>
 
-  <aside id="mission"></aside>
+  <aside id="mission" class="mini"></aside>
 
-  <button id="stage" data-open="map"></button>
-
-  <nav id="dock">
-    <button data-open="upgrades"><span>🔨</span><em>Təkmilləşdirmə</em><i class="dot" id="dotUp"></i></button>
-    <button data-open="workers"><span>👷</span><em>İşçilər</em></button>
-    <button data-open="boats"><span>🚢</span><em>Gəmilər</em></button>
-    <button data-open="research"><span>🧪</span><em>Tədqiqat</em><i class="dot" id="dotRes"></i></button>
-    <button data-open="shop"><span>🛒</span><em>Mağaza</em><i class="dot" id="dotShop"></i></button>
+  <nav id="dock" aria-label="Əsas menyu">
+    <button data-open="upgrades"><span data-ic="upgrade"></span><em>Təkmilləşdir</em><i class="dot" id="dotUp"></i></button>
+    <button data-open="workers"><span data-ic="workers"></span><em>İşçilər</em></button>
+    <button data-open="boats"><span data-ic="boats"></span><em>Gəmilər</em></button>
+    <button data-open="research"><span data-ic="research"></span><em>Tədqiqat</em><i class="dot" id="dotRes"></i></button>
+    <button data-open="shop"><span data-ic="shop"></span><em>Mağaza</em><i class="dot" id="dotShop"></i></button>
   </nav>
 
-  <button id="collect"><span class="crate">🧺</span><span class="ct"><b>Topla</b><em id="regamt">$0</em></span></button>
+  <button id="collect"><span class="ci" data-ic="basket"></span><span class="ct"><b>Topla</b><em id="regamt">$0</em></span></button>
 
   <div id="toasts" aria-live="polite"></div>
 
   <div id="scrim" hidden></div>
   <section id="panel" hidden role="dialog" aria-modal="true">
-    <header class="ph"><span class="pico" id="pico"></span><div class="ptitle"><h2 id="ptitle"></h2><small id="psub"></small></div><button class="x" id="pclose" aria-label="Bağla">✕</button></header>
+    <header class="ph"><span class="pico" id="pico"></span><div class="ptitle"><h2 id="ptitle"></h2><small id="psub"></small></div><button class="x" id="pclose" aria-label="Bağla"><span data-ic="close"></span></button></header>
     <div class="pbody" id="pbody"></div>
   </section>
 

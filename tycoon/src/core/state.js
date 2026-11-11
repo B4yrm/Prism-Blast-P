@@ -25,7 +25,7 @@ export function fresh() {
     research: { lv: {}, active: null }, // active: {id, ends}
     boostUntil: 0, freeChestAt: 0,
     log: [], logUnread: 0,
-    settings: { sound: true, vibrate: true, quality: 'high' },
+    settings: { sound: true, vibrate: true, quality: 'high', missionOpen: false },
     lastSeen: Date.now(),
     created: Date.now(),
   };

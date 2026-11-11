@@ -8,6 +8,7 @@ import {
 import { bus } from '../core/bus.js';
 import { sfx, buzz, unlockAudio } from '../core/audio.js';
 import { save, wipe } from '../core/state.js';
+import { icon, hydrateIcons } from './icons.js';
 
 const $ = id => document.getElementById(id);
 const money = n => '$' + fmt(n);
@@ -27,10 +28,23 @@ export function initUI() {
   pb.addEventListener('pointerdown', () => { holdRender = true; });
   window.addEventListener('pointerup', () => setTimeout(() => { holdRender = false; }, 80));
   pb.addEventListener('click', onPanelClick);
+  hydrateIcons();
+  // mission: a small chip by default; tap to expand, × to collapse
   $('mission').addEventListener('click', e => {
-    if (e.target.closest('[data-act="claimMission"]')) { if (claimMission()) { sfx.coin(); buzz(); toast('Missiya tamamlandı!', 'good'); } }
-    else open('missions');
+    const s = S();
+    if (e.target.closest('[data-act="claimMission"]')) { if (claimMission()) { sfx.coin(); buzz(); toast('Missiya tamamlandı!', 'good'); } return; }
+    if (e.target.closest('[data-act="missionClose"]')) { s.settings.missionOpen = false; }
+    else if (e.target.closest('[data-act="missionAll"]')) { open('missions'); return; }
+    else if (!s.settings.missionOpen) { s.settings.missionOpen = true; }
+    else return;
+    sfx.click(); $('mission').dataset.sig = ''; tick();
   });
+  // collapsible left rail (closes again after picking an item)
+  const side = $('side'), tog = $('sideTog');
+  const setSide = o => { side.classList.toggle('closed', !o); tog.setAttribute('aria-expanded', o); tog.innerHTML = icon(o ? 'close' : 'menu'); tog.appendChild(dotSide); dotSide.style.visibility = o ? 'hidden' : ''; };
+  const dotSide = $('dotSide');
+  tog.addEventListener('click', () => { sfx.click(); setSide(side.classList.contains('closed')); });
+  side.querySelectorAll('.items button').forEach(b => b.addEventListener('click', () => setSide(false)));
   $('mcard').addEventListener('click', onModalClick);
 
   makeLabels();
@@ -67,19 +81,19 @@ function tick() {
   $('money').textContent = money(s.money);
   $('gems').textContent = fmt(s.gems);
   $('fishn').textContent = fmt(s.stock.wh + s.stock.quay);
-  $('lvl').textContent = 'Lv. ' + s.level;
+  $('lvl').textContent = s.level;
   const need = xpNeed(s.level);
   $('xpfill').style.width = Math.min(100, s.xp / need * 100) + '%';
-  $('xptxt').textContent = `${fmt(s.xp)} / ${fmt(need)}`;
   const ipm = G.sim ? G.sim.incomePerMin() : 0;
   $('ipm').textContent = '+' + money(ipm);
+  const m = currentMission();
   // collect button
   const reg = Math.floor(s.register), cap = stat.tillCap();
   $('regamt').textContent = `${money(reg)} / ${money(cap)}`;
+  $('dotSide').classList.toggle('on', (m && m.done) || dailyReady() || anyAchReady() || s.logUnread > 0);
   $('collect').classList.toggle('ready', reg >= Math.max(20, cap * 0.25));
   $('collect').classList.toggle('full', reg >= cap);
   // badges
-  const m = currentMission();
   setDot('dotMis', m && m.done);
   setDot('dotDaily', dailyReady());
   setDot('dotAch', anyAchReady());
@@ -88,7 +102,6 @@ function tick() {
   setDot('dotUp', ORDER.some(b => affordable(b)));
   setDot('dotLog', s.logUnread > 0, s.logUnread);
   renderMission(m);
-  renderStage();
   updateLabels();
   if (openName && !holdRender) renderPanel();
 }
@@ -103,30 +116,23 @@ function affordable(b) {
 }
 
 function renderMission(m) {
-  const el = $('mission');
-  const sig = m ? `${S().mission}|${m.v}|${m.done}` : 'none';
+  const el = $('mission'), openCard = !!S().settings.missionOpen;
+  const sig = (m ? `${S().mission}|${m.v}|${m.done}` : 'none') + '|' + openCard;
   if (el.dataset.sig === sig) return;
   el.dataset.sig = sig;
-  if (!m) { el.innerHTML = `<span class="mi">🏁</span><h3>Bütün missiyalar bitdi</h3><span class="rw">Yenisi növbəti yeniləmədə</span>`; return; }
-  const rw = [m.r.c ? money(m.r.c) : '', m.r.g ? m.r.g + ' 💎' : ''].filter(Boolean).join(' + ');
-  el.innerHTML = `<span class="mi">🎯</span><h3>${m.t}</h3>
+  el.className = openCard ? 'open' : 'mini' + (m && m.done ? ' ready' : '');
+  if (!m) { el.innerHTML = openCard ? `<div class="mh"><span class="mi">${icon('target')}</span><h3>Bütün missiyalar bitdi</h3><button class="mx" data-act="missionClose" aria-label="Kiçilt">${icon('up')}</button></div><span class="rw">Yeniləri növbəti yeniləmədə</span>` : `<span class="mi">${icon('target')}</span><span class="mt">Missiyalar bitdi</span>`; return; }
+  const rw = [m.r.c ? money(m.r.c) : '', m.r.g ? m.r.g + ' almaz' : ''].filter(Boolean).join(' + ');
+  if (!openCard) {
+    el.innerHTML = `<span class="mi">${icon('target')}</span><span class="mt">${m.t}</span>
+      <span class="mbar"><i style="width:${m.v / m.n * 100}%"></i></span><span class="mn">${m.done ? 'Al!' : `${fmt(m.v)}/${fmt(m.n)}`}</span>`;
+    el.setAttribute('aria-label', 'Missiya: ' + m.t);
+    return;
+  }
+  el.innerHTML = `<div class="mh"><span class="mi">${icon('target')}</span><h3>${m.t}</h3><button class="mx" data-act="missionClose" aria-label="Kiçilt">${icon('up')}</button></div>
     <div class="bar"><i style="width:${m.v / m.n * 100}%"></i><em>${fmt(m.v)} / ${fmt(m.n)}</em></div>
     <span class="rw">Mükafat: ${rw}</span>
-    ${m.done ? '<button class="btn gold" data-act="claimMission">Mükafatı al</button>' : ''}`;
-}
-
-function renderStage() {
-  const el = $('stage'), st = stage(), s = S();
-  const info = STAGES[st - 1];
-  let pct, txt;
-  if (st === 1) { pct = Math.min(1, s.level / 3) * 0.5 + Math.min(1, s.money / TIER.factory.cost[1]) * 0.5; txt = 'Növbəti: Emal zavodu'; }
-  else if (st === 2) { pct = Math.min(1, (s.boats - 1) / 1) * 0.3 + Math.min(1, s.tier.factory / 3) * 0.4 + Math.min(1, s.level / 12) * 0.3; txt = 'Növbəti: Mərhələ 3'; }
-  else { pct = 1; txt = 'Maksimum'; }
-  const sig = `${st}|${Math.round(pct * 100)}`;
-  if (el.dataset.sig === sig) return;
-  el.dataset.sig = sig;
-  el.innerHTML = `<span class="si">👑</span><b>Mərhələ ${st}: ${info.name}</b><small>${txt}</small>
-    <div class="bar"><i class="blue" style="width:${pct * 100}%"></i><em>${Math.round(pct * 100)}%</em></div>`;
+    ${m.done ? '<button class="btn gold" data-act="claimMission">Mükafatı al</button>' : '<button class="btn blue" data-act="missionAll">Bütün missiyalar</button>'}`;
 }
 
 // --------------------------------------------------------- building labels
@@ -135,9 +141,9 @@ const LABEL_Z = { hq: 70, factory: 70, farm: 30, market: 52, warehouse: 50, harb
 function makeLabels() {
   const root = $('labels');
   for (const id of ORDER) {
-    const el = document.createElement('button');
+    const el = document.createElement('div');
     el.className = 'blabel';
-    el.innerHTML = `<span class="bi">${BINFO[id].icon}</span><span><b>${BINFO[id].name}</b><small></small></span><span class="up">⬆</span>`;
+    el.innerHTML = `<span class="bi">${icon('b_' + id)}</span><span class="tx"><b>${BINFO[id].name}</b><small></small></span><span class="up">${icon('arrowUp')}</span>`;
     root.appendChild(el);
     labels[id] = el;
   }
@@ -151,18 +157,26 @@ function updateLabels() {
     el.classList.toggle('can', affordable(id));
   }
 }
+// Labels: full name plates when zoomed in, small icon badges when zoomed out,
+// and never stacked on top of each other or under the HUD / dock.
+const LABEL_PRIO = ['market', 'warehouse', 'harbor', 'factory', 'hq', 'farm'];
 function placeLabels() {
   const w = G.world; if (!w) return;
   const cam = w.cameras.main, z = cam.zoom / G.quality.dpr;
-  const sc = Math.max(0.62, Math.min(1, z * 1.3));
-  const W = innerWidth, H = innerHeight;
-  for (const id of ORDER) {
-    const d = BUILDINGS[id];
+  const far = z < 0.5;
+  const sc = far ? Math.max(0.85, Math.min(1, z * 2)) : Math.max(0.8, Math.min(1.05, z * 1.1));
+  const W = innerWidth, H = innerHeight, taken = [];
+  const blocked = [$('hud'), $('dock'), $('collect'), $('mission'), $('side')].map(e => e.getBoundingClientRect());
+  for (const id of LABEL_PRIO) {
+    const d = BUILDINGS[id], el = labels[id];
     const p = w.worldToScreen(d.x + d.w / 2, d.y + d.d / 2, LABEL_Z[id] + 40);
-    const el = labels[id];
-    const vis = p.x > -100 && p.x < W + 100 && p.y > -50 && p.y < H + 50;
+    el.classList.toggle('far', far);
+    const lw = (far ? 30 : 150) * sc, lh = (far ? 30 : 32) * sc;
+    const r = { left: p.x - lw / 2, right: p.x + lw / 2, top: p.y - lh, bottom: p.y };
+    const hit = q => !(r.right < q.left || r.left > q.right || r.bottom < q.top || r.top > q.bottom);
+    const vis = p.x > -60 && p.x < W + 60 && p.y > 0 && p.y < H + 30 && !taken.some(hit) && !blocked.some(hit);
     el.style.visibility = vis ? 'visible' : 'hidden';
-    if (vis) el.style.transform = `translate(${Math.round(p.x)}px, ${Math.round(p.y)}px) translate(-50%, -100%) scale(${sc.toFixed(3)})`;
+    if (vis) { taken.push(r); el.style.transform = `translate(${Math.round(p.x)}px, ${Math.round(p.y)}px) translate(-50%, -100%) scale(${sc.toFixed(3)})`; }
   }
 }
 
@@ -185,10 +199,11 @@ function renderPanel(force) {
   const html = r.body;
   if (!force && html === lastSig) return;
   lastSig = html;
-  $('pico').textContent = r.icon; $('ptitle').textContent = r.title; $('psub').textContent = r.sub || '';
+  $('pico').innerHTML = icon(r.ic || PANEL_IC[openName] || 'menu'); $('ptitle').textContent = r.title; $('psub').textContent = r.sub || '';
   $('pbody').innerHTML = html;
 }
 
+const PANEL_IC = { upgrades: 'upgrade', workers: 'workers', boats: 'boats', research: 'research', shop: 'shop', missions: 'missions', daily: 'daily', ach: 'trophy', log: 'bell', map: 'map', settings: 'gear' };
 const bar = (v, max, cls = '', label) => `<div class="bar"><i class="${cls}" style="width:${Math.min(100, max ? v / max * 100 : 0)}%"></i><em>${label ?? `${fmt(v)} / ${fmt(max)}`}</em></div>`;
 const statBox = (label, val, extra = '') => `<div class="stat"><small>${label}</small><b>${val}</b>${extra}</div>`;
 const pips = (n, max) => `<span class="pips">${Array.from({ length: Math.min(max, 10) }, (_, i) => `<i class="${i < Math.round(n / max * Math.min(max, 10)) ? 'on' : ''}"></i>`).join('')}</span>`;
@@ -232,12 +247,12 @@ const VIEWS = {
     let body = `<p class="desc">${info.desc}</p>`;
     if (id === 'farm') {
       body += `<div class="tier"><span><b>🔒 Mərhələ 3</b><small>Balıq fermaları növbəti yeniləmədə açılacaq.</small></span><span>🐠</span></div>`;
-      return { icon: info.icon, title: info.name, sub: 'Bağlıdır', body };
+      return { ic: 'b_' + id, title: info.name, sub: 'Bağlıdır', body };
     }
     if (!t) {
       body += tierCard(id);
       if (id === 'factory') body += `<p class="note">Zavod anbardakı balığı konveyerlə götürür və 3 dəfə baha satılan qablaşdırılmış məhsul çıxarır.</p>`;
-      return { icon: info.icon, title: info.name, sub: 'Tikilməyib', body };
+      return { ic: 'b_' + id, title: info.name, sub: 'Tikilməyib', body };
     }
     if (id === 'harbor') {
       body += `<div class="stats">${statBox('Qayıqlar', `${s.boats} / ${stat.maxBoats()}`)}${statBox('Tutum', stat.boatCap() + ' balıq')}${statBox('Sürət', stat.boatSpeed().toFixed(1) + ' kv/s')}${statBox('Tutma vaxtı', stat.fishTime().toFixed(1) + ' s')}</div>`;
@@ -259,7 +274,7 @@ const VIEWS = {
       body += `<button class="btn blue wide" data-act="open" data-v="workers">👷 İşçiləri idarə et</button><button class="btn blue wide" data-act="open" data-v="research">🧪 Tədqiqat mərkəzi</button>`;
     }
     body += `<div class="sec">Təkmilləşdirmələr</div>` + trackRows(id) + `<div class="sec">Bina</div>` + tierCard(id);
-    return { icon: info.icon, title: info.name, sub: `Lv. ${t}`, body };
+    return { ic: 'b_' + id, title: info.name, sub: `Lv. ${t}`, body };
   },
 
   upgrades() {
@@ -457,7 +472,7 @@ function flyCoins() {
   const from = $('collect').getBoundingClientRect(), to = $('money').getBoundingClientRect();
   for (let i = 0; i < 8; i++) {
     const c = document.createElement('span');
-    c.className = 'fly'; c.textContent = '🪙';
+    c.className = 'fly'; c.innerHTML = icon('coin');
     c.style.transform = `translate(${from.left + from.width / 2 + (Math.random() - 0.5) * 60}px, ${from.top + (Math.random() - 0.5) * 30}px)`;
     $('flyer').appendChild(c);
     setTimeout(() => { c.style.transform = `translate(${to.left}px, ${to.top}px) scale(.6)`; c.style.opacity = '0.4'; }, 30 + i * 50);

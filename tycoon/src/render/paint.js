@@ -180,7 +180,7 @@ export class Painter {
   text(str, x, y, z, size, col, o = {}) {
     const c = this.c, [sx, sy] = this.p(x, y, z);
     c.save();
-    c.font = `${o.weight || 900} ${size * this.S}px "Lilita One", "Arial Black", system-ui, sans-serif`;
+    c.font = `${o.weight || 900} ${size * this.S}px "Baloo 2", "Arial Black", system-ui, sans-serif`;
     c.textAlign = 'center'; c.textBaseline = 'middle';
     if (o.stroke) { c.lineWidth = (o.sw || 3) * this.S; c.strokeStyle = o.stroke; c.lineJoin = 'round'; c.strokeText(str, sx, sy); }
     c.fillStyle = col; c.fillText(str, sx, sy);

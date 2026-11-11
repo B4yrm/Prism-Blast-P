@@ -31,7 +31,7 @@ function fontsReady() {
   if (!document.fonts || !document.fonts.load) return Promise.resolve();
   const t = new Promise(r => setTimeout(r, 1500));
   return Promise.race([Promise.all([
-    document.fonts.load('20px "Lilita One"'),
-    document.fonts.load('700 14px "Nunito"'),
+    document.fonts.load('800 20px "Baloo 2"'), document.fonts.load('800 20px "Baloo 2"', 'əƏİığş'),
+    document.fonts.load('800 14px "Nunito"'), document.fonts.load('900 14px "Nunito"', 'əƏİığş'),
   ]), t]).catch(() => {});
 }
