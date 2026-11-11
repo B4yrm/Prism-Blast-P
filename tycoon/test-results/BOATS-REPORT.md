@@ -118,7 +118,17 @@ Script: `tests/bench.cjs`. Headless Chromium with a software GPU, 844×390 at DP
   - old-save compatibility, offline earnings, corrupt save, simulation and presets.
 
   The results are in `boats/browser-tests.json`. In one run made while screenshots were being captured in parallel, the two timing-sensitive touch tests dropped to 9/10 and 2/10. Run alone, they pass.
-- **Android 14 emulator (CI):** results are added after the CI run for this commit (see the next commit).
+- **Android 14 emulator (CI, Pixel 6, software GPU):**
+  - every UI and touch step passed;
+  - real play → force-stop → reopen: all 13 fields equal;
+  - 0 crashes.
+  - Medium: `water mode=layers`, emulator FPS 10.9, textures 96.6 MB.
+    - Boat log: `arrivals=1 lagMean=-0.18`, so the boat was in its slip 0.18 s before unloading started.
+  - High: `water mode=shader`, FPS 8.3, textures 98.9 MB.
+    - The boat log ends with the boat settling in its slip: `arrivals=1 lagMean=-0.47`.
+  - Memory: total PSS 103 MB (the water phase measured 118–122 MB at a similar point).
+  - The emulator's FPS comes from a software GPU and does not indicate phone speed. Water phase for comparison: Medium 11.2–12.6, High 8.0–8.8.
+  - The new APK is `apk/FishingTycoon.apk` (commit `db75685`), and the emulator files are in `test-results/android/`.
 - **Real phone: not tested.** On a real phone, check:
   - FPS on High with 4 boats;
   - how the docking and leaving look;
