@@ -34,6 +34,8 @@ OFFX=$(python3 -c "print(max(0, $SW - round($CW * $D / 160)))")
 echo "screen=${SW}x${SH} density=$D page=${CW}x${CH} windowOffsetX=$OFFX" >> "$OUT/device.txt"
 tapcss() { adb shell input tap $(python3 -c "print(round($OFFX + $1 * $D / 160), round($2 * $D / 160))"); }
 pos() { echo "$(uipos)" | python3 -c "import json,sys; d=json.load(sys.stdin); v=d.get('$1'); print(v[0], v[1]) if v else print('')"; }
+# close any game pop-up (level up, offline earnings) the way a player would
+dismiss() { sleep 6; read MX MY < <(pos start); if [ -n "$MX" ] && [ "$MX" -gt 0 ]; then tapcss $MX $MY; sleep 2; echo "INFO  closed a game pop-up before: $1" >> "$RES"; fi; }
 if [ "$OFFX" -gt 0 ]; then echo "INFO  app window is inset ${OFFX}px from the display cutout (UI is not under the notch)" >> "$RES"; fi
 shot 0-welcome
 # 1. welcome button
@@ -49,13 +51,14 @@ mark; read X Y < <(pos recenter); tapcss $X $Y; sleep 2; check "centre button" "
 mark; read X Y < <(pos boats); tapcss $X $Y; sleep 3; shot 4-panel; check "dock button opens panel" "UI open boats"
 sleep 6; mark; read X Y < <(pos pclose); [ -n "$X" ] && tapcss $X $Y; sleep 2; check "panel close button" "UI close boats"
 # 6. mission chip expand / collapse
+dismiss mission
 mark; read X Y < <(pos mission); tapcss $X $Y; sleep 2; shot 5-mission-open; check "mission chip expands" "UI mission open"
-sleep 6; mark; read X Y < <(pos missionX); [ -n "$X" ] && tapcss $X $Y; sleep 2; check "mission card collapses" "UI mission mini"
+dismiss mission-close; mark; read X Y < <(pos missionX); [ -n "$X" ] && tapcss $X $Y; sleep 2; check "mission card collapses" "UI mission mini"
 # 7. single tap on a building opens it (market, centre-left of the map)
 # 8. double tap on open sea (two taps sent in one shell call; adb timing is not exact)
 DT=0
 for k in 1 2 3; do
-  mark; X=$(python3 -c "print(round($OFFX + $CW * 0.82 * $D / 160))"); Y=$(python3 -c "print(round($CH * 0.72 * $D / 160))")
+  dismiss double-tap; mark; X=$(python3 -c "print(round($OFFX + $CW * 0.82 * $D / 160))"); Y=$(python3 -c "print(round($CH * 0.72 * $D / 160))")
   adb shell "input tap $X $Y & sleep 0.12; input tap $X $Y"; sleep 2
   if log | tail -n +$MARK | grep -q "GESTURE doubletap"; then DT=$((DT+1)); fi
   read X2 Y2 < <(pos recenter); tapcss $X2 $Y2; sleep 2
@@ -64,10 +67,11 @@ echo "INFO  double tap via adb: $DT/3 recognised (adb cannot send two taps with 
 shot 6-after-doubletap
 # 9. real play, then close and reopen: every progress value must survive
 shot 8-dock-before-restart
-mark; read X Y < <(pos collect); tapcss $X $Y; sleep 2; check "collect button" "UI collect"
-read X Y < <(pos boats); tapcss $X $Y; sleep 6
+dismiss collect; mark; read X Y < <(pos collect); tapcss $X $Y; sleep 2; check "collect button" "UI collect"
+dismiss upgrades; read X Y < <(pos boats); tapcss $X $Y; sleep 6
 for k in 1 2; do read X Y < <(pos upg); [ -n "$X" ] && tapcss $X $Y; sleep 6; done
 read X Y < <(pos pclose); [ -n "$X" ] && tapcss $X $Y; sleep 20
+dismiss before-home
 adb shell input keyevent KEYCODE_HOME; sleep 3          # page hidden → game saves
 SAVED=$(log | grep "SAVED " | tail -1 | sed 's/.*SAVED //')
 adb shell am force-stop $PKG; sleep 2; adb logcat -c
