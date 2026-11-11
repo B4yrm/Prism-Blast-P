@@ -9,7 +9,7 @@ import { bus } from './core/bus.js';
 G.S = load();
 const high = G.S.settings.quality === 'high';
 const dpr = high ? Math.min(2, window.devicePixelRatio || 1) : 1;
-G.quality = { dpr, tex: high ? 2 : 1.25, ppl: high ? 3 : 2, ground: high ? 1 : 0.7 };
+G.quality = { dpr, ground: high ? 1.25 : 0.75 };
 
 // Offline earnings: half the steady-state rate, capped.
 const away = (Date.now() - (G.S.lastSeen || Date.now())) / 1000;

@@ -18,8 +18,10 @@ The build writes `index.html`, a single file with Phaser and the game inlined so
 | `src/data/defs.js` | Balance and content: upgrades, tiers, missions, research, shop |
 | `src/core/` | State with versioned saves, economy formulas, event bus, audio |
 | `src/sim/` | Simulation of boats, haulers, conveyor, factory, customers and the cash register, plus A* on the walk grid |
-| `src/render/` | Procedural canvas art: ground chunks, buildings (3 tiers each), units, props |
-| `src/scenes/` | `BootScene` generates the textures; `WorldScene` renders, runs the camera and handles taps |
+| `src/render/` | Atlas registry (`atlas.js`), ground composed from atlas tiles, small effect textures |
+| `tools/bake/` | three.js bake of the 3D models into sprite atlases (see `ASSETS.md`) |
+| `assets/` | Baked atlases (`atlas/`) and CC0 Kenney source models (`kenney/`) |
+| `src/scenes/` | `BootScene` loads the atlases; `WorldScene` renders, runs the camera and handles taps |
 | `src/ui/` | DOM HUD, side rail, dock, building labels, sheets and modals |
 
 ## Milestones
@@ -31,4 +33,4 @@ The build writes `index.html`, a single file with Phaser and the game inlined so
 5. Art pass: replace the procedural placeholder art with a sprite atlas.
 6. Android performance tuning: adaptive quality and memory checks.
 
-All art is generated in code and is temporary placeholder art, not final production art.
+See `ASSETS.md` for the art pipeline and how to replace sprites.

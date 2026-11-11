@@ -1,0 +1,72 @@
+// Bake entry (runs in headless Chromium). Builds every sprite and packs atlases.
+import * as THREE from 'three';
+import { renderSprite, pack, glb } from './render.js';
+import { BUILD } from './buildings.js';
+import { boat, person, PEOPLE, PROPS, TILES, yaw } from './units.js';
+
+const FOOT = { hq: [7, 6], factory: [8, 7], farm: [7, 7], market: [7, 6], warehouse: [8, 7], harbor: [4, 4] };
+const V = (x, y, z) => new THREE.Vector3(x, y, z);
+
+// Kenney tiles are centred 1×1 models; move them so the tile's min corner is the origin.
+async function kenney(name, rot = 0) {
+  const m = await glb(`/kenney/${name}.glb`);
+  const g = new THREE.Group(), inner = new THREE.Group();
+  inner.add(m); inner.rotation.y = rot * Math.PI / 2; g.add(inner);
+  g.updateMatrixWorld(true);
+  const b = new THREE.Box3().setFromObject(g), s = b.getSize(new THREE.Vector3());
+  const k = 1 / Math.max(s.x, s.z);
+  g.scale.setScalar(k);
+  g.updateMatrixWorld(true);
+  const b2 = new THREE.Box3().setFromObject(g);
+  const flat = name.startsWith('road') || name.startsWith('pavement');
+  g.position.set(-b2.min.x, flat ? -b2.max.y : -b2.min.y, -b2.min.z);
+  g.userData.box = [b2.min.toArray(), b2.max.toArray()];
+  // keep the top surface of flat tiles at y = 0
+  return g;
+}
+
+function jobs() {
+  const J = [];
+  const add = (name, make, opts = {}) => J.push({ name, make, opts });
+  for (const [type, [w, d]] of Object.entries(FOOT)) {
+    const tiers = type === 'farm' ? [0] : type === 'factory' ? [0, 1, 2, 3] : [1, 2, 3];
+    for (const t of tiers) add(`b/${type}/${t}`, () => BUILD[type](t, w, d), { shadow: true });
+  }
+  for (const n of ['cafe', 'shed', 'icehouse']) add(`b/${n}/1`, () => BUILD[n](), { shadow: true });
+  for (let c = 0; c < 3; c++) for (let d = 0; d < 4; d++) add(`boat/${c}/${d}`, () => { const g = new THREE.Group(), b = boat(c); b.rotation.y = yaw(d); g.add(b); return g; }, { shadow: false, outline: 2 });
+  for (const look of Object.keys(PEOPLE)) {
+    const carries = look === 'worker' ? ['none', 'raw', 'prod', 'can'] : ['none', 'bag'];
+    for (const carry of carries) for (let d = 0; d < 4; d++) for (let f = 0; f < 4; f++)
+      add(`p/${look}/${carry}/${d}/${f}`, () => { const g = new THREE.Group(), p = person(look, f, carry); p.rotation.y = yaw(d); g.add(p); return g; }, { shadow: true, outline: 1.5 });
+  }
+  for (const [name, make] of Object.entries(PROPS)) add(`prop/${name}`, make, { shadow: !['belt', 'hook', 'buoy', 'cbox'].includes(name), outline: name === 'belt_legs' ? 1.5 : 2 });
+  // ground tiles: anchored at the tile's min corner, no outline (they tile seamlessly)
+  for (const [name, make] of Object.entries(TILES)) {
+    const variants = name === 'grass' ? [0, 1, 2] : [0];
+    for (const v of variants) add(`t/${name}${name === 'grass' ? v : ''}`, () => make(v), { outline: 0, castShadow: false });
+  }
+  for (const [n, rots] of [['road-straight', [0, 1]], ['road-corner', [0, 1, 2, 3]], ['road-split', [0, 1, 2, 3]], ['road-intersection', [0]], ['road-straight-lightposts', [0, 1]], ['pavement', [0]], ['pavement-fountain', [0]]])
+    for (const r of rots) add(`k/${n}/${r}`, () => kenney(n, r), { outline: 0, castShadow: n.includes('lightposts') || n.includes('fountain'), shadow: n.includes('lightposts') || n.includes('fountain') });
+  for (const n of ['grass-trees', 'grass-trees-tall'])
+    for (const r of [0, 1]) add(`k/${n}/${r}`, () => kenney(n, r), { shadow: true, outline: 2 });
+  return J;
+}
+
+window.bake = async (filter) => {
+  const sprites = {};
+  const list = jobs().filter(j => !filter || filter.some(f => j.name.startsWith(f)));
+  for (const j of list) {
+    const obj = await j.make();
+    sprites[j.name] = renderSprite(obj, { anchor: V(0, 0, 0), ...j.opts });
+  }
+  return sprites;
+};
+window.bakeAtlas = async (filter) => {
+  const sprites = await window.bake(filter);
+  return pack(sprites, 'world');
+};
+window.preview = async (filter) => {
+  const sprites = await window.bake(filter);
+  return Object.fromEntries(Object.entries(sprites).map(([k, s]) => [k, { url: s.canvas.toDataURL('image/png'), ax: s.ax, ay: s.ay, w: s.canvas.width, h: s.canvas.height }]));
+};
+window.ready = true;

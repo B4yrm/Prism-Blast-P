@@ -225,7 +225,7 @@ button:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
   #hud { flex-wrap: wrap; gap: 6px; }
   #hud .logo, .income small { display: none; }
   .profile { order: 1; } .gear { order: 2; margin-left: auto; width: 42px; height: 42px; }
-  .res { order: 3; flex: 1 1 30%; } .res b { min-width: 0; font-size: 16px; } .res .ico { font-size: 18px; } .plus { width: 22px; height: 22px; font-size: 16px; }
+  .res { order: 3; flex: 1 1 26%; padding-left: 4px; } .res b { min-width: 0; } .res b { min-width: 0; font-size: 16px; } .res .ico { font-size: 18px; } .plus { width: 22px; height: 22px; font-size: 16px; }
   .income { order: 2; margin-left: auto; padding: 4px 8px; }
   .xpbar { width: 96px; }
   #side { top: calc(var(--st) + 112px); gap: 6px; }

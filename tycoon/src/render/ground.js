@@ -3,6 +3,7 @@
 import { BOUNDS, isLand, ROADS, PAVE, PIERS, BUILDINGS, hash, SEA_Z, iso } from '../config.js';
 import { isRoad } from '../sim/path.js';
 import { Painter, shade } from './paint.js';
+import { A, drawFrame } from './atlas.js';
 
 const inR = (rs, i, j) => rs.some(([x0, y0, x1, y1]) => i >= x0 && i <= x1 && j >= y0 && j <= y1);
 const isPave = (i, j) => inR(PAVE, i, j);
@@ -170,10 +171,10 @@ function rockLines(P, c, i, j, ax, S) {
 
 function tunnel(P, c, S) {
   // rocky hill face at x=1 with an arched opening over the avenue
-  P.box(-1, 11.4, 0, 2, 4.2, 34, '#8f8a7f', { lf: 0.9, rf: 0.7, edge: false });
-  P.box(-1, 11.4, 34, 2, 4.2, 6, '#5aa043', { edge: false });
-  const f = P.fR(-1, 11.4, 0, 2, 4.2, 34);
-  const u0 = 0.36, u1 = 0.88, pts = [P.p(...f(u0, 0))];
+  P.box(-3, 8, 0, 3, 5, 40, '#8f8a7f', { lf: 0.9, rf: 0.7, edge: false });
+  P.box(-3, 8, 40, 3, 5, 7, '#5aa043', { edge: false });
+  const f = P.fR(-3, 8, 0, 3, 5, 40);
+  const u0 = 0.32, u1 = 0.68, pts = [P.p(...f(u0, 0))];
   for (let k = 0; k <= 16; k++) { const t = k / 16; pts.push(P.p(...f(u0 + (u1 - u0) * t, 0.4 + 0.32 * Math.sin(Math.PI * t)))); }
   pts.push(P.p(...f(u1, 0)));
   c.fillStyle = '#1d2127'; c.beginPath();
@@ -184,6 +185,7 @@ function tunnel(P, c, S) {
 
 // Ground is split into ≤2048 px chunks (mobile GPU texture limit).
 export function addGround(scene, S, depth) {
+  if (A.ready) return addGroundAtlas(scene, S, depth);
   const CH = 2048, gb = groundBounds();
   const W = Math.ceil((gb.right - gb.left) * S), H = Math.ceil((gb.bottom - gb.top) * S);
   const imgs = [];
@@ -193,6 +195,87 @@ export function addGround(scene, S, depth) {
     if (scene.textures.exists(key)) scene.textures.remove(key);
     const t = scene.textures.createCanvas(key, w, h);
     paintGround(t.getContext(), S, x, y);
+    t.refresh();
+    imgs.push(scene.add.image(gb.left + x / S, gb.top + y / S, key).setOrigin(0, 0).setScale(1 / S).setDepth(depth));
+  }
+  return imgs;
+}
+
+// ---- atlas ground: Kenney road/pavement tiles + baked grass, cliffs, piers ----
+const inRect = (rs, i, j) => rs.some(([x0, y0, x1, y1]) => i >= x0 && i <= x1 && j >= y0 && j <= y1);
+// open sides per Kenney road model rotation (N = −y, E = +x, S = +y, W = −x)
+const ROAD_TILES = [
+  ['k/road-intersection/0', 'NESW'],
+  ['k/road-split/0', 'ESW'], ['k/road-split/1', 'NES'], ['k/road-split/2', 'NEW'], ['k/road-split/3', 'NSW'],
+  ['k/road-corner/0', 'SW'], ['k/road-corner/1', 'ES'], ['k/road-corner/2', 'NE'], ['k/road-corner/3', 'NW'],
+  ['k/road-straight/0', 'EW'], ['k/road-straight/1', 'NS'],
+];
+function roadFrame(i, j) {
+  let k = '';
+  if (isRoad(i, j - 1)) k += 'N';
+  if (isRoad(i + 1, j)) k += 'E';
+  if (isRoad(i, j + 1)) k += 'S';
+  if (isRoad(i - 1, j)) k += 'W';
+  if (i === 0 && j === 10) k = 'E' + (k.includes('S') ? 'S' : '') + 'W';   // runs into the tunnel
+  if (k.length <= 1) k = (k === 'N' || k === 'S') ? 'NS' : 'EW';
+  if (k === 'NS' || k === 'EW') {
+    const lamp = (k === 'EW' ? i : j) % 4 === 1;
+    return lamp ? `k/road-straight-lightposts/${k === 'EW' ? 0 : 1}` : ROAD_TILES.find(r => r[1] === k)[0];
+  }
+  const hit = ROAD_TILES.find(r => r[1] === k);
+  return hit ? hit[0] : 'k/road-intersection/0';
+}
+
+function paintGroundAtlas(c, S, offX, offY) {
+  const gb = groundBounds();
+  const P = new Painter(c, -gb.left * S - offX, -gb.top * S - offY, S);
+  const at = (i, j) => P.p(i, j, 0);
+  const { x0, y0, x1, y1 } = BOUNDS;
+  // shallow-water halo + foam (soft 2D)
+  for (let ring = 3; ring >= 1; ring--) {
+    c.fillStyle = `rgba(120,230,235,${0.1 + (3 - ring) * 0.08})`;
+    for (let i = x0; i <= x1; i++) for (let j = y0; j <= y1; j++) {
+      if (isLand(i, j)) continue;
+      let near = false;
+      for (let a = -ring; a <= ring && !near; a++) for (let b = -ring; b <= ring; b++) if (Math.abs(a) + Math.abs(b) <= ring + 0.5 && isLand(i + a, j + b)) { near = true; break; }
+      if (near) { P.path([[i - 0.05, j - 0.05, SEA_Z], [i + 1.05, j - 0.05, SEA_Z], [i + 1.05, j + 1.05, SEA_Z], [i - 0.05, j + 1.05, SEA_Z]]); c.fill(); }
+    }
+  }
+  const cells = [];
+  for (let i = x0; i <= x1; i++) for (let j = y0; j <= y1; j++) if (isLand(i, j) || isPier(i, j)) cells.push([i, j]);
+  cells.sort((a, b) => (a[0] + a[1]) - (b[0] + b[1]) || a[0] - b[0]);
+  for (const [i, j] of cells) {
+    const [dx, dy] = at(i, j);
+    if (!isLand(i, j)) { drawFrame(c, 't/pier', dx, dy, S); continue; }
+    if (!isLand(i, j + 1) && !isPier(i, j + 1)) drawFrame(c, 't/cliffY', dx, dy, S);
+    if (!isLand(i + 1, j)) drawFrame(c, 't/cliffX', dx, dy, S);
+    if (!isLand(i, j + 1) && isPier(i, j + 1)) drawFrame(c, 't/cliffY', dx, dy, S);
+    if (isRoad(i, j)) { drawFrame(c, 't/pave', dx, dy, S); drawFrame(c, roadFrame(i, j), dx, dy, S); }
+    else if (j === 22 && inRect(PAVE, i, j)) drawFrame(c, 't/quay', dx, dy, S);
+    else if (inRect(PAVE, i, j) || inBuildingPad(i, j)) drawFrame(c, 't/pave', dx, dy, S);
+    else drawFrame(c, 't/grass' + Math.floor(hash(i, j) * 3), dx, dy, S);
+  }
+  // foam where land meets water
+  c.strokeStyle = 'rgba(255,255,255,0.8)'; c.lineWidth = 2.4 * S; c.lineCap = 'round';
+  for (const [i, j] of cells) {
+    if (!isLand(i, j)) continue;
+    if (!isLand(i, j + 1) && !isPier(i, j + 1)) { const a = P.p(i, j + 1.1, SEA_Z), b = P.p(i + 1, j + 1.1, SEA_Z); c.beginPath(); c.moveTo(a[0], a[1]); c.lineTo(b[0], b[1]); c.stroke(); }
+    if (!isLand(i + 1, j)) { const a = P.p(i + 1.1, j, SEA_Z), b = P.p(i + 1.1, j + 1, SEA_Z); c.beginPath(); c.moveTo(a[0], a[1]); c.lineTo(b[0], b[1]); c.stroke(); }
+  }
+  tunnel(P, c, S);
+}
+const inBuildingPad = (i, j) => Object.values(BUILDINGS).some(b => i >= b.x && i < b.x + b.w && j >= b.y && j < b.y + b.d);
+
+function addGroundAtlas(scene, S, depth) {
+  const CH = 2048, gb = groundBounds();
+  const W = Math.ceil((gb.right - gb.left) * S), H = Math.ceil((gb.bottom - gb.top) * S);
+  const imgs = [];
+  for (let y = 0; y < H; y += CH) for (let x = 0; x < W; x += CH) {
+    const w = Math.min(CH, W - x), h = Math.min(CH, H - y);
+    const key = `ground_${x}_${y}`;
+    if (scene.textures.exists(key)) scene.textures.remove(key);
+    const t = scene.textures.createCanvas(key, w, h);
+    paintGroundAtlas(t.getContext(), S, x, y);
     t.refresh();
     imgs.push(scene.add.image(gb.left + x / S, gb.top + y / S, key).setOrigin(0, 0).setScale(1 / S).setDepth(depth));
   }
