@@ -24,7 +24,7 @@ nodialog; sleep 1
 adb exec-out screencap -p > "$OUT/0-welcome.png"
 read W0 H0 < <(adb shell wm size | tail -1 | sed 's/.*: //; s/x/ /' | awk '{ if ($1 < $2) print $2, $1; else print $1, $2 }')
 # press "Başla" on the welcome card (centre of the screen, lower half)
-adb shell input tap $((W0/2)) $((H0/2 + H0/7))
+adb shell input tap $((W0/2)) $((H0 * 29 / 40))
 sleep 3
 adb exec-out screencap -p > "$OUT/1-start.png"
 adb shell dumpsys gfxinfo az.fishing.tycoon reset > /dev/null
