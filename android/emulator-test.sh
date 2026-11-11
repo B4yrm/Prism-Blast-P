@@ -94,6 +94,17 @@ shot 7-after-restart
 adb shell am force-stop $PKG; sleep 2
 adb shell am start -W -n $PKG/az.universitet.tycoon.MainActivity > /dev/null; sleep 40; nodialog
 shot 9-after-second-restart
+# 9b. water on every preset: pick it in Settings, the game reloads, read WATER mode and FPS
+for Q in medium high; do
+  dismiss settings; read X Y < <(pos gear); tapcss $X $Y; sleep 6
+  K=qMed; [ "$Q" = high ] && K=qHigh
+  read X Y < <(pos $K); [ -n "$X" ] && tapcss $X $Y
+  sleep 45; nodialog
+  WM=$(log | grep "WATER mode=" | tail -1 | sed 's/.*WATER //')
+  PF=$(log | grep PERF | tail -1 | grep -oE "fps=[0-9.]+ textureMB=[0-9.]+ heapMB=[0-9.]+ preset=[a-z]+")
+  echo "INFO  preset $Q: water $WM; $PF" >> "$RES"
+  shot water-$Q
+done
 # 10. performance & memory
 adb shell dumpsys gfxinfo $PKG > "$OUT/gfxinfo.txt"
 adb shell dumpsys meminfo $PKG > "$OUT/meminfo.txt"

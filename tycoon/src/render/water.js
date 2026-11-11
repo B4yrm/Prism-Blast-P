@@ -167,6 +167,7 @@ export class Water {
     if (this.mode === 'layers') { this.makeFoamStrips(); this.makeRockRings(); }
     this.makeGlints(this.mode === 'layers' ? quality.glints : 0);
     this.wake = new Wake(scene, quality);
+    console.log('WATER mode=' + this.mode + ' requested=' + quality.water);
   }
 
   // area the sea covers (generous, the camera never sees past it)

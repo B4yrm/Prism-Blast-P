@@ -123,10 +123,10 @@
   },
   "touch_input_high": {
    "pass": true,
-   "dragMovedPx": 395,
+   "dragMovedPx": 421,
    "pinchZoom": 2.6,
    "recenterZoomBack": 1,
-   "doubleTap": "4/10",
+   "doubleTap": "2/10",
    "slowPairIgnored": true,
    "buildingDoubleTapKeepsPanel": "Anbar"
   },
@@ -137,13 +137,13 @@
   "save_load": {
    "pass": true,
    "before": {
-    "money": 240,
+    "money": 236,
     "lvl": 2,
     "caught": 40,
     "price": 2
    },
    "after": {
-    "money": 240,
+    "money": 236,
     "lvl": 2,
     "caught": 40,
     "price": 2
@@ -152,8 +152,8 @@
   "save_load_after_real_play": {
    "pass": true,
    "saved": {
-    "money": 346,
-    "register": 88,
+    "money": 342,
+    "register": 92,
     "gems": 21,
     "level": 3,
     "xp": 2,
@@ -167,8 +167,8 @@
     "research": 0
    },
    "loaded": {
-    "money": 346,
-    "register": 88,
+    "money": 342,
+    "register": 92,
     "gems": 21,
     "level": 3,
     "xp": 2,
@@ -238,9 +238,9 @@
     "toRest"
    ],
    "caught": 310,
-   "sold": 296,
-   "earned": 1092,
-   "customersSeen": 9
+   "sold": 300,
+   "earned": 1100,
+   "customersSeen": 7
   },
   "no_page_errors": {
    "pass": true,
@@ -252,24 +252,24 @@
     "preset": "high",
     "canvas": "1688x780",
     "textureMB": 91.5,
-    "heapMB": 54,
-    "updateMsAvg": 1.57,
+    "heapMB": 54.3,
+    "updateMsAvg": 1.67,
     "objects": 731
    },
    "medium": {
     "preset": "medium",
     "canvas": "1266x585",
     "textureMB": 89.2,
-    "heapMB": 54.4,
-    "updateMsAvg": 1.86,
+    "heapMB": 53.2,
+    "updateMsAvg": 1.41,
     "objects": 801
    },
    "low": {
     "preset": "low",
     "canvas": "844x390",
     "textureMB": 35.7,
-    "heapMB": 38.3,
-    "updateMsAvg": 1.55,
+    "heapMB": 41.2,
+    "updateMsAvg": 1.12,
     "objects": 727
    }
   }
