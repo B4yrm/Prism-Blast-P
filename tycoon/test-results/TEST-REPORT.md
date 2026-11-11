@@ -1,71 +1,52 @@
-# Fishing Tycoon: APK test report
+# Fishing Tycoon: final APK test report
 
-- **APK:** `apk/FishingTycoon.apk` (2.4 MB). It contains exactly `tycoon/index.html`, checked with `cmp`.
-- **Code version:** commit `0a74c0b`.
-
-## Summary
+- **APK:** `apk/FishingTycoon.apk`. It contains exactly `tycoon/index.html` (game code `406caf6`), checked with `cmp`.
+- **Stage 2 backup:** the unfinished Stage 2 code is kept on branch `claude/stage2-wip-backup`. It is not merged and is not being developed.
 
 | Where | Status |
 |---|---|
-| A. Browser (headless Chromium) | 14/14 tests passed |
-| B. Android emulator (CI) | All 8 checks passed, 0 crashes |
+| A. Browser (headless Chromium) | 15/15 passed |
+| B. Android emulator (CI) | Every check passed, 0 crashes |
 | C. Real phone | **Not tested** |
 
 ## A. Browser tests (headless Chromium, CPU slowed 4×, software GPU)
 
-Run the suite with `node tycoon/tests/run-tests.cjs`. Results: 14/14 passed.
+Run the suite with `node tycoon/tests/run-tests.cjs`. Results: **15/15 passed.**
 
 | Test | Result |
 |---|---|
-| UI elements overlap on 12 screen sizes (640×360 … 1280×720, portrait 360×640 … 768×1024) | No overlap, no horizontal scroll |
-| Touch areas | Every control ≥ 40 px, most 44–56 px |
-| Panels on 640×360 and 360×640: open, scroll, close; mission card | Pass |
+| UI elements overlap on 12 screen sizes | None |
+| Touch areas | ≥ 40 px |
+| Panels on 640×360 and 360×640 | Open, scroll and close work |
 | Drag, two-finger zoom, centre button, building tap | Pass |
-| Double tap, **low** preset, 10 tries | 10/10 (an earlier run gave 9/10) |
-| Double tap, **high** preset, 10 tries | 5/10 (see note 1) |
-| Two slow taps (> 350 ms apart) | Do not zoom, as intended |
-| Double tap on a building | The panel opens and stays open |
-| Building labels around the zoom threshold | No flicker (≤ 1 switch) |
-| Save → reload | Money, level, catch and upgrades unchanged |
-| Save from the previous APK | Money, gems, level, buildings, upgrades, workers, missions, research and settings all kept |
-| Offline earnings after 2 hours away | The "+$5.93K" window appears |
-| Corrupt save | Starts fresh, no error |
-| Simulation, 15 simulated minutes | Boat and worker go through every state; fish caught and sold; money earned |
-| JS errors | None |
+| Double tap, **low** preset | 10/10 |
+| Double tap, **high** preset | 5/10 (see known issue 1) |
+| Two slow taps / double tap on a building | Do not zoom / the panel stays open |
+| Labels at the zoom threshold | No flicker |
+| **Real play → close → reopen** (collect cash, 2 upgrades, hire a worker, level 3) | **All 13 progress fields equal** |
+| Save → reload; save from the previous APK; corrupt save | Pass |
+| Offline earnings (2 h) | The window appears |
+| Simulation (15 simulated minutes); JS errors | Pass; none |
 
-**Note 1.** At the high preset the software GPU needs about 200 ms per frame, so the browser delivers the test touches late. The real gap between the two taps then becomes 385–500 ms, so they are correctly treated as two separate taps. On a phone, an event's timestamp is the hardware touch time, so this artefact should not occur. That still needs checking on a real phone.
-
-### Graphics presets (browser, 844×390 at DPR 2.75)
-
-| Preset | Canvas | Textures | JS heap | Update per frame (CPU ×4 slower) |
-|---|---|---|---|---|
-| High | 1688×780 | 101.6 MB | 65 MB | 2.7 ms |
-| Medium | 1266×585 | 88.7 MB | 51 MB | 1.8 ms |
-| Low | 844×390 | 37.8 MB | 40 MB | 1.9 ms |
-
-### Economy unchanged
-
-`git diff b0a35e5` (the approved animation build), limited to `core/economy.js`, `sim/` and `data/defs.js`:
-
-- simulation and economy code: **0 changed lines**;
-- `defs.js`: only the icon names changed;
-- `state.js`: only the default settings for new players (quality `auto`, mission card closed).
+**Economy unchanged:** since the approved animation build `b0a35e5`, the simulation and economy code has **0 changed lines**. In `defs.js` only the icon names changed.
 
 ## B. Android emulator (GitHub Actions)
 
-Environment: Android 14, Pixel 6 profile, 1080×2400 at 420 dpi, WebView 113, software GPU (swiftshader). Script: `android/emulator-test.sh`.
+Environment: Android 14, Pixel 6 profile, 1080×2400 at 420 dpi, WebView 113, software GPU. Script: `android/emulator-test.sh`.
 
-Each touch is aimed using the positions the game itself logs (UIPOS). Each step is confirmed by the game's own log line in logcat.
+Each touch is aimed using the positions the game logs (UIPOS) plus the window offset. Each step is confirmed by the game's own log line.
 
 | Check | Result |
 |---|---|
-| App window vs. display cutout | Inset 127 px from the cutout. The UI is **not under the notch**. |
-| Left menu opens / closes | PASS / PASS |
+| Display cutout | The app window sits 127 px away from the cutout. The UI is **not under the notch**. |
+| Left menu open / close | PASS / PASS |
 | Centre button | PASS |
-| Dock button opens a panel; × closes it | PASS / PASS |
-| Mission chip expands / collapses | PASS / PASS |
-| Double tap (adb sends two taps; timing not exact) | Recognised 3/3 |
-| Save/load after force-stop | PASS (see note 3) |
+| Dock → panel; panel × button | PASS / PASS |
+| Mission chip expand / collapse | PASS / PASS |
+| "Topla" (collect) button | PASS |
+| Double tap (two adb taps; timing not exact) | Recognised 3/3 |
+| **Real play** (collect + 2 upgrades) → HOME → force-stop → restart | **PASS: all 13 fields equal.** Before and after: money 214, cash register 72, gems 15, level 2, XP 42, upgrades 2-0-0-0-0, 76 fish caught, 58 sold |
+| Dock icons after the 1st and 2nd restart | Drawn correctly (white blocks no longer appear) |
 | Crashes | 0 |
 
 **Memory:**
@@ -73,20 +54,34 @@ Each touch is aimed using the positions the game itself logs (UIPOS). Each step 
 - JS heap 43 MB, textures 38 MB;
 - the "Auto" preset chose "Low" on the emulator.
 
-**FPS: 9–10 on the emulator.** The CI machine has no GPU, so the emulator draws in software. This number does **not** show real-phone performance.
+**FPS: 11–12 on the emulator.** The CI machine has no GPU, so this does **not** show real-phone performance.
 
-**Note 2.** One screenshot taken after the restart shows two dock icons ("Tədqiqat", "Mağaza") as white blocks. It is unclear whether this is a capture artefact or a real rendering problem. It needs checking on a phone.
+## Fixes in this round
 
-**Note 3.** The save/load check after force-stop ran on a fresh game, so it compared starting values (money 120, level 1). The cash-register amount was also kept across the restart. The browser test checks save/load with changed values.
+1. **Dock icons ("Tədqiqat", "Mağaza" and others).**
+   - *Problem:* after a restart, inline-SVG stroke paths were drawn as white blocks in the Android WebView.
+   - *Fix:* icons are now shown as `<img>` (data-URI SVG), and the glass panels no longer use `backdrop-filter`.
+   - *Status:* correct on the emulator after two restarts. Not yet checked on a real phone.
+2. **Touch input.** Gestures moved to native Pointer Events, with each finger tracked by its pointerId.
+3. **Accidental close.** A double tap on a building no longer closes the panel it just opened.
+4. **Progress fingerprint.** On save (SAVED) and load (LOADED) the game logs a progress snapshot, so tests can prove nothing was lost.
+
+## Known issues (not counted as solved)
+
+1. **Double tap at the "High" graphics preset** (not fully solved; still needs a real-device test).
+   - *Browser test:* 10/10 at the low preset, 5/10 at the high preset.
+   - *Cause found:* at the high preset the software GPU needs about 200 ms per frame, so the browser delivers the test touches late. The measured gap between the two taps grows from 80 ms to 385–500 ms and they are treated as separate taps.
+   - *What changed:* the game now measures the gap from the event's own timestamp (finger up → next finger down, < 350 ms). On a phone that timestamp is the hardware touch time, so the problem is expected to disappear. **This is not verified.**
+   - *Emulator:* adb cannot send two taps with exact timing, so the emulator's 3/3 is not proof either.
+   - *Fallback:* if double tap still fails on a phone at the high preset, the player can still zoom with two fingers and the centre button.
+2. **Two-finger zoom on a device.** adb cannot test it on the emulator. It is tested only in the browser.
 
 ## C. Real phone
 
 **Nothing was tested on a real phone.** Please check:
-
-1. smoothness (FPS) on High / Medium / Low;
-2. two-finger zoom (adb cannot test this on the emulator);
-3. double tap;
-4. the HUD and left menu on a phone with a notch;
-5. note 2: the dock icons after restarting the app.
-
-If the game is slow, choose **Settings → Graphics → Low**.
+- FPS at each preset;
+- two-finger zoom;
+- double tap, especially at the "High" preset;
+- the UI on a phone with a notch;
+- the dock icons after closing and reopening the app;
+- that progress is kept after the app is closed and reopened.
