@@ -3,6 +3,7 @@ import { iso, unIso, BOUNDS, BUILDINGS, isLand, hash, SEA_Z, POI, CONVEYOR, CRAN
 import { addGround, groundBounds } from '../render/ground.js';
 import { A, has, addSprite, setSprite } from '../render/atlas.js';
 import { Life } from './life.js';
+import { Water } from '../render/water.js';
 import { isRoad, isWalk } from '../sim/path.js';
 import { Sim, CONVEY_TIME } from '../sim/sim.js';
 import { G, stat } from '../core/economy.js';
@@ -20,7 +21,7 @@ export class WorldScene extends Phaser.Scene {
     this.sim = new Sim();
     G.sim = this.sim; G.world = this;
     const cam = this.cameras.main;
-    cam.setBackgroundColor('#1b8bd0');
+    cam.setBackgroundColor('#0c5ca8');
 
     this.makeWater();
     addGround(this, Q.ground, D_GROUND);
@@ -53,19 +54,8 @@ export class WorldScene extends Phaser.Scene {
 
   // ---------------------------------------------------------------- water
   makeWater() {
-    const gb = groundBounds();
-    const w = gb.right - gb.left + 8000, h = gb.bottom - gb.top + 6000;
-    // TileSprites allocate a texture of their own size, so keep them small and scale up.
-    const K = 8;
-    this.w1 = this.add.tileSprite(gb.left - 4000, gb.top - 3000, w / K, h / K, 'waves').setOrigin(0).setScale(K).setTileScale(0.6 / K).setDepth(D_WATER).setAlpha(0.75);
-    this.w2 = this.add.tileSprite(gb.left - 4000, gb.top - 3000, w / K, h / K, 'waves').setOrigin(0).setScale(K).setTileScale(1.1 / K).setDepth(D_WATER + 1).setAlpha(0.4).setFlipX(true);
-    // darker deep water further out: big soft gradient overlay
-    const t = this.textures.createCanvas('deep', 256, 256), c = t.getContext();
-    const gr = c.createRadialGradient(128, 90, 30, 128, 128, 180);
-    gr.addColorStop(0, 'rgba(40,190,230,0.0)'); gr.addColorStop(1, 'rgba(8,60,130,0.55)');
-    c.fillStyle = gr; c.fillRect(0, 0, 256, 256); t.refresh();
-    const ctr = iso(24, 18);
-    this.add.image(ctr.x, ctr.y + 200, 'deep').setDisplaySize(w * 0.6, h * 0.6).setDepth(D_WATER + 2);
+    this.water = new Water(this, G.quality, groundBounds());
+    this.cameras.main.setBackgroundColor('#0c5ca8');
   }
 
   // ------------------------------------------------------------- buildings
@@ -413,8 +403,7 @@ export class WorldScene extends Phaser.Scene {
       this.vel.x *= 0.86; this.vel.y *= 0.86;
       if (Math.abs(this.vel.x) + Math.abs(this.vel.y) < 0.1) this.vel = null;
     }
-    this.w1.tilePositionX = t * 7 / 8; this.w1.tilePositionY = t * 2 / 8;
-    this.w2.tilePositionX = -t * 4 / 8; this.w2.tilePositionY = t * 3 / 8;
+    this.water.update(t, dt, cam);
     this.beam.setAlpha(0.35 + 0.3 * Math.sin(t * 2));
     for (const b of this.buoys) b.setAngle(Math.sin(t * 2 + b.x) * 8);
     for (const m of this.moored) m.s.setY(m.y0 + Math.sin(t * 1.6 + m.ph) * 1.2).setAngle(Math.sin(t * 1.1 + m.ph) * 1.2);
@@ -436,6 +425,7 @@ export class WorldScene extends Phaser.Scene {
 
   drawBoats(t) {
     const sim = this.sim, dt = this.game.loop.delta / 1000;
+    this.water.wake.update(t, sim.boats, stat.boatSpeed() * 1.12);
     while (this.boatSpr.length < sim.boats.length) {
       const i = this.boatSpr.length;
       const s = addSprite(this, 0, 0, 'boat/0/6');
@@ -445,6 +435,7 @@ export class WorldScene extends Phaser.Scene {
     }
     sim.boats.forEach((b, i) => {
       const s = this.boatSpr[i], m = b.m;
+      b.scale = [1.45, 1.7, 2.0][(G.S.boatTypes && G.S.boatTypes[i]) || 0] || 1.45;   // hull size of the baked class (for wakes)
       // heading turns smoothly towards the direction of travel (8 sprite angles)
       const target = Math.atan2(m.dy, m.dx);
       if (b.ang === undefined) b.ang = target;
@@ -461,8 +452,7 @@ export class WorldScene extends Phaser.Scene {
       s.setPosition(p.x, p.y).setDepth(depthAt(m.x, m.y) + 8).setAngle(Phaser.Math.Clamp(roll, -5, 5));
       const w = iso(m.x, m.y, SEA_Z);
       s.mirror.setPosition(w.x, w.y + 2).setAngle(-s.angle);
-      if (moving) this.life.wake(this.wakeFx, b, m.speed / Math.max(0.1, stat.boatSpeed()));
-      else if (b.state === 'fish' && Math.random() < 0.08) { this.wakeFx.emitParticleAt(w.x + (Math.random() - 0.5) * 40, w.y + (Math.random() - 0.5) * 16, 1); }
+      if (b.state === 'fish' && Math.random() < 0.08) { this.wakeFx.emitParticleAt(w.x + (Math.random() - 0.5) * 40, w.y + (Math.random() - 0.5) * 16, 1); }
     });
   }
 

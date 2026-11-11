@@ -10,9 +10,9 @@ G.S = load();
 console.log('LOADED ' + JSON.stringify(snapshot(G.S)));
 // Graphics presets. 'auto' picks one from the device's memory / CPU cores.
 export const PRESETS = {
-  high:   { dprMax: 2,   ground: 1.25, atlasHalf: false, fps: 60, cars: 5, glints: 22, foam: 1, sway: true,  wake: 1 },
-  medium: { dprMax: 1.5, ground: 1.0,  atlasHalf: false, fps: 60, cars: 3, glints: 10, foam: 2, sway: true,  wake: 0.6 },
-  low:    { dprMax: 1,   ground: 0.75, atlasHalf: true,  fps: 30, cars: 2, glints: 0,  foam: 0, sway: false, wake: 0.35 },
+  high:   { water: 'shader', dprMax: 2,   ground: 1.25, atlasHalf: false, fps: 60, cars: 5, glints: 22, foam: 1, sway: true,  wake: 1 },
+  medium: { water: 'layers', dprMax: 1.5, ground: 1.0,  atlasHalf: false, fps: 60, cars: 3, glints: 10, foam: 2, sway: true,  wake: 0.6 },
+  low:    { water: 'basic',  dprMax: 1,   ground: 0.75, atlasHalf: true,  fps: 30, cars: 2, glints: 0,  foam: 0, sway: false, wake: 0.35 },
 };
 function autoPreset() {
   const mem = navigator.deviceMemory || 4, cores = navigator.hardwareConcurrency || 4;

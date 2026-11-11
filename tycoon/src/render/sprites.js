@@ -47,6 +47,34 @@ export function makeFx(scene) {
   });
   const t = scene.textures.get('gull'); t.add('g0', 0, 0, 0, 32, 20); t.add('g1', 0, 32, 0, 32, 20);
   canvasTex(scene, 'fishjump', 24, 14, c => fishGlyph(c, 13, 7, 0.65, '#cfe3f2', '#fff'));
+  // foam strip: an irregular soft white band (shore wash)
+  canvasTex(scene, 'foamstrip', 96, 22, c => {
+    let seed = 5; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    for (let k = 0; k < 26; k++) {
+      const x = 8 + rnd() * 80, y = 11 + (rnd() - 0.5) * 6, r = 3 + rnd() * 5;
+      const g = c.createRadialGradient(x, y, 0, x, y, r);
+      g.addColorStop(0, 'rgba(255,255,255,0.9)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+      c.fillStyle = g; c.beginPath(); c.arc(x, y, r, 0, 7); c.fill();
+    }
+  });
+  // foam ring round surf rocks
+  canvasTex(scene, 'foamring', 128, 128, c => {
+    const g = c.createRadialGradient(64, 64, 34, 64, 64, 60);
+    g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(0.55, 'rgba(255,255,255,0.85)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+    c.fillStyle = g; c.fillRect(0, 0, 128, 128);
+  });
+  // long gentle swell lines (third wave layer)
+  canvasTex(scene, 'swell', 512, 256, c => {
+    let seed = 23; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    c.lineCap = 'round';
+    for (let k = 0; k < 26; k++) {
+      const x = rnd() * 512, y = rnd() * 256, L = 40 + rnd() * 70, a = 0.08 + rnd() * 0.12;
+      for (const ox of [-512, 0, 512]) for (const oy of [-256, 0, 256]) {
+        c.strokeStyle = `rgba(255,255,255,${a})`; c.lineWidth = 2 + rnd() * 2;
+        c.beginPath(); c.moveTo(x + ox - L, y + oy + L * 0.1); c.bezierCurveTo(x + ox - L / 3, y + oy - 4, x + ox + L / 3, y + oy + 4, x + ox + L, y + oy - L * 0.1); c.stroke();
+      }
+    }
+  });
   // seamless water ripple tile: rows of soft crests in the iso direction
   canvasTex(scene, 'waves', 512, 256, c => {
     let seed = 11; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;

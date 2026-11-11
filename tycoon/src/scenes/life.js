@@ -17,8 +17,6 @@ export class Life {
     this.Q = G.quality; this.frame = 0;
     this.makeCars(this.Q.cars);
     this.makeForklift();
-    this.makeShore();
-    this.makeGlints(this.Q.glints);
     this.offsets = new Map();
   }
 
@@ -193,7 +191,5 @@ export class Life {
     for (const c of this.cars) { this.stepCar(c, dt, walkers); this.drawCar(c); }
     this.stepLift(dt, walkers); this.drawLift(t);
     this.frame++;
-    if (this.Q.foam && this.frame % this.Q.foam === 0) this.animShore(t);
-    if (this.glints.length) this.animGlints(dt);
   }
 }

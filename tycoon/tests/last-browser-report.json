@@ -123,10 +123,10 @@
   },
   "touch_input_high": {
    "pass": true,
-   "dragMovedPx": 409,
+   "dragMovedPx": 395,
    "pinchZoom": 2.6,
    "recenterZoomBack": 1,
-   "doubleTap": "5/10",
+   "doubleTap": "4/10",
    "slowPairIgnored": true,
    "buildingDoubleTapKeepsPanel": "Anbar"
   },
@@ -152,8 +152,8 @@
   "save_load_after_real_play": {
    "pass": true,
    "saved": {
-    "money": 334,
-    "register": 100,
+    "money": 346,
+    "register": 88,
     "gems": 21,
     "level": 3,
     "xp": 2,
@@ -167,8 +167,8 @@
     "research": 0
    },
    "loaded": {
-    "money": 334,
-    "register": 100,
+    "money": 346,
+    "register": 88,
     "gems": 21,
     "level": 3,
     "xp": 2,
@@ -238,9 +238,9 @@
     "toRest"
    ],
    "caught": 310,
-   "sold": 299,
-   "earned": 1108,
-   "customersSeen": 7
+   "sold": 296,
+   "earned": 1092,
+   "customersSeen": 9
   },
   "no_page_errors": {
    "pass": true,
@@ -251,26 +251,26 @@
    "high": {
     "preset": "high",
     "canvas": "1688x780",
-    "textureMB": 101.6,
-    "heapMB": 65.7,
-    "updateMsAvg": 1.93,
-    "objects": 864
+    "textureMB": 91.5,
+    "heapMB": 54,
+    "updateMsAvg": 1.57,
+    "objects": 731
    },
    "medium": {
     "preset": "medium",
     "canvas": "1266x585",
-    "textureMB": 88.7,
-    "heapMB": 51.8,
-    "updateMsAvg": 2.09,
-    "objects": 847
+    "textureMB": 89.2,
+    "heapMB": 54.4,
+    "updateMsAvg": 1.86,
+    "objects": 801
    },
    "low": {
     "preset": "low",
     "canvas": "844x390",
-    "textureMB": 37.8,
-    "heapMB": 41,
-    "updateMsAvg": 1.38,
-    "objects": 836
+    "textureMB": 35.7,
+    "heapMB": 38.3,
+    "updateMsAvg": 1.55,
+    "objects": 727
    }
   }
  }

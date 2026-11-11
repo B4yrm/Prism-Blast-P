@@ -4,6 +4,7 @@ import { BOUNDS, isLand, ROADS, PAVE, PIERS, BUILDINGS, hash, SEA_Z, iso } from 
 import { isRoad } from '../sim/path.js';
 import { Painter, shade } from './paint.js';
 import { A, drawFrame } from './atlas.js';
+import { G } from '../core/economy.js';
 
 const inR = (rs, i, j) => rs.some(([x0, y0, x1, y1]) => i >= x0 && i <= x1 && j >= y0 && j <= y1);
 const isPave = (i, j) => inR(PAVE, i, j);
@@ -231,19 +232,20 @@ function paintGroundAtlas(c, S, offX, offY) {
   const P = new Painter(c, -gb.left * S - offX, -gb.top * S - offY, S);
   const at = (i, j) => P.p(i, j, 0);
   const { x0, y0, x1, y1 } = BOUNDS;
-  // shallow-water halo + foam (soft 2D)
-  for (let ring = 3; ring >= 1; ring--) {
-    c.fillStyle = `rgba(120,230,235,${0.1 + (3 - ring) * 0.08})`;
-    for (let i = x0; i <= x1; i++) for (let j = y0; j <= y1; j++) {
-      if (isLand(i, j)) continue;
-      let near = false;
-      for (let a = -ring; a <= ring && !near; a++) for (let b = -ring; b <= ring; b++) if (Math.abs(a) + Math.abs(b) <= ring + 0.5 && isLand(i + a, j + b)) { near = true; break; }
-      if (near) { P.path([[i - 0.05, j - 0.05, SEA_Z], [i + 1.05, j - 0.05, SEA_Z], [i + 1.05, j + 1.05, SEA_Z], [i - 0.05, j + 1.05, SEA_Z]]); c.fill(); }
-    }
-  }
+  // shallows are drawn by the sea itself (render/water.js)
   const cells = [];
   for (let i = x0; i <= x1; i++) for (let j = y0; j <= y1; j++) if (isLand(i, j) || isPier(i, j)) cells.push([i, j]);
   cells.sort((a, b) => (a[0] + a[1]) - (b[0] + b[1]) || a[0] - b[0]);
+  // (cells are listed before the foam so it can be drawn underneath them)
+  // static foam where land meets water (low preset; higher presets animate it)
+  if (G.quality && G.quality.water === 'basic') {
+  c.strokeStyle = 'rgba(255,255,255,0.55)'; c.lineWidth = 3 * S; c.lineCap = 'round';
+  for (const [i, j] of cells) {
+    if (!isLand(i, j)) continue;
+    if (!isLand(i, j + 1) && !isPier(i, j + 1)) { const a = P.p(i, j + 1.28, SEA_Z), b = P.p(i + 1, j + 1.28, SEA_Z); c.beginPath(); c.moveTo(a[0], a[1]); c.lineTo(b[0], b[1]); c.stroke(); }
+    if (!isLand(i + 1, j)) { const a = P.p(i + 1.28, j, SEA_Z), b = P.p(i + 1.28, j + 1, SEA_Z); c.beginPath(); c.moveTo(a[0], a[1]); c.lineTo(b[0], b[1]); c.stroke(); }
+  }
+  }
   for (const [i, j] of cells) {
     const [dx, dy] = at(i, j);
     if (!isLand(i, j)) { drawFrame(c, 't/pier', dx, dy, S); continue; }
@@ -254,13 +256,6 @@ function paintGroundAtlas(c, S, offX, offY) {
     else if (j === 22 && inRect(PAVE, i, j)) drawFrame(c, 't/quay', dx, dy, S);
     else if (inRect(PAVE, i, j) || inBuildingPad(i, j)) drawFrame(c, 't/pave', dx, dy, S);
     else drawFrame(c, 't/grass' + Math.floor(hash(i, j) * 3), dx, dy, S);
-  }
-  // foam where land meets water
-  c.strokeStyle = 'rgba(255,255,255,0.8)'; c.lineWidth = 2.4 * S; c.lineCap = 'round';
-  for (const [i, j] of cells) {
-    if (!isLand(i, j)) continue;
-    if (!isLand(i, j + 1) && !isPier(i, j + 1)) { const a = P.p(i, j + 1.1, SEA_Z), b = P.p(i + 1, j + 1.1, SEA_Z); c.beginPath(); c.moveTo(a[0], a[1]); c.lineTo(b[0], b[1]); c.stroke(); }
-    if (!isLand(i + 1, j)) { const a = P.p(i + 1.1, j, SEA_Z), b = P.p(i + 1.1, j + 1, SEA_Z); c.beginPath(); c.moveTo(a[0], a[1]); c.lineTo(b[0], b[1]); c.stroke(); }
   }
   tunnel(P, c, S);
 }
