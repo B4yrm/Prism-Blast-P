@@ -264,46 +264,66 @@ export class WorldScene extends Phaser.Scene {
   }
 
   // ------------------------------------------------------------------ input
+  // Gestures on native Pointer Events (each finger tracked by pointerId,
+  // timing from the event's own timeStamp) so slow frames can never merge or
+  // drop touches: 1 finger = drag/tap, 2 fingers = pinch, double tap = zoom.
   setupInput() {
-    const cam = this.cameras.main, inp = this.input;
-    inp.addPointer(2);
-    let drag = null, pinch = null, moved = 0;
-    inp.on('pointerdown', p => {
-      if (inp.pointer1.isDown && inp.pointer2.isDown) {
-        pinch = { d: Phaser.Math.Distance.Between(inp.pointer1.x, inp.pointer1.y, inp.pointer2.x, inp.pointer2.y), z: cam.zoom };
-        drag = null; moved = 99; return;
-      }
-      drag = { x: p.x, y: p.y, sx: cam.scrollX, sy: cam.scrollY }; moved = 0;
+    const cam = this.cameras.main, cv = this.game.canvas;
+    const pts = new Map();
+    let drag = null, pinch = null, moved = 0, multi = false;
+    const toCanvas = e => { const r = cv.getBoundingClientRect(); return { x: (e.clientX - r.left) * (cv.width / r.width), y: (e.clientY - r.top) * (cv.height / r.height) }; };
+    const slop = () => 9 * G.quality.dpr;
+    const startDrag = q => { drag = { x: q.x, y: q.y, sx: cam.scrollX, sy: cam.scrollY }; };
+    const twoFinger = () => { const [a, b] = [...pts.values()]; return { d: Math.hypot(a.x - b.x, a.y - b.y), mx: (a.x + b.x) / 2, my: (a.y + b.y) / 2 }; };
+    cv.style.touchAction = 'none';
+    cv.addEventListener('pointerdown', e => {
+      const q = toCanvas(e);
+      pts.set(e.pointerId, q); this.fingers = pts.size;
+      if (pts.size === 1) this.downT = e.timeStamp;
+      try { cv.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
       this.vel = null;
+      if (pts.size === 1) { startDrag(q); moved = 0; multi = false; }
+      else if (pts.size === 2) { const f = twoFinger(); pinch = { d: Math.max(1, f.d), z: cam.zoom }; drag = null; multi = true; }
     });
-    inp.on('pointermove', p => {
-      if (pinch && inp.pointer1.isDown && inp.pointer2.isDown) {
-        const d = Phaser.Math.Distance.Between(inp.pointer1.x, inp.pointer1.y, inp.pointer2.x, inp.pointer2.y);
-        this.zoomTo(pinch.z * d / pinch.d, (inp.pointer1.x + inp.pointer2.x) / 2, (inp.pointer1.y + inp.pointer2.y) / 2);
-        return;
-      }
-      if (!drag || !p.isDown) return;
-      const dx = p.x - drag.x, dy = p.y - drag.y;
+    cv.addEventListener('pointermove', e => {
+      if (!pts.has(e.pointerId)) return;
+      const q = toCanvas(e); pts.set(e.pointerId, q);
+      if (pts.size >= 2 && pinch) { const f = twoFinger(); this.zoomTo(pinch.z * f.d / pinch.d, f.mx, f.my); return; }
+      if (!drag) return;
+      const dx = q.x - drag.x, dy = q.y - drag.y;
       moved = Math.max(moved, Math.hypot(dx, dy));
-      if (moved > 8 * G.quality.dpr) {
+      if (moved > slop()) {
         const nx = drag.sx - dx / cam.zoom, ny = drag.sy - dy / cam.zoom;
         this.vel = { x: (nx - cam.scrollX) * 0.45, y: (ny - cam.scrollY) * 0.45 };
         cam.setScroll(nx, ny);
       }
     });
-    inp.on('pointerup', p => {
-      if (!inp.pointer1.isDown && !inp.pointer2.isDown) pinch = null;
-      if (drag && moved < 8 * G.quality.dpr) {
-        // double tap zooms in around the finger (or back out when already close)
-        const now = performance.now();      // real time: slow frames must not break double-tap
-        if (this.lastTap && now - this.lastTap.t < 300 && Math.hypot(p.x - this.lastTap.x, p.y - this.lastTap.y) < 30 * G.quality.dpr) {
-          this.lastTap = null;
-          this.zoomTo(cam.zoom > this.fitZ * 2.2 ? this.fitZ : cam.zoom * 1.8, p.x, p.y);
-        } else { this.lastTap = { t: now, x: p.x, y: p.y }; this.tap(p); }
-      }
+    const end = e => {
+      if (!pts.has(e.pointerId)) return;
+      const q = toCanvas(e); pts.delete(e.pointerId); this.fingers = pts.size;
+      if (pts.size === 1) { pinch = null; startDrag([...pts.values()][0]); moved = slop() + 1; return; }  // pinch → keep panning with the other finger
+      if (pts.size > 0) return;
+      pinch = null;
+      const isTap = e.type === 'pointerup' && !multi && drag && moved <= slop();
       drag = null;
-    });
-    inp.on('wheel', (p, objs, dx, dy) => this.zoomTo(cam.zoom * (dy > 0 ? 0.9 : 1.1), p.x, p.y));
+      if (!isTap) return;
+      // double tap = the second finger-down comes < 350 ms after the first finger-up
+      const t = e.timeStamp;
+      if (this.lastTap && this.downT - this.lastTap.t < 350 && Math.hypot(q.x - this.lastTap.x, q.y - this.lastTap.y) < 40 * G.quality.dpr) {
+        this.lastTap = null;
+        this.zoomTo(cam.zoom > this.fitZ * 2.2 ? this.fitZ : cam.zoom * 1.8, q.x, q.y);
+        console.log('GESTURE doubletap zoom=' + cam.zoom.toFixed(3));
+        return;
+      }
+      // a tap that opens something is never the first half of a double tap
+      const hit = this.tap(q);
+      console.log('GESTURE tap hit=' + !!hit);
+      this.lastTap = hit ? null : { t, x: q.x, y: q.y };
+    };
+    cv.addEventListener('pointerup', end);
+    cv.addEventListener('pointercancel', end);
+    cv.addEventListener('wheel', e => { e.preventDefault(); const q = toCanvas(e); this.zoomTo(cam.zoom * (e.deltaY > 0 ? 0.9 : 1.1), q.x, q.y); }, { passive: false });
+    this.input.enabled = false;   // Phaser's own pointer handling is not used
   }
   // Opening view: landscape shows the whole complex between the HUD and the
   // dock; portrait fills the screen height and lets the player pan sideways.
@@ -351,7 +371,7 @@ export class WorldScene extends Phaser.Scene {
   }
   tap(p) {
     const dpr = G.quality.dpr, lab = G.labelAt && G.labelAt(p.x / dpr, p.y / dpr);
-    if (lab) { bus.emit('tapBuilding', lab); return; }
+    if (lab) { bus.emit('tapBuilding', lab); return true; }
     const wp = this.cameras.main.getWorldPoint(p.x, p.y);
     const list = Object.values(this.bspr).sort((a, b) => b.depth - a.depth);
     for (const s of list) {
@@ -360,12 +380,13 @@ export class WorldScene extends Phaser.Scene {
       if (this.textures.getPixelAlpha(Math.floor(lx), Math.floor(ly), s.texture.key, s.frame.name) > 20) {
         this.tweens.add({ targets: s, scaleY: { from: s.scaleX * 0.94, to: s.scaleX }, duration: 260, ease: 'Back.Out' });
         bus.emit('tapBuilding', s.bid);
-        return;
+        return true;
       }
     }
     // tapping water near the harbour opens the harbour too
     const g = unIso(wp.x, wp.y - SEA_Z);
-    if (g.y > 22 && g.x > 1 && g.x < 25) bus.emit('tapBuilding', 'harbor');
+    if (g.y > 22 && g.x > 1 && g.x < 25) { bus.emit('tapBuilding', 'harbor'); return true; }
+    return false;
   }
 
   worldToScreen(x, y, z = 0) {
@@ -387,7 +408,7 @@ export class WorldScene extends Phaser.Scene {
       cam.scrollX += Phaser.Math.Clamp(mx, L.x0, L.x1) - mx;
       cam.scrollY += Phaser.Math.Clamp(my, L.y0, L.y1) - my;
     }
-    if (this.vel && !this.input.activePointer.isDown) {
+    if (this.vel && !this.fingers) {
       cam.scrollX += this.vel.x; cam.scrollY += this.vel.y;
       this.vel.x *= 0.86; this.vel.y *= 0.86;
       if (Math.abs(this.vel.x) + Math.abs(this.vel.y) < 0.1) this.vel = null;

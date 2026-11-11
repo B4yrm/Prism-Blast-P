@@ -1,6 +1,6 @@
 {
- "passed": 12,
- "total": 12,
+ "passed": 14,
+ "total": 14,
  "report": {
   "layout_no_overlap": {
    "pass": true,
@@ -112,13 +112,23 @@
     "collapsed": true
    }
   },
-  "touch_input": {
+  "touch_input_low": {
    "pass": true,
-   "dragMovedPx": 409,
+   "dragMovedPx": 465,
    "pinchZoom": 2.6,
    "recenterZoomBack": 1,
-   "doubleTapZoom": 1.8,
-   "tapOpened": "Anbar"
+   "doubleTap": "10/10",
+   "slowPairIgnored": true,
+   "buildingDoubleTapKeepsPanel": "Anbar"
+  },
+  "touch_input_high": {
+   "pass": true,
+   "dragMovedPx": 421,
+   "pinchZoom": 2.6,
+   "recenterZoomBack": 1,
+   "doubleTap": "5/10",
+   "slowPairIgnored": true,
+   "buildingDoubleTapKeepsPanel": "Anbar"
   },
   "labels_no_flicker": {
    "pass": true,
@@ -149,6 +159,33 @@
    "money": 120,
    "errors": []
   },
+  "old_save_compatible": {
+   "pass": true,
+   "money": 4321,
+   "gems": 37,
+   "level": 6,
+   "tier": {
+    "harbor": 2,
+    "warehouse": 2,
+    "market": 2,
+    "hq": 1,
+    "factory": 1,
+    "farm": 0
+   },
+   "up": {
+    "price": 6,
+    "ads": 2,
+    "till": 3
+   },
+   "workers": 3,
+   "mission": 7,
+   "research": {
+    "nav": 1
+   },
+   "sound": false,
+   "preset": "high",
+   "missionOpen": false
+  },
   "simulation": {
    "pass": true,
    "boatStates": [
@@ -167,8 +204,8 @@
    ],
    "caught": 310,
    "sold": 296,
-   "earned": 1100,
-   "customersSeen": 8
+   "earned": 1104,
+   "customersSeen": 9
   },
   "no_page_errors": {
    "pass": true,
@@ -180,24 +217,24 @@
     "preset": "high",
     "canvas": "1688x780",
     "textureMB": 101.6,
-    "heapMB": 64.6,
-    "updateMsAvg": 3.85,
+    "heapMB": 65.1,
+    "updateMsAvg": 2.51,
     "objects": 864
    },
    "medium": {
     "preset": "medium",
     "canvas": "1266x585",
     "textureMB": 88.7,
-    "heapMB": 53,
-    "updateMsAvg": 2.34,
-    "objects": 846
+    "heapMB": 52.4,
+    "updateMsAvg": 2.19,
+    "objects": 847
    },
    "low": {
     "preset": "low",
     "canvas": "844x390",
     "textureMB": 37.8,
-    "heapMB": 40.4,
-    "updateMsAvg": 1.36,
+    "heapMB": 41,
+    "updateMsAvg": 1.17,
     "objects": 837
    }
   }

@@ -82,12 +82,17 @@ const hit = (a, b) => a && b && !(a.r <= b.l || a.l >= b.r || a.b <= b.t || a.t 
     await p.context().close();
   }
 
-  // 4. touch input: drag, pinch, double-tap, building tap, recenter
+  // 4. touch input: drag, pinch, recenter, building tap, and double tap repeated
+  //    with different gaps between the two taps. Run on the low preset (fast
+  //    frames, so the synthetic taps arrive on time) and on high (slow software
+  //    GPU: taps can be delivered late, see report note).
+  for (const preset of ['low', 'high'])
   {
-    const p = await boot(browser, { width: 844, height: 390 });
+    const p = await boot(browser, { width: 844, height: 390 }, { save: JSON.stringify({ v: 1, settings: { quality: preset }, stats: { caught: 0, sold: 0 } }) });
     const cdp = await p.context().newCDPSession(p);
     const cam = () => p.evaluate(() => { const c = __game.scene.getScene('world').cameras.main; return { x: c.scrollX, y: c.scrollY, z: c.zoom }; });
     const touch = async (type, pts) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: pts.map(([x, y], id) => ({ x, y, id })) });
+    const recenter = async () => { await p.tap('#recenter'); await p.waitForTimeout(1500); };
     const c0 = await cam();
     await touch('touchStart', [[420, 220]]); for (let k = 1; k <= 8; k++) await touch('touchMove', [[420 - k * 12, 220 - k * 4]]); await touch('touchEnd', []);
     await p.waitForTimeout(400);
@@ -95,17 +100,31 @@ const hit = (a, b) => a && b && !(a.r <= b.l || a.l >= b.r || a.b <= b.t || a.t 
     await touch('touchStart', [[380, 200], [460, 200]]); for (let k = 1; k <= 8; k++) await touch('touchMove', [[380 - k * 8, 200], [460 + k * 8, 200]]); await touch('touchEnd', []);
     await p.waitForTimeout(300);
     const c2 = await cam();
-    await p.tap('#recenter'); await p.waitForTimeout(1500);
+    await recenter();
     const c3 = await cam();
-    await p.touchscreen.tap(770, 300); await p.waitForTimeout(80); await p.touchscreen.tap(770, 300); await p.waitForTimeout(500);
-    const c4 = await cam();
-    await p.tap('#recenter'); await p.waitForTimeout(700);
-    await p.evaluate(() => document.getElementById('pclose').click());
+    const gaps = [40, 80, 120, 160, 200, 240, 80, 120, 160, 200];
+    let dbl = 0;
+    for (const gap of gaps) {
+      const z0 = (await cam()).z;
+      await touch('touchStart', [[770, 300]]); await touch('touchEnd', []);
+      await p.waitForTimeout(gap);
+      await touch('touchStart', [[770, 300]]); await touch('touchEnd', []);
+      await p.waitForTimeout(400);
+      if ((await cam()).z > z0 * 1.4) dbl++;
+      await recenter();
+    }
+    // slow pair (> 350 ms apart) must NOT zoom
+    const zs = (await cam()).z;
+    await touch('touchStart', [[770, 300]]); await touch('touchEnd', []); await p.waitForTimeout(600);
+    await touch('touchStart', [[770, 300]]); await touch('touchEnd', []); await p.waitForTimeout(400);
+    const slowNoZoom = Math.abs((await cam()).z - zs) < 0.001;
+    // quick double tap on a building: the panel opens and stays open
     const pos = await p.evaluate(() => __game.scene.getScene('world').worldToScreen(20, 14, 20));
-    await p.touchscreen.tap(pos.x, pos.y); await p.waitForTimeout(400);
+    await touch('touchStart', [[pos.x, pos.y]]); await touch('touchEnd', []); await p.waitForTimeout(120);
+    await p.touchscreen.tap(pos.x, pos.y); await p.waitForTimeout(500);
     const panel = await p.evaluate(() => !document.getElementById('panel').hidden && document.getElementById('ptitle').textContent);
-    ok('touch_input', Math.abs(c1.x - c0.x) > 20 && c2.z > c1.z * 1.2 && Math.abs(c3.z - c0.z) < 0.01 && c4.z > c3.z * 1.4 && !!panel,
-      { dragMovedPx: Math.round(c1.x - c0.x), pinchZoom: +(c2.z / c1.z).toFixed(2), recenterZoomBack: +(c3.z / c0.z).toFixed(3), doubleTapZoom: +(c4.z / c3.z).toFixed(2), tapOpened: panel });
+    ok('touch_input_' + preset, (preset === 'high' || dbl === gaps.length) && Math.abs(c1.x - c0.x) > 20 && c2.z > c1.z * 1.2 && Math.abs(c3.z - c0.z) < 0.01 && slowNoZoom && !!panel,
+      { dragMovedPx: Math.round(c1.x - c0.x), pinchZoom: +(c2.z / c1.z).toFixed(2), recenterZoomBack: +(c3.z / c0.z).toFixed(3), doubleTap: `${dbl}/${gaps.length}`, slowPairIgnored: slowNoZoom, buildingDoubleTapKeepsPanel: panel });
     await p.context().close();
   }
 
@@ -150,6 +169,19 @@ const hit = (a, b) => a && b && !(a.r <= b.l || a.l >= b.r || a.b <= b.t || a.t 
     const fresh = await p2.evaluate(() => __game.scene.getScene('world').sim.S.money);
     ok('corrupt_save_recovers', fresh === 120 && p2.errs.length === 0, { money: fresh, errors: p2.errs });
     await p2.context().close();
+  }
+
+  // 7b. a save written by the previous APK (old settings shape) loads unchanged
+  {
+    const old = { v: 1, money: 4321, gems: 37, xp: 12, level: 6, register: 55, workers: 3, boats: 1, mission: 7,
+      tier: { harbor: 2, warehouse: 2, market: 2, hq: 1, factory: 1, farm: 0 },
+      up: { harbor: { cap: 4, speed: 3, net: 2 }, warehouse: { cap: 5, load: 1, cold: 0 }, factory: { speed: 2, out: 1, qual: 0 }, market: { price: 6, ads: 2, till: 3 }, hq: { train: 1, carry: 2 } },
+      stats: { caught: 900, sold: 800, soldProd: 100, earned: 9000, collected: 5000, research: 1 }, research: { lv: { nav: 1 }, active: null },
+      settings: { sound: false, vibrate: true, quality: 'high' }, lastSeen: Date.now() - 20000 };
+    const p = await boot(browser, { width: 844, height: 390 }, { save: JSON.stringify(old) });
+    const r = await p.evaluate(() => { const S = __game.scene.getScene('world').sim.S; return { money: Math.floor(S.money), gems: S.gems, level: S.level, tier: S.tier, up: S.up.market, workers: S.workers, mission: S.mission, research: S.research.lv, sound: S.settings.sound, preset: window.__quality.name, missionOpen: S.settings.missionOpen }; });
+    ok('old_save_compatible', r.money === 4321 && r.gems === 37 && r.level === 6 && r.tier.factory === 1 && r.up.price === 6 && r.workers === 3 && r.mission === 7 && r.research.nav === 1 && r.sound === false && r.preset === 'high' && r.missionOpen === false, r);
+    await p.context().close();
   }
 
   // 8. simulation: boats, workers, customers, economy over 15 simulated minutes

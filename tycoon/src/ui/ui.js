@@ -22,7 +22,8 @@ export function initUI() {
   // global open buttons
   document.querySelectorAll('[data-open]').forEach(b => b.addEventListener('click', () => { sfx.click(); open(b.dataset.open); }));
   $('pclose').addEventListener('click', close);
-  $('scrim').addEventListener('click', close);
+  // ignore a scrim tap right after opening (the second half of a quick double tap)
+  $('scrim').addEventListener('click', () => { if (performance.now() - openedAt > 400) close(); });
   $('collect').addEventListener('click', collect);
   const pb = $('pbody');
   pb.addEventListener('pointerdown', () => { holdRender = true; });
@@ -37,15 +38,16 @@ export function initUI() {
     else if (e.target.closest('[data-act="missionAll"]')) { open('missions'); return; }
     else if (!s.settings.missionOpen) { s.settings.missionOpen = true; }
     else return;
+    console.log('UI mission ' + (s.settings.missionOpen ? 'open' : 'mini'));
     sfx.click(); $('mission').dataset.sig = ''; tick();
   });
   // collapsible left rail (closes again after picking an item)
   const side = $('side'), tog = $('sideTog');
-  const setSide = o => { side.classList.toggle('closed', !o); tog.setAttribute('aria-expanded', o); tog.innerHTML = icon(o ? 'close' : 'menu'); tog.appendChild(dotSide); dotSide.style.visibility = o ? 'hidden' : ''; };
+  const setSide = o => { console.log('UI rail ' + (o ? 'open' : 'closed')); side.classList.toggle('closed', !o); tog.setAttribute('aria-expanded', o); tog.innerHTML = icon(o ? 'close' : 'menu'); tog.appendChild(dotSide); dotSide.style.visibility = o ? 'hidden' : ''; };
   const dotSide = $('dotSide');
   tog.addEventListener('click', () => { sfx.click(); setSide(side.classList.contains('closed')); });
   side.querySelectorAll('.items button').forEach(b => b.addEventListener('click', () => setSide(false)));
-  $('recenter').addEventListener('click', () => { sfx.click(); G.world && G.world.recenter(); });
+  $('recenter').addEventListener('click', () => { console.log('UI recenter'); sfx.click(); G.world && G.world.recenter(); });
   $('mcard').addEventListener('click', onModalClick);
 
   makeLabels();
@@ -185,14 +187,17 @@ function placeLabels() {
 }
 
 // ------------------------------------------------------------------- panel
+let openedAt = 0;
 function open(name) {
-  openName = name; lastSig = '';
+  openName = name; lastSig = ''; openedAt = performance.now();
+  console.log('UI open ' + name);
   $('panel').hidden = false; $('scrim').hidden = false;
   if (name === 'log') { S().logUnread = 0; }
   renderPanel(true);
   $('pbody').scrollTop = 0;
 }
 function close() {
+  console.log('UI close ' + openName);
   openName = null;
   $('panel').hidden = true; $('scrim').hidden = true;
 }

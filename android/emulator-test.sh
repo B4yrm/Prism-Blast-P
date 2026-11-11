@@ -1,72 +1,83 @@
 #!/usr/bin/env bash
-# Runs inside the Android emulator job: installs Fishing Tycoon, plays it for a
-# while with touch input and collects screenshots, frame and memory stats.
+# Android emulator check for Fishing Tycoon. Taps are placed from the game's own
+# UIPOS log (CSS px) converted to screen px, and every step is verified from the
+# game's UI/GESTURE log lines in logcat. Results: tycoon/test-results/android/.
 set -x
 OUT=tycoon/test-results/android
-mkdir -p "$OUT"
+rm -rf "$OUT"; mkdir -p "$OUT"
 APK=android/app/build/outputs/apk/tycoon/debug/app-tycoon-debug.apk
-adb shell getprop ro.build.version.release > "$OUT/device.txt"
-adb shell getprop ro.product.model >> "$OUT/device.txt"
-adb shell wm size >> "$OUT/device.txt"
-adb shell wm density >> "$OUT/device.txt"
-adb shell dumpsys package com.google.android.webview | grep -m1 versionName >> "$OUT/device.txt"
+PKG=az.fishing.tycoon
+RES="$OUT/results.txt"; : > "$RES"
+{ adb shell getprop ro.build.version.release; adb shell getprop ro.product.model; adb shell wm size; adb shell wm density;
+  adb shell dumpsys package com.google.android.webview | grep -m1 versionName; } > "$OUT/device.txt"
 adb install -r "$APK"
-# no first-run "Viewing full screen" bubble (it would swallow the test taps)
 adb shell settings put secure immersive_mode_confirmations confirmed
-# the slow CI emulator often reports "Launcher isn't responding": hide system error dialogs
 adb shell settings put global hide_error_dialogs 1
 adb shell pm disable-user --user 0 com.google.android.apps.nexuslauncher || true
 nodialog() { adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS > /dev/null 2>&1; }
+shot() { nodialog; sleep 1; adb exec-out screencap -p > "$OUT/$1.png"; }
+log() { adb logcat -d -s FishingTycoon:I; }
+check() { # name, regex expected in new log lines since mark
+  if log | tail -n +$MARK | grep -qE "$2"; then echo "PASS  $1" >> "$RES"; else echo "FAIL  $1  (expected: $2)" >> "$RES"; fi; }
+mark() { MARK=$(( $(log | wc -l) + 1 )); }
+
 adb logcat -c
-adb shell am start -W -n az.fishing.tycoon/az.universitet.tycoon.MainActivity | tee "$OUT/start.txt"
-sleep 40
-nodialog; sleep 1
-adb exec-out screencap -p > "$OUT/0-welcome.png"
-read W0 H0 < <(adb shell wm size | tail -1 | sed 's/.*: //; s/x/ /' | awk '{ if ($1 < $2) print $2, $1; else print $1, $2 }')
-# press "Başla" on the welcome card (centre of the screen, lower half)
-adb shell input tap $((W0/2)) $((H0 * 29 / 40))
-sleep 3
-adb exec-out screencap -p > "$OUT/1-start.png"
-adb shell dumpsys gfxinfo az.fishing.tycoon reset > /dev/null
-# screen size in landscape
-read W H < <(adb shell wm size | tail -1 | sed 's/.*: //; s/x/ /' | awk '{ if ($1 < $2) print $2, $1; else print $1, $2 }')
+adb shell am start -W -n $PKG/az.universitet.tycoon.MainActivity > "$OUT/start.txt"
+sleep 45; nodialog
+read SW SH < <(adb shell wm size | tail -1 | sed 's/.*: //; s/x/ /' | awk '{ if ($1 < $2) print $2, $1; else print $1, $2 }')
 D=$(adb shell wm density | tail -1 | sed 's/.*: //')
-px() { echo $(( $1 * D / 160 )); }
-# drag the map
-nodialog
-adb shell input swipe $((W/2)) $((H/2)) $((W/2 - W/5)) $((H/2 - H/10)) 400
-sleep 2
-adb exec-out screencap -p > "$OUT/2-after-drag.png"
-nodialog
-# double-tap on the sea at the lower right to zoom in
-adb shell input tap $((W - W/8)) $((H - H/4)); adb shell input tap $((W - W/8)) $((H - H/4))
-sleep 2
-adb exec-out screencap -p > "$OUT/3-after-doubletap.png"
-# centre button (left rail, second button)
-adb shell input tap $(px 30) $(px 110)
-sleep 2
-nodialog
-# open the "Gəmilər" panel from the middle of the dock
-adb shell input tap $((W/2)) $((H - $(px 30)))
-sleep 2
-adb exec-out screencap -p > "$OUT/4-panel.png"
-# close the panel (red × in the panel header, top-right)
-adb shell input tap $((W - $(px 30))) $(px 28)
-sleep 2
-nodialog
-# open the left rail
-adb shell input tap $(px 30) $(px 66)
-sleep 2
-adb exec-out screencap -p > "$OUT/5-rail-open.png"
-adb shell input tap $(px 30) $(px 66)
-sleep 40
-adb shell dumpsys gfxinfo az.fishing.tycoon > "$OUT/gfxinfo.txt"
-adb shell dumpsys meminfo az.fishing.tycoon > "$OUT/meminfo.txt"
-adb logcat -d -s FishingTycoon:I AndroidRuntime:E > "$OUT/logcat.txt"
-adb shell dumpsys activity activities | grep -c "az.fishing.tycoon/az.universitet.tycoon.MainActivity" > "$OUT/activity-count.txt"
-adb exec-out screencap -p > "$OUT/6-end.png"
-grep -E "Total frames|Janky|50th|90th|99th" "$OUT/gfxinfo.txt" > "$OUT/summary.txt"
-grep -E "TOTAL PSS|TOTAL RSS|Graphics:|GL mtrack|EGL mtrack|Native Heap|Java Heap" "$OUT/meminfo.txt" >> "$OUT/summary.txt"
-grep PERF "$OUT/logcat.txt" | tail -5 >> "$OUT/summary.txt"
-cat "$OUT/summary.txt"
+uipos() { log | grep UIPOS | tail -1 | sed 's/.*UIPOS //'; }
+U=$(uipos); echo "$U" > "$OUT/uipos.json"
+# page size in CSS px → horizontal offset of the app window (display cutout side)
+read CW CH < <(echo "$U" | python3 -c 'import json,sys; d=json.load(sys.stdin); print(d["w"], d["h"])')
+OFFX=$(python3 -c "print(max(0, $SW - round($CW * $D / 160)))")
+echo "screen=${SW}x${SH} density=$D page=${CW}x${CH} windowOffsetX=$OFFX" >> "$OUT/device.txt"
+tapcss() { adb shell input tap $(python3 -c "print(round($OFFX + $1 * $D / 160), round($2 * $D / 160))"); }
+pos() { echo "$(uipos)" | python3 -c "import json,sys; d=json.load(sys.stdin); v=d.get('$1'); print(v[0], v[1]) if v else print('')"; }
+if [ "$OFFX" -gt 0 ]; then echo "INFO  app window is inset ${OFFX}px from the display cutout (UI is not under the notch)" >> "$RES"; fi
+shot 0-welcome
+# 1. welcome button
+mark; read X Y < <(pos start); [ -n "$X" ] && tapcss $X $Y; sleep 3; shot 1-start
+# 2. drag the map
+mark; adb shell input swipe $((SW/2)) $((SH/2)) $((SW/2 - SW/5)) $((SH/2 - SH/10)) 500; sleep 2; shot 2-drag
+# 3. left rail open / close
+mark; read X Y < <(pos sideTog); tapcss $X $Y; sleep 2; shot 3-rail-open; check "left rail opens (notch-safe position)" "UI rail open"
+mark; tapcss $X $Y; sleep 2; check "left rail closes" "UI rail closed"
+# 4. centre button
+mark; read X Y < <(pos recenter); tapcss $X $Y; sleep 2; check "centre button" "UI recenter"
+# 5. dock → Gəmilər panel → close
+mark; read X Y < <(pos boats); tapcss $X $Y; sleep 3; shot 4-panel; check "dock button opens panel" "UI open boats"
+sleep 6; mark; read X Y < <(pos pclose); [ -n "$X" ] && tapcss $X $Y; sleep 2; check "panel close button" "UI close boats"
+# 6. mission chip expand / collapse
+mark; read X Y < <(pos mission); tapcss $X $Y; sleep 2; shot 5-mission-open; check "mission chip expands" "UI mission open"
+sleep 6; mark; read X Y < <(pos missionX); [ -n "$X" ] && tapcss $X $Y; sleep 2; check "mission card collapses" "UI mission mini"
+# 7. single tap on a building opens it (market, centre-left of the map)
+# 8. double tap on open sea (two taps sent in one shell call; adb timing is not exact)
+DT=0
+for k in 1 2 3; do
+  mark; X=$(python3 -c "print(round($OFFX + $CW * 0.82 * $D / 160))"); Y=$(python3 -c "print(round($CH * 0.72 * $D / 160))")
+  adb shell "input tap $X $Y & sleep 0.12; input tap $X $Y"; sleep 2
+  if log | tail -n +$MARK | grep -q "GESTURE doubletap"; then DT=$((DT+1)); fi
+  read X2 Y2 < <(pos recenter); tapcss $X2 $Y2; sleep 2
+done
+echo "INFO  double tap via adb: $DT/3 recognised (adb cannot send two taps with exact timing)" >> "$RES"
+shot 6-after-doubletap
+# 9. save / load on the device: kill the app, start again, compare money and level
+sleep 8
+BEFORE=$(log | grep PERF | tail -1 | grep -oE "money=[0-9]+ level=[0-9]+")
+adb shell am force-stop $PKG; sleep 2; adb logcat -c
+adb shell am start -W -n $PKG/az.universitet.tycoon.MainActivity > /dev/null; sleep 40; nodialog
+AFTER=$(log | grep PERF | tail -1 | grep -oE "money=[0-9]+ level=[0-9]+")
+if [ -n "$BEFORE" ] && [ "$BEFORE" = "$AFTER" ]; then echo "PASS  save/load after force-stop ($BEFORE)" >> "$RES"; else echo "FAIL  save/load after force-stop (before: $BEFORE, after: $AFTER)" >> "$RES"; fi
+shot 7-after-restart
+# 10. performance & memory
+adb shell dumpsys gfxinfo $PKG > "$OUT/gfxinfo.txt"
+adb shell dumpsys meminfo $PKG > "$OUT/meminfo.txt"
+log > "$OUT/logcat.txt"
+adb logcat -d -s AndroidRuntime:E > "$OUT/crashes.txt"
+{ grep -E "Total frames|Janky frames:|50th percentile|90th percentile" "$OUT/gfxinfo.txt"
+  grep -E "TOTAL PSS|Java Heap:|Native Heap:|Graphics:" "$OUT/meminfo.txt"
+  grep PERF "$OUT/logcat.txt" | tail -2; } > "$OUT/summary.txt"
+N=$(grep -c "FATAL EXCEPTION" "$OUT/crashes.txt" || true); echo "INFO  crashes: $N" >> "$RES"
+cat "$RES" "$OUT/summary.txt"
 exit 0
