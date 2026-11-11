@@ -13,9 +13,14 @@ adb shell dumpsys package com.google.android.webview | grep -m1 versionName >> "
 adb install -r "$APK"
 # no first-run "Viewing full screen" bubble (it would swallow the test taps)
 adb shell settings put secure immersive_mode_confirmations confirmed
+# the slow CI emulator often reports "Launcher isn't responding": hide system error dialogs
+adb shell settings put global hide_error_dialogs 1
+adb shell pm disable-user --user 0 com.google.android.apps.nexuslauncher || true
+nodialog() { adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS > /dev/null 2>&1; }
 adb logcat -c
 adb shell am start -W -n az.fishing.tycoon/az.universitet.tycoon.MainActivity | tee "$OUT/start.txt"
 sleep 40
+nodialog; sleep 1
 adb exec-out screencap -p > "$OUT/0-welcome.png"
 read W0 H0 < <(adb shell wm size | tail -1 | sed 's/.*: //; s/x/ /' | awk '{ if ($1 < $2) print $2, $1; else print $1, $2 }')
 # press "Başla" on the welcome card (centre of the screen, lower half)
@@ -28,9 +33,11 @@ read W H < <(adb shell wm size | tail -1 | sed 's/.*: //; s/x/ /' | awk '{ if ($
 D=$(adb shell wm density | tail -1 | sed 's/.*: //')
 px() { echo $(( $1 * D / 160 )); }
 # drag the map
+nodialog
 adb shell input swipe $((W/2)) $((H/2)) $((W/2 - W/5)) $((H/2 - H/10)) 400
 sleep 2
 adb exec-out screencap -p > "$OUT/2-after-drag.png"
+nodialog
 # double-tap on the sea at the lower right to zoom in
 adb shell input tap $((W - W/8)) $((H - H/4)); adb shell input tap $((W - W/8)) $((H - H/4))
 sleep 2
@@ -38,6 +45,7 @@ adb exec-out screencap -p > "$OUT/3-after-doubletap.png"
 # centre button (left rail, second button)
 adb shell input tap $(px 30) $(px 110)
 sleep 2
+nodialog
 # open the "Gəmilər" panel from the middle of the dock
 adb shell input tap $((W/2)) $((H - $(px 30)))
 sleep 2
@@ -45,6 +53,7 @@ adb exec-out screencap -p > "$OUT/4-panel.png"
 # close the panel (red × in the panel header, top-right)
 adb shell input tap $((W - $(px 30))) $(px 28)
 sleep 2
+nodialog
 # open the left rail
 adb shell input tap $(px 30) $(px 66)
 sleep 2

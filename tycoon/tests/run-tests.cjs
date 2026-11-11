@@ -95,7 +95,7 @@ const hit = (a, b) => a && b && !(a.r <= b.l || a.l >= b.r || a.b <= b.t || a.t 
     await touch('touchStart', [[380, 200], [460, 200]]); for (let k = 1; k <= 8; k++) await touch('touchMove', [[380 - k * 8, 200], [460 + k * 8, 200]]); await touch('touchEnd', []);
     await p.waitForTimeout(300);
     const c2 = await cam();
-    await p.tap('#recenter'); await p.waitForTimeout(700);
+    await p.tap('#recenter'); await p.waitForTimeout(1500);
     const c3 = await cam();
     await p.touchscreen.tap(770, 300); await p.waitForTimeout(80); await p.touchscreen.tap(770, 300); await p.waitForTimeout(500);
     const c4 = await cam();
