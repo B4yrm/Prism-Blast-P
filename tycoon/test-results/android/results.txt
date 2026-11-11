@@ -5,8 +5,9 @@ PASS  centre button
 PASS  dock button opens panel
 PASS  panel close button
 PASS  mission chip expands
-FAIL  mission card collapses  (expected: UI mission mini)
-INFO  double tap via adb: 0/3 recognised (adb cannot send two taps with exact timing)
-FAIL  collect button  (expected: UI collect)
-FAIL  save/load after real play + force-stop: 13 fields equal (level 2, money 120, upgrades 0-0-0-0-0, workers 1)
+PASS  mission card collapses
+INFO  closed a game pop-up before: double-tap
+INFO  double tap via adb: 3/3 recognised (adb cannot send two taps with exact timing)
+PASS  collect button
+PASS  save/load after real play + force-stop: 13 fields equal (level 2, money 214, upgrades 2-0-0-0-0, workers 1)
 INFO  crashes: 0
