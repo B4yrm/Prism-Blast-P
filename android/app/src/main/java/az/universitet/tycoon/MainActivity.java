@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.util.Log;
+import android.webkit.ConsoleMessage;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
@@ -19,6 +22,15 @@ public class MainActivity extends Activity {
         s.setJavaScriptEnabled(true);
         s.setDomStorageEnabled(true); // localStorage keeps the save between launches
         setContentView(web);
+        // Fishing Tycoon only: forward the page's console (PERF lines) to logcat for device tests.
+        if (getResources().getBoolean(R.bool.fullscreen)) {
+            web.setWebChromeClient(new WebChromeClient() {
+                @Override public boolean onConsoleMessage(ConsoleMessage m) {
+                    Log.i("FishingTycoon", m.message());
+                    return true;
+                }
+            });
+        }
         if (getResources().getBoolean(R.bool.fullscreen)) hideBars();
         web.loadUrl("file:///android_asset/index.html");
     }

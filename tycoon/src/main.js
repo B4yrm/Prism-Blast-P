@@ -7,9 +7,23 @@ import { initUI, showModal } from './ui/ui.js';
 import { bus } from './core/bus.js';
 
 G.S = load();
-const high = G.S.settings.quality === 'high';
-const dpr = high ? Math.min(2, window.devicePixelRatio || 1) : 1;
-G.quality = { dpr, ground: high ? 1.25 : 0.75 };
+// Graphics presets. 'auto' picks one from the device's memory / CPU cores.
+export const PRESETS = {
+  high:   { dprMax: 2,   ground: 1.25, atlasHalf: false, fps: 60, cars: 5, glints: 22, foam: 1, sway: true,  wake: 1 },
+  medium: { dprMax: 1.5, ground: 1.0,  atlasHalf: false, fps: 60, cars: 3, glints: 10, foam: 2, sway: true,  wake: 0.6 },
+  low:    { dprMax: 1,   ground: 0.75, atlasHalf: true,  fps: 30, cars: 2, glints: 0,  foam: 0, sway: false, wake: 0.35 },
+};
+function autoPreset() {
+  const mem = navigator.deviceMemory || 4, cores = navigator.hardwareConcurrency || 4;
+  if (mem <= 2 || cores <= 2) return 'low';
+  if (mem <= 4 || cores <= 4) return 'medium';
+  return 'high';
+}
+const chosen = G.S.settings.quality || 'auto';
+const presetName = PRESETS[chosen] ? chosen : autoPreset();
+const P = PRESETS[presetName];
+G.quality = { ...P, name: presetName, chosen, dpr: Math.min(P.dprMax, window.devicePixelRatio || 1) };
+const dpr = G.quality.dpr;
 
 // Offline earnings: half the steady-state rate, capped.
 const away = (Date.now() - (G.S.lastSeen || Date.now())) / 1000;
@@ -29,11 +43,20 @@ const game = new Phaser.Game({
   height: Math.round(innerHeight * dpr),
   scale: { mode: Phaser.Scale.NONE, zoom: 1 / dpr },
   render: { antialias: true, powerPreference: 'high-performance', roundPixels: false },
-  fps: { target: 60 },
+  fps: { target: G.quality.fps, limit: G.quality.fps < 60 ? G.quality.fps : 0 },
   banner: false,
   scene: [BootScene, WorldScene],
 });
 window.__game = game;
+window.__quality = G.quality;
+
+// Periodic performance line (visible in Android logcat via the WebView console bridge).
+setInterval(() => {
+  let px = 0;
+  try { for (const k of game.textures.getTextureKeys()) { const src = game.textures.get(k).source[0]; if (src) px += src.width * src.height; } } catch (e) { /* ignore */ }
+  const heap = performance.memory ? (performance.memory.usedJSHeapSize / 1048576).toFixed(1) : 'n/a';
+  console.log(`PERF fps=${game.loop.actualFps.toFixed(1)} textureMB=${(px * 4 / 1048576).toFixed(1)} heapMB=${heap} preset=${G.quality.name} canvas=${game.canvas.width}x${game.canvas.height}`);
+}, 10000);
 
 window.addEventListener('resize', () => {
   game.scale.resize(Math.round(innerWidth * dpr), Math.round(innerHeight * dpr));

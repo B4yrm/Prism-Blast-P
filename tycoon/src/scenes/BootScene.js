@@ -11,7 +11,7 @@ export class BootScene extends Phaser.Scene {
     const steps = [
       () => fontsReady(),
       () => makeFx(this),
-      () => loadAtlases(this, G.S.settings.quality),
+      () => loadAtlases(this, G.quality.atlasHalf ? 'low' : 'high'),
     ];
     let i = 0;
     const next = async () => {

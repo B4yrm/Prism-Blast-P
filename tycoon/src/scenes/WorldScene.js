@@ -293,7 +293,14 @@ export class WorldScene extends Phaser.Scene {
     });
     inp.on('pointerup', p => {
       if (!inp.pointer1.isDown && !inp.pointer2.isDown) pinch = null;
-      if (drag && moved < 8 * G.quality.dpr) this.tap(p);
+      if (drag && moved < 8 * G.quality.dpr) {
+        // double tap zooms in around the finger (or back out when already close)
+        const now = this.time.now;
+        if (this.lastTap && now - this.lastTap.t < 300 && Math.hypot(p.x - this.lastTap.x, p.y - this.lastTap.y) < 30 * G.quality.dpr) {
+          this.lastTap = null;
+          this.zoomTo(cam.zoom > this.fitZ * 2.2 ? this.fitZ : cam.zoom * 1.8, p.x, p.y);
+        } else { this.lastTap = { t: now, x: p.x, y: p.y }; this.tap(p); }
+      }
       drag = null;
     });
     inp.on('wheel', (p, objs, dx, dy) => this.zoomTo(cam.zoom * (dy > 0 ? 0.9 : 1.1), p.x, p.y));
@@ -313,9 +320,22 @@ export class WorldScene extends Phaser.Scene {
     if (!keep) {
       cam.setZoom(this.fitZ);
       const cx = port ? iso(17, 14).x : (L + R) / 2;
-      const cy = (T + Bt) / 2 - ((top - bottom) / 2) / this.fitZ * dpr + (port ? 70 / this.fitZ * dpr : 0);
+      const cy = (T + Bt) / 2 - ((top - bottom) / 2) / this.fitZ * dpr - (port ? 30 / this.fitZ * dpr : 0);
       cam.centerOn(cx, cy);
     } else cam.setZoom(Phaser.Math.Clamp(cam.zoom, this.minZ, this.maxZ));
+  }
+  // Smoothly return to the opening view (map "centre" button).
+  recenter() {
+    const cam = this.cameras.main, from = { z: cam.zoom, x: cam.midPoint.x, y: cam.midPoint.y };
+    this.fitZoom(false);
+    const to = { z: cam.zoom, x: cam.midPoint.x, y: cam.midPoint.y };
+    cam.setZoom(from.z); cam.centerOn(from.x, from.y);
+    this.vel = null;
+    this.tweens.addCounter({ from: 0, to: 1, duration: 450, ease: 'Cubic.easeInOut', onUpdate: tw => {
+      const k = tw.getValue();
+      cam.setZoom(from.z + (to.z - from.z) * k);
+      cam.centerOn(from.x + (to.x - from.x) * k, from.y + (to.y - from.y) * k);
+    } });
   }
   zoomTo(z, px, py) {
     const cam = this.cameras.main;
@@ -377,7 +397,7 @@ export class WorldScene extends Phaser.Scene {
     this.beam.setAlpha(0.35 + 0.3 * Math.sin(t * 2));
     for (const b of this.buoys) b.setAngle(Math.sin(t * 2 + b.x) * 8);
     for (const m of this.moored) m.s.setY(m.y0 + Math.sin(t * 1.6 + m.ph) * 1.2).setAngle(Math.sin(t * 1.1 + m.ph) * 1.2);
-    for (const tr of this.trees) tr.setAngle(Math.sin(t * 1.3 + tr.x * 0.01) * 1.2);
+    if (G.quality.sway) for (const tr of this.trees) tr.setAngle(Math.sin(t * 1.3 + tr.x * 0.01) * 1.2);
     for (const g of this.gulls) {
       g.a += dt * g.sp;
       const p = iso(g.cx + Math.cos(g.a) * g.r * 2, g.cy + Math.sin(g.a) * g.r, 120);

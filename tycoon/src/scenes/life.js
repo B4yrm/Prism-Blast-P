@@ -4,6 +4,7 @@
 import { iso, unIso, isLand, hash, SEA_Z, PIERS } from '../config.js';
 import { findPath, roadTiles } from '../sim/path.js';
 import { has, addSprite, setSprite } from '../render/atlas.js';
+import { G } from '../core/economy.js';
 
 const depthAt = (x, y) => (x + y) * 16;
 const inRect = (rs, i, j) => rs.some(([x0, y0, x1, y1]) => i >= x0 && i <= x1 && j >= y0 && j <= y1);
@@ -13,10 +14,11 @@ export class Life {
   constructor(scene) {
     this.sc = scene;
     this.cars = [];
-    this.makeCars(5);
+    this.Q = G.quality; this.frame = 0;
+    this.makeCars(this.Q.cars);
     this.makeForklift();
     this.makeShore();
-    this.makeGlints(22);
+    this.makeGlints(this.Q.glints);
     this.offsets = new Map();
   }
 
@@ -177,7 +179,7 @@ export class Life {
   // ------------------------------------------------------ boat wake & mirror
   wake(fx, b, speed) {
     // V-shaped wake from the stern plus bow spray; stronger when faster
-    if (speed < 0.2 || Math.random() > 0.35 + speed * 0.2) return;
+    if (speed < 0.2 || Math.random() > (0.35 + speed * 0.2) * this.Q.wake) return;
     const m = b.m, len = 1.6;
     for (const side of [-1, 1]) {
       const sx = m.x - m.dx * len + -m.dy * 0.35 * side, sy = m.y - m.dy * len + m.dx * 0.35 * side;
@@ -190,7 +192,8 @@ export class Life {
   update(t, dt, walkers) {
     for (const c of this.cars) { this.stepCar(c, dt, walkers); this.drawCar(c); }
     this.stepLift(dt, walkers); this.drawLift(t);
-    this.animShore(t);
-    this.animGlints(dt);
+    this.frame++;
+    if (this.Q.foam && this.frame % this.Q.foam === 0) this.animShore(t);
+    if (this.glints.length) this.animGlints(dt);
   }
 }

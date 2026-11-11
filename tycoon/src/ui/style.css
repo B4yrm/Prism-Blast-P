@@ -68,7 +68,8 @@ button:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
 .gear { margin-left: auto; }
 
 /* ---------- collapsible left rail ---------- */
-#side { position: absolute; left: calc(var(--sl) + 8px); top: calc(var(--st) + 48px); display: grid; gap: 6px; justify-items: start; }
+#side { position: absolute; left: calc(var(--sl) + 8px); top: calc(var(--st) + 48px); display: grid; gap: 8px; justify-items: start; }
+#side .items { order: 3; } #side .ctr { order: 2; }
 #side .items { display: grid; gap: 2px; padding: 4px; border-radius: 14px; transform-origin: top left; transition: transform .18s, opacity .18s; }
 #side.closed .items { transform: scale(.6); opacity: 0; pointer-events: none; }
 #side .items button { position: relative; width: 50px; height: 46px; border-radius: 10px; display: grid; justify-items: center; align-content: center; gap: 1px; }
@@ -221,6 +222,30 @@ button:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
 
 .fly { position: absolute; left: 0; top: 0; width: 22px; height: 22px; z-index: 45; transition: transform .7s cubic-bezier(.5,-0.3,.6,1), opacity .7s; }
 
+/* ---------- touch targets: every control reaches ~44–48 px ---------- */
+.pill .plus, .ibtn, .x, .mx, .seg button, .sw { position: relative; }
+.pill .plus::after { content: ""; position: absolute; inset: -10px -8px; }
+.ibtn::after, .x::after { content: ""; position: absolute; inset: -6px; }
+#mission.mini::after { content: ""; position: absolute; inset: -8px -4px; }
+#mission.open .mx { width: 34px; height: 34px; }
+.sw::after { content: ""; position: absolute; inset: -9px -6px; }
+.seg button { min-height: 40px; }
+.btn { min-height: 40px; }
+#dock button { height: 48px; }
+#side .items button { height: 48px; }
+.ri .ic { width: 22px; height: 22px; }
+.row .ri { background: linear-gradient(#5aa1f5, #2563c8); }
+.ic.ii { display: inline-block; width: 15px; height: 15px; vertical-align: -3px; }
+.ic.ii.dk path, .ic.ii.dk rect { filter: brightness(.25); }
+.ic.li { width: 18px; height: 18px; flex: none; background: #2f7ee6; border-radius: 6px; padding: 2px; box-sizing: border-box; }
+.tic { width: 34px; height: 34px; display: block; }
+.dic { width: 28px; height: 28px; display: block; }
+.stars .ic.ii { width: 12px; height: 12px; }
+.mcard .big { width: 54px; height: 54px; margin: 0 auto; }
+.stagecard .n .ic { width: 26px; height: 26px; }
+.seg { flex-wrap: wrap; }
+#side .ctr { margin-top: 0; }
+
 /* ---------- small landscape phones (≤ 400 px tall) ---------- */
 @media (max-height: 400px) {
   :root { --hud: 32px; }
@@ -230,18 +255,18 @@ button:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
 }
 /* ---------- portrait ---------- */
 @media (orientation: portrait) {
-  :root { --hud: 32px; }
+  :root { --hud: 36px; }
   #hud { flex-wrap: nowrap; gap: 4px; }
   .lvl { padding-right: 6px; } .xp { display: none; }
   .pill { height: 28px; } .pill .pi { width: 20px; height: 20px; } .pill b { font-size: 14px; }
   .pill.coin b { min-width: 0; } .pill.gem b { min-width: 0; }
-  .pill.inc { position: absolute; top: 40px; left: 0; }
+  .pill.inc { position: absolute; top: 46px; left: 0; }
   .pill.gem .plus { display: none; }
-  #side { top: calc(var(--st) + 80px); }
-  #mission { top: calc(var(--st) + 40px); }
+  #side { top: calc(var(--st) + 88px); }
+  #mission { top: calc(var(--st) + 50px); }
   #dock { left: calc(var(--sl) + 6px); right: calc(var(--sr) + 6px); transform: none; justify-content: space-around; }
   #dock button { flex: 1 1 0; width: auto; }
-  #collect { bottom: calc(var(--sb) + 62px); }
+  #collect { bottom: calc(var(--sb) + 72px); }
   #panel { top: auto; left: calc(var(--sl) + 4px); right: calc(var(--sr) + 4px); bottom: calc(var(--sb) + 4px); width: auto; height: 72%; animation-name: sup; }
   @keyframes sup { from { transform: translateY(30px); opacity: 0; } }
 }
