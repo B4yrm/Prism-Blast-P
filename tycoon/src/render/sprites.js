@@ -47,16 +47,20 @@ export function makeFx(scene) {
   });
   const t = scene.textures.get('gull'); t.add('g0', 0, 0, 0, 32, 20); t.add('g1', 0, 32, 0, 32, 20);
   canvasTex(scene, 'fishjump', 24, 14, c => fishGlyph(c, 13, 7, 0.65, '#cfe3f2', '#fff'));
-  // seamless water ripple tile
-  canvasTex(scene, 'waves', 256, 128, c => {
-    let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  // seamless water ripple tile: rows of soft crests in the iso direction
+  canvasTex(scene, 'waves', 512, 256, c => {
+    let seed = 11; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
     c.lineCap = 'round';
-    for (let k = 0; k < 46; k++) {
-      const x = rnd() * 256, y = rnd() * 128, L = 8 + rnd() * 18, a = 0.08 + rnd() * 0.16;
-      c.strokeStyle = `rgba(255,255,255,${a})`; c.lineWidth = 1.2 + rnd() * 1.4;
-      for (const ox of [-256, 0, 256]) for (const oy of [-128, 0, 128]) {
-        c.beginPath(); c.moveTo(x + ox - L, y + oy); c.quadraticCurveTo(x + ox, y + oy - 3, x + ox + L, y + oy); c.stroke();
+    const crest = (x, y, L, a, w) => {
+      for (const ox of [-512, 0, 512]) for (const oy of [-256, 0, 256]) {
+        const X = x + ox, Y = y + oy;
+        c.strokeStyle = `rgba(255,255,255,${a})`; c.lineWidth = w;
+        c.beginPath(); c.moveTo(X - L, Y + L * 0.18); c.quadraticCurveTo(X, Y - L * 0.22, X + L, Y + L * 0.18); c.stroke();
+        c.strokeStyle = `rgba(10,70,140,${a * 0.5})`; c.lineWidth = w * 0.8;
+        c.beginPath(); c.moveTo(X - L * 0.9, Y + L * 0.3 + w); c.quadraticCurveTo(X, Y - L * 0.05 + w, X + L * 0.9, Y + L * 0.3 + w); c.stroke();
       }
-    }
+    };
+    for (let k = 0; k < 70; k++) crest(rnd() * 512, rnd() * 256, 10 + rnd() * 22, 0.18 + rnd() * 0.3, 1.6 + rnd() * 1.8);
+    for (let k = 0; k < 90; k++) { c.fillStyle = `rgba(255,255,255,${0.1 + rnd() * 0.25})`; const x = rnd() * 512, y = rnd() * 256; c.beginPath(); c.ellipse(x, y, 2 + rnd() * 4, 1 + rnd() * 1.5, 0, 0, 7); c.fill(); }
   });
 }

@@ -34,6 +34,14 @@ export function initUI() {
   $('mcard').addEventListener('click', onModalClick);
 
   makeLabels();
+  // labels let drags through to the map; a tap on a label opens its building
+  G.labelAt = (x, y) => {
+    for (const id of ORDER) {
+      const r = labels[id].getBoundingClientRect();
+      if (labels[id].style.visibility !== 'hidden' && x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) return id;
+    }
+    return null;
+  };
   bus.on('frame', placeLabels);
   bus.on('tapBuilding', id => { sfx.click(); open('b:' + id); G.world.focus(id); });
   bus.on('toast', e => toast(e.t, e.warn ? 'warn' : ''));
@@ -130,7 +138,6 @@ function makeLabels() {
     const el = document.createElement('button');
     el.className = 'blabel';
     el.innerHTML = `<span class="bi">${BINFO[id].icon}</span><span><b>${BINFO[id].name}</b><small></small></span><span class="up">⬆</span>`;
-    el.addEventListener('click', () => { sfx.click(); open('b:' + id); });
     root.appendChild(el);
     labels[id] = el;
   }

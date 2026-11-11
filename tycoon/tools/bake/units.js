@@ -4,6 +4,8 @@ import { C, mat, group, box, cyl, sphere, cone, windows, crate, pallet, barrel, 
 
 // Facing: dir 0:+x 1:+y(grid) 2:-x 3:-y → rotation about up axis.
 export const yaw = dir => [0, -Math.PI / 2, Math.PI, Math.PI / 2][dir];
+// 8 directions, k * 45° turning from +x towards +y (grid)
+export const yaw8 = k => -k * Math.PI / 4;
 
 // ---- boats (modelled along +x, centred on the origin at the waterline) ------
 export const BOAT_LOOKS = [
@@ -58,9 +60,9 @@ export function boat(cls) {
   box(g, sx + 0.02, dy + 0.72 * s, -0.32 * s, 0.05, 0.06, 0.65 * s, '#f28c28');
   cyl(g, sx + 0.35 * s, dy + 0.12, 0, 0.13, 0.5 * s, '#3c8f4a', { seg: 12 }).rotation.x = Math.PI / 2;
   for (const side of [-1, 1]) {
-    const boom = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.02, 1.1 * s, 6), mat('#e6e6e6'));
-    boom.position.set(0.15 * s, dy + 0.75 * s, side * 0.45 * s); boom.rotation.x = side * 0.85; g.add(boom);
-    sphere(g, 0.15 * s, dy + 0.42 * s, side * 0.86 * s, 0.05, '#f28c28', { seg: 8 });
+    const boom = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.02, 0.85 * s, 6), mat('#e6e6e6'));
+    boom.position.set(0.15 * s, dy + 0.7 * s, side * 0.36 * s); boom.rotation.x = side * 0.85; g.add(boom);
+    sphere(g, 0.15 * s, dy + 0.5 * s, side * 0.72 * s, 0.05, '#f28c28', { seg: 8 });
   }
   cyl(g, -0.72 * s, dy + 0.67 * s, 0.15 * s, 0.015, 0.25, C.dark, { seg: 6 });
   box(g, -0.82 * s, dy + 0.92 * s, 0.12 * s, 0.2, 0.025, 0.05, C.dark);
@@ -82,7 +84,7 @@ export const PEOPLE = {
   c4: { shirt: '#26a6c9', pants: '#4e342e', skin: '#f6d0ae', hair: '#6d4c2f', long: true },
   c5: { shirt: '#ffffff', pants: '#283593', skin: '#e0ac85', hair: '#3a2a1a', cap: '#e53935' },
 };
-export function person(look, frame, carry) {
+export function person(look, frame, carry, pose) {
   const L = PEOPLE[look], g = group();
   const ph = frame / 4 * Math.PI * 2, sw = Math.sin(ph) * 0.5, bob = Math.abs(Math.cos(ph)) * 0.015;
   const limb = (x, y, z, w, h, d, col, rot) => {
@@ -112,6 +114,13 @@ export function person(look, frame, carry) {
   if (L.long) box(g, -0.09, 0.4 + bob, -0.07, 0.05, 0.14, 0.14, L.hair);
   if (L.hat) { sphere(g, 0, 0.55 + bob, 0, 0.1, L.hat, { seg: 12, sy: 0.65 }); cyl(g, 0, 0.53 + bob, 0, 0.125, 0.02, L.hat, { seg: 14 }); }
   if (L.cap) { sphere(g, 0, 0.55 + bob, 0, 0.092, L.cap, { seg: 12, sy: 0.6 }); box(g, 0.05, 0.545 + bob, -0.06, 0.1, 0.015, 0.12, L.cap); }
+  // work poses: lean the upper body forward (b0 = reaching down, b1 = lifting)
+  if (pose) {
+    const piv = new THREE.Group(); piv.position.set(0, 0.24, 0);
+    piv.rotation.z = pose === 'b0' ? -0.42 : -0.18;
+    for (const ch of [...g.children]) if (ch.position.y > 0.25) { g.remove(ch); ch.position.y -= 0.24; piv.add(ch); }
+    g.add(piv); g.position.y = pose === 'b0' ? -0.03 : -0.01;
+  }
   return g;
 }
 

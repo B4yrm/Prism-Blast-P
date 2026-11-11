@@ -37,6 +37,13 @@ class Mover {
     if (!this.moving) this.path = null;
     return !this.moving;
   }
+  // distance left along the current path
+  remaining() {
+    if (!this.path) return 0;
+    let d = 0, px = this.x, py = this.y;
+    for (let i = this.idx; i < this.path.length; i++) { d += Math.hypot(this.path[i][0] - px, this.path[i][1] - py); px = this.path[i][0]; py = this.path[i][1]; }
+    return d;
+  }
 }
 
 export class Sim {
@@ -112,7 +119,12 @@ export class Sim {
   // ---- boats ---------------------------------------------------------------
   updBoat(b, dt) {
     const S = this.S, m = b.m;
-    m.speed = stat.boatSpeed();
+    // ease out of the berth and glide in when docking (cruise is a bit faster
+    // so a round trip takes about as long as before)
+    const base = stat.boatSpeed() * 1.12;
+    if (b.state === 'out') { b.run = (b.run || 0) + m.speed * dt; m.speed = base * Math.min(1, 0.3 + b.run / 2.5); }
+    else if (b.state === 'back') m.speed = base * Math.max(0.22, Math.min(1, m.remaining() / 3.5));
+    else m.speed = base;
     b.bob += dt;
     switch (b.state) {
       case 'dock': {
@@ -129,7 +141,7 @@ export class Sim {
         }
         b.unloading = 0;
         b.t -= dt;
-        if (b.t <= 0) { b.state = 'out'; m.go([[b.berth.at[0], b.berth.at[1] + 1.5], ...b.berth.route], false); bus.emit('horn', { b }); }
+        if (b.t <= 0) { b.state = 'out'; b.run = 0; m.go([[b.berth.at[0], b.berth.at[1] + 1.5], ...b.berth.route], false); bus.emit('horn', { b }); }
         break;
       }
       case 'out':

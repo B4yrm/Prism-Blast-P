@@ -117,7 +117,7 @@ button:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
 /* ---------- building labels ---------- */
 .blabel { position: absolute; left: 0; top: 0; display: flex; align-items: center; gap: 6px; padding: 3px 10px 3px 3px;
   background: linear-gradient(var(--cream), var(--cream2)); border: 2px solid #fff; border-radius: 14px; white-space: nowrap;
-  box-shadow: 0 3px 0 #a07c45, 0 6px 14px rgba(0,0,0,.25); transform-origin: 50% 100%; will-change: transform; pointer-events: auto; cursor: pointer; }
+  box-shadow: 0 3px 0 #a07c45, 0 6px 14px rgba(0,0,0,.25); transform-origin: 50% 100%; will-change: transform; pointer-events: none; }
 .blabel .bi { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-size: 20px;
   background: radial-gradient(circle at 35% 30%, #fff1c9, #e3a64b); border: 2px solid #8a5a1d; }
 .blabel b { display: block; font-family: var(--display); font-weight: 400; font-size: 14px; line-height: 1.05; color: var(--ink); }

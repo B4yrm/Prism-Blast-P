@@ -2,7 +2,7 @@
 import * as THREE from 'three';
 import { renderSprite, pack, glb, setBakeScale } from './render.js';
 import { BUILD } from './buildings.js';
-import { boat, person, PEOPLE, PROPS, TILES, yaw } from './units.js';
+import { boat, person, PEOPLE, PROPS, TILES, yaw, yaw8 } from './units.js';
 
 const FOOT = { hq: [8, 8], factory: [9, 8], farm: [9, 8], market: [8, 8], warehouse: [10, 8], harbor: [3, 5] };
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
@@ -37,12 +37,21 @@ function jobs() {
     for (const t of tiers) add(`b/${type}/${t}`, () => BUILD[type](t, w, d), { shadow: true });
   }
   for (const n of ['cafe', 'shed', 'icehouse']) add(`b/${n}/1`, () => BUILD[n](), { shadow: true });
-  for (let c = 0; c < 3; c++) for (let d = 0; d < 4; d++) add(`boat/${c}/${d}`, () => { const g = new THREE.Group(), b = boat(c); b.rotation.y = yaw(d); g.add(b); return g; }, { shadow: false, outline: 2 });
+  for (let c = 0; c < 3; c++) for (let k = 0; k < 8; k++) add(`boat/${c}/${k}`, () => { const g = new THREE.Group(), b = boat(c); b.rotation.y = yaw8(k); g.add(b); return g; }, { shadow: false, outline: 2 });
   for (const look of Object.keys(PEOPLE)) {
     const carries = look === 'worker' ? ['none', 'raw', 'prod', 'can'] : ['none', 'bag'];
     for (const carry of carries) for (let d = 0; d < 4; d++) for (let f = 0; f < 4; f++)
       add(`p/${look}/${carry}/${d}/${f}`, () => { const g = new THREE.Group(), p = person(look, f, carry); p.rotation.y = yaw(d); g.add(p); return g; }, { shadow: true, outline: 1.5 });
   }
+  // worker load/unload poses
+  for (const [carry, pose] of [['none', 'b0'], ['raw', 'b1'], ['prod', 'b1'], ['can', 'b1']]) for (let d = 0; d < 4; d++)
+    add(`p/worker/${carry}/${d}/${pose}`, () => { const g = new THREE.Group(), p = person('worker', 0, carry, pose); p.rotation.y = yaw(d); g.add(p); return g; }, { shadow: true, outline: 1.5 });
+  // moving forklift (decor traffic), 4 directions, empty / loaded
+  for (let d = 0; d < 4; d++) for (const ld of [0, 1]) add(`veh/forklift/${d}/${ld}`, () => {
+    const g = new THREE.Group(), f = PROPS.forklift_parked();
+    if (ld) { const p = PROPS.pallet_raw(); p.position.set(0.48, 0.06, 0); p.scale.setScalar(0.7); f.add(p); }
+    f.rotation.y = yaw(d); g.add(f); return g;
+  }, { shadow: true, outline: 2 });
   for (const [name, make] of Object.entries(PROPS)) add(`prop/${name}`, make, { shadow: !['belt', 'hook', 'buoy', 'cbox'].includes(name), outline: name === 'belt_legs' ? 1.5 : 2 });
   // ground tiles: anchored at the tile's min corner, no outline (they tile seamlessly)
   for (const [name, make] of Object.entries(TILES)) {

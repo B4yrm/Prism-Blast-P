@@ -2,9 +2,10 @@
 import { iso, unIso, BOUNDS, BUILDINGS, isLand, hash, SEA_Z, POI, CONVEYOR, CRANES, LIGHTHOUSE, BERTHS, DECOR, PAVE } from '../config.js';
 import { addGround, groundBounds } from '../render/ground.js';
 import { A, has, addSprite, setSprite } from '../render/atlas.js';
+import { Life } from './life.js';
 import { isRoad, isWalk } from '../sim/path.js';
 import { Sim, CONVEY_TIME } from '../sim/sim.js';
-import { G } from '../core/economy.js';
+import { G, stat } from '../core/economy.js';
 import { bus } from '../core/bus.js';
 
 const D_WATER = -100, D_GROUND = -50;
@@ -28,6 +29,7 @@ export class WorldScene extends Phaser.Scene {
     this.makeConveyor();
     this.makeStocks();
     this.makeFx();
+    this.life = new Life(this);
     this.boatSpr = []; this.workerSpr = []; this.custSpr = []; this.custPool = [];
     this.floats = [];
 
@@ -55,8 +57,8 @@ export class WorldScene extends Phaser.Scene {
     const w = gb.right - gb.left + 8000, h = gb.bottom - gb.top + 6000;
     // TileSprites allocate a texture of their own size, so keep them small and scale up.
     const K = 8;
-    this.w1 = this.add.tileSprite(gb.left - 4000, gb.top - 3000, w / K, h / K, 'waves').setOrigin(0).setScale(K).setTileScale(1 / K * 1.2).setDepth(D_WATER).setAlpha(0.9);
-    this.w2 = this.add.tileSprite(gb.left - 4000, gb.top - 3000, w / K, h / K, 'waves').setOrigin(0).setScale(K).setTileScale(1.6 / K).setDepth(D_WATER + 1).setAlpha(0.5);
+    this.w1 = this.add.tileSprite(gb.left - 4000, gb.top - 3000, w / K, h / K, 'waves').setOrigin(0).setScale(K).setTileScale(0.6 / K).setDepth(D_WATER).setAlpha(0.75);
+    this.w2 = this.add.tileSprite(gb.left - 4000, gb.top - 3000, w / K, h / K, 'waves').setOrigin(0).setScale(K).setTileScale(1.1 / K).setDepth(D_WATER + 1).setAlpha(0.4).setFlipX(true);
     // darker deep water further out: big soft gradient overlay
     const t = this.textures.createCanvas('deep', 256, 256), c = t.getContext();
     const gr = c.createRadialGradient(128, 90, 30, 128, 128, 180);
@@ -145,7 +147,8 @@ export class WorldScene extends Phaser.Scene {
     this.moored = [];
     for (const [x, y, c, d, sc] of [[24.6, 24.6, 1, 0, 0.55], [2.0, 25.6, 0, 1, 0.6], [22.4, 29.2, 1, 3, 0.7], [27.5, 23.6, 2, 2, 0.5]]) {
       const p = iso(x, y, SEA_Z);
-      if (has(`boat/${c}/${d}`)) this.moored.push({ s: addSprite(this, p.x, p.y, `boat/${c}/${d}`, sc).setDepth(depthAt(x, y) + 8), y0: p.y, ph: x });
+      const nm = `boat/${c}/${d * 2}`;
+      if (has(nm)) { const m = addSprite(this, p.x, p.y, nm, sc).setDepth(depthAt(x, y) + 8); addSprite(this, p.x, p.y + 2, nm, sc).setScale(m.scaleX, -m.scaleY * 0.55).setAlpha(0.16).setTint(0x2a6fb0).setDepth(-42); this.moored.push({ s: m, y0: p.y, ph: x }); }
     }
     // cranes on the quay
     this.cranes = CRANES.map(([x, y]) => {
@@ -231,7 +234,7 @@ export class WorldScene extends Phaser.Scene {
       speed: { min: 30, max: 120 }, scale: { start: 0.5, end: 0 }, lifespan: 700, emitting: false, tint: [0xfff27a, 0xffffff, 0x9be7ff],
     }).setDepth(9500);
     this.wakeFx = this.add.particles(0, 0, 'dot', {
-      speed: { min: 2, max: 8 }, scale: { start: 0.5, end: 1.2 }, alpha: { start: 0.6, end: 0 }, lifespan: 1400, emitting: false,
+      speed: { min: 1, max: 6 }, scale: { start: 0.45, end: 1.5 }, alpha: { start: 0.75, end: 0 }, lifespan: 1700, emitting: false,
     }).setDepth(-40);
     this.dropFx = this.add.particles(0, 0, 'drop', {
       speed: { min: 20, max: 60 }, angle: { min: 220, max: 320 }, gravityY: 140, scale: { start: 0.7, end: 0.2 }, lifespan: 700, emitting: false,
@@ -323,6 +326,8 @@ export class WorldScene extends Phaser.Scene {
     this.cameras.main.pan(p.x, p.y - 40, 500, 'Cubic.easeInOut');
   }
   tap(p) {
+    const dpr = G.quality.dpr, lab = G.labelAt && G.labelAt(p.x / dpr, p.y / dpr);
+    if (lab) { bus.emit('tapBuilding', lab); return; }
     const wp = this.cameras.main.getWorldPoint(p.x, p.y);
     const list = Object.values(this.bspr).sort((a, b) => b.depth - a.depth);
     for (const s of list) {
@@ -378,38 +383,61 @@ export class WorldScene extends Phaser.Scene {
     this.smoke[0].emitting = fac; this.smoke[1].emitting = fac && G.S.tier.factory >= 2;
     this.drawBoats(t);
     this.drawWalkers(t);
+    this.life.update(t, dt, [...this.sim.workers.map(w => w.m), ...this.sim.customers.map(c => c.m)]);
     this.drawConveyor();
     this.drawCranes(dt);
     bus.emit('frame');
   }
 
   drawBoats(t) {
-    const sim = this.sim;
+    const sim = this.sim, dt = this.game.loop.delta / 1000;
     while (this.boatSpr.length < sim.boats.length) {
       const i = this.boatSpr.length;
-      this.boatSpr.push(addSprite(this, 0, 0, 'boat/0/3'));
+      const s = addSprite(this, 0, 0, 'boat/0/6');
+      // soft water reflection under the hull
+      s.mirror = addSprite(this, 0, 0, 'boat/0/6').setAlpha(0.18).setTint(0x2a6fb0).setDepth(-42);
+      this.boatSpr.push(s);
     }
     sim.boats.forEach((b, i) => {
       const s = this.boatSpr[i], m = b.m;
-      const dir = Math.abs(m.dx) > Math.abs(m.dy) ? (m.dx > 0 ? 0 : 2) : (m.dy > 0 ? 1 : 3);
-      if (s.frame.name !== `boat/0/${dir}`) setSprite(s, `boat/0/${dir}`);
-      const bob = Math.sin(b.bob * 2.2) * 1.6;
+      // heading turns smoothly towards the direction of travel (8 sprite angles)
+      const target = Math.atan2(m.dy, m.dx);
+      if (b.ang === undefined) b.ang = target;
+      let da = target - b.ang; while (da > Math.PI) da -= 2 * Math.PI; while (da < -Math.PI) da += 2 * Math.PI;
+      b.ang += da * Math.min(1, dt * 2.5);
+      const k = ((Math.round(b.ang / (Math.PI / 4)) % 8) + 8) % 8;
+      const name = `boat/${G.S.boatTypes ? (G.S.boatTypes[i] || 0) : 0}/${k}`;
+      if (s.frame.name !== name && has(name)) { setSprite(s, name); setSprite(s.mirror, name); s.mirror.setScale(s.scaleX, -s.scaleY * 0.55); }
+      const moving = b.state === 'out' || b.state === 'back';
+      const docked = b.state === 'dock';
+      const bob = Math.sin(b.bob * 2.2) * (docked ? 0.8 : 1.6);
       const p = iso(m.x, m.y, SEA_Z + bob);
-      s.setPosition(p.x, p.y).setDepth(depthAt(m.x, m.y) + 8).setAngle(Math.sin(b.bob * 1.7) * 1.5);
-      if (b.state === 'out' || b.state === 'back') {
-        if (Math.random() < 0.5) {
-          const w = iso(m.x - m.dx * 1.2, m.y - m.dy * 1.2, SEA_Z);
-          this.wakeFx.emitParticleAt(w.x + (Math.random() - 0.5) * 8, w.y, 1);
-        }
-      }
+      const roll = Math.sin(b.bob * 1.7) * (docked ? 1.1 : moving ? 0.8 : 1.8) + (moving ? da * 4 : 0);
+      s.setPosition(p.x, p.y).setDepth(depthAt(m.x, m.y) + 8).setAngle(Phaser.Math.Clamp(roll, -5, 5));
+      const w = iso(m.x, m.y, SEA_Z);
+      s.mirror.setPosition(w.x, w.y + 2).setAngle(-s.angle);
+      if (moving) this.life.wake(this.wakeFx, b, m.speed / Math.max(0.1, stat.boatSpeed()));
+      else if (b.state === 'fish' && Math.random() < 0.08) { this.wakeFx.emitParticleAt(w.x + (Math.random() - 0.5) * 40, w.y + (Math.random() - 0.5) * 16, 1); }
     });
   }
 
   drawWalkers(t) {
     const sim = this.sim;
-    // haulers
+    // keep people from overlapping (visual offsets only)
+    this.life.separate([...sim.workers.map(w => w.m), ...sim.customers.map(c => c.m)]);
+    // haulers: walk cycle, or bend & lift while loading / unloading
     while (this.workerSpr.length < sim.workers.length) this.workerSpr.push(addSprite(this, 0, 0, 'p/worker/none/1/0'));
-    sim.workers.forEach((w, i) => { this.workerSpr[i].look = 'worker'; this.placeWalker(this.workerSpr[i], w.m, w.carry > 0 ? w.kind : 'none', w, t); });
+    sim.workers.forEach((w, i) => {
+      const s = this.workerSpr[i]; s.look = 'worker';
+      let pose = null;
+      if (w.state === 'pick' || w.state === 'drop') {
+        const prog = 1 - Math.max(0, w.t) / Math.max(0.05, stat.loadTime());
+        const kind = w.job ? w.job.kind : 'raw';
+        const lifting = w.state === 'pick' ? prog > 0.5 : prog < 0.5;
+        pose = lifting ? `${kind === 'can' ? 'can' : kind}/b1` : 'none/b0';
+      }
+      this.placeWalker(s, w.m, w.carry > 0 ? w.kind : 'none', w, t, pose);
+    });
     // customers (pooled sprites)
     const used = new Set();
     for (const c of sim.customers) {
@@ -423,14 +451,24 @@ export class WorldScene extends Phaser.Scene {
     for (const s of this.custSpr) if (!used.has(s)) { s.setVisible(false); this.custPool.push(s); }
     this.custSpr = [...used];
   }
-  placeWalker(s, m, carry, ent, t) {
-    const p = iso(m.x, m.y);
-    const dir = Math.abs(m.dx) > Math.abs(m.dy) ? (m.dx > 0 ? 0 : 2) : (m.dy > 0 ? 1 : 3);
+  placeWalker(s, m, carry, ent, t, pose) {
+    const x = m.x + (m.ox || 0), y = m.y + (m.oy || 0);
+    const p = iso(x, y);
+    let dir = Math.abs(m.dx) > Math.abs(m.dy) ? (m.dx > 0 ? 0 : 2) : (m.dy > 0 ? 1 : 3);
+    // people waiting in the queue look around now and then
+    if (!m.moving && !pose && ent.state === 'queue') {
+      ent.lookT = (ent.lookT || Math.random() * 3) - this.game.loop.delta / 1000;
+      if (ent.lookT <= 0) { ent.lookT = 1.5 + Math.random() * 3; ent.lookDir = Math.random() < 0.5 ? 3 : (Math.random() < 0.5 ? 0 : 2); }
+      if (ent.lookDir !== undefined) dir = ent.lookDir;
+    }
     ent.walkT = (ent.walkT || 0) + (m.moving ? 1 : 0);
     const k = m.moving ? Math.floor(ent.walkT / 7) % 4 : 0;
-    const name = `p/${s.look}/${carry}/${dir}/${k}`;
+    let name = pose ? `p/worker/${pose.split('/')[0]}/${dir}/${pose.split('/')[1]}` : `p/${s.look}/${carry}/${dir}/${k}`;
+    if (!has(name)) name = `p/${s.look}/${carry}/${dir}/${k}`;
     if (s.frame.name !== name && has(name)) setSprite(s, name);
-    s.setPosition(p.x, p.y).setDepth(depthAt(m.x, m.y) + 1);
+    // idle breathing bob
+    const idle = !m.moving && !pose ? Math.sin(t * 3 + (ent.walkT || 0)) * 0.4 : 0;
+    s.setPosition(p.x, p.y + idle).setDepth(depthAt(x, y) + 1);
   }
 
   drawConveyor() {
@@ -449,8 +487,10 @@ export class WorldScene extends Phaser.Scene {
     // while a boat unloads, the hook dips into the hold and lifts a crate up
     for (const c of this.cranes) {
       c.t = Math.max(0, c.t - dt);
-      if (c.t > 0 || Math.sin(c.ph) > -0.95) c.ph += dt * 2.2;
-      const dip = c.t > 0 || Math.cos(c.ph) < 0.99 ? 0.5 - 0.5 * Math.cos(c.ph) : 0;
+      // cycle while unloading; afterwards finish the current lift and rest at the top
+      if (c.t > 0 || (c.ph % (2 * Math.PI)) > 0.05) c.ph += dt * 2.2;
+      if (c.t <= 0 && (c.ph % (2 * Math.PI)) < 0.06) c.ph = 0;
+      const dip = 0.5 - 0.5 * Math.cos(c.ph);
       c.drop = 55 + dip * 110;
       const hy = c.top.y + c.drop;
       c.hook.setPosition(c.top.x, hy);
