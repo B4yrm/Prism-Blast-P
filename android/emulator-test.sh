@@ -36,6 +36,20 @@ tapcss() { adb shell input tap $(python3 -c "print(round($OFFX + $1 * $D / 160),
 pos() { echo "$(uipos)" | python3 -c "import json,sys; d=json.load(sys.stdin); v=d.get('$1'); print(v[0], v[1]) if v else print('')"; }
 # close any game pop-up (level up, offline earnings) the way a player would
 dismiss() { sleep 6; read MX MY < <(pos start); if [ -n "$MX" ] && [ "$MX" -gt 0 ]; then tapcss $MX $MY; sleep 2; echo "INFO  closed a game pop-up before: $1" >> "$RES"; fi; }
+# UI step: close pop-ups, tap the element, verify the game's log line. A level-up pop-up can
+# open at any moment and take the tap; then it is closed and the step is tried once more.
+step() { # name, UIPOS key, expected log regex
+  for attempt in 1 2; do
+    dismiss "$1"; mark; read X Y < <(pos $2)
+    if [ -n "$X" ]; then tapcss $X $Y; sleep 2; fi
+    if log | tail -n +$MARK | grep -qE "$3"; then
+      echo "PASS  $1" >> "$RES"
+      [ $attempt = 2 ] && echo "INFO  $1: first tap was taken by a game pop-up, passed on retry" >> "$RES"
+      return 0
+    fi
+  done
+  echo "FAIL  $1  (expected: $3)" >> "$RES"
+}
 if [ "$OFFX" -gt 0 ]; then echo "INFO  app window is inset ${OFFX}px from the display cutout (UI is not under the notch)" >> "$RES"; fi
 shot 0-welcome
 # 1. welcome button
@@ -43,17 +57,16 @@ mark; read X Y < <(pos start); [ -n "$X" ] && tapcss $X $Y; sleep 3; shot 1-star
 # 2. drag the map
 mark; adb shell input swipe $((SW/2)) $((SH/2)) $((SW/2 - SW/5)) $((SH/2 - SH/10)) 500; sleep 2; shot 2-drag
 # 3. left rail open / close
-mark; read X Y < <(pos sideTog); tapcss $X $Y; sleep 2; shot 3-rail-open; check "left rail opens (notch-safe position)" "UI rail open"
-mark; tapcss $X $Y; sleep 2; check "left rail closes" "UI rail closed"
+step "left rail opens (notch-safe position)" sideTog "UI rail open"; shot 3-rail-open
+step "left rail closes" sideTog "UI rail closed"
 # 4. centre button
-mark; read X Y < <(pos recenter); tapcss $X $Y; sleep 2; check "centre button" "UI recenter"
+step "centre button" recenter "UI recenter"
 # 5. dock → Gəmilər panel → close
-mark; read X Y < <(pos boats); tapcss $X $Y; sleep 3; shot 4-panel; check "dock button opens panel" "UI open boats"
-sleep 6; mark; read X Y < <(pos pclose); [ -n "$X" ] && tapcss $X $Y; sleep 2; check "panel close button" "UI close boats"
+step "dock button opens panel" boats "UI open boats"; shot 4-panel
+step "panel close button" pclose "UI close boats"
 # 6. mission chip expand / collapse
-dismiss mission
-mark; read X Y < <(pos mission); tapcss $X $Y; sleep 2; shot 5-mission-open; check "mission chip expands" "UI mission open"
-dismiss mission-close; mark; read X Y < <(pos missionX); [ -n "$X" ] && tapcss $X $Y; sleep 2; check "mission card collapses" "UI mission mini"
+step "mission chip expands" mission "UI mission open"; shot 5-mission-open
+step "mission card collapses" missionX "UI mission mini"
 # 7. single tap on a building opens it (market, centre-left of the map)
 # 8. double tap on open sea (two taps sent in one shell call; adb timing is not exact)
 DT=0
@@ -67,7 +80,7 @@ echo "INFO  double tap via adb: $DT/3 recognised (adb cannot send two taps with 
 shot 6-after-doubletap
 # 9. real play, then close and reopen: every progress value must survive
 shot 8-dock-before-restart
-dismiss collect; mark; read X Y < <(pos collect); tapcss $X $Y; sleep 2; check "collect button" "UI collect"
+step "collect button" collect "UI collect"
 dismiss upgrades; read X Y < <(pos boats); tapcss $X $Y; sleep 6
 for k in 1 2; do read X Y < <(pos upg); [ -n "$X" ] && tapcss $X $Y; sleep 6; done
 read X Y < <(pos pclose); [ -n "$X" ] && tapcss $X $Y; sleep 20
