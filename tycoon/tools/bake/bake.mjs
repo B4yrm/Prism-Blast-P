@@ -35,11 +35,12 @@ if (mode === 'preview') {
   const out = await p.evaluate(f => window.preview(f.length ? f : null), filter);
   const dir = path.join(root, '.preview'); fs.mkdirSync(dir, { recursive: true });
   for (const [k, v] of Object.entries(out)) fs.writeFileSync(path.join(dir, k.replace(/\//g, '_') + '.png'), Buffer.from(v.url.split(',')[1], 'base64'));
+  fs.writeFileSync(path.join(dir, 'pivots.json'), JSON.stringify(Object.fromEntries(Object.entries(out).map(([k, v]) => [k, { ax: v.ax, ay: v.ay, w: v.w, h: v.h }]))));
   console.log(Object.keys(out).length, 'previews', Date.now() - t0, 'ms');
 } else {
   const pages = await p.evaluate(f => window.bakeAtlas(f.length ? f : null), filter);
   const dir = path.join(root, 'assets/atlas'); fs.mkdirSync(dir, { recursive: true });
-  for (const f of fs.readdirSync(dir)) if (/^(world|bld)-/.test(f)) fs.unlinkSync(path.join(dir, f));
+  for (const f of fs.readdirSync(dir)) if (/^(world|bld|refl|lo)-/.test(f)) fs.unlinkSync(path.join(dir, f));
   for (const pg of pages) {
     fs.writeFileSync(path.join(dir, pg.name + '.webp'), Buffer.from(pg.webp.split(',')[1], 'base64'));
     fs.writeFileSync(path.join(dir, pg.name + '.json'), JSON.stringify(pg.json));

@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { renderSprite, pack, glb, setBakeScale } from './render.js';
 import { BUILD } from './buildings.js';
 import { boat, person, PEOPLE, PROPS, TILES, yaw, yaw8 } from './units.js';
+const yaw32 = k => -k * Math.PI / 16;
 
 const FOOT = { hq: [8, 8], factory: [9, 8], farm: [9, 8], market: [8, 8], warehouse: [10, 8], harbor: [3, 5] };
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
@@ -37,7 +38,17 @@ function jobs() {
     for (const t of tiers) add(`b/${type}/${t}`, () => BUILD[type](t, w, d), { shadow: true });
   }
   for (const n of ['cafe', 'shed', 'icehouse']) add(`b/${n}/1`, () => BUILD[n](), { shadow: true });
-  for (let c = 0; c < 3; c++) for (let k = 0; k < 8; k++) add(`boat/${c}/${k}`, () => { const g = new THREE.Group(), b = boat(c); b.rotation.y = yaw8(k); g.add(b); return g; }, { shadow: false, outline: 2 });
+  // working boats: 32 headings (heading k·11.25°, so turns show no steps) +
+  // baked water reflections; classes 1–2 (moored decoration) keep 8 headings
+  const boatAt = (c, a) => () => { const g = new THREE.Group(), b = boat(c); b.rotation.y = a; g.add(b); return g; };
+  for (let k = 0; k < 32; k++) {
+    add(`boat32/0/${k}`, boatAt(0, yaw32(k)), { shadow: false, outline: 2 });
+    add(`boatR32/0/${k}`, boatAt(0, yaw32(k)), { reflect: true, outline: 0 });
+  }
+  for (let c = 1; c < 3; c++) for (let k = 0; k < 8; k++) {
+    add(`boat/${c}/${k}`, boatAt(c, yaw8(k)), { shadow: false, outline: 1 });   // drawn small: low-res page
+    add(`boatR/${c}/${k}`, boatAt(c, yaw8(k)), { reflect: true, outline: 0 });
+  }
   for (const look of Object.keys(PEOPLE)) {
     const carries = look === 'worker' ? ['none', 'raw', 'prod', 'can'] : ['none', 'bag'];
     for (const carry of carries) for (let d = 0; d < 4; d++) for (let f = 0; f < 4; f++)
@@ -66,22 +77,24 @@ function jobs() {
 }
 
 // Large buildings are baked at 1.5× (96 px tiles) to keep GPU memory low;
+// water reflections (blurred anyway) and the small decorative boats at 1×;
 // everything else at 2× (128 px tiles). Each atlas page records its scale.
-const BIG = 1.5, SMALL = 2;
+const BIG = 1.5, SMALL = 2, LO = 1;
 const isBig = n => n.startsWith('b/') && !/b\/(cafe|shed|icehouse)/.test(n);
+const isLo = n => n.startsWith('boatR') || /^boat\/[12]\//.test(n);
 window.bake = async (filter, only) => {
   const sprites = {};
   const list = jobs().filter(j => (!filter || filter.some(f => j.name.startsWith(f))) && (!only || only(j.name)));
   for (const j of list) {
-    setBakeScale(isBig(j.name) ? BIG : SMALL);
+    setBakeScale(isLo(j.name) ? LO : isBig(j.name) ? BIG : SMALL);
     const obj = await j.make();
     sprites[j.name] = renderSprite(obj, { anchor: V(0, 0, 0), ...j.opts });
   }
   return sprites;
 };
 window.bakeAtlas = async (filter) => {
-  const big = await window.bake(filter, isBig), small = await window.bake(filter, n => !isBig(n));
-  return [...pack(big, 'bld', BIG), ...pack(small, 'world', SMALL)];
+  const big = await window.bake(filter, isBig), lo = await window.bake(filter, isLo), small = await window.bake(filter, n => !isBig(n) && !isLo(n));
+  return [...pack(big, 'bld', BIG), ...pack(small, 'world', SMALL), ...pack(lo, 'lo', LO)];
 };
 window.preview = async (filter) => {
   const sprites = await window.bake(filter);

@@ -4,6 +4,8 @@ import { addGround, groundBounds } from '../render/ground.js';
 import { A, has, addSprite, setSprite } from '../render/atlas.js';
 import { Life } from './life.js';
 import { Water } from '../render/water.js';
+import { Fleet } from '../render/boats.js';
+import { VBERTH, buoysAt } from '../render/boatpaths.js';
 import { isRoad, isWalk } from '../sim/path.js';
 import { Sim, CONVEY_TIME } from '../sim/sim.js';
 import { G, stat } from '../core/economy.js';
@@ -30,8 +32,9 @@ export class WorldScene extends Phaser.Scene {
     this.makeConveyor();
     this.makeStocks();
     this.makeFx();
+    this.fleet = new Fleet(this, Q);
     this.life = new Life(this);
-    this.boatSpr = []; this.workerSpr = []; this.custSpr = []; this.custPool = [];
+    this.workerSpr = []; this.custSpr = []; this.custPool = [];
     this.floats = [];
 
     // camera
@@ -133,13 +136,7 @@ export class WorldScene extends Phaser.Scene {
     prop('prop/container_yard', 20.9, 23.45);
     for (const [x, y, n] of [[3.6, 22.5, 'pallet_raw'], [5.0, 22.45, 'fishbox_stack'], [6.6, 22.45, 'fishbox_stack'], [16.6, 22.45, 'fishbox_stack'], [18.3, 22.5, 'forklift_parked'],
       [19.4, 22.5, 'barrels'], [11.6, 23.5, 'cones'], [6.5, 25.6, 'netpile'], [13.5, 26.8, 'netpile'], [20.5, 25.2, 'netpile'], [2.6, 23.5, 'pallet_prod']]) prop('prop/' + n, x, y);
-    // moored boats keep the harbour busy (decorative)
-    this.moored = [];
-    for (const [x, y, c, d, sc] of [[24.6, 24.6, 1, 0, 0.55], [2.0, 25.6, 0, 1, 0.6], [22.4, 29.2, 1, 3, 0.7], [27.5, 23.6, 2, 2, 0.5]]) {
-      const p = iso(x, y, SEA_Z);
-      const nm = `boat/${c}/${d * 2}`;
-      if (has(nm)) { const m = addSprite(this, p.x, p.y, nm, sc).setDepth(depthAt(x, y) + 8); addSprite(this, p.x, p.y + 2, nm, sc).setScale(m.scaleX, -m.scaleY * 0.55).setAlpha(0.16).setTint(0x2a6fb0).setDepth(-42); this.moored.push({ s: m, y0: p.y, ph: x }); }
-    }
+    // (moored decorative boats and the bollards are part of the fleet, render/boats.js)
     // cranes on the quay
     this.cranes = CRANES.map(([x, y]) => {
       const c = iso(x + 0.5, y + 0.5);
@@ -149,22 +146,21 @@ export class WorldScene extends Phaser.Scene {
       const line = this.add.graphics().setDepth(dz + 30);
       const hook = addSprite(this, top.x, top.y + 60, 'prop/hook').setDepth(dz + 31);
       const load = addSprite(this, top.x, top.y + 60, 'prop/crate_raw', 1.6).setDepth(dz + 32).setVisible(false);
-      return { hook, line, load, top, drop: 60, t: 0, ph: 0 };
+      return { x: x + 0.5, hook, line, load, top, drop: 60, t: 0, ph: 0 };
     });
     // lighthouse + rocks on the cape
     const lp = iso(LIGHTHOUSE[0], LIGHTHOUSE[1]);
     prop('prop/lighthouse', LIGHTHOUSE[0], LIGHTHOUSE[1], 1.2);
     for (const [x, y] of [[36.4, 13.6], [38.3, 17.4], [36.2, 18.2], [38.5, 14.2]]) prop('prop/rock', x, y, 1.3);
     this.beam = this.add.image(lp.x, lp.y - 3.05 * UZ * 1.2, 'puff').setScale(0.9).setAlpha(0.6).setTint(0xfff2a6).setDepth(depthAt(...LIGHTHOUSE) + 1).setBlendMode('ADD');
-    // fishing-ground buoys
+    // fishing-ground buoys, either side of where each boat tows its nets
     this.buoys = [];
-    for (const B of BERTHS) {
-      const [fx, fy] = B.route[B.route.length - 1];
-      for (const [ox, oy] of [[-1.4, 0.6], [1.2, -0.8], [0.6, 1.6]]) {
-        const p = iso(fx + ox, fy + oy, SEA_Z);
-        if (has('prop/buoy')) this.buoys.push(addSprite(this, p.x, p.y, 'prop/buoy').setDepth(depthAt(fx + ox, fy + oy)));
+    BERTHS.forEach((B, k) => {
+      for (const [x, y] of buoysAt(k)) {
+        const p = iso(x, y, SEA_Z);
+        if (has('prop/buoy')) this.buoys.push(addSprite(this, p.x, p.y, 'prop/buoy').setDepth(depthAt(x, y)));
       }
-    }
+    });
     this.gulls = [];
     for (let k = 0; k < 7; k++) this.gulls.push({ s: this.add.image(0, 0, 'gull', 'g0').setDepth(5000).setScale(0.45), cx: 4 + k * 3.5, cy: 24 + (k % 3) * 3, r: 1.5 + k % 3, sp: 0.25 + k * 0.04, a: k });
   }
@@ -232,14 +228,17 @@ export class WorldScene extends Phaser.Scene {
   }
   burst(x, y, n = 16) { const p = iso(x, y, 20); this.sparkle.emitParticleAt(p.x, p.y, n); }
   splash(b) {
-    const p = iso(b.m.x + (Math.random() - 0.5) * 2, b.m.y + (Math.random() - 0.5) * 2, SEA_Z);
+    const vb = this.fleet.fishingAt(b);              // fish jump round the boat while it tows its nets
+    if (!vb) return;
+    const p = iso(vb.x - Math.cos(vb.h) * 1.6 + (Math.random() - 0.5) * 2, vb.y - Math.sin(vb.h) * 1.6 + (Math.random() - 0.5) * 2, SEA_Z);
     this.dropFx.emitParticleAt(p.x, p.y, 6);
     const f = this.add.image(p.x, p.y, 'fishjump').setDepth(9300).setScale(0.8);
     this.tweens.add({ targets: f, y: p.y - 26, duration: 380, yoyo: true, ease: 'Quad.Out', angle: { from: -40, to: 40 }, onComplete: () => f.destroy() });
   }
   craneWork(b) {
-    const cr = this.cranes[b.i % this.cranes.length];
-    if (cr) cr.t = 1.2;
+    // only the crane at this boat's own berth, and only once the boat is in
+    const bx = VBERTH[b.i % VBERTH.length][0], cr = this.cranes.find(c => Math.abs(c.x - bx) < 1.5);
+    if (cr && this.fleet.moored(b)) cr.t = 1.2;
   }
 
   floatText(x, y, str, col) {
@@ -406,7 +405,6 @@ export class WorldScene extends Phaser.Scene {
     this.water.update(t, dt, cam);
     this.beam.setAlpha(0.35 + 0.3 * Math.sin(t * 2));
     for (const b of this.buoys) b.setAngle(Math.sin(t * 2 + b.x) * 8);
-    for (const m of this.moored) m.s.setY(m.y0 + Math.sin(t * 1.6 + m.ph) * 1.2).setAngle(Math.sin(t * 1.1 + m.ph) * 1.2);
     if (G.quality.sway) for (const tr of this.trees) tr.setAngle(Math.sin(t * 1.3 + tr.x * 0.01) * 1.2);
     for (const g of this.gulls) {
       g.a += dt * g.sp;
@@ -415,7 +413,7 @@ export class WorldScene extends Phaser.Scene {
     }
     const fac = G.S.tier.factory > 0;
     this.smoke[0].emitting = fac; this.smoke[1].emitting = fac && G.S.tier.factory >= 2;
-    this.drawBoats(t);
+    this.drawBoats(t, dt);
     this.drawWalkers(t);
     this.life.update(t, dt, [...this.sim.workers.map(w => w.m), ...this.sim.customers.map(c => c.m)]);
     this.drawConveyor();
@@ -423,37 +421,8 @@ export class WorldScene extends Phaser.Scene {
     bus.emit('frame');
   }
 
-  drawBoats(t) {
-    const sim = this.sim, dt = this.game.loop.delta / 1000;
-    this.water.wake.update(t, sim.boats, stat.boatSpeed() * 1.12);
-    while (this.boatSpr.length < sim.boats.length) {
-      const i = this.boatSpr.length;
-      const s = addSprite(this, 0, 0, 'boat/0/6');
-      // soft water reflection under the hull
-      s.mirror = addSprite(this, 0, 0, 'boat/0/6').setAlpha(0.18).setTint(0x2a6fb0).setDepth(-42);
-      this.boatSpr.push(s);
-    }
-    sim.boats.forEach((b, i) => {
-      const s = this.boatSpr[i], m = b.m;
-      b.scale = [1.45, 1.7, 2.0][(G.S.boatTypes && G.S.boatTypes[i]) || 0] || 1.45;   // hull size of the baked class (for wakes)
-      // heading turns smoothly towards the direction of travel (8 sprite angles)
-      const target = Math.atan2(m.dy, m.dx);
-      if (b.ang === undefined) b.ang = target;
-      let da = target - b.ang; while (da > Math.PI) da -= 2 * Math.PI; while (da < -Math.PI) da += 2 * Math.PI;
-      b.ang += da * Math.min(1, dt * 2.5);
-      const k = ((Math.round(b.ang / (Math.PI / 4)) % 8) + 8) % 8;
-      const name = `boat/${G.S.boatTypes ? (G.S.boatTypes[i] || 0) : 0}/${k}`;
-      if (s.frame.name !== name && has(name)) { setSprite(s, name); setSprite(s.mirror, name); s.mirror.setScale(s.scaleX, -s.scaleY * 0.55); }
-      const moving = b.state === 'out' || b.state === 'back';
-      const docked = b.state === 'dock';
-      const bob = Math.sin(b.bob * 2.2) * (docked ? 0.8 : 1.6);
-      const p = iso(m.x, m.y, SEA_Z + bob);
-      const roll = Math.sin(b.bob * 1.7) * (docked ? 1.1 : moving ? 0.8 : 1.8) + (moving ? da * 4 : 0);
-      s.setPosition(p.x, p.y).setDepth(depthAt(m.x, m.y) + 8).setAngle(Phaser.Math.Clamp(roll, -5, 5));
-      const w = iso(m.x, m.y, SEA_Z);
-      s.mirror.setPosition(w.x, w.y + 2).setAngle(-s.angle);
-      if (b.state === 'fish' && Math.random() < 0.08) { this.wakeFx.emitParticleAt(w.x + (Math.random() - 0.5) * 40, w.y + (Math.random() - 0.5) * 16, 1); }
-    });
+  drawBoats(t, dt) {
+    this.fleet.update(t, dt);          // same time step as the simulation, so the two stay in step
   }
 
   drawWalkers(t) {

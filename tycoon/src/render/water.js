@@ -333,16 +333,15 @@ export class Wake {
     this.g = scene.add.graphics().setDepth(-43);
     this.trails = new Map();
   }
-  update(t, boats, speedRef) {
+  // items: { key, x, y, dx, dy (unit heading), sp (speed ahead), moving, stern (tiles), scale }
+  update(t, items, speedRef) {
     const g = this.g; g.clear();
     const KELVIN = 0.354;                                  // tan(19.5°): half-angle of a ship wake
-    for (const b of boats) {
-      let tr = this.trails.get(b); if (!tr) this.trails.set(b, tr = { pts: [], last: 0 });
-      const m = b.m, moving = (b.state === 'out' || b.state === 'back') && m.speed > 0.05;
-      if (moving && t - tr.last >= this.every) {
+    for (const b of items) {
+      let tr = this.trails.get(b.key); if (!tr) this.trails.set(b.key, tr = { pts: [], last: 0 });
+      if (b.moving && t - tr.last >= this.every) {
         tr.last = t;
-        const len = 1.3 * (b.scale || 1.45) + 0.05;          // stern of the baked hull
-        tr.pts.unshift({ x: m.x - m.dx * len, y: m.y - m.dy * len, dx: m.dx, dy: m.dy, sp: m.speed, v: Math.min(1.2, m.speed / Math.max(0.1, speedRef)), t });
+        tr.pts.unshift({ x: b.x - b.dx * b.stern, y: b.y - b.dy * b.stern, dx: b.dx, dy: b.dy, sp: b.sp, v: Math.min(1.2, b.sp / Math.max(0.1, speedRef)), t });
       }
       while (tr.pts.length && t - tr.pts[tr.pts.length - 1].t > this.life) tr.pts.pop();
       if (tr.pts.length < 2) continue;

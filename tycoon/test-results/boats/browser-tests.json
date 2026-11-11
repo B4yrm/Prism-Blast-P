@@ -1,0 +1,277 @@
+{
+ "passed": 15,
+ "total": 15,
+ "report": {
+  "layout_no_overlap": {
+   "pass": true,
+   "sizes": {
+    "640x360": "ok",
+    "732x412": "ok",
+    "800x360": "ok",
+    "844x390": "ok",
+    "915x412": "ok",
+    "960x540": "ok",
+    "1024x600": "ok",
+    "1280x720": "ok",
+    "360x640": "ok",
+    "390x844": "ok",
+    "412x915": "ok",
+    "768x1024": "ok"
+   }
+  },
+  "touch_targets_min_40px": {
+   "pass": true,
+   "plus": [
+    40,
+    40
+   ],
+   "gear": [
+    44,
+    44
+   ],
+   "sideTog": [
+    44,
+    44
+   ],
+   "recenter": [
+    44,
+    44
+   ],
+   "mission": [
+    194,
+    46
+   ],
+   "dockBtn": [
+    56,
+    42
+   ],
+   "collect": [
+    118,
+    46
+   ]
+  },
+  "panels_640x360": {
+   "pass": true,
+   "upgrades": {
+    "inView": true,
+    "closeVisible": true,
+    "scroll": true,
+    "closed": true
+   },
+   "missions": {
+    "inView": true,
+    "closeVisible": true,
+    "scroll": "fits",
+    "closed": true
+   },
+   "workers": {
+    "inView": true,
+    "closeVisible": true,
+    "scroll": true,
+    "closed": true
+   },
+   "settings": {
+    "inView": true,
+    "closeVisible": true,
+    "scroll": true,
+    "closed": true
+   },
+   "missionCard": {
+    "opened": true,
+    "collapsed": true
+   }
+  },
+  "panels_360x640": {
+   "pass": true,
+   "upgrades": {
+    "inView": true,
+    "closeVisible": true,
+    "scroll": true,
+    "closed": true
+   },
+   "missions": {
+    "inView": true,
+    "closeVisible": true,
+    "scroll": "fits",
+    "closed": true
+   },
+   "workers": {
+    "inView": true,
+    "closeVisible": true,
+    "scroll": true,
+    "closed": true
+   },
+   "settings": {
+    "inView": true,
+    "closeVisible": true,
+    "scroll": "fits",
+    "closed": true
+   },
+   "missionCard": {
+    "opened": true,
+    "collapsed": true
+   }
+  },
+  "touch_input_low": {
+   "pass": true,
+   "dragMovedPx": 470,
+   "pinchZoom": 2.6,
+   "recenterZoomBack": 1,
+   "doubleTap": "10/10",
+   "slowPairIgnored": true,
+   "buildingDoubleTapKeepsPanel": "Anbar"
+  },
+  "touch_input_high": {
+   "pass": true,
+   "dragMovedPx": 395,
+   "pinchZoom": 2.6,
+   "recenterZoomBack": 1,
+   "doubleTap": "6/10",
+   "slowPairIgnored": true,
+   "buildingDoubleTapKeepsPanel": "Anbar"
+  },
+  "labels_no_flicker": {
+   "pass": true,
+   "flips": 1
+  },
+  "save_load": {
+   "pass": true,
+   "before": {
+    "money": 236,
+    "lvl": 2,
+    "caught": 40,
+    "price": 2
+   },
+   "after": {
+    "money": 236,
+    "lvl": 2,
+    "caught": 40,
+    "price": 2
+   }
+  },
+  "save_load_after_real_play": {
+   "pass": true,
+   "saved": {
+    "money": 346,
+    "register": 88,
+    "gems": 21,
+    "level": 3,
+    "xp": 2,
+    "tiers": "111100",
+    "upgrades": "2-0-0-0-0",
+    "workers": 2,
+    "boats": 1,
+    "caught": 126,
+    "sold": 110,
+    "mission": 0,
+    "research": 0
+   },
+   "loaded": {
+    "money": 346,
+    "register": 88,
+    "gems": 21,
+    "level": 3,
+    "xp": 2,
+    "tiers": "111100",
+    "upgrades": "2-0-0-0-0",
+    "workers": 2,
+    "boats": 1,
+    "caught": 126,
+    "sold": 110,
+    "mission": 0,
+    "research": 0
+   },
+   "differentFields": [],
+   "progressed": true
+  },
+  "offline_earnings_modal": {
+   "pass": true,
+   "text": "Xoş gəldin! Sən yoxkən işçilər 2 saat 0 dəq işlədi. +$5.93K Topla ×2 · 10",
+   "shown": "5.93K"
+  },
+  "corrupt_save_recovers": {
+   "pass": true,
+   "money": 120,
+   "errors": []
+  },
+  "old_save_compatible": {
+   "pass": true,
+   "money": 4321,
+   "gems": 37,
+   "level": 6,
+   "tier": {
+    "harbor": 2,
+    "warehouse": 2,
+    "market": 2,
+    "hq": 1,
+    "factory": 1,
+    "farm": 0
+   },
+   "up": {
+    "price": 6,
+    "ads": 2,
+    "till": 3
+   },
+   "workers": 3,
+   "mission": 7,
+   "research": {
+    "nav": 1
+   },
+   "sound": false,
+   "preset": "high",
+   "missionOpen": false
+  },
+  "simulation": {
+   "pass": true,
+   "boatStates": [
+    "dock",
+    "out",
+    "fish",
+    "back"
+   ],
+   "workerStates": [
+    "idle",
+    "toSrc",
+    "pick",
+    "toDst",
+    "drop",
+    "toRest"
+   ],
+   "caught": 310,
+   "sold": 299,
+   "earned": 1100,
+   "customersSeen": 6
+  },
+  "no_page_errors": {
+   "pass": true,
+   "errors": []
+  },
+  "graphics_presets": {
+   "pass": true,
+   "high": {
+    "preset": "high",
+    "canvas": "1688x780",
+    "textureMB": 98.9,
+    "heapMB": 59,
+    "updateMsAvg": 2.47,
+    "objects": 747
+   },
+   "medium": {
+    "preset": "medium",
+    "canvas": "1266x585",
+    "textureMB": 96.6,
+    "heapMB": 56.2,
+    "updateMsAvg": 2.43,
+    "objects": 816
+   },
+   "low": {
+    "preset": "low",
+    "canvas": "844x390",
+    "textureMB": 37.5,
+    "heapMB": 42.6,
+    "updateMsAvg": 1.71,
+    "objects": 737
+   }
+  }
+ }
+}

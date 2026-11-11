@@ -116,6 +116,8 @@ for Q in medium high; do
   WM=$(log | grep "WATER mode=" | tail -1 | sed 's/.*WATER //')
   PF=$(log | grep PERF | tail -1 | grep -oE "fps=[0-9.]+ textureMB=[0-9.]+ heapMB=[0-9.]+ preset=[a-z]+")
   echo "INFO  preset $Q: water $WM; $PF" >> "$RES"
+  BL=$(log | grep "BOATS n=" | tail -1 | sed 's/.*BOATS //')
+  echo "INFO  preset $Q: boats $BL" >> "$RES"
   shot water-$Q
 done
 # 10. performance & memory
@@ -125,7 +127,8 @@ log > "$OUT/logcat.txt"
 adb logcat -d -s AndroidRuntime:E > "$OUT/crashes.txt"
 { grep -E "Total frames|Janky frames:|50th percentile|90th percentile" "$OUT/gfxinfo.txt"
   grep -E "TOTAL PSS|Java Heap:|Native Heap:|Graphics:" "$OUT/meminfo.txt"
-  grep PERF "$OUT/logcat.txt" | tail -2; } > "$OUT/summary.txt"
+  grep PERF "$OUT/logcat.txt" | tail -2
+  grep "BOATS n=" "$OUT/logcat.txt" | tail -1; } > "$OUT/summary.txt"
 N=$(grep -c "FATAL EXCEPTION" "$OUT/crashes.txt" || true); echo "INFO  crashes: $N" >> "$RES"
 cat "$RES" "$OUT/summary.txt"
 exit 0

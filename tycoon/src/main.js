@@ -10,9 +10,9 @@ G.S = load();
 console.log('LOADED ' + JSON.stringify(snapshot(G.S)));
 // Graphics presets. 'auto' picks one from the device's memory / CPU cores.
 export const PRESETS = {
-  high:   { water: 'shader', dprMax: 2,   ground: 1.25, atlasHalf: false, fps: 60, cars: 5, glints: 22, foam: 1, sway: true,  wake: 1 },
-  medium: { water: 'layers', dprMax: 1.5, ground: 1.0,  atlasHalf: false, fps: 60, cars: 3, glints: 10, foam: 2, sway: true,  wake: 0.6 },
-  low:    { water: 'basic',  dprMax: 1,   ground: 0.75, atlasHalf: true,  fps: 30, cars: 2, glints: 0,  foam: 0, sway: false, wake: 0.35 },
+  high:   { water: 'shader', dprMax: 2,   ground: 1.25, atlasHalf: false, fps: 60, cars: 5, glints: 22, foam: 1, sway: true,  wake: 1,    boatFx: 2 },
+  medium: { water: 'layers', dprMax: 1.5, ground: 1.0,  atlasHalf: false, fps: 60, cars: 3, glints: 10, foam: 2, sway: true,  wake: 0.6,  boatFx: 1 },
+  low:    { water: 'basic',  dprMax: 1,   ground: 0.75, atlasHalf: true,  fps: 30, cars: 2, glints: 0,  foam: 0, sway: false, wake: 0.35, boatFx: 0 },
 };
 function autoPreset() {
   const mem = navigator.deviceMemory || 4, cores = navigator.hardwareConcurrency || 4;
@@ -71,6 +71,7 @@ setInterval(() => {
   const r = sel => { const e = document.querySelector(sel); if (!e) return null; const b = e.getBoundingClientRect(); return [Math.round(b.left + b.width / 2), Math.round(b.top + b.height / 2)]; };
   console.log('UIPOS ' + JSON.stringify({ w: innerWidth, h: innerHeight, sideTog: r('#sideTog'), recenter: r('#recenter'), boats: r('#dock [data-open=boats]'), pclose: r('#pclose'), mission: r('#mission'), gear: r('#hud .gear'), collect: r('#collect'), rail0: r('#side .items button'), missionX: r('#mission .mx'), start: r('#mcard [data-m]'), upg: r('#pbody [data-act=track]:not([disabled])'), qHigh: r('[data-q=high]'), qMed: r('[data-q=medium]') }));
   console.log(`PERF renderer=${game.renderer ? (game.renderer.type === 2 ? 'webgl' : 'canvas') : 'none'} world=${!!G.world} size=${innerWidth}x${innerHeight} zoom=${G.world ? G.world.cameras.main.zoom.toFixed(3) : 0} money=${Math.floor(G.S.money)} level=${G.S.level} caught=${G.S.stats.caught} fps=${game.loop.actualFps.toFixed(1)} textureMB=${(px * 4 / 1048576).toFixed(1)} heapMB=${heap} preset=${G.quality.name} canvas=${game.canvas.width}x${game.canvas.height}`);
+  if (G.world && G.world.fleet) console.log(G.world.fleet.logLine());
 }, 5000);
 
 window.addEventListener('resize', () => {

@@ -15,22 +15,50 @@ export const BOAT_LOOKS = [
 ];
 export function boat(cls) {
   const L = BOAT_LOOKS[cls], s = L.s, g = group();
-  const hullShape = (k, inset = 0) => {
+  const l = 1.3 * s, w = 0.42 * s;
+  const paint = col => mat(col, { r: 0.42 });              // semi-gloss hull paint
+  const metal = col => mat(col, { r: 0.32, m: 0.45 });
+  const hullShape = (inset = 0) => {
     const sh = new THREE.Shape();
-    const l = 1.3 * k - inset, w = 0.42 * k - inset;
-    sh.moveTo(-l, -w); sh.lineTo(l * 0.55, -w); sh.quadraticCurveTo(l * 0.95, -w * 0.8, l * 1.08, 0);
-    sh.quadraticCurveTo(l * 0.95, w * 0.8, l * 0.55, w); sh.lineTo(-l, w); sh.lineTo(-l, -w);
+    const ll = l - inset, ww = w - inset;
+    sh.moveTo(-ll, -ww); sh.lineTo(ll * 0.55, -ww); sh.quadraticCurveTo(ll * 0.95, -ww * 0.8, ll * 1.08, 0);
+    sh.quadraticCurveTo(ll * 0.95, ww * 0.8, ll * 0.55, ww); sh.lineTo(-ll, ww); sh.lineTo(-ll, -ww);
     return sh;
   };
-  const layer = (y, h, col, inset = 0) => {
-    const geo = new THREE.ExtrudeGeometry(hullShape(s, inset), { depth: h, bevelEnabled: false, curveSegments: 10 });
-    const m = new THREE.Mesh(geo, mat(col)); m.rotation.x = -Math.PI / 2; m.position.y = y; g.add(m); return m;
+  const layer = (y, h, m, inset = 0) => {
+    const geo = new THREE.ExtrudeGeometry(hullShape(inset), { depth: h, bevelEnabled: false, curveSegments: 12 });
+    const mesh = new THREE.Mesh(geo, typeof m === 'string' ? mat(m) : m); mesh.rotation.x = -Math.PI / 2; mesh.position.y = y; g.add(mesh); return mesh;
   };
-  layer(-0.12, 0.12, L.stripe, 0.04);
-  layer(0, 0.26 * s, L.hull);
-  layer(0.26 * s, 0.07, '#ffffff');
-  layer(0.33 * s, 0.015, '#e9dcc3', 0.05);                       // deck
+  layer(-0.12, 0.12, paint(L.stripe), 0.04);                  // boot-top below the waterline
+  layer(0, 0.26 * s, paint(L.hull));
+  layer(0.255 * s, 0.022, '#1d2a44', -0.014);                 // rub rail
+  layer(0.26 * s, 0.07, paint('#ffffff'));                    // sheer stripe
+  layer(0.33 * s, 0.015, '#e9dcc3', 0.05);                    // deck
   const dy = 0.345 * s;
+  // deck planks
+  for (let zz = -0.7; zz <= 0.71; zz += 0.175) box(g, -0.95 * l, dy, zz * w - 0.004, 1.42 * l, 0.004, 0.008, '#c9b58f');
+  // hull side details: portholes with rims, rust streaks, registration number
+  const sideDecal = (x, y, wd, ht, draw) => {
+    const cv = document.createElement('canvas'); cv.width = Math.round(wd * 256); cv.height = Math.round(ht * 256);
+    draw(cv.getContext('2d'), cv.width, cv.height);
+    const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 4;
+    const m = new THREE.MeshStandardMaterial({ map: tex, transparent: true, roughness: 0.5 });
+    for (const side of [1, -1]) {
+      const p = new THREE.Mesh(new THREE.PlaneGeometry(wd, ht), m);
+      p.position.set(x, y, side * (w + 0.006)); if (side < 0) p.rotation.y = Math.PI; g.add(p);
+    }
+  };
+  for (const px of [-0.86, -0.68, -0.5]) sideDecal(px * s, 0.165 * s, 0.11 * s, 0.17 * s, (c, W, H) => {
+    const r = W * 0.36;
+    c.fillStyle = 'rgba(122,74,42,0.35)'; c.fillRect(W / 2 - W * 0.05, W / 2, W * 0.1, H - W / 2);   // rust streak
+    c.fillStyle = '#eef3f7'; c.beginPath(); c.arc(W / 2, W / 2, r * 1.32, 0, 7); c.fill();
+    c.fillStyle = '#1e2f4a'; c.beginPath(); c.arc(W / 2, W / 2, r, 0, 7); c.fill();
+    c.fillStyle = 'rgba(160,210,255,0.55)'; c.beginPath(); c.arc(W / 2 - r * 0.3, W / 2 - r * 0.3, r * 0.35, 0, 7); c.fill();
+  });
+  sideDecal(0.5 * s, 0.16 * s, 0.36 * s, 0.11 * s, (c, W, H) => {
+    c.fillStyle = '#ffffff'; c.font = `900 ${Math.round(H * 0.82)}px "Arial Black", Arial, sans-serif`; c.textAlign = 'center'; c.textBaseline = 'middle';
+    c.fillText(`AZ-${String(cls * 7 + 11).padStart(3, '0')}`, W / 2, H * 0.55);
+  });
   // cabin & wheelhouse at the stern
   box(g, -1.05 * s, dy, -0.3 * s, 0.75 * s, 0.38 * s, 0.6 * s, L.cabin);
   windows(g, '+z', -1.05 * s, dy, -0.3 * s, 0.75 * s, 0.38 * s, 0.6 * s, 3, 1, { mv: 0.1, gap: 0.3, mull: false });
@@ -38,30 +66,47 @@ export function boat(cls) {
   box(g, -1.0 * s, dy + 0.38 * s, -0.24 * s, 0.55 * s, 0.24 * s, 0.48 * s, L.cabin);
   windows(g, '+x', -1.0 * s, dy + 0.38 * s, -0.24 * s, 0.55 * s, 0.24 * s, 0.48 * s, 2, 1, { mv: 0.05, gap: 0.15, mull: false, glass: '#5aa6e0' });
   windows(g, '+z', -1.0 * s, dy + 0.38 * s, -0.24 * s, 0.55 * s, 0.24 * s, 0.48 * s, 2, 1, { mv: 0.05, gap: 0.15, mull: false, glass: '#5aa6e0' });
-  box(g, -1.04 * s, dy + 0.62 * s, -0.28 * s, 0.63 * s, 0.05, 0.56 * s, L.roof);
-  cyl(g, -0.75 * s, dy + 0.67 * s, 0, 0.02, 0.3, '#dddddd', { seg: 6 });
+  box(g, -1.04 * s, dy + 0.62 * s, -0.28 * s, 0.63 * s, 0.05, 0.56 * s, paint(L.roof));
+  // wheelhouse roof: navigation lights, searchlight, horn, whip antennas
+  sphere(g, -0.43 * s, dy + 0.58 * s, -0.26 * s, 0.035, '#ff3b30', { e: 0xff2a20, ei: 0.9, seg: 8 });
+  sphere(g, -0.43 * s, dy + 0.58 * s, 0.26 * s, 0.035, '#34d65a', { e: 0x22dd55, ei: 0.9, seg: 8 });
+  const sl = cyl(g, -0.55 * s, dy + 0.69 * s, 0.12 * s, 0.045, 0.09, C.dark, { seg: 10 }); sl.rotation.z = Math.PI / 2;
+  sphere(g, -0.5 * s, dy + 0.735 * s, 0.12 * s, 0.035, '#fff6c8', { e: 0xfff0b0, ei: 0.7, seg: 8 });
+  cone(g, -0.92 * s, dy + 0.67 * s, -0.16 * s, 0.03, 0.08, '#dcdcdc', 8);
+  for (const zz of [-0.2, 0.2]) cyl(g, -0.98 * s, dy + 0.67 * s, zz * s, 0.008, 0.42 * s, '#e6e6e6', { seg: 5 });
+  cyl(g, -0.75 * s, dy + 0.67 * s, 0, 0.02, 0.3, '#dddddd', { seg: 6, r: 0.32, m: 0.45 });
   // mast, boom and rigging
   cyl(g, 0.15 * s, dy, 0, 0.035, 1.0 * s, '#f2f2f2', { seg: 8 });
+  sphere(g, 0.15 * s, dy + 1.0 * s + 0.02, 0, 0.03, '#ffffff', { e: 0xffffff, ei: 0.6, seg: 8 });
   const boom = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.025, 1.0 * s, 6), mat(C.yellow));
   boom.position.set(0.5 * s, dy + 0.75 * s, 0); boom.rotation.z = -1.1; g.add(boom);
   box(g, 0.12 * s, dy + 0.98 * s, -0.04, 0.22, 0.12, 0.02, L.stripe);
-  // net pile & crates on deck
+  // net pile, crates, rope coils and cleats on deck
   sphere(g, 0.55 * s, dy + 0.05, 0.05, 0.22 * s, '#3f8f4a', { sy: 0.45, seg: 9 });
   crate(g, -0.2 * s, dy, 0.08 * s, 0.18 * s, 'raw'); crate(g, -0.2 * s, dy, -0.24 * s, 0.18 * s, 'raw');
+  for (const zz of [-0.22, 0.22]) {
+    const coil = new THREE.Mesh(new THREE.TorusGeometry(0.07 * s, 0.018 * s, 6, 14), mat('#d8c39a'));
+    coil.rotation.x = Math.PI / 2; coil.position.set(0.86 * s, dy + 0.02, zz * s); g.add(coil);
+  }
+  for (const [cx, cz] of [[1.05, 0.2], [1.05, -0.2], [-1.15, 0.33], [-1.15, -0.33]]) {   // mooring cleats
+    box(g, cx * s - 0.03, dy, cz * s - 0.012, 0.06, 0.035, 0.024, metal('#3b4148'));
+    box(g, cx * s - 0.012, dy, cz * s - 0.03, 0.024, 0.035, 0.06, metal('#3b4148'));
+  }
   if (cls >= 1) { cyl(g, 0.9 * s, dy, 0, 0.13 * s, 0.16, '#8a8f96', { seg: 12 }); }
   if (cls >= 2) {
     cyl(g, -0.2 * s, dy, 0, 0.04, 1.3 * s, C.yellow, { seg: 8 });
     const arm = new THREE.Mesh(new THREE.BoxGeometry(0.9 * s, 0.05, 0.05), mat(C.yellow)); arm.position.set(0.2 * s, dy + 1.25 * s, 0); arm.rotation.z = -0.35; g.add(arm);
     box(g, -0.32 * s, dy, -0.36 * s, 0.24 * s, 0.24 * s, 0.24 * s, '#e2453c');
   }
-  // stern A-frame gantry with net drum, outrigger booms, radar, life rafts, rails
+  // stern A-frame gantry with net drum and hanging floats, outrigger booms, radar, life rafts, rails
   const sx = -1.25 * s;
-  for (const zz of [-0.32, 0.28]) box(g, sx + 0.02, dy, zz * s, 0.05, 0.75 * s, 0.05, '#f28c28');
-  box(g, sx + 0.02, dy + 0.72 * s, -0.32 * s, 0.05, 0.06, 0.65 * s, '#f28c28');
+  for (const zz of [-0.32, 0.28]) box(g, sx + 0.02, dy, zz * s, 0.05, 0.75 * s, 0.05, metal('#f28c28'));
+  box(g, sx + 0.02, dy + 0.72 * s, -0.32 * s, 0.05, 0.06, 0.65 * s, metal('#f28c28'));
+  for (const zz of [-0.18, 0, 0.18]) { cyl(g, sx + 0.045, dy + 0.62 * s, zz * s, 0.004, 0.1 * s, '#333', { seg: 4 }); sphere(g, sx + 0.045, dy + 0.6 * s, zz * s, 0.045, '#ff7a1a', { seg: 8 }); }
   cyl(g, sx + 0.35 * s, dy + 0.12, 0, 0.13, 0.5 * s, '#3c8f4a', { seg: 12 }).rotation.x = Math.PI / 2;
   for (const side of [-1, 1]) {
-    const boom = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.02, 0.85 * s, 6), mat('#e6e6e6'));
-    boom.position.set(0.15 * s, dy + 0.7 * s, side * 0.36 * s); boom.rotation.x = side * 0.85; g.add(boom);
+    const bm = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.02, 0.85 * s, 6), metal('#e6e6e6'));
+    bm.position.set(0.15 * s, dy + 0.7 * s, side * 0.36 * s); bm.rotation.x = side * 0.85; g.add(bm);
     sphere(g, 0.15 * s, dy + 0.5 * s, side * 0.72 * s, 0.05, '#f28c28', { seg: 8 });
   }
   cyl(g, -0.72 * s, dy + 0.67 * s, 0.15 * s, 0.015, 0.25, C.dark, { seg: 6 });
@@ -70,9 +115,11 @@ export function boat(cls) {
   railing(g, 0.1 * s, -0.4 * s, 0.75 * s, -0.4 * s, dy, C.white); railing(g, 0.1 * s, 0.4 * s, 0.75 * s, 0.4 * s, dy, C.white);
   for (let k = 0; k < 3; k++) fishBox(g, -0.1 * s + k * 0.24, dy, -0.05 * s, 0.22);
   // tyre fenders
-  for (const k of [-0.6, 0, 0.5]) { cyl(g, k * s, 0.12 * s, 0.43 * s, 0.06, 0.04, '#222', { seg: 10 }).rotation.x = Math.PI / 2; }
+  for (const k of [-0.2, 0.2]) for (const side of [1, -1]) { cyl(g, k * s, 0.12 * s, side * 0.43 * s, 0.06, 0.04, '#222', { seg: 10 }).rotation.x = Math.PI / 2; }
   return g;
 }
+// Hull outline at the waterline (local: u forward, v starboard), for runtime foam and shadows.
+export function hullDims(cls) { const s = BOAT_LOOKS[cls].s; return { bow: 1.3 * s * 1.08, stern: 1.3 * s, half: 0.42 * s }; }
 
 // ---- people (≈0.55 tall) -----------------------------------------------------
 export const PEOPLE = {
@@ -192,6 +239,7 @@ export const PROPS = {
   crate_raw() { const g = group(); crate(g, -0.11, 0, -0.11, 0.22, 'raw'); return g; },
   crate_prod() { const g = group(); crate(g, -0.11, 0, -0.11, 0.22, 'prod'); return g; },
   cbox() { const g = group(); crate(g, -0.08, 0, -0.08, 0.16, 'raw'); return g; },
+  bollard() { const g = group(); cyl(g, 0, 0, 0, 0.07, 0.16, '#2f343a', { seg: 12 }); cyl(g, 0, 0.16, 0, 0.1, 0.04, '#2f343a', { seg: 12 }); cyl(g, 0, 0.2, 0, 0.06, 0.02, '#4a525b', { seg: 12 }); return g; },
   cones() { const g = group(); for (let k = 0; k < 3; k++) cone(g, k * 0.15, 0, k * 0.1, 0.05, 0.16, C.orange, 8); return g; },
   belt() {   // one tile of elevated conveyor running along grid y
     const g = group();

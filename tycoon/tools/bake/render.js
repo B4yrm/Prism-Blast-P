@@ -44,6 +44,16 @@ cam.updateMatrixWorld();
 
 const toCam = p => p.clone().applyMatrix4(cam.matrixWorldInverse);
 
+// Reflection pass helpers: keep only what is above the water (after mirroring:
+// y <= 0) and write the depth below the surface for the alpha fade.
+const keepBelow = new THREE.Plane(new THREE.Vector3(0, -1, 0), 0);
+const depthMat = new THREE.ShaderMaterial({
+  vertexShader: 'varying float vY; void main() { vec4 wp = modelMatrix * vec4(position, 1.0); vY = wp.y; gl_Position = projectionMatrix * viewMatrix * wp; }',
+  fragmentShader: 'varying float vY; void main() { if (vY > 0.0) discard; gl_FragColor = vec4(vec3(clamp(-vY / 1.6, 0.0, 1.0)), 1.0); }',
+  side: THREE.DoubleSide,
+});
+const SEA_TINT = [24, 104, 176];
+
 // ---- GLB loading ------------------------------------------------------------
 const loader = new GLTFLoader();
 const glbCache = {};
@@ -56,6 +66,7 @@ export async function glb(url) {
 // opts: anchor (Vector3, world point that becomes the sprite pivot), shadow (bool),
 // outline (px, 0 = none), extra (Box3 extension for shadows), groundY
 export function renderSprite(obj, opts = {}) {
+  if (opts.reflect) return renderReflection(obj, opts);
   scene.add(obj);
   obj.traverse(o => { if (o.isMesh) { o.castShadow = opts.castShadow !== false; o.receiveShadow = true; } });
   obj.updateMatrixWorld(true);
@@ -92,6 +103,60 @@ export function renderSprite(obj, opts = {}) {
   const a = toCam((opts.anchor || new THREE.Vector3()).clone());
   scene.remove(obj);
   return trim(out, (a.x - x0) * PPU, (y1 - a.y) * PPU);
+}
+
+// Planar water reflection: the model mirrored in the waterline (y = 0) with the
+// lights mirrored too, seen by the same camera. Only the part above the water is
+// reflected; it fades with depth below the surface, takes on the sea colour and
+// is slightly blurred. The pivot stays at the anchor, so at runtime the
+// reflection sits exactly under the boat.
+function renderReflection(obj, opts) {
+  obj.scale.y *= -1;
+  scene.add(obj);
+  obj.traverse(o => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = false; } });
+  obj.updateMatrixWorld(true);
+  const box = new THREE.Box3().setFromObject(obj);
+  box.max.y = Math.min(box.max.y, 0);
+  ground.visible = false;
+  const sunPos = sun.position.clone(), fillPos = fill.position.clone(), sky = hemi.color.clone(), gnd = hemi.groundColor.clone();
+  const c = box.getCenter(new THREE.Vector3());
+  sun.target.position.copy(c); sun.position.copy(c).add(new THREE.Vector3(-6, -14, 9));
+  fill.position.set(10, -6, 3);
+  hemi.color.copy(gnd); hemi.groundColor.copy(sky);
+  let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+  for (let i = 0; i < 8; i++) {
+    const p = toCam(new THREE.Vector3(i & 1 ? box.max.x : box.min.x, i & 2 ? box.max.y : box.min.y, i & 4 ? box.max.z : box.min.z));
+    x0 = Math.min(x0, p.x); x1 = Math.max(x1, p.x); y0 = Math.min(y0, p.y); y1 = Math.max(y1, p.y);
+  }
+  const pad = 4 / PPU;
+  x0 -= pad; x1 += pad; y0 -= pad; y1 += pad;
+  const W = Math.ceil((x1 - x0) * PPU), H = Math.ceil((y1 - y0) * PPU);
+  cam.left = x0; cam.right = x0 + W / PPU; cam.top = y1; cam.bottom = y1 - H / PPU;
+  cam.updateProjectionMatrix();
+  renderer.setSize(W, H, false);
+  renderer.clippingPlanes = [keepBelow];
+  renderer.render(scene, cam);
+  const colour = copy(renderer.domElement, false);
+  scene.overrideMaterial = depthMat;
+  renderer.render(scene, cam);
+  const depth = copy(renderer.domElement, false);
+  scene.overrideMaterial = null;
+  renderer.clippingPlanes = [];
+  sun.position.copy(sunPos); fill.position.copy(fillPos); hemi.color.copy(sky); hemi.groundColor.copy(gnd);
+  const cg = colour.getContext('2d'), img = cg.getImageData(0, 0, W, H), dd = depth.getContext('2d').getImageData(0, 0, W, H).data, px = img.data;
+  const strength = opts.reflectAlpha ?? 0.8;
+  for (let i = 0; i < px.length; i += 4) {
+    if (!px[i + 3]) continue;
+    const f = Math.pow(1 - dd[i] / 255, 1.8);
+    px[i] = px[i] * 0.6 + SEA_TINT[0] * 0.4; px[i + 1] = px[i + 1] * 0.6 + SEA_TINT[1] * 0.4; px[i + 2] = px[i + 2] * 0.6 + SEA_TINT[2] * 0.4;
+    px[i + 3] = px[i + 3] * f * strength;
+  }
+  cg.putImageData(img, 0, 0);
+  const blur = document.createElement('canvas'); blur.width = W; blur.height = H;
+  const bg = blur.getContext('2d'); bg.filter = 'blur(0.7px)'; bg.drawImage(colour, 0, 0);
+  const a = toCam((opts.anchor || new THREE.Vector3()).clone());
+  scene.remove(obj);
+  return trim(blur, (a.x - x0) * PPU, (y1 - a.y) * PPU);
 }
 
 // Copy the WebGL frame; 'grade' adds the saturated cartoon colour grade.

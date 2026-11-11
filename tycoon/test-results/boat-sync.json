@@ -1,0 +1,329 @@
+[
+ {
+  "scenario": "fleet4",
+  "seconds": 900,
+  "boats": 4,
+  "pageErrors": [],
+  "simulation": {
+   "legDurationsWithVisuals": {
+    "0/fish": "6.03",
+    "0/back": "10.60",
+    "0/out": "8.43",
+    "1/fish": "6.03",
+    "1/back": "10.53",
+    "1/out": "8.37",
+    "2/fish": "6.03",
+    "2/back": "11.17",
+    "2/out": "9.00",
+    "3/fish": "6.03",
+    "3/back": "10.77",
+    "3/out": "8.60"
+   },
+   "identicalToRunWithout": true,
+   "caught": {
+    "withVisuals": 921,
+    "without": 921
+   },
+   "money": {
+    "withVisuals": 2984,
+    "without": 2996
+   }
+  },
+  "hulls": {
+   "overlapSamples": 0,
+   "firstOverlap": null,
+   "minGapTiles": 0.244,
+   "landContactSamples": 0,
+   "decorContactSamples": 0
+  },
+  "motion": {
+   "maxSpeedTilesPerS": 3.05,
+   "maxTurnRateDegPerS": 57.7,
+   "holdSeconds": 13.1
+  },
+  "cruiseShare": {
+   "p10": 0.97,
+   "median": 1.19,
+   "p90": 1.6,
+   "max": 1.6
+  },
+  "sync": {
+   "arrivalLagS": {
+    "n": 90,
+    "min": -0.2,
+    "median": -0.17,
+    "max": -0.1,
+    "mean": -0.15
+   },
+   "departureLagS": {
+    "n": 92,
+    "min": -0.53,
+    "median": -0.53,
+    "max": -0.53,
+    "mean": -0.53
+   },
+   "towingS": {
+    "n": 88,
+    "min": 0.5,
+    "median": 2.1,
+    "max": 2.3,
+    "mean": 1.87
+   },
+   "tripsWithoutTowing": 2
+  },
+  "lateArrivals": [],
+  "ok": true,
+  "wallSeconds": 17
+ },
+ {
+  "scenario": "fleet4-upgraded",
+  "seconds": 600,
+  "boats": 4,
+  "pageErrors": [],
+  "simulation": {
+   "legDurationsWithVisuals": {
+    "0/fish": "3.37",
+    "0/back": "5.87",
+    "0/out": "4.67",
+    "1/fish": "3.37",
+    "1/back": "5.83",
+    "1/out": "4.63",
+    "2/fish": "3.37",
+    "2/back": "6.20",
+    "2/out": "5.00",
+    "3/fish": "3.37",
+    "3/back": "5.97",
+    "3/out": "4.77"
+   },
+   "identicalToRunWithout": true,
+   "caught": {
+    "withVisuals": 729,
+    "without": 729
+   },
+   "money": {
+    "withVisuals": 2040,
+    "without": 2076
+   }
+  },
+  "hulls": {
+   "overlapSamples": 0,
+   "firstOverlap": null,
+   "minGapTiles": 0.417,
+   "landContactSamples": 0,
+   "decorContactSamples": 0
+  },
+  "motion": {
+   "maxSpeedTilesPerS": 4.85,
+   "maxTurnRateDegPerS": 82.2,
+   "holdSeconds": 1
+  },
+  "cruiseShare": {
+   "p10": 1.1,
+   "median": 1.6,
+   "p90": 2,
+   "max": 2
+  },
+  "sync": {
+   "arrivalLagS": {
+    "n": 26,
+    "min": -0.17,
+    "median": -0.1,
+    "max": 0.4,
+    "mean": -0.09
+   },
+   "departureLagS": {
+    "n": 26,
+    "min": -0.53,
+    "median": -0.53,
+    "max": -0.53,
+    "mean": -0.53
+   },
+   "towingS": {
+    "n": 6,
+    "min": 0.07,
+    "median": 0.07,
+    "max": 0.07,
+    "mean": 0.07
+   },
+   "tripsWithoutTowing": 20
+  },
+  "lateArrivals": [],
+  "ok": true,
+  "wallSeconds": 10
+ },
+ {
+  "scenario": "fleet1",
+  "seconds": 300,
+  "boats": 1,
+  "pageErrors": [],
+  "simulation": {
+   "legDurationsWithVisuals": {
+    "0/fish": "6.03",
+    "0/back": "10.60",
+    "0/out": "8.43"
+   },
+   "identicalToRunWithout": true,
+   "caught": {
+    "withVisuals": 101,
+    "without": 101
+   },
+   "money": {
+    "withVisuals": 860,
+    "without": 860
+   }
+  },
+  "hulls": {
+   "overlapSamples": 0,
+   "firstOverlap": null,
+   "minGapTiles": null,
+   "landContactSamples": 0,
+   "decorContactSamples": 0
+  },
+  "motion": {
+   "maxSpeedTilesPerS": 3.05,
+   "maxTurnRateDegPerS": 57.2,
+   "holdSeconds": 0
+  },
+  "cruiseShare": {
+   "p10": 1.04,
+   "median": 1.6,
+   "p90": 1.6,
+   "max": 1.6
+  },
+  "sync": {
+   "arrivalLagS": {
+    "n": 10,
+    "min": -0.2,
+    "median": -0.2,
+    "max": -0.2,
+    "mean": -0.2
+   },
+   "departureLagS": {
+    "n": 11,
+    "min": -0.53,
+    "median": -0.53,
+    "max": -0.53,
+    "mean": -0.53
+   },
+   "towingS": {
+    "n": 10,
+    "min": 1.17,
+    "median": 1.17,
+    "max": 1.17,
+    "mean": 1.17
+   },
+   "tripsWithoutTowing": 0
+  },
+  "lateArrivals": [],
+  "ok": true,
+  "wallSeconds": 7
+ },
+ {
+  "scenario": "fleet4-maxed",
+  "seconds": 400,
+  "boats": 4,
+  "pageErrors": [],
+  "simulation": {
+   "legDurationsWithVisuals": {
+    "0/fish": "0.70",
+    "0/back": "3.10",
+    "0/out": "2.47",
+    "1/fish": "0.70",
+    "1/back": "3.10",
+    "1/out": "2.43",
+    "2/fish": "0.70",
+    "2/back": "3.27",
+    "3/fish": "0.70",
+    "3/back": "3.17"
+   },
+   "identicalToRunWithout": true,
+   "caught": {
+    "withVisuals": 701,
+    "without": 701
+   },
+   "money": {
+    "withVisuals": 1572,
+    "without": 1536
+   }
+  },
+  "hulls": {
+   "overlapSamples": 0,
+   "firstOverlap": null,
+   "minGapTiles": 1.802,
+   "landContactSamples": 0,
+   "decorContactSamples": 0
+  },
+  "motion": {
+   "maxSpeedTilesPerS": 6.68,
+   "maxTurnRateDegPerS": 121,
+   "holdSeconds": 0
+  },
+  "cruiseShare": {
+   "p10": 1.4,
+   "median": 1.6,
+   "p90": 2,
+   "max": 2
+  },
+  "sync": {
+   "arrivalLagS": {
+    "n": 7,
+    "min": 1.53,
+    "median": 3.33,
+    "max": 3.5,
+    "mean": 2.97
+   },
+   "departureLagS": {
+    "n": 7,
+    "min": -0.53,
+    "median": -0.53,
+    "max": -0.53,
+    "mean": -0.53
+   },
+   "towingS": {
+    "n": 0,
+    "mean": 0
+   },
+   "tripsWithoutTowing": 7
+  },
+  "lateArrivals": [
+   {
+    "boat": 0,
+    "simDock": 7.5,
+    "visualIn": 11,
+    "events": [
+     "0.033 0 v docked",
+     "0.1 0 v castoff",
+     "0.7 0 v depart",
+     "1.233 0 s out",
+     "3.7 0 s fish",
+     "4.4 0 s back",
+     "6.033 0 v return",
+     "7.5 0 s dock",
+     "11 0 v settle"
+    ]
+   },
+   {
+    "boat": 0,
+    "simDock": 24.367,
+    "visualIn": 27.867,
+    "events": [
+     "4.4 0 s back",
+     "6.033 0 v return",
+     "7.5 0 s dock",
+     "11 0 v settle",
+     "12.3 0 v docked",
+     "16.967 0 v castoff",
+     "17.567 0 v depart",
+     "18.1 0 s out",
+     "20.567 0 s fish",
+     "21.267 0 s back",
+     "22.9 0 v return",
+     "24.367 0 s dock",
+     "27.867 0 v settle"
+    ]
+   }
+  ],
+  "ok": true,
+  "wallSeconds": 10
+ }
+]

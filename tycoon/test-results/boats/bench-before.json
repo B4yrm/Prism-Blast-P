@@ -1,0 +1,101 @@
+{
+ "low/fit": {
+  "frames": 301,
+  "frameMsAvg": 16.6,
+  "frameMsP90": 16.7,
+  "fps": 60.1,
+  "updateMsAvg": 0.21,
+  "drawCallsPerFrame": 1.1,
+  "textureMB": 35.7,
+  "heapMB": 39.5,
+  "objects": 729
+ },
+ "low/harbour": {
+  "frames": 301,
+  "frameMsAvg": 16.6,
+  "frameMsP90": 16.7,
+  "fps": 60.1,
+  "updateMsAvg": 0.24,
+  "drawCallsPerFrame": 1.1,
+  "textureMB": 35.7,
+  "heapMB": 39.7,
+  "objects": 728
+ },
+ "low/fleet": {
+  "frames": 145,
+  "frameMsAvg": 34.6,
+  "frameMsP90": 66.7,
+  "fps": 28.9,
+  "updateMsAvg": 0.17,
+  "drawCallsPerFrame": 2,
+  "textureMB": 35.7,
+  "heapMB": 42.9,
+  "objects": 744
+ },
+ "medium/fit": {
+  "frames": 72,
+  "frameMsAvg": 69.8,
+  "frameMsP90": 133.3,
+  "fps": 14.3,
+  "updateMsAvg": 0.33,
+  "drawCallsPerFrame": 5,
+  "textureMB": 89.2,
+  "heapMB": 55.1,
+  "objects": 801
+ },
+ "medium/harbour": {
+  "frames": 77,
+  "frameMsAvg": 65.5,
+  "frameMsP90": 116.7,
+  "fps": 15.3,
+  "updateMsAvg": 0.4,
+  "drawCallsPerFrame": 5,
+  "textureMB": 89.2,
+  "heapMB": 53.2,
+  "objects": 801
+ },
+ "medium/fleet": {
+  "frames": 69,
+  "frameMsAvg": 72.9,
+  "frameMsP90": 133.3,
+  "fps": 13.7,
+  "updateMsAvg": 0.42,
+  "drawCallsPerFrame": 5,
+  "textureMB": 89.2,
+  "heapMB": 55.4,
+  "objects": 818
+ },
+ "high/fit": {
+  "frames": 65,
+  "frameMsAvg": 77.8,
+  "frameMsP90": 133.3,
+  "fps": 12.9,
+  "updateMsAvg": 0.5,
+  "drawCallsPerFrame": 5,
+  "textureMB": 91.5,
+  "heapMB": 54.4,
+  "objects": 732
+ },
+ "high/harbour": {
+  "frames": 64,
+  "frameMsAvg": 78.5,
+  "frameMsP90": 133.4,
+  "fps": 12.7,
+  "updateMsAvg": 0.33,
+  "drawCallsPerFrame": 5,
+  "textureMB": 91.5,
+  "heapMB": 56,
+  "objects": 732
+ },
+ "high/fleet": {
+  "frames": 52,
+  "frameMsAvg": 96.4,
+  "frameMsP90": 150,
+  "fps": 10.4,
+  "updateMsAvg": 0.36,
+  "drawCallsPerFrame": 5,
+  "textureMB": 91.5,
+  "heapMB": 57.1,
+  "objects": 748
+ }
+}

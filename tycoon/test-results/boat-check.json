@@ -1,0 +1,136 @@
+{
+ "departures": [
+  {
+   "berth": 0,
+   "reverse": 4.55,
+   "sea": 14.94,
+   "reverseRadius": 2.5,
+   "minSeaRadius": 2.8,
+   "hits": 0
+  },
+  {
+   "berth": 1,
+   "reverse": 4.68,
+   "sea": 10.94,
+   "reverseRadius": 2.5,
+   "minSeaRadius": 2.8,
+   "hits": 0
+  },
+  {
+   "berth": 2,
+   "reverse": 4.18,
+   "sea": 14.96,
+   "reverseRadius": 2.5,
+   "minSeaRadius": 2.8,
+   "hits": 0
+  },
+  {
+   "berth": 3,
+   "reverse": 2.93,
+   "sea": 12.71,
+   "reverseRadius": 2.5,
+   "minSeaRadius": 2.8,
+   "hits": 0
+  }
+ ],
+ "arrivals": [
+  {
+   "berth": 0,
+   "starts": 40,
+   "withHits": 0,
+   "clearFromAnyOf16Headings": 5,
+   "minRadius": 2.8,
+   "longest": 19.83,
+   "meanFromFishing": 16.06
+  },
+  {
+   "berth": 1,
+   "starts": 29,
+   "withHits": 0,
+   "clearFromAnyOf16Headings": 5,
+   "minRadius": 2.8,
+   "longest": 19.52,
+   "meanFromFishing": 18.35
+  },
+  {
+   "berth": 2,
+   "starts": 68,
+   "withHits": 0,
+   "clearFromAnyOf16Headings": 8,
+   "minRadius": 2.8,
+   "longest": 23.91,
+   "meanFromFishing": 15.64
+  },
+  {
+   "berth": 3,
+   "starts": 59,
+   "withHits": 0,
+   "clearFromAnyOf16Headings": 5,
+   "minRadius": 2.8,
+   "longest": 20.72,
+   "meanFromFishing": 16.66
+  }
+ ],
+ "fishing": [
+  {
+   "berth": 0,
+   "len": 2.5,
+   "hits": 0
+  },
+  {
+   "berth": 1,
+   "len": 2.5,
+   "hits": 0
+  },
+  {
+   "berth": 2,
+   "len": 2.5,
+   "hits": 0
+  },
+  {
+   "berth": 3,
+   "len": 2.5,
+   "hits": 0
+  }
+ ],
+ "decor": [
+  {
+   "k": 0,
+   "at": [
+    24.6,
+    24.6
+   ],
+   "onSolid": 0,
+   "onBoat": 0
+  },
+  {
+   "k": 1,
+   "at": [
+    2,
+    25.6
+   ],
+   "onSolid": 0,
+   "onBoat": 0
+  },
+  {
+   "k": 2,
+   "at": [
+    27.6,
+    26.6
+   ],
+   "onSolid": 0,
+   "onBoat": 0
+  },
+  {
+   "k": 3,
+   "at": [
+    27.5,
+    23.6
+   ],
+   "onSolid": 0,
+   "onBoat": 0
+  }
+ ],
+ "fails": [],
+ "ok": true
+}
