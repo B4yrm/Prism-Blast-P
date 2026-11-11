@@ -19,7 +19,11 @@ async function kenney(name, rot = 0) {
   g.updateMatrixWorld(true);
   const b2 = new THREE.Box3().setFromObject(g);
   const flat = name.startsWith('road') || name.startsWith('pavement');
-  g.position.set(-b2.min.x, flat ? -b2.max.y : -b2.min.y, -b2.min.z);
+  // flat tiles: road surface at y = 0 (lamp posts / fountains stick up from it)
+  let top = b2.max.y;
+  if (flat && name !== 'road-straight' && name !== 'pavement') top = (await kenney('road-straight')).userData.top;
+  g.position.set(-b2.min.x, flat ? -top : -b2.min.y, -b2.min.z);
+  g.userData.top = b2.max.y;
   g.userData.box = [b2.min.toArray(), b2.max.toArray()];
   // keep the top surface of flat tiles at y = 0
   return g;

@@ -206,9 +206,9 @@ const inRect = (rs, i, j) => rs.some(([x0, y0, x1, y1]) => i >= x0 && i <= x1 &&
 // open sides per Kenney road model rotation (N = −y, E = +x, S = +y, W = −x)
 const ROAD_TILES = [
   ['k/road-intersection/0', 'NESW'],
-  ['k/road-split/0', 'ESW'], ['k/road-split/1', 'NES'], ['k/road-split/2', 'NEW'], ['k/road-split/3', 'NSW'],
-  ['k/road-corner/0', 'SW'], ['k/road-corner/1', 'ES'], ['k/road-corner/2', 'NE'], ['k/road-corner/3', 'NW'],
-  ['k/road-straight/0', 'EW'], ['k/road-straight/1', 'NS'],
+  ['k/road-split/0', 'NES'], ['k/road-split/1', 'ESW'], ['k/road-split/2', 'NSW'], ['k/road-split/3', 'NEW'],
+  ['k/road-corner/0', 'NE'], ['k/road-corner/1', 'ES'], ['k/road-corner/2', 'SW'], ['k/road-corner/3', 'NW'],
+  ['k/road-straight/0', 'NS'], ['k/road-straight/1', 'EW'],
 ];
 function roadFrame(i, j) {
   let k = '';
@@ -220,7 +220,7 @@ function roadFrame(i, j) {
   if (k.length <= 1) k = (k === 'N' || k === 'S') ? 'NS' : 'EW';
   if (k === 'NS' || k === 'EW') {
     const lamp = (k === 'EW' ? i : j) % 4 === 1;
-    return lamp ? `k/road-straight-lightposts/${k === 'EW' ? 0 : 1}` : ROAD_TILES.find(r => r[1] === k)[0];
+    return lamp ? `k/road-straight-lightposts/${k === 'EW' ? 1 : 0}` : ROAD_TILES.find(r => r[1] === k)[0];
   }
   const hit = ROAD_TILES.find(r => r[1] === k);
   return hit ? hit[0] : 'k/road-intersection/0';
