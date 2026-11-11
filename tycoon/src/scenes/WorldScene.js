@@ -295,7 +295,7 @@ export class WorldScene extends Phaser.Scene {
       if (!inp.pointer1.isDown && !inp.pointer2.isDown) pinch = null;
       if (drag && moved < 8 * G.quality.dpr) {
         // double tap zooms in around the finger (or back out when already close)
-        const now = this.time.now;
+        const now = performance.now();      // real time: slow frames must not break double-tap
         if (this.lastTap && now - this.lastTap.t < 300 && Math.hypot(p.x - this.lastTap.x, p.y - this.lastTap.y) < 30 * G.quality.dpr) {
           this.lastTap = null;
           this.zoomTo(cam.zoom > this.fitZ * 2.2 ? this.fitZ : cam.zoom * 1.8, p.x, p.y);

@@ -1,5 +1,5 @@
 {
- "passed": 11,
+ "passed": 12,
  "total": 12,
  "report": {
   "layout_no_overlap": {
@@ -113,11 +113,11 @@
    }
   },
   "touch_input": {
-   "pass": false,
+   "pass": true,
    "dragMovedPx": 409,
    "pinchZoom": 2.6,
-   "recenterZoomBack": 1.045,
-   "doubleTapZoom": 1.72,
+   "recenterZoomBack": 1,
+   "doubleTapZoom": 1.8,
    "tapOpened": "Anbar"
   },
   "labels_no_flicker": {
@@ -167,8 +167,8 @@
    ],
    "caught": 310,
    "sold": 296,
-   "earned": 1088,
-   "customersSeen": 7
+   "earned": 1100,
+   "customersSeen": 8
   },
   "no_page_errors": {
    "pass": true,
@@ -180,25 +180,25 @@
     "preset": "high",
     "canvas": "1688x780",
     "textureMB": 101.6,
-    "heapMB": 65.9,
-    "updateMsAvg": 3.19,
+    "heapMB": 64.6,
+    "updateMsAvg": 3.85,
     "objects": 864
    },
    "medium": {
     "preset": "medium",
     "canvas": "1266x585",
     "textureMB": 88.7,
-    "heapMB": 51.7,
-    "updateMsAvg": 2.08,
+    "heapMB": 53,
+    "updateMsAvg": 2.34,
     "objects": 846
    },
    "low": {
     "preset": "low",
     "canvas": "844x390",
     "textureMB": 37.8,
-    "heapMB": 43.2,
-    "updateMsAvg": 1.72,
-    "objects": 836
+    "heapMB": 40.4,
+    "updateMsAvg": 1.36,
+    "objects": 837
    }
   }
  }
