@@ -2,6 +2,51 @@
 
 **Scope:** boats only (look, movement, docking, contact with the water). Untouched: the simulation (`src/sim/` has no changes), economy, missions, save/load, workers, cranes' look, buildings, the multi-sea system, the Stage 2 backup and Balıqçı Idle.
 
+## Revision 2 (after review)
+
+Two problems were fixed, and boats are now tested separately with no upgrades and with every upgrade at its maximum.
+
+**1. In the slip before unloading, at every upgrade level.** The time at which the simulation will dock is now a hard deadline for the whole visual trip, computed from the simulation's own formulas.
+- When a boat leaves, its speed is planned so that way out + nets + way home end **0.5 s before** the simulation docks.
+- If the simulation's trip is shorter than a calm manoeuvre allows, the whole animation runs faster. Cruise and harbour speeds, the turn rate and the gear-change pause all scale together, up to 8× the normal speed share. The route itself does not change, so the clearance checks still hold.
+- **Result:** in all 6 scenarios, including every harbour upgrade at 30 plus the speed research at its top level, the boat is in its slip **0.43–0.57 s before** unloading starts.
+- **The cost:** at those extreme levels, where the simulation's whole trip lasts about 5–6 s, the boats move very fast: up to 19 tiles/s and about 350°/s in turns. This only happens when needed. With no upgrades, top speed is 3–5 tiles/s.
+
+**2. The net at every fishing time.** Every trip now shows a net:
+- paid out astern on two warps, with a float line and orange floats;
+- towed;
+- hauled back in, with the catch shining silver in the cod end.
+
+The animation is scaled to the time available: 45 % of the simulation's fishing time, 0.9–2.5 s, never shorter than 0.7 s. Even with fishing at 0.7 s (nets upgraded to 30), every trip shows the net (0 trips without it).
+
+**Fish jumps** now come from the net while it is hauled in, 5 per trip. The game's random splash event is no longer used for this. In the tests, every jump was at most 0.41 tiles from a net that was being hauled.
+
+**Performance (High, 4 boats):**
+- Boats off screen are no longer drawn: no sprites, shadows or lines.
+- Fewer temporary objects per frame.
+- The way home is estimated once and cached.
+- Boats do their planning on different frames.
+
+Average boat logic cost is about 0.2 ms per frame. Occasional 6–13 ms frames remain; they appear in the previous build as well and look like garbage collection.
+
+**Simulation unchanged:**
+- 1 boat over 10 minutes: every leg is identical to the build before phase 2, and the catch is 211 = 211.
+- 4 boats: every boat's out / fishing / back legs are identical.
+- In all 6 scenarios, the legs are the same with and without visual boats.
+
+**Tests after the fixes (`tests/boat-sync.cjs`):**
+
+| Scenario | Overlaps | Touching land / pier / decor | Closest gap (tiles) | In slip before unloading (s) | Net cast + haul (s, min / median) | Trips without the net | Fish jumps (farthest from the net, tiles) | Top speed (tiles/s) / turn (°/s) |
+|---|---|---|---|---|---|---|---|---|
+| 4 boats, no upgrades, 15 min | **0** | **0** | 0.249 | 0.50 … 0.57 | 0.7 / 2.07 | **0** | 445 (0.41) | 5.23 / 89.2 |
+| 4 boats, engine 10 / nets 8 / hold 6, 10 min | **0** | **0** | 1.045 | 0.47 … 0.57 | 0.7 / 0.73 | **0** | 130 (0.39) | 6.05 / 111.2 |
+| 1 boat, 5 min | **0** | **0** | – | 0.50 … 0.53 | 1.13 / 1.17 | **0** | 50 (0.41) | 3.05 / 57.2 |
+| 1 boat, every harbour upgrade at 30, 5 min | **0** | **0** | – | 0.43 … 0.47 | 0.7 / 0.73 | **0** | 20 (0.41) | 14.54 / 247.2 |
+| 4 boats, every harbour upgrade at 30, 6.7 min | **0** | **0** | 1.973 | 0.43 … 0.50 | 0.7 / 0.73 | **0** | 35 (0.41) | 14.54 / 280 |
+| 4 boats, harbour upgrades at 30 + sea-charts and big-nets research at 3, 6.7 min | **0** | **0** | 2.77 | 0.43 … 0.50 | 0.7 / 0.73 | **0** | 35 (0.41) | 19.11 / 354.8 |
+
+**Normal play (4 boats, no upgrades):** towing time is 2.1 s (median). The shortest, 0.7 s, happens when a boat had to wait for another one first.
+
 ## How it works
 
 The simulation still moves every boat along its straight route with the same timings as before. A new visual layer (`src/render/boats.js`) draws each boat along realistic manoeuvres instead and plans its speed from the simulation's clock:
@@ -59,7 +104,7 @@ Trip time, catch and income therefore cannot change: the visual layer only reads
 - **`tests/boat-sync.cjs`** runs the game for 5–15 minutes with and without the visual boats. In all 4 scenarios every leg duration is identical, and so is the catch (921 = 921, 729 = 729, 101 = 101, 701 = 701).
   - Money differs by about 1 % even between two runs *without* visual boats. It depends on the start-up frames and wall-clock timers (measured: two plain runs gave 881 and 901 fish over 900 s), not on the boats.
 
-## Sync with the simulation and safety (`tests/boat-sync.cjs`, stepped at 30 FPS)
+## Sync with the simulation and safety: first version (`tests/boat-sync.cjs`, stepped at 30 FPS)
 
 | Scenario | Hull overlaps | Touching land / pier / decor | Closest gap (tiles) | Arrival vs. unloading start (s) | Towing (median s) | Waits (s) |
 |---|---|---|---|---|---|---|
@@ -70,7 +115,7 @@ Trip time, catch and income therefore cannot change: the visual layer only reads
 
 - The boat starts backing out 0.53 s before the simulation leaves.
 - Largest speed: 3.05 tiles/s with the starting engine (the old boats moved at 1.9). Largest turn rate: 58°/s.
-- **Limitation:** with every harbour upgrade at its maximum, a whole trip lasts about 6 s in the simulation, faster than a boat can visibly manoeuvre. The boat then reaches its slip 1.5–3.5 s after unloading has started. The crane waits for it, but crates appear on the quay a moment early. The same happens when fishing time drops below about 3.5 s (heavily upgraded nets): the boat turns for home without towing, and fish jump as it passes the fishing spot.
+- *(First version. The limitation that stood here, boats arriving late with maxed upgrades and no towing with short fishing, is fixed in Revision 2 above.)*
 
 **Static check (`tests/boat-check.cjs`):**
 - For all 4 berths, nothing touches land, piers, the quay, moored or decorative boats, or buoys:
@@ -81,7 +126,7 @@ Trip time, catch and income therefore cannot change: the visual layer only reads
 - No turn is tighter than 2.8 tiles.
 - Tools that found the manoeuvres: `tools/boats/search.mjs` (back-out) and `tools/boats/grounds.mjs` (fishing spots).
 
-## Performance before / after
+## Performance: before phase 2 / after revision 2
 
 Script: `tests/bench.cjs`. Headless Chromium with a software GPU, 844×390 at DPR 2.75, 5 s per scene. Scenes:
 - **fit**: the opening view;
@@ -90,15 +135,15 @@ Script: `tests/bench.cjs`. Headless Chromium with a software GPU, 844×390 at DP
 
 | Preset/scene | FPS | Frame time p90 (ms) | Update (ms) | Textures (MB) | JS heap (MB) |
 |---|---|---|---|---|---|
-| low/fit | 60.1 → **60.2** | 16.7 → 16.7 | 0.21 → 0.19 | 35.7 → 37.5 | 39.5 → 42.6 |
-| low/harbour | 60.1 → **60.1** | 16.7 → 16.7 | 0.24 → 0.16 | 35.7 → 37.5 | 39.7 → 43.9 |
-| low/fleet | 28.9 → **33.6** | 66.7 → 66.7 | 0.17 → 0.26 | 35.7 → 37.5 | 42.9 → 44.7 |
-| medium/fit | 14.3 → **15.2** | 133.3 → 100 | 0.33 → 0.35 | 89.2 → 96.6 | 55.1 → 57.3 |
-| medium/harbour | 15.3 → **15** | 116.7 → 133.3 | 0.4 → 0.38 | 89.2 → 96.6 | 53.2 → 56.6 |
-| medium/fleet | 13.7 → **12.9** | 133.3 → 133.3 | 0.42 → 0.6 | 89.2 → 96.6 | 55.4 → 57.7 |
-| high/fit | 12.9 → **13.5** | 133.3 → 133.3 | 0.5 → 0.39 | 91.5 → 98.9 | 54.4 → 58.1 |
-| high/harbour | 12.7 → **11.7** | 133.4 → 133.3 | 0.33 → 0.49 | 91.5 → 98.9 | 56 → 59.3 |
-| high/fleet | 10.4 → **10.6** | 150 → 133.3 | 0.36 → 0.6 | 91.5 → 98.9 | 57.1 → 64.7 |
+| low/fit | 60.1 → **60.1** | 16.7 → 16.7 | 0.21 → 0.31 | 35.7 → 37.5 | 39.5 → 41.7 |
+| low/harbour | 60.1 → **60.1** | 16.7 → 16.7 | 0.24 → 0.27 | 35.7 → 37.5 | 39.7 → 44.2 |
+| low/fleet | 28.9 → **25.1** | 66.7 → 83.4 | 0.17 → 0.3 | 35.7 → 37.5 | 42.9 → 45.3 |
+| medium/fit | 14.3 → **14.5** | 133.3 → 116.7 | 0.33 → 0.64 | 89.2 → 96.6 | 55.1 → 57.4 |
+| medium/harbour | 15.3 → **14.8** | 116.7 → 116.7 | 0.4 → 0.7 | 89.2 → 96.6 | 53.2 → 56.1 |
+| medium/fleet | 13.7 → **12.6** | 133.3 → 149.9 | 0.42 → 0.64 | 89.2 → 96.6 | 55.4 → 63 |
+| high/fit | 12.9 → **12.5** | 133.3 → 149.9 | 0.5 → 0.7 | 91.5 → 98.9 | 54.4 → 59.1 |
+| high/harbour | 12.7 → **11.1** | 133.4 → 150 | 0.33 → 0.61 | 91.5 → 98.9 | 56 → 57.7 |
+| high/fleet | 10.4 → **10.1** | 150 → 130.1 | 0.36 → 0.54 | 91.5 → 98.9 | 57.1 → 62.4 |
 
 **Reading the numbers:**
 - Between runs of the same build this software renderer varies by ±10–15 %. Repeated fleet runs:
@@ -111,14 +156,14 @@ Script: `tests/bench.cjs`. Headless Chromium with a software GPU, 844×390 at DP
 
 ## Tests
 
-- **Browser suite (`tests/run-tests.cjs`):** **15/15** passed:
+- **Browser suite (`tests/run-tests.cjs`), revision 2:** **15/15** in the latest run (`boats/browser-tests.json`):
   - layout on 12 screen sizes;
-  - touch: double tap 10/10 on Low, 6/10 on High (the known headless limitation from `TEST-REPORT.md`);
+  - double tap 10/10 on Low and 4/10 on High (High is the known headless limitation from `TEST-REPORT.md`);
   - real play → close → reopen with all 13 fields equal;
   - old-save compatibility, offline earnings, corrupt save, simulation and presets.
 
-  The results are in `boats/browser-tests.json`. In one run made while screenshots were being captured in parallel, the two timing-sensitive touch tests dropped to 9/10 and 2/10. Run alone, they pass.
-- **Android 14 emulator (CI, Pixel 6, software GPU):**
+  **Flaky:** on **High**, the check "a quick double tap on a building keeps its panel open" failed in 2 of 3 runs. It sends two taps 120 ms apart while this software renderer needs about 100 ms per frame on High. Low passes every time. Like the High double tap, it needs checking on a real phone.
+- **Android 14 emulator (CI, Pixel 6, software GPU), first version** (revision 2 results are added after its CI run):
   - every UI and touch step passed;
   - real play → force-stop → reopen: all 13 fields equal;
   - 0 crashes.
@@ -138,7 +183,10 @@ Script: `tests/bench.cjs`. Headless Chromium with a software GPU, 844×390 at DP
 ## Files
 
 - **Screenshots:** `test-results/boats/` (`high-*`, `medium-*`, `low-*`, `compare-presets-*`)
-- **Motion:** `test-results/boats/boats-motion.gif` (480 px, 19 s: leaving the slip, then coming home and making fast) and `boats-motion.mp4` (640 px, same footage)
+- **Motion:**
+  - `test-results/boats/boats-motion.gif` (420 px, 23 s, no upgrades: leaving the slip, the net cast and hauled with fish jumping, coming home and making fast) and `boats-motion.mp4`;
+  - `boats-maxed.gif` and `boats-maxed.mp4` (every harbour upgrade at 30: a whole trip in about 7 s, in the slip before unloading).
+- **Net animation:** `net-sequence.jpg`, `high-net-*.jpg` and `net-medium-low.jpg`
 - **Benchmarks:** `test-results/boats/bench-before.json` and `bench-after.json`
 - **Boat checks:** `test-results/boat-check.json` and `test-results/boat-sync.json`
 - **Code:**

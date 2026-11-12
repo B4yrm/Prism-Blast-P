@@ -168,15 +168,16 @@ export const RETURN_FROM = [11, 9.75, 4, 4];
 
 const cat = (...parts) => parts.reduce((acc, p) => acc.concat(acc.length ? p.slice(1) : p), []);
 
-export function poseAt(path, s) {
-  const { x, y, a, n } = path;
-  if (s <= 0) return { x: x[0], y: y[0], a: a[0] };
-  if (s >= path.len) return { x: x[n - 1], y: y[n - 1], a: a[n - 1] };
+export function poseAt(path, s, out) {
+  const { x, y, a, n } = path, o = out || {};
+  if (s <= 0) { o.x = x[0]; o.y = y[0]; o.a = a[0]; return o; }
+  if (s >= path.len) { o.x = x[n - 1]; o.y = y[n - 1]; o.a = a[n - 1]; return o; }
   let lo = 0, hi = n - 1;
   while (hi - lo > 1) { const mid = (lo + hi) >> 1; if (path.s[mid] <= s) lo = mid; else hi = mid; }
   const t = (s - path.s[lo]) / Math.max(1e-6, path.s[hi] - path.s[lo]);
   let da = a[hi] - a[lo]; while (da > Math.PI) da -= 2 * Math.PI; while (da < -Math.PI) da += 2 * Math.PI;
-  return { x: x[lo] + (x[hi] - x[lo]) * t, y: y[lo] + (y[hi] - y[lo]) * t, a: a[lo] + da * t };
+  o.x = x[lo] + (x[hi] - x[lo]) * t; o.y = y[lo] + (y[hi] - y[lo]) * t; o.a = a[lo] + da * t;
+  return o;
 }
 
 // ---- manoeuvres -----------------------------------------------------------------

@@ -48,7 +48,6 @@ export class WorldScene extends Phaser.Scene {
     bus.on('tier', ({ b }) => this.refreshBuilding(b));
     bus.on('sale', e => this.floatText(e.x, e.y, '+$' + e.amt, '#ffe14d'));
     bus.on('sad', e => this.floatText(e.x, e.y, '😞', '#fff'));
-    bus.on('splash', e => this.splash(e.b));
     bus.on('unload', e => this.craneWork(e.b));
     this.time.addEvent({ delay: 250, loop: true, callback: () => this.syncStocks() });
     this.events.emit('ready');
@@ -227,10 +226,9 @@ export class WorldScene extends Phaser.Scene {
     }).setDepth(9400);
   }
   burst(x, y, n = 16) { const p = iso(x, y, 20); this.sparkle.emitParticleAt(p.x, p.y, n); }
-  splash(b) {
-    const vb = this.fleet.fishingAt(b);              // fish jump round the boat while it tows its nets
-    if (!vb) return;
-    const p = iso(vb.x - Math.cos(vb.h) * 1.6 + (Math.random() - 0.5) * 2, vb.y - Math.sin(vb.h) * 1.6 + (Math.random() - 0.5) * 2, SEA_Z);
+  // a fish jumps at grid (x, y): called by the fleet while a net is hauled in
+  fishJump(x, y) {
+    const p = iso(x, y, SEA_Z);
     this.dropFx.emitParticleAt(p.x, p.y, 6);
     const f = this.add.image(p.x, p.y, 'fishjump').setDepth(9300).setScale(0.8);
     this.tweens.add({ targets: f, y: p.y - 26, duration: 380, yoyo: true, ease: 'Quad.Out', angle: { from: -40, to: 40 }, onComplete: () => f.destroy() });

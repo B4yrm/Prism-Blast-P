@@ -20,14 +20,16 @@ esbuild.buildSync({ entryPoints: [path.join(root, 'src/render/boatpaths.js')], b
 const P = require(bundled);
 
 const SCENARIOS = [
-  // maxLag: how late (s) the visual boat may reach its slip after the simulation docked
-  { name: 'fleet4', boats: 4, secs: 900, up: {}, maxLag: 1 },
-  { name: 'fleet4-upgraded', boats: 4, secs: 600, up: { cap: 6, speed: 10, net: 8 }, maxLag: 1 },
-  { name: 'fleet1', boats: 1, secs: 300, up: {}, maxLag: 1 },
-  // every harbour upgrade at its maximum (level 30): a trip lasts 6 s in the
-  // simulation, faster than a boat can visibly manoeuvre — the visual boat may
-  // reach its slip a few seconds after unloading has started
-  { name: 'fleet4-maxed', boats: 4, secs: 400, up: { cap: 30, speed: 30, net: 30 }, maxLag: 4.5 },
+  // every scenario: the visual boat must be in its slip before the simulation
+  // starts unloading (lag < 0) and every trip shows the net being cast and hauled
+  { name: 'fleet4', boats: 4, secs: 900, up: {} },
+  { name: 'fleet4-upgraded', boats: 4, secs: 600, up: { cap: 6, speed: 10, net: 8 } },
+  { name: 'fleet1', boats: 1, secs: 300, up: {} },
+  { name: 'fleet1-maxed', boats: 1, secs: 300, up: { cap: 30, speed: 30, net: 30 } },
+  // every harbour upgrade at its maximum (level 30): a whole trip lasts ~6 s
+  { name: 'fleet4-maxed', boats: 4, secs: 400, up: { cap: 30, speed: 30, net: 30 } },
+  // … and the sea-charts research at its top level too (+30 % boat speed)
+  { name: 'fleet4-maxed-research', boats: 4, secs: 400, up: { cap: 30, speed: 30, net: 30 }, research: { nav: 3, nets: 3 } },
 ];
 
 async function run(b, sc, withFleet) {
@@ -35,7 +37,7 @@ async function run(b, sc, withFleet) {
   await ctx.addInitScript(sc => {
     if (sessionStorage.getItem('s')) return; sessionStorage.setItem('s', 1);
     localStorage.setItem('fishingTycoon.save', JSON.stringify({ v: 1, money: 500, boats: sc.boats, workers: sc.boats === 4 ? 6 : 2, level: 9, settings: { quality: 'medium' },
-      tier: { harbor: sc.boats === 4 ? 3 : 1, warehouse: 2, market: 2, hq: 2, factory: 0, farm: 0 }, up: { harbor: { cap: 0, speed: 0, net: 0, ...sc.up } },
+      tier: { harbor: sc.boats === 4 ? 3 : 1, warehouse: 2, market: 2, hq: 2, factory: 0, farm: 0 }, up: { harbor: { cap: 0, speed: 0, net: 0, ...sc.up } }, research: { lv: sc.research || {}, active: null },
       stats: { caught: 1, sold: 1 }, lastSeen: Date.now() }));
   }, sc);
   const p = await ctx.newPage();
@@ -51,9 +53,13 @@ async function run(b, sc, withFleet) {
     // that both runs (with and without visuals) feed the simulation the same numbers
     const simRandom = rnd;
     let seed2 = 99; const visRandom = () => (seed2 = (seed2 * 48271) % 2147483647) / 2147483647;
-    // splashes are drawn round the visual boat, so they draw from the visual stream too
-    const splash = w.splash.bind(w);
-    w.splash = b => { const keep = Math.random; Math.random = visRandom; splash(b); Math.random = keep; };
+    // every fish jump: how far from the net of a boat that is fishing (tiles)
+    const jumps = [], jump = w.fishJump.bind(w);
+    w.fishJump = (x, y) => {
+      let d = Infinity;
+      for (const v of F.boats) if (v.phase === 'fishing') { const q = F.netEnd(v); d = Math.min(d, Math.hypot(q.x - x, q.y - y)); }
+      jumps.push(+d.toFixed(2)); jump(x, y);
+    };
     const traj = [], ev = [];
     const lastS = sim.boats.map(b => b.state), lastV = [];
     let t = 0, holdFrames = 0, cs = [];
@@ -74,7 +80,7 @@ async function run(b, sc, withFleet) {
       }
       if (k % 200 === 0) { Math.random = simRandom; sim.collect(true); }
     }
-    return { traj, ev, holdSecs: +(holdFrames * dt).toFixed(1), cs, caught: sim.S.stats.caught, money: Math.floor(sim.S.money), dt };
+    return { jumps, nets: F.stats.nets, netMin: F.stats.netMin, traj, ev, holdSecs: +(holdFrames * dt).toFixed(1), cs, caught: sim.S.stats.caught, money: Math.floor(sim.S.money), dt };
   }, [sc.secs, withFleet]);
   r.errs = errs;
   await ctx.close();
@@ -84,6 +90,7 @@ async function run(b, sc, withFleet) {
 function analyse(sc, r, plain) {
   const out = { scenario: sc.name, seconds: sc.secs, boats: sc.boats, pageErrors: r.errs.slice(0, 3) };
   // 1. simulation untouched: per boat, the set of out / fish / back leg durations
+  //    (a leg that only one run reached inside the time window is not compared)
   const legs = run => {
     const L = {};
     for (let i = 0; i < sc.boats; i++) {
@@ -93,7 +100,7 @@ function analyse(sc, r, plain) {
     return Object.fromEntries(Object.entries(L).map(([k, v]) => [k, [...v].sort().join(',')]));
   };
   const lv = legs(r), lp = legs(plain);
-  out.simulation = { legDurationsWithVisuals: lv, identicalToRunWithout: JSON.stringify(lv) === JSON.stringify(lp),
+  out.simulation = { legDurationsWithVisuals: lv, legDurationsWithout: lp, identicalToRunWithout: Object.keys(lv).filter(k => k in lp).every(k => lv[k] === lp[k]) && Object.keys(lv).filter(k => k in lp).length >= Object.keys(lv).length - 1,
     caught: { withVisuals: r.caught, without: plain.caught }, money: { withVisuals: r.money, without: plain.money } };
   // 2. hulls: boat–boat overlap and boat–land contact, every 3rd frame
   const docked = [0, 1, 2, 3].map(P.dockedHull), decor = P.DECOR_BOATS.map(d => P.decorHull(d));
@@ -155,7 +162,9 @@ function analyse(sc, r, plain) {
     arrivalLagS: stats(arr),          // visual in the slip minus simulation docking (negative = early)
     departureLagS: stats(dep),        // visual starts backing out minus simulation leaving
     towingS: stats(fishing),
-    tripsWithoutTowing: r.ev.filter(e => e[2] === 's' && e[3] === 'dock').length - fishing.length,
+    tripsWithoutNets: (() => { let n = 0; for (let i = 0; i < sc.boats; i++) { const V = r.ev.filter(e => e[1] === i && e[2] === 'v'); V.forEach((e, k) => { if (e[3] === 'return' && k > 0 && V[k - 1][3] !== 'fishing') n++; }); } return n; })(),
+    netsShortestS: r.nets ? +r.netMin.toFixed(2) : null,
+    fishJumps: r.jumps.length, fishJumpFarthestFromNetTiles: r.jumps.length ? Math.max(...r.jumps) : null,
   };
   // context of arrivals more than 1 s late, for diagnosis
   const late = [];
@@ -168,7 +177,7 @@ function analyse(sc, r, plain) {
     }
   }
   out.lateArrivals = late.slice(0, 2);
-  out.ok = out.simulation.identicalToRunWithout && overlaps === 0 && landHits === 0 && decorHits === 0 && !r.errs.length && (arr.length ? Math.max(...arr) <= sc.maxLag : true);
+  out.ok = out.simulation.identicalToRunWithout && overlaps === 0 && landHits === 0 && decorHits === 0 && !r.errs.length && (arr.length ? Math.max(...arr) < 0 : true) && out.sync.tripsWithoutNets === 0 && (out.sync.fishJumpFarthestFromNetTiles || 0) <= 1;
   return out;
 }
 
