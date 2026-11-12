@@ -2,6 +2,51 @@
 
 **Scope:** boats only (look, movement, docking, contact with the water). Untouched: the simulation (`src/sim/` has no changes), economy, missions, save/load, workers, cranes' look, buildings, the multi-sea system, the Stage 2 backup and Balıqçı Idle.
 
+## Revision 3: natural motion at the highest levels
+
+**Problem.** In revision 2, boats with maxed upgrades did keep the deadline, but only by speeding up the whole animation: up to 19 tiles/s and 350°/s, about 3× the speed of the old straight-line boats. That did not look natural.
+
+**Fix: a harbour trip.** When the trip to the fishing grounds does not fit the simulation's trip without going more than 2× the normal speed share (`C_FULL`), boats make a short trip instead:
+- the boat backs straight out along its own slip until its bow is just clear of the pier heads (4.5–6.3 tiles);
+- it pays out its net astern into the open water and hauls it in, with fish jumping from the net;
+- it goes straight back in and makes fast.
+
+There is no turning, the boat never leaves its own lane, so it cannot meet another boat, and every trip is still in the slip before unloading. With every harbour upgrade at 30, the fastest boat now moves at 4.8 tiles/s: **0.74 ×** the simulation's own speed, which the old boats used to show, instead of 19 tiles/s. The emergency speed-up for catching up after waiting for another boat is limited to 3 × (was 8 ×).
+
+**When boats switch to the harbour trip.** The switch depends on the engine level (speed), the nets level and the sea-charts research; with these levels or higher, boats make harbour trips:
+
+| Nets level | 0 | 5 | 10 | 15 | 20 | 30 |
+|---|---|---|---|---|---|---|
+| Engine level, no research | 21 | 9 | 6 | 4 | 2 | 0 |
+| Engine level, sea charts at 3 | 15 | 4 | 1 | 0 | 0 | 0 |
+
+The reason: the realistic route out to the fishing grounds is about 1.5× longer than the simulation's straight route. Once fishing gets short, the full route only fits at more than twice the speed. The threshold is one constant (`C_FULL` in `src/render/boats.js`); raising it keeps the long trip at higher levels, but faster.
+
+**Unchanged:** trip time, catch and income. The simulation's legs are identical with and without visual boats in all 7 scenarios; 1 boat over 10 minutes: every leg identical, catch 211 = 211.
+
+**Tests after revision 3 (`tests/boat-sync.cjs`, 7 scenarios, stepped at 30 FPS):**
+
+| Scenario | Trip | Overlaps / contacts | In slip before unloading (s) | Net (s, min / median) | Trips without net | Top speed (tiles/s) | × the simulation's cruise | Top turn (°/s) |
+|---|---|---|---|---|---|---|---|---|
+| 4 boats, no upgrades, 15 min | to the fishing grounds | **0 / 0** | 0.50 … 0.57 | 0.7 / 2.33 | **0** | 4.43 | 2.32 | 81.3 |
+| 4 boats, engine 10 / nets 8 / hold 6, 10 min | harbour trip | **0 / 0** | 0.83 … 2.20 | 1.5 / 1.53 | **0** | 1.55 | 0.45 | 0 |
+| 1 boat, 5 min | to the fishing grounds | **0 / 0** | 0.50 … 0.53 | 1.13 / 1.17 | **0** | 3.05 | 1.6 | 57.2 |
+| 4 boats, engine 6 / nets 3 / hold 4, 10 min | to the fishing grounds | **0 / 0** | 0.23 … 0.57 | 0.7 / 1 | **0** | 6.72 | 2.39 | 118.4 |
+| 1 boat, every harbour upgrade at 30, 5 min | harbour trip | **0 / 0** | 0.47 … 0.50 | 0.7 / 0.73 | **0** | 4.81 | 0.74 | 0 |
+| 4 boats, every harbour upgrade at 30, 6.7 min | harbour trip | **0 / 0** | 0.47 … 0.53 | 0.7 / 0.73 | **0** | 4.81 | 0.74 | 0 |
+| 4 boats, upgrades at 30 + sea-charts and big-nets research at 3, 6.7 min | harbour trip | **0 / 0** | 0.47 … 0.53 | 0.7 / 0.73 | **0** | 6.26 | 0.74 | 0 |
+
+- **Static check (`tests/boat-check.cjs`):** passed. It now also covers the harbour trips: all 4 berths are clear of piers, the quay, moored and decorative boats.
+- **Browser suite:** **15/15** in 2 of 2 runs, including double tap 10/10 on Low, save/load, save/load after real play (all 13 fields equal), old saves and corrupt saves.
+- **Android 14 emulator, revision 2 build (CI run #41):**
+  - every step passed, including save/load after real play + force-stop (13 fields equal), and 0 crashes;
+  - Medium: FPS 14.2; the boat was in its slip 0.57 s before unloading, with the net shown;
+  - High: FPS 10.8; the boat was in its slip 0.65 s before unloading, with the net shown;
+  - total PSS 105 MB.
+  
+  Revision 3's own emulator run follows in its CI run.
+- **Video:** `test-results/boats/boats-maxed.gif` and `boats-maxed.mp4`: 4 boats with every harbour upgrade at 30, 16 s.
+
 ## Revision 2 (after review)
 
 Two problems were fixed, and boats are now tested separately with no upgrades and with every upgrade at its maximum.

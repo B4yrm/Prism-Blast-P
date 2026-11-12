@@ -74,6 +74,15 @@ for (let i = 0; i < nB; i++) {
   }
   report.arrivals.push({ berth: i, starts: starts.length, withHits: nHits, clearFromAnyOf16Headings: anyHeading, minRadius: +worst.toFixed(2), longest: +maxLen.toFixed(2), meanFromFishing: +(sumLen / nGround).toFixed(2) });
 }
+// harbour trips (heavily upgraded boats): straight out of the own slip and back
+report.harbourTrips = [];
+for (let i = 0; i < nB; i++) {
+  const others = othersFor(i), dep = P.shortDeparture(i), e = P.shortSpot(i);
+  const plan = [...dep, ...P.shortFishing(i, e), ...P.shortArrival(i, P.poseAt(P.shortFishing(i, e)[0].path, 0.3))];
+  const h = P.planHits(plan, others);
+  report.harbourTrips.push({ berth: i, out: +dep[0].path.len.toFixed(2), hits: h.length });
+  if (h.length) fail(`harbour trip ${i} touches something at ${JSON.stringify(h[0])}`);
+}
 // decorative boats: in open water, clear of moored boats and of each other
 P.DECOR_BOATS.forEach((d, k) => {
   const pts = P.hullPoints(d[0], d[1], d[3] * Math.PI / 4, 0.06, P.CLASS_S[d[2]] / P.CLASS_S[0] * d[4]);

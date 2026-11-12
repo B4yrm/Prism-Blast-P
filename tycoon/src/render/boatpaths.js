@@ -231,6 +231,25 @@ export function arrivalPlan(i, from, R = SEA_R) {
   ];
 }
 
+// Harbour trip, for heavily upgraded boats whose whole simulated trip is
+// shorter than a calm run to the fishing grounds: the boat backs straight out
+// along its own slip until its bow is just clear of the pier heads, casts and
+// hauls its net astern, then goes straight back in. It never leaves its own
+// lane, so it never turns and never crosses another boat's way.
+export const SHORT_OUT = 0.4;                        // tiles beyond the slip mouth
+export const shortSpot = i => ({ x: VBERTH[i][0], y: MOUTH_Y[i] + SHORT_OUT, a: NORTH });
+export function shortDeparture(i) {
+  const [bx, by] = VBERTH[i], e = shortSpot(i);
+  return [{ path: finish(resample(straight(bx, by, SOUTH, e.y - by))), dir: -1, kind: 'reverse', stop: true }];
+}
+export function shortArrival(i, from) {
+  const by = VBERTH[i][1];
+  return [{ path: finish(resample(straight(from.x, from.y, NORTH, Math.max(0.05, from.y - by)))), dir: 1, kind: 'glide', stop: true }];
+}
+export function shortFishing(i, from) {                // the net goes out astern; the boat barely moves
+  return [{ path: finish(resample(straight(from.x, from.y, from.a, 0.3))), dir: 1, kind: 'fish', stop: true }];
+}
+
 // Towing the nets: slowly straight on for LINGER tiles, then lying still until called home.
 export function fishingPlan(i, from) {
   return [{ path: finish(resample(straight(from.x, from.y, from.a, LINGER))), dir: 1, kind: 'fish', stop: true }];

@@ -25,6 +25,8 @@ const SCENARIOS = [
   { name: 'fleet4', boats: 4, secs: 900, up: {} },
   { name: 'fleet4-upgraded', boats: 4, secs: 600, up: { cap: 6, speed: 10, net: 8 } },
   { name: 'fleet1', boats: 1, secs: 300, up: {} },
+  // just below the switch to harbour trips: the fishing-grounds trip at its fastest
+  { name: 'fleet4-mid', boats: 4, secs: 600, up: { cap: 4, speed: 6, net: 3 } },
   { name: 'fleet1-maxed', boats: 1, secs: 300, up: { cap: 30, speed: 30, net: 30 } },
   // every harbour upgrade at its maximum (level 30): a whole trip lasts ~6 s
   { name: 'fleet4-maxed', boats: 4, secs: 400, up: { cap: 30, speed: 30, net: 30 } },
@@ -80,7 +82,7 @@ async function run(b, sc, withFleet) {
       }
       if (k % 200 === 0) { Math.random = simRandom; sim.collect(true); }
     }
-    return { jumps, nets: F.stats.nets, netMin: F.stats.netMin, traj, ev, holdSecs: +(holdFrames * dt).toFixed(1), cs, caught: sim.S.stats.caught, money: Math.floor(sim.S.money), dt };
+    return { v0: F.V0, harbourTrips: !!F.modeShort, jumps, nets: F.stats.nets, netMin: F.stats.netMin, traj, ev, holdSecs: +(holdFrames * dt).toFixed(1), cs, caught: sim.S.stats.caught, money: Math.floor(sim.S.money), dt };
   }, [sc.secs, withFleet]);
   r.errs = errs;
   await ctx.close();
@@ -136,7 +138,7 @@ function analyse(sc, r, plain) {
     let d = h1 - h0; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI;
     maxYaw = Math.max(maxYaw, Math.abs(d) / r.dt);
   }
-  out.motion = { maxSpeedTilesPerS: +maxStep.toFixed(2), maxTurnRateDegPerS: +(maxYaw * 180 / Math.PI).toFixed(1), holdSeconds: r.holdSecs };
+  out.motion = { trip: r.harbourTrips ? 'harbour trip' : 'to the fishing grounds', simCruiseTilesPerS: +r.v0.toFixed(2), maxSpeedVsSimCruise: +(maxStep / r.v0).toFixed(2), maxSpeedTilesPerS: +maxStep.toFixed(2), maxTurnRateDegPerS: +(maxYaw * 180 / Math.PI).toFixed(1), holdSeconds: r.holdSecs };
   const cs = r.cs.slice().sort((a, b) => a - b), q = k => cs.length ? cs[Math.min(cs.length - 1, Math.floor(cs.length * k))] : null;
   out.cruiseShare = { p10: q(0.1), median: q(0.5), p90: q(0.9), max: cs[cs.length - 1] };
   // 4. sync with the simulation

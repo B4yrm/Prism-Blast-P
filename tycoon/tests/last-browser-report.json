@@ -114,7 +114,7 @@
   },
   "touch_input_low": {
    "pass": true,
-   "dragMovedPx": 470,
+   "dragMovedPx": 465,
    "pinchZoom": 2.6,
    "recenterZoomBack": 1,
    "doubleTap": "10/10",
@@ -123,10 +123,10 @@
   },
   "touch_input_high": {
    "pass": true,
-   "dragMovedPx": 409,
+   "dragMovedPx": 421,
    "pinchZoom": 2.6,
    "recenterZoomBack": 1,
-   "doubleTap": "4/10",
+   "doubleTap": "7/10",
    "slowPairIgnored": true,
    "buildingDoubleTapKeepsPanel": "Anbar"
   },
@@ -239,8 +239,8 @@
    ],
    "caught": 310,
    "sold": 296,
-   "earned": 1088,
-   "customersSeen": 6
+   "earned": 1100,
+   "customersSeen": 8
   },
   "no_page_errors": {
    "pass": true,
@@ -252,24 +252,24 @@
     "preset": "high",
     "canvas": "1688x780",
     "textureMB": 98.9,
-    "heapMB": 56.2,
-    "updateMsAvg": 2.86,
+    "heapMB": 57.5,
+    "updateMsAvg": 2.21,
     "objects": 747
    },
    "medium": {
     "preset": "medium",
     "canvas": "1266x585",
     "textureMB": 96.6,
-    "heapMB": 56.7,
-    "updateMsAvg": 2.99,
+    "heapMB": 55.6,
+    "updateMsAvg": 3.38,
     "objects": 816
    },
    "low": {
     "preset": "low",
     "canvas": "844x390",
     "textureMB": 37.5,
-    "heapMB": 42.3,
-    "updateMsAvg": 2.05,
+    "heapMB": 43.2,
+    "updateMsAvg": 3.12,
     "objects": 738
    }
   }

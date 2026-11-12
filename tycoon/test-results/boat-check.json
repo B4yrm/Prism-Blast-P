@@ -132,5 +132,27 @@
   }
  ],
  "fails": [],
+ "harbourTrips": [
+  {
+   "berth": 0,
+   "out": 6.3,
+   "hits": 0
+  },
+  {
+   "berth": 1,
+   "out": 6.3,
+   "hits": 0
+  },
+  {
+   "berth": 2,
+   "out": 5.8,
+   "hits": 0
+  },
+  {
+   "berth": 3,
+   "out": 4.5,
+   "hits": 0
+  }
+ ],
  "ok": true
 }
