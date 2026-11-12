@@ -1,0 +1,334 @@
+{
+ "limits": {
+  "speed": 5,
+  "turnDegPerS": 90
+ },
+ "hull": {
+  "bow": 2.04,
+  "stern": 1.89,
+  "half": 0.61
+ },
+ "jetties": [
+  {
+   "jetty": "east",
+   "candidates": {
+    "head": 3248,
+    "stem": 406,
+    "headClean": 814,
+    "stemClean": 0
+   },
+   "minGap_head": 0.3,
+   "minGap_stem": null,
+   "fastest_head": {
+    "fam": "head",
+    "jetty": 0,
+    "x": 25.5,
+    "y": 32.81,
+    "a": 180,
+    "sense": -1,
+    "R": 2.8,
+    "gap": 0.6,
+    "sa": 0,
+    "sb": 0.5,
+    "L": 0,
+    "len": 18.6,
+    "tFast": 6.67,
+    "tCalm": 7.45,
+    "vmax": 4.51,
+    "wmax": 90,
+    "deck": [
+     24.2,
+     30.6,
+     31,
+     31.6
+    ],
+    "hits": []
+   },
+   "fastest_stem": null,
+   "pairs": {
+    "head+head": {
+     "slowerLoopS": {
+      "brisk": 6.67,
+      "calm": 7.45
+     },
+     "newDeckTiles": 13.1,
+     "A": {
+      "fam": "head",
+      "jetty": 0,
+      "x": 28,
+      "y": 32.81,
+      "a": 180,
+      "sense": -1,
+      "R": 2.8,
+      "gap": 0.6,
+      "sa": 0,
+      "sb": 0.5,
+      "L": 0,
+      "len": 18.6,
+      "tFast": 6.67,
+      "tCalm": 7.45,
+      "vmax": 4.51,
+      "wmax": 90,
+      "deck": [
+       26.7,
+       30.6,
+       31,
+       31.6
+      ],
+      "hits": []
+     },
+     "B": {
+      "fam": "head",
+      "jetty": 0,
+      "x": 39.5,
+      "y": 32.81,
+      "a": 0,
+      "sense": 1,
+      "R": 2.8,
+      "gap": 0.6,
+      "sa": 0,
+      "sb": 0.5,
+      "L": 0,
+      "len": 18.6,
+      "tFast": 6.67,
+      "tCalm": 7.45,
+      "vmax": 4.51,
+      "wmax": 90,
+      "deck": [
+       30,
+       30.6,
+       40.8,
+       31.6
+      ],
+      "hits": []
+     }
+    },
+    "head+stem (a decorative boat moved)": {
+     "slowerLoopS": {
+      "brisk": 6.67,
+      "calm": 7.45
+     },
+     "newDeckTiles": 3.3,
+     "A": {
+      "fam": "head",
+      "jetty": 0,
+      "x": 28,
+      "y": 32.81,
+      "a": 180,
+      "sense": -1,
+      "R": 2.8,
+      "gap": 0.6,
+      "sa": 0,
+      "sb": 0.5,
+      "L": 0,
+      "len": 18.6,
+      "tFast": 6.67,
+      "tCalm": 7.45,
+      "vmax": 4.51,
+      "wmax": 90,
+      "deck": [
+       26.7,
+       30.6,
+       31,
+       31.6
+      ],
+      "hits": []
+     },
+     "B": {
+      "fam": "stem",
+      "jetty": 0,
+      "x": 32.21,
+      "y": 27.7,
+      "a": 90,
+      "sense": -1,
+      "R": 2.8,
+      "gap": 0.6,
+      "sa": 0,
+      "sb": 0.5,
+      "L": 0,
+      "len": 18.6,
+      "tFast": 6.67,
+      "tCalm": 7.45,
+      "vmax": 4.51,
+      "wmax": 90,
+      "deck": null,
+      "hits": [
+       "decor boat"
+      ],
+      "side": 1
+     }
+    }
+   }
+  },
+  {
+   "jetty": "west",
+   "candidates": {
+    "head": 3248,
+    "stem": 357,
+    "headClean": 1749,
+    "stemClean": 44
+   },
+   "minGap_head": 0.3,
+   "minGap_stem": 0.6,
+   "fastest_head": {
+    "fam": "head",
+    "jetty": 1,
+    "x": -18,
+    "y": 32.81,
+    "a": 0,
+    "sense": 1,
+    "R": 2.8,
+    "gap": 0.6,
+    "sa": 0,
+    "sb": 0.5,
+    "L": 0,
+    "len": 18.6,
+    "tFast": 6.67,
+    "tCalm": 7.45,
+    "vmax": 4.51,
+    "wmax": 90,
+    "deck": [
+     -20.09,
+     30.6,
+     -3,
+     31.6
+    ],
+    "hits": []
+   },
+   "fastest_stem": {
+    "fam": "stem",
+    "jetty": 1,
+    "x": -5.21,
+    "y": 27.7,
+    "a": 90,
+    "sense": 1,
+    "R": 2.8,
+    "gap": 0.6,
+    "sa": 0,
+    "sb": 0.5,
+    "L": 0,
+    "len": 18.6,
+    "tFast": 6.67,
+    "tCalm": 7.45,
+    "vmax": 4.51,
+    "wmax": 90,
+    "deck": null,
+    "hits": [],
+    "side": -1
+   },
+   "pairs": {
+    "head+head": {
+     "slowerLoopS": {
+      "brisk": 6.67,
+      "calm": 7.45
+     },
+     "newDeckTiles": 11.3,
+     "A": {
+      "fam": "head",
+      "jetty": 1,
+      "x": -2.5,
+      "y": 32.96,
+      "a": 180,
+      "sense": -1,
+      "R": 2.8,
+      "gap": 0.75,
+      "sa": 0,
+      "sb": 0.5,
+      "L": 0,
+      "len": 18.6,
+      "tFast": 6.67,
+      "tCalm": 7.45,
+      "vmax": 4.51,
+      "wmax": 90,
+      "deck": [
+       -4,
+       30.6,
+       -0.41000000000000014,
+       31.6
+      ],
+      "hits": []
+     },
+     "B": {
+      "fam": "head",
+      "jetty": 1,
+      "x": 7,
+      "y": 32.81,
+      "a": 0,
+      "sense": 1,
+      "R": 2.8,
+      "gap": 0.6,
+      "sa": 0,
+      "sb": 0.5,
+      "L": 0,
+      "len": 18.6,
+      "tFast": 6.67,
+      "tCalm": 7.45,
+      "vmax": 4.51,
+      "wmax": 90,
+      "deck": [
+       -4,
+       30.6,
+       8.3,
+       31.6
+      ],
+      "hits": []
+     }
+    },
+    "head+stem": {
+     "slowerLoopS": {
+      "brisk": 6.67,
+      "calm": 7.45
+     },
+     "newDeckTiles": 2.4,
+     "A": {
+      "fam": "head",
+      "jetty": 1,
+      "x": -2,
+      "y": 32.81,
+      "a": 0,
+      "sense": 1,
+      "R": 2.8,
+      "gap": 0.6,
+      "sa": 0,
+      "sb": 0.5,
+      "L": 0,
+      "len": 18.6,
+      "tFast": 6.67,
+      "tCalm": 7.45,
+      "vmax": 4.51,
+      "wmax": 90,
+      "deck": [
+       -4.09,
+       30.6,
+       -0.7,
+       31.6
+      ],
+      "hits": []
+     },
+     "B": {
+      "fam": "stem",
+      "jetty": 1,
+      "x": -5.21,
+      "y": 27.7,
+      "a": 90,
+      "sense": 1,
+      "R": 2.8,
+      "gap": 0.6,
+      "sa": 0,
+      "sb": 0.5,
+      "L": 0,
+      "len": 18.6,
+      "tFast": 6.67,
+      "tCalm": 7.45,
+      "vmax": 4.51,
+      "wmax": 90,
+      "deck": null,
+      "hits": [],
+      "side": -1
+     }
+    }
+   }
+  }
+ ],
+ "searchSeconds": 30
+}

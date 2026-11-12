@@ -1,0 +1,5619 @@
+{
+ "limits": {
+  "speed": 5,
+  "turnDegPerS": 90
+ },
+ "searchSeconds": 30,
+ "layoutsFound": [
+  {
+   "jetty": "east",
+   "candidates": {
+    "head": 3248,
+    "stem": 406,
+    "headClean": 814,
+    "stemClean": 0
+   },
+   "minGapHead": 0.3,
+   "minGapStem": null,
+   "pairs": {
+    "head+head": {
+     "slowerLoopS": {
+      "brisk": 6.67,
+      "calm": 7.45
+     },
+     "newDeckTiles": 13.1
+    },
+    "head+stem (a decorative boat moved)": {
+     "slowerLoopS": {
+      "brisk": 6.67,
+      "calm": 7.45
+     },
+     "newDeckTiles": 3.3
+    }
+   }
+  },
+  {
+   "jetty": "west",
+   "candidates": {
+    "head": 3248,
+    "stem": 357,
+    "headClean": 1749,
+    "stemClean": 44
+   },
+   "minGapHead": 0.3,
+   "minGapStem": 0.6,
+   "pairs": {
+    "head+head": {
+     "slowerLoopS": {
+      "brisk": 6.67,
+      "calm": 7.45
+     },
+     "newDeckTiles": 11.3
+    },
+    "head+stem": {
+     "slowerLoopS": {
+      "brisk": 6.67,
+      "calm": 7.45
+     },
+     "newDeckTiles": 2.4
+    }
+   }
+  }
+ ],
+ "boats": [
+  {
+   "boat": 0,
+   "jetty": "west",
+   "berth": "head arm, sea face",
+   "x": -2,
+   "y": 32.81,
+   "headingDeg": 0,
+   "gapToPier": 0.6,
+   "radius": 2.8,
+   "loopTiles": 18.6,
+   "timeBriskS": 6.67,
+   "timeCalmS": 7.45,
+   "topSpeed": 4.51,
+   "topTurnDegPerS": 90,
+   "newDeck": [
+    -4.09,
+    30.6,
+    -0.7,
+    31.6
+   ],
+   "decorBoatsToMove": [],
+   "clearanceToOtherLoops": 1.88,
+   "clearanceToObstacles": 0.11,
+   "longerLoops": [
+    {
+     "n": 0,
+     "tiles": 18.6,
+     "briskS": 6.67,
+     "calmS": 7.45
+    },
+    {
+     "n": 1,
+     "tiles": 20.6,
+     "briskS": 7.12,
+     "calmS": 7.91
+    },
+    {
+     "n": 2,
+     "tiles": 22.6,
+     "briskS": 7.56,
+     "calmS": 8.36
+    },
+    {
+     "n": 3,
+     "tiles": 24.6,
+     "briskS": 7.98,
+     "calmS": 8.81
+    },
+    {
+     "n": 4,
+     "tiles": 26.6,
+     "briskS": 8.39,
+     "calmS": 9.25
+    },
+    {
+     "n": 5,
+     "tiles": 28.6,
+     "briskS": 8.79,
+     "calmS": 9.67
+    }
+   ],
+   "longerLoopsStopAt": "edge of the sea in use"
+  },
+  {
+   "boat": 1,
+   "jetty": "east",
+   "berth": "head arm, sea face",
+   "x": 28,
+   "y": 32.81,
+   "headingDeg": 180,
+   "gapToPier": 0.6,
+   "radius": 2.8,
+   "loopTiles": 18.6,
+   "timeBriskS": 6.67,
+   "timeCalmS": 7.45,
+   "topSpeed": 4.51,
+   "topTurnDegPerS": 90,
+   "newDeck": [
+    26.7,
+    30.6,
+    31,
+    31.6
+   ],
+   "decorBoatsToMove": [],
+   "clearanceToOtherLoops": 2.47,
+   "clearanceToObstacles": 0.11,
+   "longerLoops": [
+    {
+     "n": 0,
+     "tiles": 18.6,
+     "briskS": 6.67,
+     "calmS": 7.45
+    },
+    {
+     "n": 1,
+     "tiles": 20.6,
+     "briskS": 7.12,
+     "calmS": 7.91
+    },
+    {
+     "n": 2,
+     "tiles": 22.6,
+     "briskS": 7.56,
+     "calmS": 8.36
+    },
+    {
+     "n": 3,
+     "tiles": 24.6,
+     "briskS": 7.98,
+     "calmS": 8.81
+    },
+    {
+     "n": 4,
+     "tiles": 26.6,
+     "briskS": 8.39,
+     "calmS": 9.25
+    },
+    {
+     "n": 5,
+     "tiles": 28.6,
+     "briskS": 8.79,
+     "calmS": 9.67
+    }
+   ],
+   "longerLoopsStopAt": "edge of the sea in use"
+  },
+  {
+   "boat": 2,
+   "jetty": "west",
+   "berth": "jetty stem, outer face",
+   "x": -5.21,
+   "y": 27.7,
+   "headingDeg": 90,
+   "gapToPier": 0.6,
+   "radius": 2.8,
+   "loopTiles": 18.6,
+   "timeBriskS": 6.67,
+   "timeCalmS": 7.45,
+   "topSpeed": 4.51,
+   "topTurnDegPerS": 90,
+   "newDeck": null,
+   "decorBoatsToMove": [],
+   "clearanceToOtherLoops": 1.88,
+   "clearanceToObstacles": 0.2,
+   "longerLoops": [
+    {
+     "n": 0,
+     "tiles": 18.6,
+     "briskS": 6.67,
+     "calmS": 7.45
+    },
+    {
+     "n": 1,
+     "tiles": 20.6,
+     "briskS": 7.12,
+     "calmS": 7.91
+    },
+    {
+     "n": 2,
+     "tiles": 22.6,
+     "briskS": 7.56,
+     "calmS": 8.36
+    },
+    {
+     "n": 3,
+     "tiles": 24.6,
+     "briskS": 7.98,
+     "calmS": 8.81
+    },
+    {
+     "n": 4,
+     "tiles": 26.6,
+     "briskS": 8.39,
+     "calmS": 9.25
+    }
+   ],
+   "longerLoopsStopAt": "edge of the sea in use"
+  },
+  {
+   "boat": 3,
+   "jetty": "east",
+   "berth": "jetty stem, outer face",
+   "x": 32.21,
+   "y": 27.7,
+   "headingDeg": 90,
+   "gapToPier": 0.6,
+   "radius": 2.8,
+   "loopTiles": 18.6,
+   "timeBriskS": 6.67,
+   "timeCalmS": 7.45,
+   "topSpeed": 4.51,
+   "topTurnDegPerS": 90,
+   "newDeck": null,
+   "decorBoatsToMove": [
+    2
+   ],
+   "clearanceToOtherLoops": 2.47,
+   "clearanceToObstacles": 0.2,
+   "longerLoops": [
+    {
+     "n": 0,
+     "tiles": 18.6,
+     "briskS": 6.67,
+     "calmS": 7.45
+    },
+    {
+     "n": 1,
+     "tiles": 20.6,
+     "briskS": 7.12,
+     "calmS": 7.91
+    },
+    {
+     "n": 2,
+     "tiles": 22.6,
+     "briskS": 7.56,
+     "calmS": 8.36
+    },
+    {
+     "n": 3,
+     "tiles": 24.6,
+     "briskS": 7.98,
+     "calmS": 8.81
+    },
+    {
+     "n": 4,
+     "tiles": 26.6,
+     "briskS": 8.39,
+     "calmS": 9.25
+    },
+    {
+     "n": 5,
+     "tiles": 28.6,
+     "briskS": 8.79,
+     "calmS": 9.67
+    },
+    {
+     "n": 6,
+     "tiles": 30.6,
+     "briskS": 9.19,
+     "calmS": 10.09
+    }
+   ],
+   "longerLoopsStopAt": "edge of the sea in use"
+  }
+ ],
+ "existingSlipRoutes": [
+  {
+   "slip": 0,
+   "routes": 15,
+   "hitDeck": [],
+   "hitNewBerth": [],
+   "crossesLoopOfBoat": [
+    0
+   ]
+  },
+  {
+   "slip": 1,
+   "routes": 17,
+   "hitDeck": [],
+   "hitNewBerth": [],
+   "crossesLoopOfBoat": [
+    1
+   ]
+  },
+  {
+   "slip": 2,
+   "routes": 19,
+   "hitDeck": [
+    "way out",
+    "way home (called back)"
+   ],
+   "hitNewBerth": [
+    "way out",
+    "way home (called back)"
+   ],
+   "crossesLoopOfBoat": [
+    0
+   ]
+  },
+  {
+   "slip": 3,
+   "routes": 14,
+   "hitDeck": [
+    "way out",
+    "way home (called back)"
+   ],
+   "hitNewBerth": [
+    "way out",
+    "towing",
+    "way home",
+    "way home (called back)"
+   ],
+   "crossesLoopOfBoat": [
+    1
+   ]
+  }
+ ],
+ "moveFromSlip": [
+  {
+   "boat": 0,
+   "stage": "2: to the head arm (slips 2 and 3 empty)",
+   "tiles": 38.8,
+   "briskS": 13.6,
+   "calmS": 14.9,
+   "via": [
+    -10,
+    35,
+    270
+   ],
+   "hits": 0
+  },
+  {
+   "boat": 1,
+   "stage": "2: to the head arm (slips 2 and 3 empty)",
+   "tiles": 38.2,
+   "briskS": 13.5,
+   "calmS": 14.8,
+   "via": [
+    36,
+    35,
+    270
+   ],
+   "hits": 0
+  },
+  {
+   "boat": 2,
+   "stage": "1: to the jetty stem (head arms not built yet)",
+   "tiles": 33.1,
+   "briskS": 12.4,
+   "calmS": 13.7,
+   "via": [
+    -9.71,
+    30.5,
+    -113
+   ],
+   "hits": 0
+  },
+  {
+   "boat": 3,
+   "stage": "1: to the jetty stem (head arms not built yet)",
+   "tiles": 33.9,
+   "briskS": 12.3,
+   "calmS": 13.6,
+   "via": [
+    36.71,
+    31.5,
+    -67
+   ],
+   "hits": 0
+  }
+ ],
+ "loopTimeByRadius": [
+  {
+   "R": 2.4,
+   "tiles": 16.1,
+   "briskS": 6.36,
+   "calmS": 7.03,
+   "topSpeed": 3.9,
+   "turnDegPerS": 90
+  },
+  {
+   "R": 2.8,
+   "tiles": 18.6,
+   "briskS": 6.67,
+   "calmS": 7.45,
+   "topSpeed": 4.51,
+   "turnDegPerS": 90
+  },
+  {
+   "R": 3.2,
+   "tiles": 21.1,
+   "briskS": 7,
+   "calmS": 7.89,
+   "topSpeed": 5,
+   "turnDegPerS": 90
+  },
+  {
+   "R": 4,
+   "tiles": 26.1,
+   "briskS": 8,
+   "calmS": 8.89,
+   "topSpeed": 5,
+   "turnDegPerS": 72
+  }
+ ],
+ "levels": [
+  {
+   "nav": 0,
+   "net": 0,
+   "sp": 0,
+   "built": false,
+   "V0": 1.9,
+   "sim": [
+    25.08,
+    24.94,
+    26.23,
+    25.41
+   ],
+   "grounds5": [
+    24.46,
+    23.74,
+    24.34,
+    23.86
+   ],
+   "grounds44": [
+    24.46,
+    23.74,
+    24.34,
+    23.86
+   ],
+   "mode": "slips",
+   "lateS": [
+    0,
+    0
+   ],
+   "verdict": "full route, on time"
+  },
+  {
+   "nav": 0,
+   "net": 0,
+   "sp": 5,
+   "built": false,
+   "V0": 2.67,
+   "sim": [
+    19.63,
+    19.53,
+    20.45,
+    19.86
+   ],
+   "grounds5": [
+    20.02,
+    19.54,
+    20.14,
+    19.54
+   ],
+   "grounds44": [
+    20.02,
+    19.54,
+    20.14,
+    19.54
+   ],
+   "mode": "slips",
+   "lateS": [
+    0,
+    0
+   ],
+   "verdict": "full route, on time"
+  },
+  {
+   "nav": 0,
+   "net": 0,
+   "sp": 10,
+   "built": false,
+   "V0": 3.43,
+   "sim": [
+    16.6,
+    16.52,
+    17.24,
+    16.78
+   ],
+   "grounds5": [
+    17.74,
+    17.38,
+    17.86,
+    17.5
+   ],
+   "grounds44": [
+    18.1,
+    17.74,
+    18.22,
+    17.98
+   ],
+   "mode": "slips",
+   "lateS": [
+    0.07,
+    0.95
+   ],
+   "verdict": "full route, in ≤ 0.9 s late (≥ 1 s moored)"
+  },
+  {
+   "nav": 0,
+   "net": 0,
+   "sp": 14,
+   "built": false,
+   "V0": 4.04,
+   "sim": [
+    15,
+    14.93,
+    15.54,
+    15.15
+   ],
+   "grounds5": [
+    16.78,
+    16.3,
+    16.78,
+    16.66
+   ],
+   "grounds44": [
+    17.5,
+    17.14,
+    17.62,
+    17.38
+   ],
+   "mode": "slips",
+   "lateS": [
+    0.69,
+    1.95
+   ],
+   "verdict": "full route, in ≤ 1.9 s late (≥ 1 s moored)"
+  },
+  {
+   "nav": 0,
+   "net": 0,
+   "sp": 18,
+   "built": false,
+   "V0": 4.65,
+   "sim": [
+    13.82,
+    13.76,
+    14.29,
+    13.95
+   ],
+   "grounds5": [
+    16.42,
+    15.94,
+    16.42,
+    16.3
+   ],
+   "grounds44": [
+    17.38,
+    16.9,
+    17.5,
+    17.26
+   ],
+   "mode": "slips",
+   "lateS": [
+    1.58,
+    3.01
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 0,
+   "net": 0,
+   "sp": 22,
+   "built": false,
+   "V0": 5.26,
+   "sim": [
+    12.91,
+    12.86,
+    13.33,
+    13.03
+   ],
+   "grounds5": [
+    16.18,
+    15.7,
+    16.42,
+    16.3
+   ],
+   "grounds44": [
+    17.26,
+    16.78,
+    17.38,
+    17.14
+   ],
+   "mode": "slips",
+   "lateS": [
+    2.29,
+    3.8
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 0,
+   "net": 0,
+   "sp": 26,
+   "built": false,
+   "V0": 5.86,
+   "sim": [
+    12.19,
+    12.15,
+    12.57,
+    12.3
+   ],
+   "grounds5": [
+    16.06,
+    15.7,
+    16.18,
+    16.06
+   ],
+   "grounds44": [
+    17.14,
+    16.66,
+    17.26,
+    17.02
+   ],
+   "mode": "slips",
+   "lateS": [
+    3,
+    4.4
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 0,
+   "net": 0,
+   "sp": 30,
+   "built": false,
+   "V0": 6.47,
+   "sim": [
+    11.61,
+    11.57,
+    11.95,
+    11.71
+   ],
+   "grounds5": [
+    15.94,
+    15.58,
+    16.06,
+    15.94
+   ],
+   "grounds44": [
+    17.02,
+    16.54,
+    17.14,
+    16.9
+   ],
+   "mode": "slips",
+   "lateS": [
+    3.46,
+    4.86
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 0,
+   "net": 5,
+   "sp": 0,
+   "built": false,
+   "V0": 1.9,
+   "sim": [
+    23.25,
+    23.11,
+    24.4,
+    23.58
+   ],
+   "grounds5": [
+    23.84,
+    23.12,
+    23.72,
+    23.24
+   ],
+   "grounds44": [
+    23.84,
+    23.12,
+    23.72,
+    23.24
+   ],
+   "mode": "slips",
+   "lateS": [
+    0,
+    0.04
+   ],
+   "verdict": "full route, in ≤ 0.0 s late (≥ 1 s moored)"
+  },
+  {
+   "nav": 0,
+   "net": 5,
+   "sp": 5,
+   "built": false,
+   "V0": 2.67,
+   "sim": [
+    17.8,
+    17.7,
+    18.62,
+    18.04
+   ],
+   "grounds5": [
+    19.4,
+    18.92,
+    19.52,
+    18.92
+   ],
+   "grounds44": [
+    19.4,
+    18.92,
+    19.52,
+    18.92
+   ],
+   "mode": "slips",
+   "lateS": [
+    0.33,
+    1.05
+   ],
+   "verdict": "full route, in ≤ 1.1 s late (≥ 1 s moored)"
+  },
+  {
+   "nav": 0,
+   "net": 5,
+   "sp": 10,
+   "built": false,
+   "V0": 3.43,
+   "sim": [
+    14.77,
+    14.7,
+    15.41,
+    14.96
+   ],
+   "grounds5": [
+    17.12,
+    16.76,
+    17.24,
+    16.88
+   ],
+   "grounds44": [
+    17.48,
+    17.12,
+    17.6,
+    17.36
+   ],
+   "mode": "slips",
+   "lateS": [
+    1.28,
+    2.16
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 0,
+   "net": 5,
+   "sp": 14,
+   "built": false,
+   "V0": 4.04,
+   "sim": [
+    13.17,
+    13.11,
+    13.72,
+    13.33
+   ],
+   "grounds5": [
+    16.16,
+    15.68,
+    16.16,
+    16.04
+   ],
+   "grounds44": [
+    16.88,
+    16.52,
+    17,
+    16.76
+   ],
+   "mode": "slips",
+   "lateS": [
+    1.89,
+    3.16
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 0,
+   "net": 5,
+   "sp": 18,
+   "built": false,
+   "V0": 4.65,
+   "sim": [
+    11.99,
+    11.94,
+    12.46,
+    12.13
+   ],
+   "grounds5": [
+    15.8,
+    15.32,
+    15.8,
+    15.68
+   ],
+   "grounds44": [
+    16.76,
+    16.28,
+    16.88,
+    16.64
+   ],
+   "mode": "slips",
+   "lateS": [
+    2.79,
+    4.22
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 0,
+   "net": 5,
+   "sp": 22,
+   "built": false,
+   "V0": 5.26,
+   "sim": [
+    11.09,
+    11.04,
+    11.5,
+    11.21
+   ],
+   "grounds5": [
+    15.56,
+    15.08,
+    15.8,
+    15.68
+   ],
+   "grounds44": [
+    16.64,
+    16.16,
+    16.76,
+    16.52
+   ],
+   "mode": "slips",
+   "lateS": [
+    3.49,
+    5
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 0,
+   "net": 5,
+   "sp": 26,
+   "built": false,
+   "V0": 5.86,
+   "sim": [
+    10.37,
+    10.32,
+    10.74,
+    10.48
+   ],
+   "grounds5": [
+    15.44,
+    15.08,
+    15.56,
+    15.44
+   ],
+   "grounds44": [
+    16.52,
+    16.04,
+    16.64,
+    16.4
+   ],
+   "mode": "slips",
+   "lateS": [
+    4.21,
+    5.6
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 0,
+   "net": 5,
+   "sp": 30,
+   "built": false,
+   "V0": 6.47,
+   "sim": [
+    9.78,
+    9.74,
+    10.12,
+    9.88
+   ],
+   "grounds5": [
+    15.32,
+    14.96,
+    15.44,
+    15.32
+   ],
+   "grounds44": [
+    16.4,
+    15.92,
+    16.52,
+    16.28
+   ],
+   "mode": "slips",
+   "lateS": [
+    4.67,
+    6.07
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 0,
+   "net": 10,
+   "sp": 0,
+   "built": false,
+   "V0": 1.9,
+   "sim": [
+    21.98,
+    21.84,
+    23.13,
+    22.31
+   ],
+   "grounds5": [
+    23.27,
+    22.55,
+    23.15,
+    22.67
+   ],
+   "grounds44": [
+    23.27,
+    22.55,
+    23.15,
+    22.67
+   ],
+   "mode": "slips",
+   "lateS": [
+    0,
+    0.74
+   ],
+   "verdict": "full route, in ≤ 0.7 s late (≥ 1 s moored)"
+  },
+  {
+   "nav": 0,
+   "net": 10,
+   "sp": 5,
+   "built": false,
+   "V0": 2.67,
+   "sim": [
+    16.53,
+    16.43,
+    17.35,
+    16.77
+   ],
+   "grounds5": [
+    18.83,
+    18.35,
+    18.95,
+    18.35
+   ],
+   "grounds44": [
+    18.83,
+    18.35,
+    18.95,
+    18.35
+   ],
+   "mode": "slips",
+   "lateS": [
+    1.03,
+    1.75
+   ],
+   "verdict": "full route, in ≤ 1.8 s late (≥ 1 s moored)"
+  },
+  {
+   "nav": 0,
+   "net": 10,
+   "sp": 10,
+   "built": false,
+   "V0": 3.43,
+   "sim": [
+    13.5,
+    13.43,
+    14.14,
+    13.69
+   ],
+   "grounds5": [
+    16.55,
+    16.19,
+    16.67,
+    16.31
+   ],
+   "grounds44": [
+    16.91,
+    16.55,
+    17.03,
+    16.79
+   ],
+   "mode": "slips",
+   "lateS": [
+    1.98,
+    2.86
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 0,
+   "net": 10,
+   "sp": 14,
+   "built": false,
+   "V0": 4.04,
+   "sim": [
+    11.9,
+    11.84,
+    12.45,
+    12.06
+   ],
+   "grounds5": [
+    15.59,
+    15.11,
+    15.59,
+    15.47
+   ],
+   "grounds44": [
+    16.31,
+    15.95,
+    16.43,
+    16.19
+   ],
+   "mode": "slips",
+   "lateS": [
+    2.59,
+    3.86
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 0,
+   "net": 10,
+   "sp": 18,
+   "built": false,
+   "V0": 4.65,
+   "sim": [
+    10.72,
+    10.67,
+    11.19,
+    10.86
+   ],
+   "grounds5": [
+    15.23,
+    14.75,
+    15.23,
+    15.11
+   ],
+   "grounds44": [
+    16.19,
+    15.71,
+    16.31,
+    16.07
+   ],
+   "mode": "slips",
+   "lateS": [
+    3.49,
+    4.92
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 0,
+   "net": 10,
+   "sp": 22,
+   "built": false,
+   "V0": 5.26,
+   "sim": [
+    9.82,
+    9.77,
+    10.23,
+    9.94
+   ],
+   "grounds5": [
+    14.99,
+    14.51,
+    15.23,
+    15.11
+   ],
+   "grounds44": [
+    16.07,
+    15.59,
+    16.19,
+    15.95
+   ],
+   "mode": "slips",
+   "lateS": [
+    4.19,
+    5.7
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 0,
+   "net": 10,
+   "sp": 26,
+   "built": false,
+   "V0": 5.86,
+   "sim": [
+    9.1,
+    9.05,
+    9.47,
+    9.21
+   ],
+   "grounds5": [
+    14.87,
+    14.51,
+    14.99,
+    14.87
+   ],
+   "grounds44": [
+    15.95,
+    15.47,
+    16.07,
+    15.83
+   ],
+   "mode": "slips",
+   "lateS": [
+    4.91,
+    6.3
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 0,
+   "net": 10,
+   "sp": 30,
+   "built": false,
+   "V0": 6.47,
+   "sim": [
+    8.51,
+    8.47,
+    8.85,
+    8.61
+   ],
+   "grounds5": [
+    14.75,
+    14.39,
+    14.87,
+    14.75
+   ],
+   "grounds44": [
+    15.83,
+    15.35,
+    15.95,
+    15.71
+   ],
+   "mode": "slips",
+   "lateS": [
+    5.37,
+    6.77
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 0,
+   "net": 14,
+   "sp": 0,
+   "built": false,
+   "V0": 1.9,
+   "sim": [
+    21.25,
+    21.11,
+    22.4,
+    21.58
+   ],
+   "grounds5": [
+    22.94,
+    22.22,
+    22.82,
+    22.34
+   ],
+   "grounds44": [
+    22.94,
+    22.22,
+    22.82,
+    22.34
+   ],
+   "mode": "slips",
+   "lateS": [
+    0,
+    1.14
+   ],
+   "verdict": "full route, in ≤ 1.1 s late (≥ 1 s moored)"
+  },
+  {
+   "nav": 0,
+   "net": 14,
+   "sp": 5,
+   "built": false,
+   "V0": 2.67,
+   "sim": [
+    15.8,
+    15.7,
+    16.62,
+    16.03
+   ],
+   "grounds5": [
+    18.5,
+    18.02,
+    18.62,
+    18.02
+   ],
+   "grounds44": [
+    18.5,
+    18.02,
+    18.62,
+    18.02
+   ],
+   "mode": "slips",
+   "lateS": [
+    1.44,
+    2.15
+   ],
+   "verdict": "full route, in ≤ 2.1 s late (≥ 1 s moored)"
+  },
+  {
+   "nav": 0,
+   "net": 14,
+   "sp": 10,
+   "built": false,
+   "V0": 3.43,
+   "sim": [
+    12.77,
+    12.69,
+    13.41,
+    12.95
+   ],
+   "grounds5": [
+    16.22,
+    15.86,
+    16.34,
+    15.98
+   ],
+   "grounds44": [
+    16.58,
+    16.22,
+    16.7,
+    16.46
+   ],
+   "mode": "slips",
+   "lateS": [
+    2.38,
+    3.26
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 0,
+   "net": 14,
+   "sp": 14,
+   "built": false,
+   "V0": 4.04,
+   "sim": [
+    11.17,
+    11.11,
+    11.71,
+    11.33
+   ],
+   "grounds5": [
+    15.26,
+    14.78,
+    15.26,
+    15.14
+   ],
+   "grounds44": [
+    15.98,
+    15.62,
+    16.1,
+    15.86
+   ],
+   "mode": "slips",
+   "lateS": [
+    3,
+    4.26
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 0,
+   "net": 14,
+   "sp": 18,
+   "built": false,
+   "V0": 4.65,
+   "sim": [
+    9.99,
+    9.93,
+    10.46,
+    10.13
+   ],
+   "grounds5": [
+    14.9,
+    14.42,
+    14.9,
+    14.78
+   ],
+   "grounds44": [
+    15.86,
+    15.38,
+    15.98,
+    15.74
+   ],
+   "mode": "slips",
+   "lateS": [
+    3.89,
+    5.32
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 0,
+   "net": 14,
+   "sp": 22,
+   "built": false,
+   "V0": 5.26,
+   "sim": [
+    9.08,
+    9.03,
+    9.5,
+    9.2
+   ],
+   "grounds5": [
+    14.66,
+    14.18,
+    14.9,
+    14.78
+   ],
+   "grounds44": [
+    15.74,
+    15.26,
+    15.86,
+    15.62
+   ],
+   "mode": "slips",
+   "lateS": [
+    4.6,
+    6.11
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 0,
+   "net": 14,
+   "sp": 26,
+   "built": false,
+   "V0": 5.86,
+   "sim": [
+    8.37,
+    8.32,
+    8.74,
+    8.47
+   ],
+   "grounds5": [
+    14.54,
+    14.18,
+    14.66,
+    14.54
+   ],
+   "grounds44": [
+    15.62,
+    15.14,
+    15.74,
+    15.5
+   ],
+   "mode": "slips",
+   "lateS": [
+    5.31,
+    6.7
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 0,
+   "net": 14,
+   "sp": 30,
+   "built": false,
+   "V0": 6.47,
+   "sim": [
+    7.78,
+    7.74,
+    8.12,
+    7.88
+   ],
+   "grounds5": [
+    14.42,
+    14.06,
+    14.54,
+    14.42
+   ],
+   "grounds44": [
+    15.5,
+    15.02,
+    15.62,
+    15.38
+   ],
+   "mode": "slips",
+   "lateS": [
+    5.77,
+    7.17
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 0,
+   "net": 18,
+   "sp": 0,
+   "built": false,
+   "V0": 1.9,
+   "sim": [
+    20.7,
+    20.56,
+    21.85,
+    21.03
+   ],
+   "grounds5": [
+    22.86,
+    22.14,
+    22.74,
+    22.26
+   ],
+   "grounds44": [
+    22.86,
+    22.14,
+    22.74,
+    22.26
+   ],
+   "mode": "slips",
+   "lateS": [
+    0.34,
+    1.61
+   ],
+   "verdict": "full route, in ≤ 1.6 s late (≥ 1 s moored)"
+  },
+  {
+   "nav": 0,
+   "net": 18,
+   "sp": 5,
+   "built": false,
+   "V0": 2.67,
+   "sim": [
+    15.25,
+    15.15,
+    16.07,
+    15.49
+   ],
+   "grounds5": [
+    18.42,
+    17.94,
+    18.54,
+    17.94
+   ],
+   "grounds44": [
+    18.42,
+    17.94,
+    18.54,
+    17.94
+   ],
+   "mode": "slips",
+   "lateS": [
+    1.9,
+    2.62
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 0,
+   "net": 18,
+   "sp": 10,
+   "built": false,
+   "V0": 3.43,
+   "sim": [
+    12.22,
+    12.15,
+    12.86,
+    12.41
+   ],
+   "grounds5": [
+    16.14,
+    15.78,
+    16.26,
+    15.9
+   ],
+   "grounds44": [
+    16.5,
+    16.14,
+    16.62,
+    16.38
+   ],
+   "mode": "slips",
+   "lateS": [
+    2.85,
+    3.73
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 0,
+   "net": 18,
+   "sp": 14,
+   "built": true,
+   "V0": 4.04,
+   "sim": [
+    10.62,
+    10.56,
+    11.17,
+    10.78
+   ],
+   "grounds5": [
+    15.18,
+    14.7,
+    15.18,
+    15.06
+   ],
+   "grounds44": [
+    15.9,
+    15.54,
+    16.02,
+    15.78
+   ],
+   "mode": "loops",
+   "per": [
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 28.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 28.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 26.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 30.6
+    }
+   ],
+   "lateS": [
+    0,
+    0
+   ],
+   "mooredS": [
+    3.15,
+    3.15
+   ],
+   "verdict": "loop on time (longer loop: 28.6 / 28.6 / 26.6 / 30.6 tiles)"
+  },
+  {
+   "nav": 0,
+   "net": 18,
+   "sp": 18,
+   "built": true,
+   "V0": 4.65,
+   "sim": [
+    9.44,
+    9.39,
+    9.92,
+    9.58
+   ],
+   "grounds5": [
+    14.82,
+    14.34,
+    14.82,
+    14.7
+   ],
+   "grounds44": [
+    15.78,
+    15.3,
+    15.9,
+    15.66
+   ],
+   "mode": "loops",
+   "per": [
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 28.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 28.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 26.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 30.6
+    }
+   ],
+   "lateS": [
+    0,
+    0
+   ],
+   "mooredS": [
+    3.15,
+    3.15
+   ],
+   "verdict": "loop on time (longer loop: 28.6 / 28.6 / 26.6 / 30.6 tiles)"
+  },
+  {
+   "nav": 0,
+   "net": 18,
+   "sp": 22,
+   "built": true,
+   "V0": 5.26,
+   "sim": [
+    8.54,
+    8.49,
+    8.95,
+    8.66
+   ],
+   "grounds5": [
+    14.58,
+    14.1,
+    14.82,
+    14.7
+   ],
+   "grounds44": [
+    15.66,
+    15.18,
+    15.78,
+    15.54
+   ],
+   "mode": "loops",
+   "per": [
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 24.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 24.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 26.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 24.6
+    }
+   ],
+   "lateS": [
+    0,
+    0
+   ],
+   "mooredS": [
+    3.15,
+    3.15
+   ],
+   "verdict": "loop on time (longer loop: 24.6 / 24.6 / 26.6 / 24.6 tiles)"
+  },
+  {
+   "nav": 0,
+   "net": 18,
+   "sp": 26,
+   "built": true,
+   "V0": 5.86,
+   "sim": [
+    7.82,
+    7.77,
+    8.19,
+    7.93
+   ],
+   "grounds5": [
+    14.46,
+    14.1,
+    14.58,
+    14.46
+   ],
+   "grounds44": [
+    15.54,
+    15.06,
+    15.66,
+    15.42
+   ],
+   "mode": "loops",
+   "per": [
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 22.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 20.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 22.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 22.6
+    }
+   ],
+   "lateS": [
+    0,
+    0
+   ],
+   "mooredS": [
+    3.15,
+    3.15
+   ],
+   "verdict": "loop on time (longer loop: 22.6 / 20.6 / 22.6 / 22.6 tiles)"
+  },
+  {
+   "nav": 0,
+   "net": 18,
+   "sp": 30,
+   "built": true,
+   "V0": 6.47,
+   "sim": [
+    7.24,
+    7.2,
+    7.57,
+    7.33
+   ],
+   "grounds5": [
+    14.34,
+    13.98,
+    14.46,
+    14.34
+   ],
+   "grounds44": [
+    15.42,
+    14.94,
+    15.54,
+    15.3
+   ],
+   "mode": "loops",
+   "per": [
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 18.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 18.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 20.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 18.6
+    }
+   ],
+   "lateS": [
+    0,
+    0
+   ],
+   "mooredS": [
+    3.15,
+    3.15
+   ],
+   "verdict": "loop on time (longer loop: 18.6 / 18.6 / 20.6 / 18.6 tiles)"
+  },
+  {
+   "nav": 0,
+   "net": 22,
+   "sp": 0,
+   "built": false,
+   "V0": 1.9,
+   "sim": [
+    20.29,
+    20.15,
+    21.44,
+    20.62
+   ],
+   "grounds5": [
+    22.86,
+    22.14,
+    22.74,
+    22.26
+   ],
+   "grounds44": [
+    22.86,
+    22.14,
+    22.74,
+    22.26
+   ],
+   "mode": "slips",
+   "lateS": [
+    0.75,
+    2.02
+   ],
+   "verdict": "full route, in ≤ 2.0 s late (≥ 1 s moored)"
+  },
+  {
+   "nav": 0,
+   "net": 22,
+   "sp": 5,
+   "built": false,
+   "V0": 2.67,
+   "sim": [
+    14.84,
+    14.74,
+    15.66,
+    15.08
+   ],
+   "grounds5": [
+    18.42,
+    17.94,
+    18.54,
+    17.94
+   ],
+   "grounds44": [
+    18.42,
+    17.94,
+    18.54,
+    17.94
+   ],
+   "mode": "slips",
+   "lateS": [
+    2.31,
+    3.03
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 0,
+   "net": 22,
+   "sp": 10,
+   "built": false,
+   "V0": 3.43,
+   "sim": [
+    11.81,
+    11.74,
+    12.45,
+    12
+   ],
+   "grounds5": [
+    16.14,
+    15.78,
+    16.26,
+    15.9
+   ],
+   "grounds44": [
+    16.5,
+    16.14,
+    16.62,
+    16.38
+   ],
+   "mode": "slips",
+   "lateS": [
+    3.26,
+    4.14
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 0,
+   "net": 22,
+   "sp": 14,
+   "built": true,
+   "V0": 4.04,
+   "sim": [
+    10.21,
+    10.15,
+    10.76,
+    10.37
+   ],
+   "grounds5": [
+    15.18,
+    14.7,
+    15.18,
+    15.06
+   ],
+   "grounds44": [
+    15.9,
+    15.54,
+    16.02,
+    15.78
+   ],
+   "mode": "loops",
+   "per": [
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 28.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 28.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 26.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 30.6
+    }
+   ],
+   "lateS": [
+    0,
+    0
+   ],
+   "mooredS": [
+    3.15,
+    3.15
+   ],
+   "verdict": "loop on time (longer loop: 28.6 / 28.6 / 26.6 / 30.6 tiles)"
+  },
+  {
+   "nav": 0,
+   "net": 22,
+   "sp": 18,
+   "built": true,
+   "V0": 4.65,
+   "sim": [
+    9.03,
+    8.98,
+    9.51,
+    9.17
+   ],
+   "grounds5": [
+    14.82,
+    14.34,
+    14.82,
+    14.7
+   ],
+   "grounds44": [
+    15.78,
+    15.3,
+    15.9,
+    15.66
+   ],
+   "mode": "loops",
+   "per": [
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 26.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 26.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 26.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 28.6
+    }
+   ],
+   "lateS": [
+    0,
+    0
+   ],
+   "mooredS": [
+    3.15,
+    3.15
+   ],
+   "verdict": "loop on time (longer loop: 26.6 / 26.6 / 26.6 / 28.6 tiles)"
+  },
+  {
+   "nav": 0,
+   "net": 22,
+   "sp": 22,
+   "built": true,
+   "V0": 5.26,
+   "sim": [
+    8.13,
+    8.08,
+    8.54,
+    8.25
+   ],
+   "grounds5": [
+    14.58,
+    14.1,
+    14.82,
+    14.7
+   ],
+   "grounds44": [
+    15.66,
+    15.18,
+    15.78,
+    15.54
+   ],
+   "mode": "loops",
+   "per": [
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 22.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 22.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 24.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 22.6
+    }
+   ],
+   "lateS": [
+    0,
+    0
+   ],
+   "mooredS": [
+    3.15,
+    3.15
+   ],
+   "verdict": "loop on time (longer loop: 22.6 / 22.6 / 24.6 / 22.6 tiles)"
+  },
+  {
+   "nav": 0,
+   "net": 22,
+   "sp": 26,
+   "built": true,
+   "V0": 5.86,
+   "sim": [
+    7.41,
+    7.36,
+    7.78,
+    7.52
+   ],
+   "grounds5": [
+    14.46,
+    14.1,
+    14.58,
+    14.46
+   ],
+   "grounds44": [
+    15.54,
+    15.06,
+    15.66,
+    15.42
+   ],
+   "mode": "loops",
+   "per": [
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 20.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 20.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 20.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 20.6
+    }
+   ],
+   "lateS": [
+    0,
+    0
+   ],
+   "mooredS": [
+    3.15,
+    3.15
+   ],
+   "verdict": "loop on time (longer loop: 20.6 / 20.6 / 20.6 / 20.6 tiles)"
+  },
+  {
+   "nav": 0,
+   "net": 22,
+   "sp": 30,
+   "built": true,
+   "V0": 6.47,
+   "sim": [
+    6.83,
+    6.79,
+    7.17,
+    6.92
+   ],
+   "grounds5": [
+    14.34,
+    13.98,
+    14.46,
+    14.34
+   ],
+   "grounds44": [
+    15.42,
+    14.94,
+    15.54,
+    15.3
+   ],
+   "mode": "loops",
+   "per": [
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0.07,
+     "mooredCalm": 3.08,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0.11,
+     "mooredCalm": 3.04,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 18.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 18.6
+    }
+   ],
+   "lateS": [
+    0,
+    0.11
+   ],
+   "mooredS": [
+    3.04,
+    3.15
+   ],
+   "verdict": "shortest loop, 0.0–0.1 s late, ≥ 3.0 s moored"
+  },
+  {
+   "nav": 0,
+   "net": 26,
+   "sp": 0,
+   "built": false,
+   "V0": 1.9,
+   "sim": [
+    19.99,
+    19.85,
+    21.14,
+    20.32
+   ],
+   "grounds5": [
+    22.86,
+    22.14,
+    22.74,
+    22.26
+   ],
+   "grounds44": [
+    22.86,
+    22.14,
+    22.74,
+    22.26
+   ],
+   "mode": "slips",
+   "lateS": [
+    1.05,
+    2.32
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 0,
+   "net": 26,
+   "sp": 5,
+   "built": false,
+   "V0": 2.67,
+   "sim": [
+    14.54,
+    14.44,
+    15.36,
+    14.77
+   ],
+   "grounds5": [
+    18.42,
+    17.94,
+    18.54,
+    17.94
+   ],
+   "grounds44": [
+    18.42,
+    17.94,
+    18.54,
+    17.94
+   ],
+   "mode": "slips",
+   "lateS": [
+    2.62,
+    3.33
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 0,
+   "net": 26,
+   "sp": 10,
+   "built": false,
+   "V0": 3.43,
+   "sim": [
+    11.51,
+    11.43,
+    12.15,
+    11.69
+   ],
+   "grounds5": [
+    16.14,
+    15.78,
+    16.26,
+    15.9
+   ],
+   "grounds44": [
+    16.5,
+    16.14,
+    16.62,
+    16.38
+   ],
+   "mode": "slips",
+   "lateS": [
+    3.56,
+    4.44
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 0,
+   "net": 26,
+   "sp": 14,
+   "built": true,
+   "V0": 4.04,
+   "sim": [
+    9.91,
+    9.84,
+    10.45,
+    10.06
+   ],
+   "grounds5": [
+    15.18,
+    14.7,
+    15.18,
+    15.06
+   ],
+   "grounds44": [
+    15.9,
+    15.54,
+    16.02,
+    15.78
+   ],
+   "mode": "loops",
+   "per": [
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 28.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 28.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 26.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 30.6
+    }
+   ],
+   "lateS": [
+    0,
+    0
+   ],
+   "mooredS": [
+    3.15,
+    3.15
+   ],
+   "verdict": "loop on time (longer loop: 28.6 / 28.6 / 26.6 / 30.6 tiles)"
+  },
+  {
+   "nav": 0,
+   "net": 26,
+   "sp": 18,
+   "built": true,
+   "V0": 4.65,
+   "sim": [
+    8.73,
+    8.67,
+    9.2,
+    8.86
+   ],
+   "grounds5": [
+    14.82,
+    14.34,
+    14.82,
+    14.7
+   ],
+   "grounds44": [
+    15.78,
+    15.3,
+    15.9,
+    15.66
+   ],
+   "mode": "loops",
+   "per": [
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 26.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 24.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 26.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 26.6
+    }
+   ],
+   "lateS": [
+    0,
+    0
+   ],
+   "mooredS": [
+    3.15,
+    3.15
+   ],
+   "verdict": "loop on time (longer loop: 26.6 / 24.6 / 26.6 / 26.6 tiles)"
+  },
+  {
+   "nav": 0,
+   "net": 26,
+   "sp": 22,
+   "built": true,
+   "V0": 5.26,
+   "sim": [
+    7.82,
+    7.77,
+    8.24,
+    7.94
+   ],
+   "grounds5": [
+    14.58,
+    14.1,
+    14.82,
+    14.7
+   ],
+   "grounds44": [
+    15.66,
+    15.18,
+    15.78,
+    15.54
+   ],
+   "mode": "loops",
+   "per": [
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 22.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 20.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 22.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 22.6
+    }
+   ],
+   "lateS": [
+    0,
+    0
+   ],
+   "mooredS": [
+    3.15,
+    3.15
+   ],
+   "verdict": "loop on time (longer loop: 22.6 / 20.6 / 22.6 / 22.6 tiles)"
+  },
+  {
+   "nav": 0,
+   "net": 26,
+   "sp": 26,
+   "built": true,
+   "V0": 5.86,
+   "sim": [
+    7.1,
+    7.06,
+    7.48,
+    7.21
+   ],
+   "grounds5": [
+    14.46,
+    14.1,
+    14.58,
+    14.46
+   ],
+   "grounds44": [
+    15.54,
+    15.06,
+    15.66,
+    15.42
+   ],
+   "mode": "loops",
+   "per": [
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 18.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 18.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 20.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 18.6
+    }
+   ],
+   "lateS": [
+    0,
+    0
+   ],
+   "mooredS": [
+    3.15,
+    3.15
+   ],
+   "verdict": "loop on time (longer loop: 18.6 / 18.6 / 20.6 / 18.6 tiles)"
+  },
+  {
+   "nav": 0,
+   "net": 26,
+   "sp": 30,
+   "built": true,
+   "V0": 6.47,
+   "sim": [
+    6.52,
+    6.48,
+    6.86,
+    6.62
+   ],
+   "grounds5": [
+    14.34,
+    13.98,
+    14.46,
+    14.34
+   ],
+   "grounds44": [
+    15.42,
+    14.94,
+    15.54,
+    15.3
+   ],
+   "mode": "loops",
+   "per": [
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0.38,
+     "mooredCalm": 2.77,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0.42,
+     "mooredCalm": 2.73,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0.04,
+     "mooredCalm": 3.11,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0.28,
+     "mooredCalm": 2.87,
+     "longest": null
+    }
+   ],
+   "lateS": [
+    0,
+    0.42
+   ],
+   "mooredS": [
+    2.73,
+    3.15
+   ],
+   "verdict": "shortest loop, 0.0–0.4 s late, ≥ 2.7 s moored"
+  },
+  {
+   "nav": 0,
+   "net": 30,
+   "sp": 0,
+   "built": false,
+   "V0": 1.9,
+   "sim": [
+    19.76,
+    19.62,
+    20.91,
+    20.09
+   ],
+   "grounds5": [
+    22.86,
+    22.14,
+    22.74,
+    22.26
+   ],
+   "grounds44": [
+    22.86,
+    22.14,
+    22.74,
+    22.26
+   ],
+   "mode": "slips",
+   "lateS": [
+    1.28,
+    2.55
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 0,
+   "net": 30,
+   "sp": 5,
+   "built": false,
+   "V0": 2.67,
+   "sim": [
+    14.31,
+    14.21,
+    15.13,
+    14.54
+   ],
+   "grounds5": [
+    18.42,
+    17.94,
+    18.54,
+    17.94
+   ],
+   "grounds44": [
+    18.42,
+    17.94,
+    18.54,
+    17.94
+   ],
+   "mode": "slips",
+   "lateS": [
+    2.85,
+    3.56
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 0,
+   "net": 30,
+   "sp": 10,
+   "built": false,
+   "V0": 3.43,
+   "sim": [
+    11.28,
+    11.2,
+    11.92,
+    11.46
+   ],
+   "grounds5": [
+    16.14,
+    15.78,
+    16.26,
+    15.9
+   ],
+   "grounds44": [
+    16.5,
+    16.14,
+    16.62,
+    16.38
+   ],
+   "mode": "slips",
+   "lateS": [
+    3.79,
+    4.67
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 0,
+   "net": 30,
+   "sp": 14,
+   "built": true,
+   "V0": 4.04,
+   "sim": [
+    9.68,
+    9.61,
+    10.22,
+    9.83
+   ],
+   "grounds5": [
+    15.18,
+    14.7,
+    15.18,
+    15.06
+   ],
+   "grounds44": [
+    15.9,
+    15.54,
+    16.02,
+    15.78
+   ],
+   "mode": "loops",
+   "per": [
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 28.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 28.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 26.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 30.6
+    }
+   ],
+   "lateS": [
+    0,
+    0
+   ],
+   "mooredS": [
+    3.15,
+    3.15
+   ],
+   "verdict": "loop on time (longer loop: 28.6 / 28.6 / 26.6 / 30.6 tiles)"
+  },
+  {
+   "nav": 0,
+   "net": 30,
+   "sp": 18,
+   "built": true,
+   "V0": 4.65,
+   "sim": [
+    8.5,
+    8.44,
+    8.97,
+    8.63
+   ],
+   "grounds5": [
+    14.82,
+    14.34,
+    14.82,
+    14.7
+   ],
+   "grounds44": [
+    15.78,
+    15.3,
+    15.9,
+    15.66
+   ],
+   "mode": "loops",
+   "per": [
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 24.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 24.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 26.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 24.6
+    }
+   ],
+   "lateS": [
+    0,
+    0
+   ],
+   "mooredS": [
+    3.15,
+    3.15
+   ],
+   "verdict": "loop on time (longer loop: 24.6 / 24.6 / 26.6 / 24.6 tiles)"
+  },
+  {
+   "nav": 0,
+   "net": 30,
+   "sp": 22,
+   "built": true,
+   "V0": 5.26,
+   "sim": [
+    7.59,
+    7.54,
+    8.01,
+    7.71
+   ],
+   "grounds5": [
+    14.58,
+    14.1,
+    14.82,
+    14.7
+   ],
+   "grounds44": [
+    15.66,
+    15.18,
+    15.78,
+    15.54
+   ],
+   "mode": "loops",
+   "per": [
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 20.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 20.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 22.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 20.6
+    }
+   ],
+   "lateS": [
+    0,
+    0
+   ],
+   "mooredS": [
+    3.15,
+    3.15
+   ],
+   "verdict": "loop on time (longer loop: 20.6 / 20.6 / 22.6 / 20.6 tiles)"
+  },
+  {
+   "nav": 0,
+   "net": 30,
+   "sp": 26,
+   "built": true,
+   "V0": 5.86,
+   "sim": [
+    6.87,
+    6.83,
+    7.25,
+    6.98
+   ],
+   "grounds5": [
+    14.46,
+    14.1,
+    14.58,
+    14.46
+   ],
+   "grounds44": [
+    15.54,
+    15.06,
+    15.66,
+    15.42
+   ],
+   "mode": "loops",
+   "per": [
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0.03,
+     "mooredCalm": 3.12,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0.07,
+     "mooredCalm": 3.08,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 18.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 18.6
+    }
+   ],
+   "lateS": [
+    0,
+    0.07
+   ],
+   "mooredS": [
+    3.08,
+    3.15
+   ],
+   "verdict": "shortest loop, 0.0–0.1 s late, ≥ 3.1 s moored"
+  },
+  {
+   "nav": 0,
+   "net": 30,
+   "sp": 30,
+   "built": true,
+   "V0": 6.47,
+   "sim": [
+    6.29,
+    6.25,
+    6.63,
+    6.39
+   ],
+   "grounds5": [
+    14.34,
+    13.98,
+    14.46,
+    14.34
+   ],
+   "grounds44": [
+    15.42,
+    14.94,
+    15.54,
+    15.3
+   ],
+   "mode": "loops",
+   "per": [
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0.61,
+     "mooredCalm": 2.54,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0.65,
+     "mooredCalm": 2.5,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0.27,
+     "mooredCalm": 2.88,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0.51,
+     "mooredCalm": 2.64,
+     "longest": null
+    }
+   ],
+   "lateS": [
+    0,
+    0.65
+   ],
+   "mooredS": [
+    2.5,
+    3.15
+   ],
+   "verdict": "shortest loop, 0.0–0.7 s late, ≥ 2.5 s moored"
+  },
+  {
+   "nav": 3,
+   "net": 0,
+   "sp": 0,
+   "built": false,
+   "V0": 2.48,
+   "sim": [
+    20.67,
+    20.57,
+    21.56,
+    20.93
+   ],
+   "grounds5": [
+    20.98,
+    20.38,
+    20.74,
+    20.5
+   ],
+   "grounds44": [
+    20.98,
+    20.38,
+    20.74,
+    20.5
+   ],
+   "mode": "slips",
+   "lateS": [
+    0,
+    0
+   ],
+   "verdict": "full route, on time"
+  },
+  {
+   "nav": 3,
+   "net": 0,
+   "sp": 5,
+   "built": false,
+   "V0": 3.47,
+   "sim": [
+    16.48,
+    16.41,
+    17.11,
+    16.66
+   ],
+   "grounds5": [
+    17.62,
+    17.26,
+    17.86,
+    17.5
+   ],
+   "grounds44": [
+    17.98,
+    17.5,
+    18.1,
+    17.86
+   ],
+   "mode": "slips",
+   "lateS": [
+    0.2,
+    0.95
+   ],
+   "verdict": "full route, in ≤ 0.9 s late (≥ 1 s moored)"
+  },
+  {
+   "nav": 3,
+   "net": 0,
+   "sp": 10,
+   "built": false,
+   "V0": 4.46,
+   "sim": [
+    14.15,
+    14.09,
+    14.64,
+    14.29
+   ],
+   "grounds5": [
+    16.42,
+    15.94,
+    16.66,
+    16.3
+   ],
+   "grounds44": [
+    17.5,
+    16.9,
+    17.62,
+    17.38
+   ],
+   "mode": "slips",
+   "lateS": [
+    1.3,
+    2.8
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 3,
+   "net": 0,
+   "sp": 14,
+   "built": false,
+   "V0": 5.25,
+   "sim": [
+    12.92,
+    12.87,
+    13.34,
+    13.04
+   ],
+   "grounds5": [
+    16.18,
+    15.7,
+    16.42,
+    16.3
+   ],
+   "grounds44": [
+    17.26,
+    16.78,
+    17.38,
+    17.14
+   ],
+   "mode": "slips",
+   "lateS": [
+    2.28,
+    3.79
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 3,
+   "net": 0,
+   "sp": 18,
+   "built": false,
+   "V0": 6.04,
+   "sim": [
+    12.01,
+    11.97,
+    12.38,
+    12.12
+   ],
+   "grounds5": [
+    16.06,
+    15.58,
+    16.18,
+    16.06
+   ],
+   "grounds44": [
+    17.02,
+    16.66,
+    17.26,
+    17.02
+   ],
+   "mode": "slips",
+   "lateS": [
+    3.06,
+    4.46
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 3,
+   "net": 0,
+   "sp": 22,
+   "built": false,
+   "V0": 6.83,
+   "sim": [
+    11.32,
+    11.28,
+    11.64,
+    11.41
+   ],
+   "grounds5": [
+    15.94,
+    15.46,
+    16.06,
+    15.94
+   ],
+   "grounds44": [
+    16.9,
+    16.54,
+    17.02,
+    16.78
+   ],
+   "mode": "slips",
+   "lateS": [
+    3.63,
+    5.03
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 3,
+   "net": 0,
+   "sp": 26,
+   "built": false,
+   "V0": 7.62,
+   "sim": [
+    10.76,
+    10.73,
+    11.05,
+    10.85
+   ],
+   "grounds5": [
+    15.82,
+    15.34,
+    15.82,
+    15.7
+   ],
+   "grounds44": [
+    16.9,
+    16.3,
+    16.9,
+    16.66
+   ],
+   "mode": "slips",
+   "lateS": [
+    4.06,
+    5.59
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 3,
+   "net": 0,
+   "sp": 30,
+   "built": false,
+   "V0": 8.42,
+   "sim": [
+    10.32,
+    10.28,
+    10.58,
+    10.39
+   ],
+   "grounds5": [
+    15.58,
+    15.34,
+    15.82,
+    15.7
+   ],
+   "grounds44": [
+    16.66,
+    16.3,
+    16.9,
+    16.66
+   ],
+   "mode": "slips",
+   "lateS": [
+    4.51,
+    5.79
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 3,
+   "net": 5,
+   "sp": 0,
+   "built": false,
+   "V0": 2.48,
+   "sim": [
+    18.85,
+    18.74,
+    19.73,
+    19.1
+   ],
+   "grounds5": [
+    20.36,
+    19.76,
+    20.12,
+    19.88
+   ],
+   "grounds44": [
+    20.36,
+    19.76,
+    20.12,
+    19.88
+   ],
+   "mode": "slips",
+   "lateS": [
+    0,
+    0.96
+   ],
+   "verdict": "full route, in ≤ 1.0 s late (≥ 1 s moored)"
+  },
+  {
+   "nav": 3,
+   "net": 5,
+   "sp": 5,
+   "built": false,
+   "V0": 3.47,
+   "sim": [
+    14.66,
+    14.58,
+    15.29,
+    14.84
+   ],
+   "grounds5": [
+    17,
+    16.64,
+    17.24,
+    16.88
+   ],
+   "grounds44": [
+    17.36,
+    16.88,
+    17.48,
+    17.24
+   ],
+   "mode": "slips",
+   "lateS": [
+    1.4,
+    2.15
+   ],
+   "verdict": "full route, in ≤ 2.1 s late (≥ 1 s moored)"
+  },
+  {
+   "nav": 3,
+   "net": 5,
+   "sp": 10,
+   "built": false,
+   "V0": 4.46,
+   "sim": [
+    12.33,
+    12.27,
+    12.82,
+    12.47
+   ],
+   "grounds5": [
+    15.8,
+    15.32,
+    16.04,
+    15.68
+   ],
+   "grounds44": [
+    16.88,
+    16.28,
+    17,
+    16.76
+   ],
+   "mode": "slips",
+   "lateS": [
+    2.5,
+    4
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 3,
+   "net": 5,
+   "sp": 14,
+   "built": false,
+   "V0": 5.25,
+   "sim": [
+    11.1,
+    11.05,
+    11.51,
+    11.22
+   ],
+   "grounds5": [
+    15.56,
+    15.08,
+    15.8,
+    15.68
+   ],
+   "grounds44": [
+    16.64,
+    16.16,
+    16.76,
+    16.52
+   ],
+   "mode": "slips",
+   "lateS": [
+    3.48,
+    4.99
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 3,
+   "net": 5,
+   "sp": 18,
+   "built": false,
+   "V0": 6.04,
+   "sim": [
+    10.19,
+    10.14,
+    10.55,
+    10.29
+   ],
+   "grounds5": [
+    15.44,
+    14.96,
+    15.56,
+    15.44
+   ],
+   "grounds44": [
+    16.4,
+    16.04,
+    16.64,
+    16.4
+   ],
+   "mode": "slips",
+   "lateS": [
+    4.27,
+    5.66
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 3,
+   "net": 5,
+   "sp": 22,
+   "built": false,
+   "V0": 6.83,
+   "sim": [
+    9.49,
+    9.45,
+    9.81,
+    9.58
+   ],
+   "grounds5": [
+    15.32,
+    14.84,
+    15.44,
+    15.32
+   ],
+   "grounds44": [
+    16.28,
+    15.92,
+    16.4,
+    16.16
+   ],
+   "mode": "slips",
+   "lateS": [
+    4.84,
+    6.24
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 3,
+   "net": 5,
+   "sp": 26,
+   "built": false,
+   "V0": 7.62,
+   "sim": [
+    8.94,
+    8.9,
+    9.23,
+    9.02
+   ],
+   "grounds5": [
+    15.2,
+    14.72,
+    15.2,
+    15.08
+   ],
+   "grounds44": [
+    16.28,
+    15.68,
+    16.28,
+    16.04
+   ],
+   "mode": "slips",
+   "lateS": [
+    5.27,
+    6.79
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 3,
+   "net": 5,
+   "sp": 30,
+   "built": false,
+   "V0": 8.42,
+   "sim": [
+    8.49,
+    8.46,
+    8.75,
+    8.56
+   ],
+   "grounds5": [
+    14.96,
+    14.72,
+    15.2,
+    15.08
+   ],
+   "grounds44": [
+    16.04,
+    15.68,
+    16.28,
+    16.04
+   ],
+   "mode": "slips",
+   "lateS": [
+    5.71,
+    7
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 3,
+   "net": 10,
+   "sp": 0,
+   "built": false,
+   "V0": 2.48,
+   "sim": [
+    17.58,
+    17.47,
+    18.46,
+    17.83
+   ],
+   "grounds5": [
+    19.79,
+    19.19,
+    19.55,
+    19.31
+   ],
+   "grounds44": [
+    19.79,
+    19.19,
+    19.55,
+    19.31
+   ],
+   "mode": "slips",
+   "lateS": [
+    0.54,
+    1.66
+   ],
+   "verdict": "full route, in ≤ 1.7 s late (≥ 1 s moored)"
+  },
+  {
+   "nav": 3,
+   "net": 10,
+   "sp": 5,
+   "built": false,
+   "V0": 3.47,
+   "sim": [
+    13.39,
+    13.31,
+    14.02,
+    13.57
+   ],
+   "grounds5": [
+    16.43,
+    16.07,
+    16.67,
+    16.31
+   ],
+   "grounds44": [
+    16.79,
+    16.31,
+    16.91,
+    16.67
+   ],
+   "mode": "slips",
+   "lateS": [
+    2.1,
+    2.85
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 3,
+   "net": 10,
+   "sp": 10,
+   "built": false,
+   "V0": 4.46,
+   "sim": [
+    11.06,
+    11,
+    11.55,
+    11.2
+   ],
+   "grounds5": [
+    15.23,
+    14.75,
+    15.47,
+    15.11
+   ],
+   "grounds44": [
+    16.31,
+    15.71,
+    16.43,
+    16.19
+   ],
+   "mode": "slips",
+   "lateS": [
+    3.2,
+    4.7
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 3,
+   "net": 10,
+   "sp": 14,
+   "built": false,
+   "V0": 5.25,
+   "sim": [
+    9.83,
+    9.78,
+    10.24,
+    9.95
+   ],
+   "grounds5": [
+    14.99,
+    14.51,
+    15.23,
+    15.11
+   ],
+   "grounds44": [
+    16.07,
+    15.59,
+    16.19,
+    15.95
+   ],
+   "mode": "slips",
+   "lateS": [
+    4.18,
+    5.69
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 3,
+   "net": 10,
+   "sp": 18,
+   "built": false,
+   "V0": 6.04,
+   "sim": [
+    8.92,
+    8.87,
+    9.28,
+    9.02
+   ],
+   "grounds5": [
+    14.87,
+    14.39,
+    14.99,
+    14.87
+   ],
+   "grounds44": [
+    15.83,
+    15.47,
+    16.07,
+    15.83
+   ],
+   "mode": "slips",
+   "lateS": [
+    4.97,
+    6.36
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 3,
+   "net": 10,
+   "sp": 22,
+   "built": false,
+   "V0": 6.83,
+   "sim": [
+    8.22,
+    8.18,
+    8.54,
+    8.31
+   ],
+   "grounds5": [
+    14.75,
+    14.27,
+    14.87,
+    14.75
+   ],
+   "grounds44": [
+    15.71,
+    15.35,
+    15.83,
+    15.59
+   ],
+   "mode": "slips",
+   "lateS": [
+    5.54,
+    6.94
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 3,
+   "net": 10,
+   "sp": 26,
+   "built": false,
+   "V0": 7.62,
+   "sim": [
+    7.67,
+    7.63,
+    7.96,
+    7.75
+   ],
+   "grounds5": [
+    14.63,
+    14.15,
+    14.63,
+    14.51
+   ],
+   "grounds44": [
+    15.71,
+    15.11,
+    15.71,
+    15.47
+   ],
+   "mode": "slips",
+   "lateS": [
+    5.97,
+    7.49
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 3,
+   "net": 10,
+   "sp": 30,
+   "built": false,
+   "V0": 8.42,
+   "sim": [
+    7.22,
+    7.19,
+    7.48,
+    7.29
+   ],
+   "grounds5": [
+    14.39,
+    14.15,
+    14.63,
+    14.51
+   ],
+   "grounds44": [
+    15.47,
+    15.11,
+    15.71,
+    15.47
+   ],
+   "mode": "slips",
+   "lateS": [
+    6.41,
+    7.7
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 3,
+   "net": 14,
+   "sp": 0,
+   "built": false,
+   "V0": 2.48,
+   "sim": [
+    16.85,
+    16.74,
+    17.73,
+    17.1
+   ],
+   "grounds5": [
+    19.46,
+    18.86,
+    19.22,
+    18.98
+   ],
+   "grounds44": [
+    19.46,
+    18.86,
+    19.22,
+    18.98
+   ],
+   "mode": "slips",
+   "lateS": [
+    0.94,
+    2.06
+   ],
+   "verdict": "full route, in ≤ 2.1 s late (≥ 1 s moored)"
+  },
+  {
+   "nav": 3,
+   "net": 14,
+   "sp": 5,
+   "built": false,
+   "V0": 3.47,
+   "sim": [
+    12.65,
+    12.58,
+    13.29,
+    12.84
+   ],
+   "grounds5": [
+    16.1,
+    15.74,
+    16.34,
+    15.98
+   ],
+   "grounds44": [
+    16.46,
+    15.98,
+    16.58,
+    16.34
+   ],
+   "mode": "slips",
+   "lateS": [
+    2.5,
+    3.26
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 3,
+   "net": 14,
+   "sp": 10,
+   "built": false,
+   "V0": 4.46,
+   "sim": [
+    10.32,
+    10.27,
+    10.82,
+    10.47
+   ],
+   "grounds5": [
+    14.9,
+    14.42,
+    15.14,
+    14.78
+   ],
+   "grounds44": [
+    15.98,
+    15.38,
+    16.1,
+    15.86
+   ],
+   "mode": "slips",
+   "lateS": [
+    3.6,
+    5.11
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 3,
+   "net": 14,
+   "sp": 14,
+   "built": false,
+   "V0": 5.25,
+   "sim": [
+    9.09,
+    9.04,
+    9.51,
+    9.21
+   ],
+   "grounds5": [
+    14.66,
+    14.18,
+    14.9,
+    14.78
+   ],
+   "grounds44": [
+    15.74,
+    15.26,
+    15.86,
+    15.62
+   ],
+   "mode": "slips",
+   "lateS": [
+    4.59,
+    6.1
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 3,
+   "net": 14,
+   "sp": 18,
+   "built": false,
+   "V0": 6.04,
+   "sim": [
+    8.19,
+    8.14,
+    8.55,
+    8.29
+   ],
+   "grounds5": [
+    14.54,
+    14.06,
+    14.66,
+    14.54
+   ],
+   "grounds44": [
+    15.5,
+    15.14,
+    15.74,
+    15.5
+   ],
+   "mode": "slips",
+   "lateS": [
+    5.37,
+    6.76
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 3,
+   "net": 14,
+   "sp": 22,
+   "built": false,
+   "V0": 6.83,
+   "sim": [
+    7.49,
+    7.45,
+    7.81,
+    7.58
+   ],
+   "grounds5": [
+    14.42,
+    13.94,
+    14.54,
+    14.42
+   ],
+   "grounds44": [
+    15.38,
+    15.02,
+    15.5,
+    15.26
+   ],
+   "mode": "slips",
+   "lateS": [
+    5.94,
+    7.34
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 3,
+   "net": 14,
+   "sp": 26,
+   "built": false,
+   "V0": 7.62,
+   "sim": [
+    6.94,
+    6.9,
+    7.22,
+    7.02
+   ],
+   "grounds5": [
+    14.3,
+    13.82,
+    14.3,
+    14.18
+   ],
+   "grounds44": [
+    15.38,
+    14.78,
+    15.38,
+    15.14
+   ],
+   "mode": "slips",
+   "lateS": [
+    6.37,
+    7.89
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 3,
+   "net": 14,
+   "sp": 30,
+   "built": false,
+   "V0": 8.42,
+   "sim": [
+    6.49,
+    6.46,
+    6.75,
+    6.56
+   ],
+   "grounds5": [
+    14.06,
+    13.82,
+    14.3,
+    14.18
+   ],
+   "grounds44": [
+    15.14,
+    14.78,
+    15.38,
+    15.14
+   ],
+   "mode": "slips",
+   "lateS": [
+    6.81,
+    8.1
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 3,
+   "net": 18,
+   "sp": 0,
+   "built": false,
+   "V0": 2.48,
+   "sim": [
+    16.3,
+    16.19,
+    17.19,
+    16.55
+   ],
+   "grounds5": [
+    19.38,
+    18.78,
+    19.14,
+    18.9
+   ],
+   "grounds44": [
+    19.38,
+    18.78,
+    19.14,
+    18.9
+   ],
+   "mode": "slips",
+   "lateS": [
+    1.4,
+    2.53
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 3,
+   "net": 18,
+   "sp": 5,
+   "built": false,
+   "V0": 3.47,
+   "sim": [
+    12.11,
+    12.03,
+    12.74,
+    12.29
+   ],
+   "grounds5": [
+    16.02,
+    15.66,
+    16.26,
+    15.9
+   ],
+   "grounds44": [
+    16.38,
+    15.9,
+    16.5,
+    16.26
+   ],
+   "mode": "slips",
+   "lateS": [
+    2.97,
+    3.72
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 3,
+   "net": 18,
+   "sp": 10,
+   "built": false,
+   "V0": 4.46,
+   "sim": [
+    9.78,
+    9.72,
+    10.27,
+    9.92
+   ],
+   "grounds5": [
+    14.82,
+    14.34,
+    15.06,
+    14.7
+   ],
+   "grounds44": [
+    15.9,
+    15.3,
+    16.02,
+    15.78
+   ],
+   "mode": "slips",
+   "lateS": [
+    4.07,
+    5.57
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 3,
+   "net": 18,
+   "sp": 14,
+   "built": true,
+   "V0": 5.25,
+   "sim": [
+    8.55,
+    8.5,
+    8.96,
+    8.67
+   ],
+   "grounds5": [
+    14.58,
+    14.1,
+    14.82,
+    14.7
+   ],
+   "grounds44": [
+    15.66,
+    15.18,
+    15.78,
+    15.54
+   ],
+   "mode": "loops",
+   "per": [
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 24.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 24.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 26.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 24.6
+    }
+   ],
+   "lateS": [
+    0,
+    0
+   ],
+   "mooredS": [
+    3.15,
+    3.15
+   ],
+   "verdict": "loop on time (longer loop: 24.6 / 24.6 / 26.6 / 24.6 tiles)"
+  },
+  {
+   "nav": 3,
+   "net": 18,
+   "sp": 18,
+   "built": true,
+   "V0": 6.04,
+   "sim": [
+    7.64,
+    7.6,
+    8,
+    7.74
+   ],
+   "grounds5": [
+    14.46,
+    13.98,
+    14.58,
+    14.46
+   ],
+   "grounds44": [
+    15.42,
+    15.06,
+    15.66,
+    15.42
+   ],
+   "mode": "loops",
+   "per": [
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 20.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 20.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 22.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 20.6
+    }
+   ],
+   "lateS": [
+    0,
+    0
+   ],
+   "mooredS": [
+    3.15,
+    3.15
+   ],
+   "verdict": "loop on time (longer loop: 20.6 / 20.6 / 22.6 / 20.6 tiles)"
+  },
+  {
+   "nav": 3,
+   "net": 18,
+   "sp": 22,
+   "built": true,
+   "V0": 6.83,
+   "sim": [
+    6.94,
+    6.9,
+    7.26,
+    7.03
+   ],
+   "grounds5": [
+    14.34,
+    13.86,
+    14.46,
+    14.34
+   ],
+   "grounds44": [
+    15.3,
+    14.94,
+    15.42,
+    15.18
+   ],
+   "mode": "loops",
+   "per": [
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 18.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 18.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 18.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 18.6
+    }
+   ],
+   "lateS": [
+    0,
+    0
+   ],
+   "mooredS": [
+    3.15,
+    3.15
+   ],
+   "verdict": "loop on time (longer loop: 18.6 / 18.6 / 18.6 / 18.6 tiles)"
+  },
+  {
+   "nav": 3,
+   "net": 18,
+   "sp": 26,
+   "built": true,
+   "V0": 7.62,
+   "sim": [
+    6.39,
+    6.35,
+    6.68,
+    6.47
+   ],
+   "grounds5": [
+    14.22,
+    13.74,
+    14.22,
+    14.1
+   ],
+   "grounds44": [
+    15.3,
+    14.7,
+    15.3,
+    15.06
+   ],
+   "mode": "loops",
+   "per": [
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0.51,
+     "mooredCalm": 2.64,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0.55,
+     "mooredCalm": 2.6,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0.22,
+     "mooredCalm": 2.93,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0.43,
+     "mooredCalm": 2.72,
+     "longest": null
+    }
+   ],
+   "lateS": [
+    0,
+    0.55
+   ],
+   "mooredS": [
+    2.6,
+    3.15
+   ],
+   "verdict": "shortest loop, 0.0–0.6 s late, ≥ 2.6 s moored"
+  },
+  {
+   "nav": 3,
+   "net": 18,
+   "sp": 30,
+   "built": true,
+   "V0": 8.42,
+   "sim": [
+    5.94,
+    5.91,
+    6.2,
+    6.02
+   ],
+   "grounds5": [
+    13.98,
+    13.74,
+    14.22,
+    14.1
+   ],
+   "grounds44": [
+    15.06,
+    14.7,
+    15.3,
+    15.06
+   ],
+   "mode": "loops",
+   "per": [
+    {
+     "lateBrisk": 0.18,
+     "lateCalm": 0.96,
+     "mooredCalm": 2.19,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0.21,
+     "lateCalm": 0.99,
+     "mooredCalm": 2.16,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0.7,
+     "mooredCalm": 2.45,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0.1,
+     "lateCalm": 0.88,
+     "mooredCalm": 2.27,
+     "longest": null
+    }
+   ],
+   "lateS": [
+    0.21,
+    0.99
+   ],
+   "mooredS": [
+    2.16,
+    2.94
+   ],
+   "verdict": "shortest loop, 0.2–1.0 s late, ≥ 2.2 s moored"
+  },
+  {
+   "nav": 3,
+   "net": 22,
+   "sp": 0,
+   "built": false,
+   "V0": 2.48,
+   "sim": [
+    15.89,
+    15.78,
+    16.78,
+    16.14
+   ],
+   "grounds5": [
+    19.38,
+    18.78,
+    19.14,
+    18.9
+   ],
+   "grounds44": [
+    19.38,
+    18.78,
+    19.14,
+    18.9
+   ],
+   "mode": "slips",
+   "lateS": [
+    1.81,
+    2.94
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 3,
+   "net": 22,
+   "sp": 5,
+   "built": false,
+   "V0": 3.47,
+   "sim": [
+    11.7,
+    11.62,
+    12.33,
+    11.88
+   ],
+   "grounds5": [
+    16.02,
+    15.66,
+    16.26,
+    15.9
+   ],
+   "grounds44": [
+    16.38,
+    15.9,
+    16.5,
+    16.26
+   ],
+   "mode": "slips",
+   "lateS": [
+    3.38,
+    4.13
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 3,
+   "net": 22,
+   "sp": 10,
+   "built": false,
+   "V0": 4.46,
+   "sim": [
+    9.37,
+    9.31,
+    9.86,
+    9.51
+   ],
+   "grounds5": [
+    14.82,
+    14.34,
+    15.06,
+    14.7
+   ],
+   "grounds44": [
+    15.9,
+    15.3,
+    16.02,
+    15.78
+   ],
+   "mode": "slips",
+   "lateS": [
+    4.48,
+    5.98
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 3,
+   "net": 22,
+   "sp": 14,
+   "built": true,
+   "V0": 5.25,
+   "sim": [
+    8.14,
+    8.09,
+    8.56,
+    8.26
+   ],
+   "grounds5": [
+    14.58,
+    14.1,
+    14.82,
+    14.7
+   ],
+   "grounds44": [
+    15.66,
+    15.18,
+    15.78,
+    15.54
+   ],
+   "mode": "loops",
+   "per": [
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 22.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 22.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 24.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 24.6
+    }
+   ],
+   "lateS": [
+    0,
+    0
+   ],
+   "mooredS": [
+    3.15,
+    3.15
+   ],
+   "verdict": "loop on time (longer loop: 22.6 / 22.6 / 24.6 / 24.6 tiles)"
+  },
+  {
+   "nav": 3,
+   "net": 22,
+   "sp": 18,
+   "built": true,
+   "V0": 6.04,
+   "sim": [
+    7.23,
+    7.19,
+    7.59,
+    7.33
+   ],
+   "grounds5": [
+    14.46,
+    13.98,
+    14.58,
+    14.46
+   ],
+   "grounds44": [
+    15.42,
+    15.06,
+    15.66,
+    15.42
+   ],
+   "mode": "loops",
+   "per": [
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 18.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 18.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 20.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 18.6
+    }
+   ],
+   "lateS": [
+    0,
+    0
+   ],
+   "mooredS": [
+    3.15,
+    3.15
+   ],
+   "verdict": "loop on time (longer loop: 18.6 / 18.6 / 20.6 / 18.6 tiles)"
+  },
+  {
+   "nav": 3,
+   "net": 22,
+   "sp": 22,
+   "built": true,
+   "V0": 6.83,
+   "sim": [
+    6.53,
+    6.49,
+    6.85,
+    6.62
+   ],
+   "grounds5": [
+    14.34,
+    13.86,
+    14.46,
+    14.34
+   ],
+   "grounds44": [
+    15.3,
+    14.94,
+    15.42,
+    15.18
+   ],
+   "mode": "loops",
+   "per": [
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0.37,
+     "mooredCalm": 2.78,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0.41,
+     "mooredCalm": 2.74,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0.05,
+     "mooredCalm": 3.1,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0.28,
+     "mooredCalm": 2.87,
+     "longest": null
+    }
+   ],
+   "lateS": [
+    0,
+    0.41
+   ],
+   "mooredS": [
+    2.74,
+    3.15
+   ],
+   "verdict": "shortest loop, 0.0–0.4 s late, ≥ 2.7 s moored"
+  },
+  {
+   "nav": 3,
+   "net": 22,
+   "sp": 26,
+   "built": true,
+   "V0": 7.62,
+   "sim": [
+    5.98,
+    5.95,
+    6.27,
+    6.06
+   ],
+   "grounds5": [
+    14.22,
+    13.74,
+    14.22,
+    14.1
+   ],
+   "grounds44": [
+    15.3,
+    14.7,
+    15.3,
+    15.06
+   ],
+   "mode": "loops",
+   "per": [
+    {
+     "lateBrisk": 0.14,
+     "lateCalm": 0.92,
+     "mooredCalm": 2.23,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0.17,
+     "lateCalm": 0.95,
+     "mooredCalm": 2.2,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0.63,
+     "mooredCalm": 2.52,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0.06,
+     "lateCalm": 0.84,
+     "mooredCalm": 2.31,
+     "longest": null
+    }
+   ],
+   "lateS": [
+    0.17,
+    0.95
+   ],
+   "mooredS": [
+    2.2,
+    2.98
+   ],
+   "verdict": "shortest loop, 0.2–0.9 s late, ≥ 2.2 s moored"
+  },
+  {
+   "nav": 3,
+   "net": 22,
+   "sp": 30,
+   "built": true,
+   "V0": 8.42,
+   "sim": [
+    5.53,
+    5.5,
+    5.79,
+    5.61
+   ],
+   "grounds5": [
+    13.98,
+    13.74,
+    14.22,
+    14.1
+   ],
+   "grounds44": [
+    15.06,
+    14.7,
+    15.3,
+    15.06
+   ],
+   "mode": "loops",
+   "per": [
+    {
+     "lateBrisk": 0.59,
+     "lateCalm": 1.37,
+     "mooredCalm": 1.78,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0.62,
+     "lateCalm": 1.4,
+     "mooredCalm": 1.75,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0.33,
+     "lateCalm": 1.11,
+     "mooredCalm": 2.04,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0.51,
+     "lateCalm": 1.29,
+     "mooredCalm": 1.86,
+     "longest": null
+    }
+   ],
+   "lateS": [
+    0.62,
+    1.4
+   ],
+   "mooredS": [
+    1.75,
+    2.53
+   ],
+   "verdict": "shortest loop, 0.6–1.4 s late, ≥ 1.8 s moored"
+  },
+  {
+   "nav": 3,
+   "net": 26,
+   "sp": 0,
+   "built": false,
+   "V0": 2.48,
+   "sim": [
+    15.58,
+    15.48,
+    16.47,
+    15.84
+   ],
+   "grounds5": [
+    19.38,
+    18.78,
+    19.14,
+    18.9
+   ],
+   "grounds44": [
+    19.38,
+    18.78,
+    19.14,
+    18.9
+   ],
+   "mode": "slips",
+   "lateS": [
+    2.12,
+    3.25
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 3,
+   "net": 26,
+   "sp": 5,
+   "built": false,
+   "V0": 3.47,
+   "sim": [
+    11.39,
+    11.32,
+    12.02,
+    11.57
+   ],
+   "grounds5": [
+    16.02,
+    15.66,
+    16.26,
+    15.9
+   ],
+   "grounds44": [
+    16.38,
+    15.9,
+    16.5,
+    16.26
+   ],
+   "mode": "slips",
+   "lateS": [
+    3.69,
+    4.44
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 3,
+   "net": 26,
+   "sp": 10,
+   "built": false,
+   "V0": 4.46,
+   "sim": [
+    9.06,
+    9,
+    9.55,
+    9.2
+   ],
+   "grounds5": [
+    14.82,
+    14.34,
+    15.06,
+    14.7
+   ],
+   "grounds44": [
+    15.9,
+    15.3,
+    16.02,
+    15.78
+   ],
+   "mode": "slips",
+   "lateS": [
+    4.79,
+    6.29
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 3,
+   "net": 26,
+   "sp": 14,
+   "built": true,
+   "V0": 5.25,
+   "sim": [
+    7.83,
+    7.78,
+    8.25,
+    7.95
+   ],
+   "grounds5": [
+    14.58,
+    14.1,
+    14.82,
+    14.7
+   ],
+   "grounds44": [
+    15.66,
+    15.18,
+    15.78,
+    15.54
+   ],
+   "mode": "loops",
+   "per": [
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 22.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 20.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 22.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 22.6
+    }
+   ],
+   "lateS": [
+    0,
+    0
+   ],
+   "mooredS": [
+    3.15,
+    3.15
+   ],
+   "verdict": "loop on time (longer loop: 22.6 / 20.6 / 22.6 / 22.6 tiles)"
+  },
+  {
+   "nav": 3,
+   "net": 26,
+   "sp": 18,
+   "built": true,
+   "V0": 6.04,
+   "sim": [
+    6.92,
+    6.88,
+    7.29,
+    7.03
+   ],
+   "grounds5": [
+    14.46,
+    13.98,
+    14.58,
+    14.46
+   ],
+   "grounds44": [
+    15.42,
+    15.06,
+    15.66,
+    15.42
+   ],
+   "mode": "loops",
+   "per": [
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 18.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0.02,
+     "mooredCalm": 3.13,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 18.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 18.6
+    }
+   ],
+   "lateS": [
+    0,
+    0.02
+   ],
+   "mooredS": [
+    3.13,
+    3.15
+   ],
+   "verdict": "shortest loop, 0.0–0.0 s late, ≥ 3.1 s moored"
+  },
+  {
+   "nav": 3,
+   "net": 26,
+   "sp": 22,
+   "built": true,
+   "V0": 6.83,
+   "sim": [
+    6.23,
+    6.19,
+    6.55,
+    6.32
+   ],
+   "grounds5": [
+    14.34,
+    13.86,
+    14.46,
+    14.34
+   ],
+   "grounds44": [
+    15.3,
+    14.94,
+    15.42,
+    15.18
+   ],
+   "mode": "loops",
+   "per": [
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0.67,
+     "mooredCalm": 2.48,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0.71,
+     "mooredCalm": 2.44,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0.35,
+     "mooredCalm": 2.8,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0.58,
+     "mooredCalm": 2.57,
+     "longest": null
+    }
+   ],
+   "lateS": [
+    0,
+    0.71
+   ],
+   "mooredS": [
+    2.44,
+    3.15
+   ],
+   "verdict": "shortest loop, 0.0–0.7 s late, ≥ 2.4 s moored"
+  },
+  {
+   "nav": 3,
+   "net": 26,
+   "sp": 26,
+   "built": true,
+   "V0": 7.62,
+   "sim": [
+    5.67,
+    5.64,
+    5.96,
+    5.76
+   ],
+   "grounds5": [
+    14.22,
+    13.74,
+    14.22,
+    14.1
+   ],
+   "grounds44": [
+    15.3,
+    14.7,
+    15.3,
+    15.06
+   ],
+   "mode": "loops",
+   "per": [
+    {
+     "lateBrisk": 0.45,
+     "lateCalm": 1.23,
+     "mooredCalm": 1.92,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0.48,
+     "lateCalm": 1.26,
+     "mooredCalm": 1.89,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0.16,
+     "lateCalm": 0.94,
+     "mooredCalm": 2.21,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0.36,
+     "lateCalm": 1.14,
+     "mooredCalm": 2.01,
+     "longest": null
+    }
+   ],
+   "lateS": [
+    0.48,
+    1.26
+   ],
+   "mooredS": [
+    1.89,
+    2.67
+   ],
+   "verdict": "shortest loop, 0.5–1.3 s late, ≥ 1.9 s moored"
+  },
+  {
+   "nav": 3,
+   "net": 26,
+   "sp": 30,
+   "built": true,
+   "V0": 8.42,
+   "sim": [
+    5.23,
+    5.19,
+    5.49,
+    5.3
+   ],
+   "grounds5": [
+    13.98,
+    13.74,
+    14.22,
+    14.1
+   ],
+   "grounds44": [
+    15.06,
+    14.7,
+    15.3,
+    15.06
+   ],
+   "mode": "loops",
+   "per": [
+    {
+     "lateBrisk": 0.89,
+     "lateCalm": 1.67,
+     "mooredCalm": 1.48,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0.93,
+     "lateCalm": 1.71,
+     "mooredCalm": 1.44,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0.63,
+     "lateCalm": 1.41,
+     "mooredCalm": 1.74,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0.82,
+     "lateCalm": 1.6,
+     "mooredCalm": 1.55,
+     "longest": null
+    }
+   ],
+   "lateS": [
+    0.93,
+    1.71
+   ],
+   "mooredS": [
+    1.44,
+    2.22
+   ],
+   "verdict": "shortest loop, 0.9–1.7 s late, ≥ 1.4 s moored"
+  },
+  {
+   "nav": 3,
+   "net": 30,
+   "sp": 0,
+   "built": false,
+   "V0": 2.48,
+   "sim": [
+    15.35,
+    15.25,
+    16.24,
+    15.61
+   ],
+   "grounds5": [
+    19.38,
+    18.78,
+    19.14,
+    18.9
+   ],
+   "grounds44": [
+    19.38,
+    18.78,
+    19.14,
+    18.9
+   ],
+   "mode": "slips",
+   "lateS": [
+    2.35,
+    3.48
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 3,
+   "net": 30,
+   "sp": 5,
+   "built": false,
+   "V0": 3.47,
+   "sim": [
+    11.16,
+    11.09,
+    11.79,
+    11.34
+   ],
+   "grounds5": [
+    16.02,
+    15.66,
+    16.26,
+    15.9
+   ],
+   "grounds44": [
+    16.38,
+    15.9,
+    16.5,
+    16.26
+   ],
+   "mode": "slips",
+   "lateS": [
+    3.92,
+    4.67
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 3,
+   "net": 30,
+   "sp": 10,
+   "built": false,
+   "V0": 4.46,
+   "sim": [
+    8.83,
+    8.77,
+    9.32,
+    8.97
+   ],
+   "grounds5": [
+    14.82,
+    14.34,
+    15.06,
+    14.7
+   ],
+   "grounds44": [
+    15.9,
+    15.3,
+    16.02,
+    15.78
+   ],
+   "mode": "slips",
+   "lateS": [
+    5.02,
+    6.52
+   ],
+   "verdict": "full route does not fit: harbour trip"
+  },
+  {
+   "nav": 3,
+   "net": 30,
+   "sp": 14,
+   "built": true,
+   "V0": 5.25,
+   "sim": [
+    7.6,
+    7.55,
+    8.02,
+    7.72
+   ],
+   "grounds5": [
+    14.58,
+    14.1,
+    14.82,
+    14.7
+   ],
+   "grounds44": [
+    15.66,
+    15.18,
+    15.78,
+    15.54
+   ],
+   "mode": "loops",
+   "per": [
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 20.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 20.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 22.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 20.6
+    }
+   ],
+   "lateS": [
+    0,
+    0
+   ],
+   "mooredS": [
+    3.15,
+    3.15
+   ],
+   "verdict": "loop on time (longer loop: 20.6 / 20.6 / 22.6 / 20.6 tiles)"
+  },
+  {
+   "nav": 3,
+   "net": 30,
+   "sp": 18,
+   "built": true,
+   "V0": 6.04,
+   "sim": [
+    6.69,
+    6.65,
+    7.06,
+    6.8
+   ],
+   "grounds5": [
+    14.46,
+    13.98,
+    14.58,
+    14.46
+   ],
+   "grounds44": [
+    15.42,
+    15.06,
+    15.66,
+    15.42
+   ],
+   "mode": "loops",
+   "per": [
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0.21,
+     "mooredCalm": 2.94,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0.25,
+     "mooredCalm": 2.9,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0,
+     "mooredCalm": 3.15,
+     "longest": 18.6
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0.1,
+     "mooredCalm": 3.05,
+     "longest": null
+    }
+   ],
+   "lateS": [
+    0,
+    0.25
+   ],
+   "mooredS": [
+    2.9,
+    3.15
+   ],
+   "verdict": "shortest loop, 0.0–0.3 s late, ≥ 2.9 s moored"
+  },
+  {
+   "nav": 3,
+   "net": 30,
+   "sp": 22,
+   "built": true,
+   "V0": 6.83,
+   "sim": [
+    6,
+    5.96,
+    6.32,
+    6.09
+   ],
+   "grounds5": [
+    14.34,
+    13.86,
+    14.46,
+    14.34
+   ],
+   "grounds44": [
+    15.3,
+    14.94,
+    15.42,
+    15.18
+   ],
+   "mode": "loops",
+   "per": [
+    {
+     "lateBrisk": 0.12,
+     "lateCalm": 0.9,
+     "mooredCalm": 2.25,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0.16,
+     "lateCalm": 0.94,
+     "mooredCalm": 2.21,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0,
+     "lateCalm": 0.58,
+     "mooredCalm": 2.57,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0.03,
+     "lateCalm": 0.81,
+     "mooredCalm": 2.34,
+     "longest": null
+    }
+   ],
+   "lateS": [
+    0.16,
+    0.94
+   ],
+   "mooredS": [
+    2.21,
+    2.99
+   ],
+   "verdict": "shortest loop, 0.2–0.9 s late, ≥ 2.2 s moored"
+  },
+  {
+   "nav": 3,
+   "net": 30,
+   "sp": 26,
+   "built": true,
+   "V0": 7.62,
+   "sim": [
+    5.44,
+    5.41,
+    5.73,
+    5.53
+   ],
+   "grounds5": [
+    14.22,
+    13.74,
+    14.22,
+    14.1
+   ],
+   "grounds44": [
+    15.3,
+    14.7,
+    15.3,
+    15.06
+   ],
+   "mode": "loops",
+   "per": [
+    {
+     "lateBrisk": 0.68,
+     "lateCalm": 1.46,
+     "mooredCalm": 1.69,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0.71,
+     "lateCalm": 1.49,
+     "mooredCalm": 1.66,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0.39,
+     "lateCalm": 1.17,
+     "mooredCalm": 1.98,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0.59,
+     "lateCalm": 1.37,
+     "mooredCalm": 1.78,
+     "longest": null
+    }
+   ],
+   "lateS": [
+    0.71,
+    1.49
+   ],
+   "mooredS": [
+    1.66,
+    2.44
+   ],
+   "verdict": "shortest loop, 0.7–1.5 s late, ≥ 1.7 s moored"
+  },
+  {
+   "nav": 3,
+   "net": 30,
+   "sp": 30,
+   "built": true,
+   "V0": 8.42,
+   "sim": [
+    5,
+    4.96,
+    5.26,
+    5.07
+   ],
+   "grounds5": [
+    13.98,
+    13.74,
+    14.22,
+    14.1
+   ],
+   "grounds44": [
+    15.06,
+    14.7,
+    15.3,
+    15.06
+   ],
+   "mode": "loops",
+   "per": [
+    {
+     "lateBrisk": 1.12,
+     "lateCalm": 1.9,
+     "mooredCalm": 1.25,
+     "longest": null
+    },
+    {
+     "lateBrisk": 1.16,
+     "lateCalm": 1.94,
+     "mooredCalm": 1.21,
+     "longest": null
+    },
+    {
+     "lateBrisk": 0.86,
+     "lateCalm": 1.64,
+     "mooredCalm": 1.51,
+     "longest": null
+    },
+    {
+     "lateBrisk": 1.05,
+     "lateCalm": 1.83,
+     "mooredCalm": 1.32,
+     "longest": null
+    }
+   ],
+   "lateS": [
+    1.16,
+    1.94
+   ],
+   "mooredS": [
+    1.21,
+    1.99
+   ],
+   "verdict": "shortest loop, 1.2–1.9 s late, ≥ 1.2 s moored"
+  }
+ ]
+}
