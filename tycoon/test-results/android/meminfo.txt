@@ -1,45 +1,45 @@
 Applications Memory Usage (in Kilobytes):
-Uptime: 620147 Realtime: 620147
+Uptime: 615313 Realtime: 615313
 
-** MEMINFO in pid 7132 [az.fishing.tycoon] **
+** MEMINFO in pid 7239 [az.fishing.tycoon] **
                    Pss  Private  Private  SwapPss      Rss     Heap     Heap     Heap
                  Total    Dirty    Clean    Dirty    Total     Size    Alloc     Free
                 ------   ------   ------   ------   ------   ------   ------   ------
-  Native Heap    21627    21580       36       23    22840    31600    25487     1881
-  Dalvik Heap     1292     1268       12       89     2168     5426     2713     2713
- Dalvik Other     1088     1016       12        2     1404                           
-        Stack     1624     1624        0        0     1632                           
-       Ashmem    24953      156        0        0    50304                           
-    Other dev        9        4        4        0      320                           
-     .so mmap     6097      300     2704        2    36404                           
-    .jar mmap     3481        0     1052        0    35516                           
-    .apk mmap    28528      428    11520        0    54868                           
-    .dex mmap       35        4        0        0      952                           
-    .oat mmap       18        0        0        0     1556                           
-    .art mmap     7706     5676     1700       60    22380                           
-   Other mmap     1492       40      452        0     3640                           
-      Unknown     8383     8380        0        0     8740                           
-        TOTAL   106509    40476    17492      176   242724    37026    28200     4594
+  Native Heap    21388    21364        0       25    22436    31600    25300     1725
+  Dalvik Heap     1296     1272       12       91     2100     5426     2713     2713
+ Dalvik Other     1060      984       16        2     1368                           
+        Stack     1648     1648        0        0     1656                           
+       Ashmem    50209      156        0        0   100816                           
+    Other dev        8        4        4        0      320                           
+     .so mmap     4299      284     1172        2    36148                           
+    .jar mmap     2650        0      764        0    35148                           
+    .apk mmap    25298      428    10152        0    53876                           
+    .dex mmap       36        4        0        0      976                           
+    .oat mmap       18        0        0        0     1580                           
+    .art mmap     7618     5676     1456       66    22024                           
+   Other mmap     1367       52      264        0     3596                           
+      Unknown     9061     9056        0        0     9420                           
+        TOTAL   126142    40928    13840      186   291464    37026    28013     4438
  
  App Summary
                        Pss(KB)                        Rss(KB)
                         ------                         ------
-           Java Heap:     8644                          24548
-         Native Heap:    21580                          22840
-                Code:    16008                         129432
-               Stack:     1624                           1632
+           Java Heap:     8404                          24124
+         Native Heap:    21364                          22436
+                Code:    12804                         127856
+               Stack:     1648                           1656
             Graphics:        0                              0
-       Private Other:    10112
-              System:    48541
-             Unknown:                                   64272
+       Private Other:    10548
+              System:    71374
+             Unknown:                                  115392
  
-           TOTAL PSS:   106509            TOTAL RSS:   242724       TOTAL SWAP PSS:      176
+           TOTAL PSS:   126142            TOTAL RSS:   291464       TOTAL SWAP PSS:      186
  
  Objects
                Views:        5         ViewRootImpl:        1
          AppContexts:        6           Activities:        1
               Assets:       25        AssetManagers:        0
-       Local Binders:       45        Proxy Binders:       47
+       Local Binders:       41        Proxy Binders:       44
        Parcel memory:       10         Parcel count:       40
     Death Recipients:        2             WebViews:        1
  
