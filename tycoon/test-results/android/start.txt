@@ -1,7 +1,6 @@
 Starting: Intent { cmp=az.fishing.tycoon/az.universitet.tycoon.MainActivity }
 Status: ok
-LaunchState: COLD
+LaunchState: UNKNOWN (0)
 Activity: az.fishing.tycoon/az.universitet.tycoon.MainActivity
-TotalTime: 4328
-WaitTime: 4397
+WaitTime: 6404
 Complete
