@@ -1,137 +1,134 @@
 --------- beginning of main
-11-11 22:24:09.301  6791  6791 I FishingTycoon: LOADED {"money":238,"register":96,"gems":15,"level":2,"xp":55,"tiers":"111100","upgrades":"2-0-0-0-0","workers":1,"boats":1,"caught":86,"sold":70,"mission":0,"research":0}
-11-11 22:24:11.511  6791  6791 I FishingTycoon: WATER mode=basic requested=basic
-11-11 22:24:17.567  6791  6791 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[796,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
-11-11 22:24:17.567  6791  6791 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=238 level=2 caught=86 fps=19.1 textureMB=37.5 heapMB=42.6 preset=low canvas=866x412
-11-11 22:24:17.567  6791  6791 I FishingTycoon: BOATS n=1 phases=docked arrivals=0 lagMean=n/a lagMax=n/a waits=0 fx=0
-11-11 22:24:19.382  6791  6791 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[796,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
-11-11 22:24:19.382  6791  6791 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=238 level=2 caught=86 fps=16.9 textureMB=37.5 heapMB=42.6 preset=low canvas=866x412
-11-11 22:24:19.383  6791  6791 I FishingTycoon: BOATS n=1 phases=depart arrivals=0 lagMean=n/a lagMax=n/a waits=0 fx=0
-11-11 22:24:24.385  6791  6791 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[796,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
-11-11 22:24:24.385  6791  6791 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=238 level=2 caught=86 fps=18.3 textureMB=37.5 heapMB=42.6 preset=low canvas=866x412
-11-11 22:24:24.385  6791  6791 I FishingTycoon: BOATS n=1 phases=depart arrivals=0 lagMean=n/a lagMax=n/a waits=0 fx=0
-11-11 22:24:29.403  6791  6791 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[796,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
-11-11 22:24:29.404  6791  6791 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=238 level=2 caught=86 fps=13.0 textureMB=37.5 heapMB=42.6 preset=low canvas=866x412
-11-11 22:24:29.404  6791  6791 I FishingTycoon: BOATS n=1 phases=depart arrivals=0 lagMean=n/a lagMax=n/a waits=0 fx=0
-11-11 22:24:34.324  6791  6791 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[796,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
-11-11 22:24:34.324  6791  6791 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=238 level=2 caught=86 fps=11.6 textureMB=37.5 heapMB=42.6 preset=low canvas=866x412
-11-11 22:24:34.324  6791  6791 I FishingTycoon: BOATS n=1 phases=fishing arrivals=0 lagMean=n/a lagMax=n/a waits=0 fx=0
-11-11 22:24:39.371  6791  6791 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[796,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
-11-11 22:24:39.372  6791  6791 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=238 level=2 caught=102 fps=11.1 textureMB=37.5 heapMB=42.6 preset=low canvas=866x412
-11-11 22:24:39.372  6791  6791 I FishingTycoon: BOATS n=1 phases=return arrivals=0 lagMean=n/a lagMax=n/a waits=0 fx=0
-11-11 22:24:44.343  6791  6791 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
-11-11 22:24:44.347  6791  6791 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=238 level=2 caught=102 fps=10.6 textureMB=37.5 heapMB=42.6 preset=low canvas=866x412
-11-11 22:24:44.347  6791  6791 I FishingTycoon: BOATS n=1 phases=return arrivals=0 lagMean=n/a lagMax=n/a waits=0 fx=0
-11-11 22:24:49.370  6791  6791 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
-11-11 22:24:49.371  6791  6791 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=238 level=2 caught=102 fps=10.7 textureMB=37.5 heapMB=42.6 preset=low canvas=866x412
-11-11 22:24:49.371  6791  6791 I FishingTycoon: BOATS n=1 phases=castoff arrivals=1 lagMean=-0.23 lagMax=0.00 waits=0 fx=0
-11-11 22:24:57.851  6924  6924 I FishingTycoon: LOADED {"money":238,"register":120,"gems":15,"level":2,"xp":62,"tiers":"111100","upgrades":"2-0-0-0-0","workers":1,"boats":1,"caught":102,"sold":76,"mission":0,"research":0}
-11-11 22:25:00.408  6924  6924 I FishingTycoon: WATER mode=basic requested=basic
-11-11 22:25:06.482  6924  6924 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
-11-11 22:25:06.483  6924  6924 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=238 level=2 caught=102 fps=25.5 textureMB=37.5 heapMB=42.6 preset=low canvas=866x412
-11-11 22:25:06.483  6924  6924 I FishingTycoon: BOATS n=1 phases=docked arrivals=0 lagMean=n/a lagMax=n/a waits=0 fx=0
-11-11 22:25:07.960  6924  6924 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
-11-11 22:25:07.960  6924  6924 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=238 level=2 caught=102 fps=20.3 textureMB=37.5 heapMB=42.6 preset=low canvas=866x412
-11-11 22:25:07.961  6924  6924 I FishingTycoon: BOATS n=1 phases=castoff arrivals=0 lagMean=n/a lagMax=n/a waits=0 fx=0
-11-11 22:25:12.996  6924  6924 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
-11-11 22:25:12.996  6924  6924 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=238 level=2 caught=102 fps=19.2 textureMB=37.5 heapMB=42.6 preset=low canvas=866x412
-11-11 22:25:12.996  6924  6924 I FishingTycoon: BOATS n=1 phases=depart arrivals=0 lagMean=n/a lagMax=n/a waits=0 fx=0
-11-11 22:25:17.933  6924  6924 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
-11-11 22:25:17.933  6924  6924 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=238 level=2 caught=102 fps=13.8 textureMB=37.5 heapMB=42.6 preset=low canvas=866x412
-11-11 22:25:17.933  6924  6924 I FishingTycoon: BOATS n=1 phases=depart arrivals=0 lagMean=n/a lagMax=n/a waits=0 fx=0
-11-11 22:25:22.927  6924  6924 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
-11-11 22:25:22.927  6924  6924 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=238 level=2 caught=102 fps=12.1 textureMB=37.5 heapMB=42.6 preset=low canvas=866x412
-11-11 22:25:22.928  6924  6924 I FishingTycoon: BOATS n=1 phases=fishing arrivals=0 lagMean=n/a lagMax=n/a waits=0 fx=0
-11-11 22:25:27.984  6924  6924 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
-11-11 22:25:27.985  6924  6924 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=238 level=2 caught=118 fps=11.2 textureMB=37.5 heapMB=42.6 preset=low canvas=866x412
-11-11 22:25:27.985  6924  6924 I FishingTycoon: BOATS n=1 phases=return arrivals=0 lagMean=n/a lagMax=n/a waits=0 fx=0
-11-11 22:25:32.996  6924  6924 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
-11-11 22:25:32.997  6924  6924 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=238 level=2 caught=118 fps=11.1 textureMB=37.5 heapMB=42.6 preset=low canvas=866x412
-11-11 22:25:32.997  6924  6924 I FishingTycoon: BOATS n=1 phases=return arrivals=0 lagMean=n/a lagMax=n/a waits=0 fx=0
-11-11 22:25:37.985  6924  6924 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
-11-11 22:25:37.986  6924  6924 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=238 level=2 caught=118 fps=10.6 textureMB=37.5 heapMB=42.6 preset=low canvas=866x412
-11-11 22:25:37.986  6924  6924 I FishingTycoon: BOATS n=1 phases=docked arrivals=1 lagMean=-0.22 lagMax=0.00 waits=0 fx=0
-11-11 22:25:42.955  6924  6924 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
-11-11 22:25:42.955  6924  6924 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=238 level=2 caught=118 fps=9.9 textureMB=37.5 heapMB=42.6 preset=low canvas=866x412
-11-11 22:25:42.955  6924  6924 I FishingTycoon: BOATS n=1 phases=depart arrivals=1 lagMean=-0.22 lagMax=0.00 waits=0 fx=0
-11-11 22:25:45.593  6924  6924 I FishingTycoon: UI open settings
-11-11 22:25:47.993  6924  6924 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[834,31],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":[676,217],"qMed":[619,217]}
-11-11 22:25:47.994  6924  6924 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=238 level=2 caught=118 fps=12.4 textureMB=37.5 heapMB=42.6 preset=low canvas=866x412
-11-11 22:25:47.994  6924  6924 I FishingTycoon: BOATS n=1 phases=depart arrivals=1 lagMean=-0.22 lagMax=0.00 waits=0 fx=0
-11-11 22:25:51.870  6924  6924 I FishingTycoon: SAVED {"money":238,"register":160,"gems":15,"level":2,"xp":73,"tiers":"111100","upgrades":"2-0-0-0-0","workers":1,"boats":1,"caught":118,"sold":86,"mission":0,"research":0}
-11-11 22:25:51.870  6924  6924 I FishingTycoon: SAVED {"money":238,"register":160,"gems":15,"level":2,"xp":73,"tiers":"111100","upgrades":"2-0-0-0-0","workers":1,"boats":1,"caught":118,"sold":86,"mission":0,"research":0}
-11-11 22:25:52.141  6924  6924 I FishingTycoon: LOADED {"money":238,"register":160,"gems":15,"level":2,"xp":73,"tiers":"111100","upgrades":"2-0-0-0-0","workers":1,"boats":1,"caught":118,"sold":86,"mission":0,"research":0}
-11-11 22:25:54.110  6924  6924 I FishingTycoon: WATER mode=layers requested=layers
-11-11 22:25:57.163  6924  6924 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
-11-11 22:25:57.163  6924  6924 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.433 money=238 level=2 caught=118 fps=30.4 textureMB=96.6 heapMB=42.6 preset=medium canvas=1299x618
-11-11 22:25:57.163  6924  6924 I FishingTycoon: BOATS n=1 phases=castoff arrivals=0 lagMean=n/a lagMax=n/a waits=0 fx=1
-11-11 22:26:02.287  6924  6924 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
-11-11 22:26:02.287  6924  6924 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.433 money=238 level=2 caught=118 fps=16.0 textureMB=96.6 heapMB=42.6 preset=medium canvas=1299x618
-11-11 22:26:02.287  6924  6924 I FishingTycoon: BOATS n=1 phases=depart arrivals=0 lagMean=n/a lagMax=n/a waits=0 fx=1
-11-11 22:26:07.227  6924  6924 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
-11-11 22:26:07.227  6924  6924 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.433 money=238 level=2 caught=118 fps=12.9 textureMB=96.6 heapMB=42.6 preset=medium canvas=1299x618
-11-11 22:26:07.227  6924  6924 I FishingTycoon: BOATS n=1 phases=depart arrivals=0 lagMean=n/a lagMax=n/a waits=0 fx=1
-11-11 22:26:12.301  6924  6924 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
-11-11 22:26:12.301  6924  6924 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.433 money=238 level=2 caught=118 fps=11.9 textureMB=96.6 heapMB=42.6 preset=medium canvas=1299x618
-11-11 22:26:12.301  6924  6924 I FishingTycoon: BOATS n=1 phases=depart arrivals=0 lagMean=n/a lagMax=n/a waits=0 fx=1
-11-11 22:26:17.242  6924  6924 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
-11-11 22:26:17.242  6924  6924 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.433 money=238 level=2 caught=118 fps=11.6 textureMB=96.6 heapMB=42.6 preset=medium canvas=1299x618
-11-11 22:26:17.242  6924  6924 I FishingTycoon: BOATS n=1 phases=fishing arrivals=0 lagMean=n/a lagMax=n/a waits=0 fx=1
-11-11 22:26:22.216  6924  6924 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
-11-11 22:26:22.216  6924  6924 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.433 money=238 level=2 caught=134 fps=11.2 textureMB=96.6 heapMB=42.6 preset=medium canvas=1299x618
-11-11 22:26:22.216  6924  6924 I FishingTycoon: BOATS n=1 phases=return arrivals=0 lagMean=n/a lagMax=n/a waits=0 fx=1
-11-11 22:26:24.387  6924  6924 I FishingTycoon: Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently
-11-11 22:26:27.193  6924  6924 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
-11-11 22:26:27.194  6924  6924 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.433 money=238 level=2 caught=134 fps=11.6 textureMB=96.6 heapMB=42.6 preset=medium canvas=1299x618
-11-11 22:26:27.194  6924  6924 I FishingTycoon: BOATS n=1 phases=return arrivals=0 lagMean=n/a lagMax=n/a waits=0 fx=1
-11-11 22:26:32.214  6924  6924 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
-11-11 22:26:32.214  6924  6924 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.433 money=238 level=2 caught=134 fps=10.9 textureMB=96.6 heapMB=42.6 preset=medium canvas=1299x618
-11-11 22:26:32.214  6924  6924 I FishingTycoon: BOATS n=1 phases=docked arrivals=1 lagMean=-0.18 lagMax=0.00 waits=0 fx=1
-11-11 22:26:37.239  6924  6924 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
-11-11 22:26:37.239  6924  6924 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.433 money=238 level=2 caught=134 fps=11.3 textureMB=96.6 heapMB=42.6 preset=medium canvas=1299x618
-11-11 22:26:37.240  6924  6924 I FishingTycoon: BOATS n=1 phases=depart arrivals=1 lagMean=-0.18 lagMax=0.00 waits=0 fx=1
-11-11 22:26:42.259  6924  6924 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
-11-11 22:26:42.259  6924  6924 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.433 money=238 level=2 caught=134 fps=10.6 textureMB=96.6 heapMB=42.6 preset=medium canvas=1299x618
-11-11 22:26:42.260  6924  6924 I FishingTycoon: BOATS n=1 phases=depart arrivals=1 lagMean=-0.18 lagMax=0.00 waits=0 fx=1
-11-11 22:26:47.097  6924  6924 I FishingTycoon: UI open settings
-11-11 22:26:47.162  6924  6924 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[834,31],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":[676,217],"qMed":[619,217]}
-11-11 22:26:47.162  6924  6924 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.433 money=238 level=2 caught=134 fps=10.8 textureMB=96.6 heapMB=42.6 preset=medium canvas=1299x618
-11-11 22:26:47.162  6924  6924 I FishingTycoon: BOATS n=1 phases=fishing arrivals=1 lagMean=-0.18 lagMax=0.00 waits=0 fx=1
-11-11 22:26:52.220  6924  6924 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[834,31],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":[676,217],"qMed":[619,217]}
-11-11 22:26:52.220  6924  6924 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.433 money=238 level=2 caught=150 fps=9.9 textureMB=96.6 heapMB=42.6 preset=medium canvas=1299x618
-11-11 22:26:52.220  6924  6924 I FishingTycoon: BOATS n=1 phases=return arrivals=1 lagMean=-0.18 lagMax=0.00 waits=0 fx=1
-11-11 22:26:53.675  6924  6924 I FishingTycoon: SAVED {"money":238,"register":208,"gems":15,"level":2,"xp":87,"tiers":"111100","upgrades":"2-0-0-0-0","workers":1,"boats":1,"caught":150,"sold":98,"mission":0,"research":0}
-11-11 22:26:53.676  6924  6924 I FishingTycoon: SAVED {"money":238,"register":208,"gems":15,"level":2,"xp":87,"tiers":"111100","upgrades":"2-0-0-0-0","workers":1,"boats":1,"caught":150,"sold":98,"mission":0,"research":0}
-11-11 22:26:54.065  6924  6924 I FishingTycoon: LOADED {"money":238,"register":208,"gems":15,"level":2,"xp":87,"tiers":"111100","upgrades":"2-0-0-0-0","workers":1,"boats":1,"caught":150,"sold":98,"mission":0,"research":0}
-11-11 22:26:55.481  6924  6924 I FishingTycoon: WATER mode=shader requested=shader
-11-11 22:26:59.119  6924  6924 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
-11-11 22:26:59.164  6924  6924 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.577 money=238 level=2 caught=150 fps=29.4 textureMB=98.9 heapMB=42.6 preset=high canvas=1732x824
-11-11 22:26:59.164  6924  6924 I FishingTycoon: BOATS n=1 phases=docked arrivals=0 lagMean=n/a lagMax=n/a waits=0 fx=2
-11-11 22:27:04.176  6924  6924 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
-11-11 22:27:04.176  6924  6924 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.577 money=238 level=2 caught=150 fps=13.1 textureMB=98.9 heapMB=42.6 preset=high canvas=1732x824
-11-11 22:27:04.176  6924  6924 I FishingTycoon: BOATS n=1 phases=castoff arrivals=0 lagMean=n/a lagMax=n/a waits=0 fx=2
-11-11 22:27:09.292  6924  6924 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
-11-11 22:27:09.293  6924  6924 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.577 money=238 level=2 caught=150 fps=9.7 textureMB=98.9 heapMB=42.6 preset=high canvas=1732x824
-11-11 22:27:09.293  6924  6924 I FishingTycoon: BOATS n=1 phases=depart arrivals=0 lagMean=n/a lagMax=n/a waits=0 fx=2
-11-11 22:27:14.248  6924  6924 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
-11-11 22:27:14.248  6924  6924 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.577 money=238 level=2 caught=150 fps=9.0 textureMB=98.9 heapMB=42.6 preset=high canvas=1732x824
-11-11 22:27:14.248  6924  6924 I FishingTycoon: BOATS n=1 phases=depart arrivals=0 lagMean=n/a lagMax=n/a waits=0 fx=2
-11-11 22:27:19.262  6924  6924 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
-11-11 22:27:19.264  6924  6924 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.577 money=238 level=2 caught=150 fps=8.6 textureMB=98.9 heapMB=42.6 preset=high canvas=1732x824
-11-11 22:27:19.264  6924  6924 I FishingTycoon: BOATS n=1 phases=depart arrivals=0 lagMean=n/a lagMax=n/a waits=0 fx=2
-11-11 22:27:24.148  6924  6924 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
-11-11 22:27:24.148  6924  6924 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.577 money=238 level=2 caught=150 fps=8.3 textureMB=98.9 heapMB=42.6 preset=high canvas=1732x824
-11-11 22:27:24.148  6924  6924 I FishingTycoon: BOATS n=1 phases=depart arrivals=0 lagMean=n/a lagMax=n/a waits=0 fx=2
-11-11 22:27:29.299  6924  6924 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
-11-11 22:27:29.303  6924  6924 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.577 money=238 level=2 caught=150 fps=8.4 textureMB=98.9 heapMB=42.6 preset=high canvas=1732x824
-11-11 22:27:29.310  6924  6924 I FishingTycoon: BOATS n=1 phases=return arrivals=0 lagMean=n/a lagMax=n/a waits=0 fx=2
-11-11 22:27:34.122  6924  6924 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
-11-11 22:27:34.122  6924  6924 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.577 money=238 level=2 caught=166 fps=8.3 textureMB=98.9 heapMB=42.6 preset=high canvas=1732x824
-11-11 22:27:34.122  6924  6924 I FishingTycoon: BOATS n=1 phases=return arrivals=0 lagMean=n/a lagMax=n/a waits=0 fx=2
-11-11 22:27:36.298  6924  6924 I FishingTycoon: Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently
-11-11 22:27:39.178  6924  6924 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
-11-11 22:27:39.179  6924  6924 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.577 money=238 level=2 caught=166 fps=8.5 textureMB=98.9 heapMB=42.6 preset=high canvas=1732x824
-11-11 22:27:39.179  6924  6924 I FishingTycoon: BOATS n=1 phases=return arrivals=0 lagMean=n/a lagMax=n/a waits=0 fx=2
-11-11 22:27:44.219  6924  6924 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
-11-11 22:27:44.219  6924  6924 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.577 money=238 level=2 caught=166 fps=7.5 textureMB=98.9 heapMB=42.6 preset=high canvas=1732x824
-11-11 22:27:44.219  6924  6924 I FishingTycoon: BOATS n=1 phases=settle arrivals=1 lagMean=-0.47 lagMax=0.00 waits=0 fx=2
+11-12 07:36:34.827  7027  7027 I FishingTycoon: LOADED {"money":230,"register":80,"gems":15,"level":2,"xp":49,"tiers":"111100","upgrades":"2-0-0-0-0","workers":1,"boats":1,"caught":86,"sold":64,"mission":0,"research":0}
+11-12 07:36:36.582  7027  7027 I FishingTycoon: WATER mode=basic requested=basic
+11-12 07:36:40.824  7027  7027 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[796,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
+11-12 07:36:40.824  7027  7027 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=230 level=2 caught=86 fps=25.0 textureMB=37.5 heapMB=42.6 preset=low canvas=866x412
+11-12 07:36:40.824  7027  7027 I FishingTycoon: BOATS n=1 phases=docked arrivals=0 lagMean=n/a lagMax=n/a waits=0 nets=0 netMinS=n/a fx=0
+11-12 07:36:44.891  7027  7027 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[796,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
+11-12 07:36:44.892  7027  7027 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=230 level=2 caught=86 fps=24.8 textureMB=37.5 heapMB=42.6 preset=low canvas=866x412
+11-12 07:36:44.892  7027  7027 I FishingTycoon: BOATS n=1 phases=depart arrivals=0 lagMean=n/a lagMax=n/a waits=0 nets=0 netMinS=n/a fx=0
+11-12 07:36:49.934  7027  7027 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[796,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
+11-12 07:36:49.935  7027  7027 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=230 level=2 caught=86 fps=18.3 textureMB=37.5 heapMB=42.6 preset=low canvas=866x412
+11-12 07:36:49.935  7027  7027 I FishingTycoon: BOATS n=1 phases=depart arrivals=0 lagMean=n/a lagMax=n/a waits=0 nets=0 netMinS=n/a fx=0
+11-12 07:36:54.878  7027  7027 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[796,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
+11-12 07:36:54.878  7027  7027 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=230 level=2 caught=86 fps=15.3 textureMB=37.5 heapMB=42.6 preset=low canvas=866x412
+11-12 07:36:54.878  7027  7027 I FishingTycoon: BOATS n=1 phases=depart arrivals=0 lagMean=n/a lagMax=n/a waits=0 nets=0 netMinS=n/a fx=0
+11-12 07:36:59.861  7027  7027 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[796,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
+11-12 07:36:59.861  7027  7027 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=230 level=2 caught=102 fps=14.8 textureMB=37.5 heapMB=42.6 preset=low canvas=866x412
+11-12 07:36:59.862  7027  7027 I FishingTycoon: BOATS n=1 phases=return arrivals=0 lagMean=n/a lagMax=n/a waits=0 nets=1 netMinS=1.20 fx=0
+11-12 07:37:04.892  7027  7027 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[796,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
+11-12 07:37:04.893  7027  7027 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=230 level=2 caught=102 fps=15.2 textureMB=37.5 heapMB=42.6 preset=low canvas=866x412
+11-12 07:37:04.893  7027  7027 I FishingTycoon: BOATS n=1 phases=return arrivals=0 lagMean=n/a lagMax=n/a waits=0 nets=1 netMinS=1.20 fx=0
+11-12 07:37:09.889  7027  7027 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[796,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
+11-12 07:37:09.889  7027  7027 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=230 level=2 caught=102 fps=14.4 textureMB=37.5 heapMB=42.6 preset=low canvas=866x412
+11-12 07:37:09.890  7027  7027 I FishingTycoon: BOATS n=1 phases=docked arrivals=1 lagMean=-0.57 lagMax=-0.57 waits=0 nets=1 netMinS=1.20 fx=0
+11-12 07:37:14.928  7027  7027 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[796,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
+11-12 07:37:14.928  7027  7027 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=230 level=2 caught=102 fps=14.3 textureMB=37.5 heapMB=42.6 preset=low canvas=866x412
+11-12 07:37:14.929  7027  7027 I FishingTycoon: BOATS n=1 phases=depart arrivals=1 lagMean=-0.57 lagMax=-0.57 waits=0 nets=1 netMinS=1.20 fx=0
+11-12 07:37:22.162  7170  7170 I FishingTycoon: LOADED {"money":230,"register":80,"gems":15,"level":2,"xp":50,"tiers":"111100","upgrades":"2-0-0-0-0","workers":1,"boats":1,"caught":102,"sold":64,"mission":0,"research":0}
+11-12 07:37:24.228  7170  7170 I FishingTycoon: WATER mode=basic requested=basic
+11-12 07:37:28.765  7170  7170 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[796,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
+11-12 07:37:28.766  7170  7170 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=230 level=2 caught=102 fps=25.0 textureMB=37.5 heapMB=42.6 preset=low canvas=866x412
+11-12 07:37:28.766  7170  7170 I FishingTycoon: BOATS n=1 phases=docked arrivals=0 lagMean=n/a lagMax=n/a waits=0 nets=0 netMinS=n/a fx=0
+11-12 07:37:32.296  7170  7170 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[796,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
+11-12 07:37:32.297  7170  7170 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=230 level=2 caught=102 fps=24.7 textureMB=37.5 heapMB=42.6 preset=low canvas=866x412
+11-12 07:37:32.297  7170  7170 I FishingTycoon: BOATS n=1 phases=depart arrivals=0 lagMean=n/a lagMax=n/a waits=0 nets=0 netMinS=n/a fx=0
+11-12 07:37:37.305  7170  7170 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[796,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
+11-12 07:37:37.307  7170  7170 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=230 level=2 caught=102 fps=18.3 textureMB=37.5 heapMB=42.6 preset=low canvas=866x412
+11-12 07:37:37.308  7170  7170 I FishingTycoon: BOATS n=1 phases=depart arrivals=0 lagMean=n/a lagMax=n/a waits=0 nets=0 netMinS=n/a fx=0
+11-12 07:37:42.292  7170  7170 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[796,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
+11-12 07:37:42.299  7170  7170 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=230 level=2 caught=102 fps=15.1 textureMB=37.5 heapMB=42.6 preset=low canvas=866x412
+11-12 07:37:42.299  7170  7170 I FishingTycoon: BOATS n=1 phases=depart arrivals=0 lagMean=n/a lagMax=n/a waits=0 nets=0 netMinS=n/a fx=0
+11-12 07:37:47.278  7170  7170 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[796,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
+11-12 07:37:47.278  7170  7170 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=230 level=2 caught=118 fps=15.0 textureMB=37.5 heapMB=42.6 preset=low canvas=866x412
+11-12 07:37:47.278  7170  7170 I FishingTycoon: BOATS n=1 phases=return arrivals=0 lagMean=n/a lagMax=n/a waits=0 nets=1 netMinS=1.15 fx=0
+11-12 07:37:52.332  7170  7170 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[796,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
+11-12 07:37:52.332  7170  7170 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=230 level=2 caught=118 fps=14.8 textureMB=37.5 heapMB=42.6 preset=low canvas=866x412
+11-12 07:37:52.332  7170  7170 I FishingTycoon: BOATS n=1 phases=return arrivals=0 lagMean=n/a lagMax=n/a waits=0 nets=1 netMinS=1.15 fx=0
+11-12 07:37:57.270  7170  7170 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[796,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
+11-12 07:37:57.270  7170  7170 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=230 level=2 caught=118 fps=14.7 textureMB=37.5 heapMB=42.6 preset=low canvas=866x412
+11-12 07:37:57.270  7170  7170 I FishingTycoon: BOATS n=1 phases=settle arrivals=1 lagMean=-0.60 lagMax=-0.60 waits=0 nets=1 netMinS=1.15 fx=0
+11-12 07:38:02.307  7170  7170 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[796,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
+11-12 07:38:02.308  7170  7170 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=230 level=2 caught=118 fps=13.9 textureMB=37.5 heapMB=42.6 preset=low canvas=866x412
+11-12 07:38:02.308  7170  7170 I FishingTycoon: BOATS n=1 phases=depart arrivals=1 lagMean=-0.60 lagMax=-0.60 waits=0 nets=1 netMinS=1.15 fx=0
+11-12 07:38:07.286  7170  7170 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
+11-12 07:38:07.286  7170  7170 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=230 level=2 caught=118 fps=14.2 textureMB=37.5 heapMB=42.6 preset=low canvas=866x412
+11-12 07:38:07.286  7170  7170 I FishingTycoon: BOATS n=1 phases=depart arrivals=1 lagMean=-0.60 lagMax=-0.60 waits=0 nets=1 netMinS=1.15 fx=0
+11-12 07:38:10.021  7170  7170 I FishingTycoon: UI open settings
+11-12 07:38:12.284  7170  7170 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[834,31],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":[676,217],"qMed":[619,217]}
+11-12 07:38:12.284  7170  7170 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.289 money=230 level=2 caught=118 fps=16.5 textureMB=37.5 heapMB=42.6 preset=low canvas=866x412
+11-12 07:38:12.284  7170  7170 I FishingTycoon: BOATS n=1 phases=depart arrivals=1 lagMean=-0.60 lagMax=-0.60 waits=0 nets=1 netMinS=1.15 fx=0
+11-12 07:38:16.490  7170  7170 I FishingTycoon: SAVED {"money":230,"register":104,"gems":15,"level":2,"xp":57,"tiers":"111100","upgrades":"2-0-0-0-0","workers":1,"boats":1,"caught":118,"sold":70,"mission":0,"research":0}
+11-12 07:38:16.490  7170  7170 I FishingTycoon: SAVED {"money":230,"register":104,"gems":15,"level":2,"xp":57,"tiers":"111100","upgrades":"2-0-0-0-0","workers":1,"boats":1,"caught":118,"sold":70,"mission":0,"research":0}
+11-12 07:38:16.891  7170  7170 I FishingTycoon: LOADED {"money":230,"register":104,"gems":15,"level":2,"xp":57,"tiers":"111100","upgrades":"2-0-0-0-0","workers":1,"boats":1,"caught":118,"sold":70,"mission":0,"research":0}
+11-12 07:38:18.159  7170  7170 I FishingTycoon: WATER mode=layers requested=layers
+11-12 07:38:21.955  7170  7170 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
+11-12 07:38:21.956  7170  7170 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.433 money=230 level=2 caught=118 fps=27.5 textureMB=96.6 heapMB=42.6 preset=medium canvas=1299x618
+11-12 07:38:21.956  7170  7170 I FishingTycoon: BOATS n=1 phases=castoff arrivals=0 lagMean=n/a lagMax=n/a waits=0 nets=0 netMinS=n/a fx=1
+11-12 07:38:26.999  7170  7170 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
+11-12 07:38:27.000  7170  7170 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.433 money=230 level=2 caught=118 fps=18.1 textureMB=96.6 heapMB=42.6 preset=medium canvas=1299x618
+11-12 07:38:27.000  7170  7170 I FishingTycoon: BOATS n=1 phases=depart arrivals=0 lagMean=n/a lagMax=n/a waits=0 nets=0 netMinS=n/a fx=1
+11-12 07:38:32.031  7170  7170 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
+11-12 07:38:32.034  7170  7170 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.433 money=230 level=2 caught=118 fps=15.7 textureMB=96.6 heapMB=42.6 preset=medium canvas=1299x618
+11-12 07:38:32.035  7170  7170 I FishingTycoon: BOATS n=1 phases=depart arrivals=0 lagMean=n/a lagMax=n/a waits=0 nets=0 netMinS=n/a fx=1
+11-12 07:38:36.949  7170  7170 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
+11-12 07:38:36.949  7170  7170 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.433 money=230 level=2 caught=118 fps=15.2 textureMB=96.6 heapMB=42.6 preset=medium canvas=1299x618
+11-12 07:38:36.949  7170  7170 I FishingTycoon: BOATS n=1 phases=depart arrivals=0 lagMean=n/a lagMax=n/a waits=0 nets=0 netMinS=n/a fx=1
+11-12 07:38:41.828  7170  7170 I FishingTycoon: Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently
+11-12 07:38:41.931  7170  7170 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
+11-12 07:38:41.932  7170  7170 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.433 money=230 level=2 caught=134 fps=14.9 textureMB=96.6 heapMB=42.6 preset=medium canvas=1299x618
+11-12 07:38:41.932  7170  7170 I FishingTycoon: BOATS n=1 phases=return arrivals=0 lagMean=n/a lagMax=n/a waits=0 nets=1 netMinS=1.25 fx=1
+11-12 07:38:47.035  7170  7170 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
+11-12 07:38:47.036  7170  7170 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.433 money=230 level=2 caught=134 fps=14.5 textureMB=96.6 heapMB=42.6 preset=medium canvas=1299x618
+11-12 07:38:47.036  7170  7170 I FishingTycoon: BOATS n=1 phases=return arrivals=0 lagMean=n/a lagMax=n/a waits=0 nets=1 netMinS=1.25 fx=1
+11-12 07:38:51.985  7170  7170 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
+11-12 07:38:52.017  7170  7170 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.433 money=230 level=2 caught=134 fps=14.7 textureMB=96.6 heapMB=42.6 preset=medium canvas=1299x618
+11-12 07:38:52.017  7170  7170 I FishingTycoon: BOATS n=1 phases=settle arrivals=1 lagMean=-0.57 lagMax=-0.57 waits=0 nets=1 netMinS=1.25 fx=1
+11-12 07:38:57.005  7170  7170 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
+11-12 07:38:57.005  7170  7170 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.433 money=230 level=2 caught=134 fps=14.2 textureMB=96.6 heapMB=42.6 preset=medium canvas=1299x618
+11-12 07:38:57.008  7170  7170 I FishingTycoon: BOATS n=1 phases=depart arrivals=1 lagMean=-0.57 lagMax=-0.57 waits=0 nets=1 netMinS=1.25 fx=1
+11-12 07:39:01.959  7170  7170 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
+11-12 07:39:01.960  7170  7170 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.433 money=230 level=2 caught=134 fps=14.6 textureMB=96.6 heapMB=42.6 preset=medium canvas=1299x618
+11-12 07:39:01.960  7170  7170 I FishingTycoon: BOATS n=1 phases=depart arrivals=1 lagMean=-0.57 lagMax=-0.57 waits=0 nets=1 netMinS=1.25 fx=1
+11-12 07:39:06.979  7170  7170 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
+11-12 07:39:06.982  7170  7170 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.433 money=230 level=2 caught=134 fps=14.2 textureMB=96.6 heapMB=42.6 preset=medium canvas=1299x618
+11-12 07:39:06.982  7170  7170 I FishingTycoon: BOATS n=1 phases=depart arrivals=1 lagMean=-0.57 lagMax=-0.57 waits=0 nets=1 netMinS=1.25 fx=1
+11-12 07:39:10.636  7170  7170 I FishingTycoon: UI open settings
+11-12 07:39:11.953  7170  7170 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[834,31],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":[676,217],"qMed":[619,217]}
+11-12 07:39:11.954  7170  7170 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.433 money=230 level=2 caught=150 fps=13.5 textureMB=96.6 heapMB=42.6 preset=medium canvas=1299x618
+11-12 07:39:11.954  7170  7170 I FishingTycoon: BOATS n=1 phases=return arrivals=1 lagMean=-0.57 lagMax=-0.57 waits=0 nets=2 netMinS=1.12 fx=1
+11-12 07:39:16.901  7170  7170 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[834,31],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":[676,217],"qMed":[619,217]}
+11-12 07:39:16.902  7170  7170 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.433 money=230 level=2 caught=150 fps=12.7 textureMB=96.6 heapMB=42.6 preset=medium canvas=1299x618
+11-12 07:39:16.903  7170  7170 I FishingTycoon: BOATS n=1 phases=return arrivals=1 lagMean=-0.57 lagMax=-0.57 waits=0 nets=2 netMinS=1.12 fx=1
+11-12 07:39:17.037  7170  7170 I FishingTycoon: SAVED {"money":230,"register":176,"gems":15,"level":2,"xp":77,"tiers":"111100","upgrades":"2-0-0-0-0","workers":1,"boats":1,"caught":150,"sold":88,"mission":0,"research":0}
+11-12 07:39:17.038  7170  7170 I FishingTycoon: SAVED {"money":230,"register":176,"gems":15,"level":2,"xp":77,"tiers":"111100","upgrades":"2-0-0-0-0","workers":1,"boats":1,"caught":150,"sold":88,"mission":0,"research":0}
+11-12 07:39:17.308  7170  7170 I FishingTycoon: LOADED {"money":230,"register":176,"gems":15,"level":2,"xp":77,"tiers":"111100","upgrades":"2-0-0-0-0","workers":1,"boats":1,"caught":150,"sold":88,"mission":0,"research":0}
+11-12 07:39:18.479  7170  7170 I FishingTycoon: WATER mode=shader requested=shader
+11-12 07:39:22.431  7170  7170 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
+11-12 07:39:22.434  7170  7170 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.577 money=230 level=2 caught=150 fps=26.0 textureMB=98.9 heapMB=42.6 preset=high canvas=1732x824
+11-12 07:39:22.435  7170  7170 I FishingTycoon: BOATS n=1 phases=castoff arrivals=0 lagMean=n/a lagMax=n/a waits=0 nets=0 netMinS=n/a fx=2
+11-12 07:39:27.343  7170  7170 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
+11-12 07:39:27.343  7170  7170 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.577 money=230 level=2 caught=150 fps=15.8 textureMB=98.9 heapMB=42.6 preset=high canvas=1732x824
+11-12 07:39:27.343  7170  7170 I FishingTycoon: BOATS n=1 phases=depart arrivals=0 lagMean=n/a lagMax=n/a waits=0 nets=0 netMinS=n/a fx=2
+11-12 07:39:32.408  7170  7170 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
+11-12 07:39:32.409  7170  7170 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.577 money=230 level=2 caught=150 fps=12.4 textureMB=98.9 heapMB=42.6 preset=high canvas=1732x824
+11-12 07:39:32.416  7170  7170 I FishingTycoon: BOATS n=1 phases=depart arrivals=0 lagMean=n/a lagMax=n/a waits=0 nets=0 netMinS=n/a fx=2
+11-12 07:39:37.394  7170  7170 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
+11-12 07:39:37.396  7170  7170 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.577 money=230 level=2 caught=150 fps=11.2 textureMB=98.9 heapMB=42.6 preset=high canvas=1732x824
+11-12 07:39:37.396  7170  7170 I FishingTycoon: BOATS n=1 phases=depart arrivals=0 lagMean=n/a lagMax=n/a waits=0 nets=0 netMinS=n/a fx=2
+11-12 07:39:42.458  7170  7170 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
+11-12 07:39:42.459  7170  7170 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.577 money=230 level=2 caught=150 fps=10.9 textureMB=98.9 heapMB=42.6 preset=high canvas=1732x824
+11-12 07:39:42.459  7170  7170 I FishingTycoon: BOATS n=1 phases=fishing arrivals=0 lagMean=n/a lagMax=n/a waits=0 nets=0 netMinS=n/a fx=2
+11-12 07:39:47.400  7170  7170 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
+11-12 07:39:47.402  7170  7170 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.577 money=230 level=2 caught=166 fps=10.8 textureMB=98.9 heapMB=42.6 preset=high canvas=1732x824
+11-12 07:39:47.402  7170  7170 I FishingTycoon: BOATS n=1 phases=return arrivals=0 lagMean=n/a lagMax=n/a waits=0 nets=1 netMinS=1.30 fx=2
+11-12 07:39:50.258  7170  7170 I FishingTycoon: Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently
+11-12 07:39:52.352  7170  7170 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
+11-12 07:39:52.353  7170  7170 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.577 money=230 level=2 caught=166 fps=10.6 textureMB=98.9 heapMB=42.6 preset=high canvas=1732x824
+11-12 07:39:52.353  7170  7170 I FishingTycoon: BOATS n=1 phases=return arrivals=0 lagMean=n/a lagMax=n/a waits=0 nets=1 netMinS=1.30 fx=2
+11-12 07:39:57.351  7170  7170 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
+11-12 07:39:57.352  7170  7170 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.577 money=230 level=2 caught=166 fps=10.8 textureMB=98.9 heapMB=42.6 preset=high canvas=1732x824
+11-12 07:39:57.352  7170  7170 I FishingTycoon: BOATS n=1 phases=docked arrivals=1 lagMean=-0.65 lagMax=-0.65 waits=0 nets=1 netMinS=1.30 fx=2
+11-12 07:40:02.352  7170  7170 I FishingTycoon: UIPOS {"w":866,"h":412,"sideTog":[25,65],"recenter":[25,107],"boats":[433,377],"pclose":[0,0],"mission":[799,65],"gear":[841,23],"collect":[792,381],"rail0":[26,149],"missionX":null,"start":null,"upg":null,"qHigh":null,"qMed":null}
+11-12 07:40:02.352  7170  7170 I FishingTycoon: PERF renderer=webgl world=true size=866x412 zoom=0.577 money=230 level=2 caught=166 fps=10.6 textureMB=98.9 heapMB=42.6 preset=high canvas=1732x824
+11-12 07:40:02.353  7170  7170 I FishingTycoon: BOATS n=1 phases=depart arrivals=1 lagMean=-0.65 lagMax=-0.65 waits=0 nets=1 netMinS=1.30 fx=2
