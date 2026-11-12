@@ -1,0 +1,75 @@
+{
+ "build": {
+  "before": {
+   "built": false,
+   "progress": 0.06,
+   "flag": 0
+  },
+  "constructionProgressEverySecond": [
+   0.06,
+   0.2,
+   0.35,
+   0.49,
+   0.63,
+   0.78,
+   0.92,
+   1,
+   1
+  ],
+  "after": {
+   "built": true,
+   "progress": 1,
+   "flag": 1,
+   "stored": 1
+  },
+  "reloaded": {
+   "built": true,
+   "progress": 1,
+   "flag": 1,
+   "stored": 1
+  },
+  "errors": [],
+  "pass": true
+ },
+ "reloadKeepsProgress": {
+  "pass": true,
+  "before": {
+   "money": 900,
+   "gems": 33,
+   "level": 12,
+   "xp": 2,
+   "boats": 4,
+   "workers": 6,
+   "caught": 100,
+   "up": "{\"harbor\":{\"cap\":5,\"speed\":14,\"net\":18},\"warehouse\":{\"cap\":0,\"load\":0,\"cold\":0},\"factory\":{\"speed\":0,\"out\":0,\"qual\":0},\"market\":{\"price\":0,\"ads\":0,\"till\":0},\"hq\":{\"train\":0,\"carry\":0}}",
+   "tier": "{\"harbor\":3,\"warehouse\":2,\"market\":2,\"hq\":2,\"factory\":1,\"farm\":0}"
+  },
+  "after": {
+   "money": 900,
+   "gems": 33,
+   "level": 12,
+   "xp": 2,
+   "boats": 4,
+   "workers": 6,
+   "caught": 100,
+   "up": "{\"harbor\":{\"cap\":5,\"speed\":14,\"net\":18},\"warehouse\":{\"cap\":0,\"load\":0,\"cold\":0},\"factory\":{\"speed\":0,\"out\":0,\"qual\":0},\"market\":{\"price\":0,\"ads\":0,\"till\":0},\"hq\":{\"train\":0,\"carry\":0}}",
+   "tier": "{\"harbor\":3,\"warehouse\":2,\"market\":2,\"hq\":2,\"factory\":1,\"farm\":0}"
+  }
+ },
+ "oldSaveBelow": {
+  "built": false,
+  "progress": 0,
+  "flag": 0,
+  "errors": [],
+  "pass": true
+ },
+ "oldSaveAbove": {
+  "built": true,
+  "progress": 1,
+  "flag": 1,
+  "stored": 1,
+  "errors": [],
+  "pass": true
+ },
+ "ok": true
+}

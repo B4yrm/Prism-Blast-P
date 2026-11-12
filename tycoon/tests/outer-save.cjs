@@ -13,8 +13,10 @@ const ready = p => p.waitForFunction(() => window.__game && __game.scene.getScen
 
 async function session(b, save) {
   const ctx = await b.newContext({ viewport: { width: 844, height: 390 } });
-  await ctx.addInitScript(s => { if (sessionStorage.getItem('s')) return; sessionStorage.setItem('s', 1); localStorage.setItem('fishingTycoon.save', JSON.stringify(s)); }, save);
   const p = await ctx.newPage(), errs = [];
+  // seed the save once, with the game told not to write on the way out, then start it for real
+  await p.goto(FILE); await ready(p);
+  await p.evaluate(s => { window.__noSave = true; localStorage.setItem('fishingTycoon.save', JSON.stringify(s)); }, save);
   p.on('pageerror', e => errs.push(e.message));
   await p.goto(FILE); await ready(p);
   return { ctx, p, errs };

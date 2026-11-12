@@ -98,17 +98,20 @@ P.DECOR_BOATS.forEach((d, k) => {
 report.zones = [];
 {
   const zonePose = z => ({ x: z.x, y: z.y, a: z.head * Math.PI / 16 });
+  const lingerAtZ = (i, z) => { if (!z.R) return lingerAt(i, zonePose(z)); const f = P.fishTurnPlan(zonePose(z), z.R, z.sweep)[0].path, o = []; for (let s = 0; s <= f.len + 1e-6; s += 0.25) { const q = P.poseAt(f, s); o.push(P.hullAt(q.x, q.y, q.a, 0.15)); } return o; };
   const lingerAt = (i, g) => { const f = P.fishingPlan(i, g)[0].path, o = []; for (let s = 0; s <= P.LINGER + 1e-6; s += 0.25) { const q = P.poseAt(f, s); o.push(P.hullAt(q.x, q.y, q.a, 0.15)); } return o; };
-  const allZones = i => [{ tier: 'slip', g: P.groundPose(i) }, ...P.ZONES[i].slip.map(z => ({ tier: 'slip', g: zonePose(z) })), ...P.ZONES[i].outer.map(z => ({ tier: 'outer', g: zonePose(z) }))];
-  const lingersOf = [0, 1, 2, 3].map(j => allZones(j).flatMap(z => lingerAt(j, z.g)));
+  const allZones = i => [{ tier: 'slip', g: P.groundPose(i) }, ...P.ZONES[i].slip.map(z => ({ tier: 'slip', g: zonePose(z), z })), ...P.ZONES[i].outer.map(z => ({ tier: 'outer', g: zonePose(z), z }))];
+  // the whole fleet works one step at a time: zones are checked against the same step of the other boats
+  const lingersOf = [0, 1, 2, 3].map(j => ({ slip: P.ZONES[j].slip.flatMap(z => lingerAt(j, zonePose(z))), outer: P.ZONES[j].outer.flatMap(z => lingerAtZ(j, z)) }));
   for (let i = 0; i < nB; i++) {
     const obs = [...[0, 1, 2, 3, 4, 5, 6, 7].filter(s => s !== i && s !== 4 + i).map(s => P.siteHull(s, 0.05)), ...decor, ...buoys];
-    const cross = [0, 1, 2, 3].filter(j => j !== i).flatMap(j => lingersOf[j]);
     for (const z of allZones(i).slice(1)) {
-      const site = z.tier === 'outer' ? 4 + i : i, routes = [P.siteDeparture(site, z.g), P.fishingPlan(i, z.g)];
+      const cross = [0, 1, 2, 3].filter(j => j !== i).flatMap(j => lingersOf[j][z.tier]);
+      const site = z.tier === 'outer' ? 4 + i : i, routes = [P.siteDeparture(site, z.g), z.z && z.z.R ? P.fishTurnPlan(z.g, z.z.R, z.z.sweep) : P.fishingPlan(i, z.g)];
       if (z.tier === 'outer') routes.push(P.siteDeparture(i, z.g));          // the first trip after the jetties are built
       const t = routes[1][0].path;
-      for (let s = 0; s <= t.len + 1e-6; s += 0.5) routes.push(P.siteArrival(site, P.poseAt(t, s)));
+      if (z.z && z.z.R) routes.push(P.siteArrival(site, P.poseAt(t, t.len)));        // the turn is always completed
+      else for (let s = 0; s <= t.len + 1e-6; s += 0.5) routes.push(P.siteArrival(site, P.poseAt(t, s)));
       let hits = 0, minR = Infinity;
       for (const r of routes) {
         const h = P.planHits(r, [...obs, ...cross]);

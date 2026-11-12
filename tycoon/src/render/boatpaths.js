@@ -36,7 +36,7 @@ export const BERTH_MOVES = [
 
 // Decorative moored boats [x, y, class, heading index (8 directions), sprite scale],
 // placed clear of every manoeuvre (checked by tests/boat-check.cjs).
-export const DECOR_BOATS = [[24.6, 24.6, 1, 0, 0.55], [2.0, 25.6, 0, 1, 0.6], [34.8, 24.2, 1, 5, 0.7], [27.5, 23.6, 2, 2, 0.5]];
+export const DECOR_BOATS = [[24.6, 24.6, 1, 0, 0.55], [2.0, 25.6, 0, 1, 0.6], [34.0, 26.6, 1, 5, 0.7], [27.5, 23.6, 2, 2, 0.5]];
 export const CLASS_S = [1.45, 1.7, 2.0];             // hull size factor of each baked boat class
 export const decorHull = ([x, y, c, d, sc], grow = 0) => hullAt(x, y, d * Math.PI / 4, grow, CLASS_S[c] / CLASS_S[0] * sc);
 
@@ -166,7 +166,7 @@ export const SEA_R = 2.8;                            // turning radius at sea (t
 // A boat called home while still on its way out first runs this far along the
 // way out (tiles), so that turning round never crosses a neighbour's final
 // approach (checked by tests/boat-check.cjs).
-export const RETURN_FROM = [11, 9.75, 4, 4];
+export const RETURN_FROM = [11, 10.25, 5.25, 10];
 
 const cat = (...parts) => parts.reduce((acc, p) => acc.concat(acc.length ? p.slice(1) : p), []);
 
@@ -192,7 +192,7 @@ const NORTH = -Math.PI / 2, SOUTH = Math.PI / 2;
 // tools/boats/grounds.mjs so that way out + way back are short and no boat's
 // route crosses the water where a neighbour lingers with its nets out.
 export const GROUND = [{ dx: 2, dy: 1, head: 2 }, { dx: -2, dy: -1, head: 16 }, { dx: 1, dy: -2, head: 8 }, { dx: -2, dy: -1, head: 6 }];
-export const LINGER = 2.5;                           // tiles of towing (then the boat lies still with its nets out)
+export const LINGER = 2.0;                           // tiles of towing (then the boat lies still with its nets out)
 export const groundPose = (i, g = GROUND[i]) => {
   const R = BERTHS[i].route, G = R[R.length - 1];
   return { x: G[0] + g.dx, y: G[1] + g.dy, a: g.head * Math.PI / 16 };
@@ -278,6 +278,12 @@ export function shortArrival(i, from) {
 }
 export function shortFishing(i, from) {                // the net goes out astern; the boat barely moves
   return [{ path: finish(resample(straight(from.x, from.y, from.a, 0.3))), dir: 1, kind: 'fish', stop: true }];
+}
+
+// Outer sectors: the net is towed while the boat makes its turn for home — an arc
+// of radius R through 180° (sweep +1 towards larger angles, −1 the other way).
+export function fishTurnPlan(from, R, sweep) {
+  return [{ path: finish(resample(arc(from.x, from.y, from.a, R, sweep * Math.PI))), dir: 1, kind: 'fishturn', stop: false }];
 }
 
 // Towing the nets: slowly straight on for LINGER tiles, then lying still until called home.
