@@ -17,6 +17,7 @@ export function fresh() {
       hq: { train: 0, carry: 0 },
     },
     workers: 1, boats: 1,
+    harborOuter: 0,               // outer jetties: 0 not built, 1 built (visual; built once nets ≥ 18 and engine ≥ 14)
     stock: { quay: 0, wh: 0, facOut: 0, mRaw: 0, mProd: 0 },
     stats: { caught: 0, sold: 0, soldProd: 0, earned: 0, collected: 0, research: 0 },
     mission: 0,

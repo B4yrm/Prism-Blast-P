@@ -9,6 +9,9 @@
 //   • for information: arrivals from the fishing spot in 16 headings
 //   • turns at sea are never tighter than the sea radius
 //   • decorative boats sit in open water
+//   • outer berths and every nearer / sector fishing zone: way out (also from
+//     the slip for the first trip after the jetties are built), tow and way
+//     home clear of everything and of the water where other boats fish
 //   node tests/boat-check.cjs  → prints a JSON report, exit code 1 on failure
 const esbuild = require('esbuild');
 const path = require('path');
@@ -91,6 +94,32 @@ P.DECOR_BOATS.forEach((d, k) => {
   report.decor.push({ k, at: d.slice(0, 2), onSolid, onBoat });
   if (onSolid || onBoat) fail(`decor boat ${k} overlaps ${onSolid ? 'land/pier' : 'a boat'}`);
 });
+// outer berths and fishing-zone ladders (tools/boats/zones.mjs)
+report.zones = [];
+{
+  const zonePose = z => ({ x: z.x, y: z.y, a: z.head * Math.PI / 16 });
+  const lingerAt = (i, g) => { const f = P.fishingPlan(i, g)[0].path, o = []; for (let s = 0; s <= P.LINGER + 1e-6; s += 0.25) { const q = P.poseAt(f, s); o.push(P.hullAt(q.x, q.y, q.a, 0.15)); } return o; };
+  const allZones = i => [{ tier: 'slip', g: P.groundPose(i) }, ...P.ZONES[i].slip.map(z => ({ tier: 'slip', g: zonePose(z) })), ...P.ZONES[i].outer.map(z => ({ tier: 'outer', g: zonePose(z) }))];
+  const lingersOf = [0, 1, 2, 3].map(j => allZones(j).flatMap(z => lingerAt(j, z.g)));
+  for (let i = 0; i < nB; i++) {
+    const obs = [...[0, 1, 2, 3, 4, 5, 6, 7].filter(s => s !== i && s !== 4 + i).map(s => P.siteHull(s, 0.05)), ...decor, ...buoys];
+    const cross = [0, 1, 2, 3].filter(j => j !== i).flatMap(j => lingersOf[j]);
+    for (const z of allZones(i).slice(1)) {
+      const site = z.tier === 'outer' ? 4 + i : i, routes = [P.siteDeparture(site, z.g), P.fishingPlan(i, z.g)];
+      if (z.tier === 'outer') routes.push(P.siteDeparture(i, z.g));          // the first trip after the jetties are built
+      const t = routes[1][0].path;
+      for (let s = 0; s <= t.len + 1e-6; s += 0.5) routes.push(P.siteArrival(site, P.poseAt(t, s)));
+      let hits = 0, minR = Infinity;
+      for (const r of routes) {
+        const h = P.planHits(r, [...obs, ...cross]);
+        if (h.length) { hits++; fail(`${z.tier} zone of boat ${i} at (${z.g.x}, ${z.g.y}): touches something at ${JSON.stringify(h[0])}`); }
+        for (const leg of r) if (leg.kind === 'sea') minR = Math.min(minR, P.minRadius(leg.path));
+      }
+      if (minR < P.SEA_R - 0.05) fail(`${z.tier} zone of boat ${i}: turn tighter than ${P.SEA_R} (${minR.toFixed(2)})`);
+      report.zones.push({ boat: i, tier: z.tier, at: [z.g.x, z.g.y], routes: routes.length, hits, minRadius: +minR.toFixed(2) });
+    }
+  }
+}
 report.ok = report.fails.length === 0;
 console.log(JSON.stringify(report, null, 1));
 fs.mkdirSync(path.join(root, 'test-results'), { recursive: true });

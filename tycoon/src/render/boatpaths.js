@@ -7,6 +7,8 @@
 // the slip. Pure geometry: shared by the game and by the automatic clearance
 // check (tests/boat-check.cjs).
 import { BERTHS, PIERS, BOUNDS, isLand } from '../config.js';
+import { OUTER_MOVES, ZONES } from './boatzones.js';
+export { OUTER_MOVES, ZONES };
 
 // Class-0 hull at the waterline (tiles): bow tip, stern, half beam.
 export const HULL = { bow: 2.04, stern: 1.89, half: 0.61 };
@@ -34,7 +36,7 @@ export const BERTH_MOVES = [
 
 // Decorative moored boats [x, y, class, heading index (8 directions), sprite scale],
 // placed clear of every manoeuvre (checked by tests/boat-check.cjs).
-export const DECOR_BOATS = [[24.6, 24.6, 1, 0, 0.55], [2.0, 25.6, 0, 1, 0.6], [27.6, 26.6, 1, 5, 0.7], [27.5, 23.6, 2, 2, 0.5]];
+export const DECOR_BOATS = [[24.6, 24.6, 1, 0, 0.55], [2.0, 25.6, 0, 1, 0.6], [34.8, 24.2, 1, 5, 0.7], [27.5, 23.6, 2, 2, 0.5]];
 export const CLASS_S = [1.45, 1.7, 2.0];             // hull size factor of each baked boat class
 export const decorHull = ([x, y, c, d, sc], grow = 0) => hullAt(x, y, d * Math.PI / 4, grow, CLASS_S[c] / CLASS_S[0] * sc);
 
@@ -189,7 +191,7 @@ const NORTH = -Math.PI / 2, SOUTH = Math.PI / 2;
 // spot (still among its buoys) and heading in π/16 steps. Chosen by
 // tools/boats/grounds.mjs so that way out + way back are short and no boat's
 // route crosses the water where a neighbour lingers with its nets out.
-export const GROUND = [{ dx: 2, dy: 1, head: 2 }, { dx: -2, dy: -1, head: 10 }, { dx: 2, dy: -2, head: 3 }, { dx: -2, dy: -2, head: 10 }];
+export const GROUND = [{ dx: 2, dy: 1, head: 2 }, { dx: -2, dy: -1, head: 16 }, { dx: 1, dy: -2, head: 8 }, { dx: -2, dy: -1, head: 6 }];
 export const LINGER = 2.5;                           // tiles of towing (then the boat lies still with its nets out)
 export const groundPose = (i, g = GROUND[i]) => {
   const R = BERTHS[i].route, G = R[R.length - 1];
@@ -206,30 +208,58 @@ export const buoysAt = i => {
 };
 export const buoyPoly = ([x, y], r = 0.3) => Array.from({ length: 8 }, (_, k) => [x + r * Math.cos(k * Math.PI / 4), y + r * Math.sin(k * Math.PI / 4)]);
 
-export function departurePlan(i, mv = BERTH_MOVES[i], R = SEA_R, gr = GROUND[i]) {
-  const [bx, by] = VBERTH[i], g = groundPose(i, gr);
+// ---- mooring sites -------------------------------------------------------------
+// Sites 0–3 are the slips. Sites 4–7 are the outer berths along the two outer
+// jetties (built at high upgrade levels): boat i's outer site is 4 + i. Every
+// boat lies bow north; it leaves by backing out with the stern swinging (moves
+// found by tools/boats/search.mjs and tools/boats/zones.mjs) and comes in by a
+// straight glide from its site's mouth.
+export const JETTIES = [[30, 22, 31, 30.6], [-4, 22, -3, 30.6]];       // x0, y0, x1, y1 (east, west)
+export const OUTER_Y = 29.0;                                          // boat centre at an outer berth
+export const OUTER_X = [-2.24, 29.24, -4.76, 31.76];                  // boat i's outer berth
+export const OUTER_JETTY = [1, 0, 1, 0];
+export const OUTER_MOUTH = JETTIES[0][3] + HULL.bow + 0.6;            // glide starts here (bow clear of the jetty end)
+export const siteOf = s => s < 4
+  ? { x: VBERTH[s][0], y: VBERTH[s][1], my: MOUTH_Y[s] + APPROACH, mv: BERTH_MOVES[s] }
+  : { x: OUTER_X[s - 4], y: OUTER_Y, my: OUTER_MOUTH, mv: OUTER_MOVES[s - 4] };
+export const siteHull = (s, grow = 0) => hullAt(siteOf(s).x, siteOf(s).y, -Math.PI / 2, grow);
+// bow line and stern line bollards of an outer berth, on its jetty
+export const outerBollards = i => {
+  const J = JETTIES[OUTER_JETTY[i]], x = OUTER_X[i] < J[0] ? J[0] + 0.2 : J[2] - 0.2;
+  return [[x, OUTER_Y - 1.6], [x, OUTER_Y + 1.3]];
+};
+
+// From site s: back out, stop, then the shortest smooth way to the pose `to`.
+export function siteDeparture(s, to, mv = siteOf(s).mv, R = SEA_R) {
+  const { x: bx, y: by } = siteOf(s);
   const back = cat(mv.d0 > 0 ? straight(bx, by, SOUTH, mv.d0) : [[bx, by]], arc(bx, by + mv.d0, SOUTH, mv.R, -mv.side * mv.phi));
   const rev = finish(resample(back));
   const end = poseAt(rev, rev.len), head = end.a + Math.PI;     // heading at the stop (bow)
-  const sea = finish(resample(dubins([end.x, end.y, head], [g.x, g.y, g.a], R)));
+  const sea = finish(resample(dubins([end.x, end.y, head], [to.x, to.y, to.a], R)));
   return [
     { path: rev, dir: -1, kind: 'reverse', stop: true },
     { path: sea, dir: 1, kind: 'sea', stop: false },
   ];
 }
-
-// From any pose at sea back into slip i: the shortest smooth route (never
-// tighter than SEA_R) to a point in line with the slip, bow north, then a
-// straight glide into the berth.
-export function arrivalPlan(i, from, R = SEA_R) {
-  const [bx, by] = VBERTH[i], M = [bx, MOUTH_Y[i] + APPROACH];
-  const sea = finish(resample(dubins([from.x, from.y, from.a], [M[0], M[1], NORTH], R)));
-  const glide = finish(resample(straight(M[0], M[1], NORTH, M[1] - by)));
+// Into site s from any pose at sea: smooth way to the site's mouth, bow north, then a straight glide.
+export function siteArrival(s, from, R = SEA_R) {
+  const { x: bx, y: by, my } = siteOf(s);
+  const sea = finish(resample(dubins([from.x, from.y, from.a], [bx, my, NORTH], R)));
+  const glide = finish(resample(straight(bx, my, NORTH, my - by)));
   return [
     { path: sea, dir: 1, kind: 'sea', stop: false },
     { path: glide, dir: 1, kind: 'glide', stop: true },
   ];
 }
+
+export function departurePlan(i, mv = BERTH_MOVES[i], R = SEA_R, gr = GROUND[i]) {
+  return siteDeparture(i, groundPose(i, gr), mv, R);
+}
+
+// From any pose at sea back into slip i: the shortest smooth route (never
+// tighter than SEA_R) to a point in line with the slip, bow north, then a
+// straight glide into the berth.
+export function arrivalPlan(i, from, R = SEA_R) { return siteArrival(i, from, R); }
 
 // Harbour trip, for heavily upgraded boats whose whole simulated trip is
 // shorter than a calm run to the fishing grounds: the boat backs straight out
@@ -282,7 +312,8 @@ export function hullAt(x, y, h, grow = 0, scale = 1) {
 const inRect = (rs, px, py) => rs.some(([x0, y0, x1, y1]) => px >= x0 && px < x1 + 1 && py >= y0 && py < y1 + 1);
 export function solidAt(px, py) {
   if (px < BOUNDS.x0 || py < BOUNDS.y0 || px > BOUNDS.x1 || py > BOUNDS.y1) return false;   // open sea round the map
-  return isLand(Math.floor(px), Math.floor(py)) || inRect(PIERS, px, py);
+  return isLand(Math.floor(px), Math.floor(py)) || inRect(PIERS, px, py)
+    || JETTIES.some(([x0, y0, x1, y1]) => px >= x0 && px <= x1 && py >= y0 && py <= y1);
 }
 // Dense points along a hull outline (for clearance tests).
 export function hullPoints(x, y, h, grow = 0.06, scale = 1) {

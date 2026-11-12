@@ -20,25 +20,23 @@ esbuild.buildSync({ entryPoints: [path.join(root, 'src/render/boatpaths.js')], b
 const P = require(bundled);
 
 const SCENARIOS = [
-  // every scenario: the visual boat must be in its slip before the simulation
-  // starts unloading (lag < 0) and every trip shows the net being cast and hauled
-  { name: 'fleet4', boats: 4, secs: 900, up: {} },
-  { name: 'fleet4-upgraded', boats: 4, secs: 600, up: { cap: 6, speed: 10, net: 8 } },
-  { name: 'fleet1', boats: 1, secs: 300, up: {} },
-  // just below the switch to harbour trips: the fishing-grounds trip at its fastest
-  { name: 'fleet4-mid', boats: 4, secs: 600, up: { cap: 4, speed: 6, net: 3 } },
-  { name: 'fleet1-maxed', boats: 1, secs: 300, up: { cap: 30, speed: 30, net: 30 } },
-  // every harbour upgrade at its maximum (level 30): a whole trip lasts ~6 s
-  { name: 'fleet4-maxed', boats: 4, secs: 400, up: { cap: 30, speed: 30, net: 30 } },
-  // … and the sea-charts research at its top level too (+30 % boat speed)
-  { name: 'fleet4-maxed-research', boats: 4, secs: 400, up: { cap: 30, speed: 30, net: 30 }, research: { nav: 3, nets: 3 } },
+  // every scenario: no overlaps, the visual boat in its slip / berth before the
+  // simulation starts unloading, a net on every trip, the simulation unchanged
+  { name: 'start-fleet4', boats: 4, secs: 900, up: {} },
+  { name: 'start-fleet1', boats: 1, secs: 300, up: {} },
+  { name: 'mid-fleet4 (engine 6, nets 3)', boats: 4, secs: 600, up: { cap: 4, speed: 6, net: 3 } },
+  { name: 'mid+-fleet4 (engine 10, nets 8)', boats: 4, secs: 600, up: { cap: 6, speed: 10, net: 8 } },
+  { name: 'late-fleet4 (engine 20, nets 18): jetties are built during the run', boats: 4, secs: 600, up: { cap: 10, speed: 20, net: 18 } },
+  { name: 'max-fleet4 (30/30): jetties built during the run', boats: 4, secs: 400, up: { cap: 30, speed: 30, net: 30 } },
+  { name: 'max-fleet1 (30/30), jetties already built', boats: 1, secs: 300, up: { cap: 30, speed: 30, net: 30 }, outer: 1 },
+  { name: 'max+research-fleet4 (30/30 + sea charts 3), jetties already built', boats: 4, secs: 400, up: { cap: 30, speed: 30, net: 30 }, research: { nav: 3, nets: 3 }, outer: 1 },
 ];
 
 async function run(b, sc, withFleet) {
   const ctx = await b.newContext({ viewport: { width: 844, height: 390 } });
   await ctx.addInitScript(sc => {
     if (sessionStorage.getItem('s')) return; sessionStorage.setItem('s', 1);
-    localStorage.setItem('fishingTycoon.save', JSON.stringify({ v: 1, money: 500, boats: sc.boats, workers: sc.boats === 4 ? 6 : 2, level: 9, settings: { quality: 'medium' },
+    localStorage.setItem('fishingTycoon.save', JSON.stringify({ v: 1, money: 500, harborOuter: sc.outer || 0, boats: sc.boats, workers: sc.boats === 4 ? 6 : 2, level: 9, settings: { quality: 'medium' },
       tier: { harbor: sc.boats === 4 ? 3 : 1, warehouse: 2, market: 2, hq: 2, factory: 0, farm: 0 }, up: { harbor: { cap: 0, speed: 0, net: 0, ...sc.up } }, research: { lv: sc.research || {}, active: null },
       stats: { caught: 1, sold: 1 }, lastSeen: Date.now() }));
   }, sc);
@@ -82,7 +80,7 @@ async function run(b, sc, withFleet) {
       }
       if (k % 200 === 0) { Math.random = simRandom; sim.collect(true); }
     }
-    return { v0: F.V0, harbourTrips: !!F.modeShort, jumps, nets: F.stats.nets, netMin: F.stats.netMin, traj, ev, holdSecs: +(holdFrames * dt).toFixed(1), cs, caught: sim.S.stats.caught, money: Math.floor(sim.S.money), dt };
+    return { v0: F.V0, trips: F.stats.trips, built: F.jetties.built, jumps, nets: F.stats.nets, netMin: F.stats.netMin, traj, ev, holdSecs: +(holdFrames * dt).toFixed(1), cs, caught: sim.S.stats.caught, money: Math.floor(sim.S.money), dt };
   }, [sc.secs, withFleet]);
   r.errs = errs;
   await ctx.close();
@@ -138,7 +136,7 @@ function analyse(sc, r, plain) {
     let d = h1 - h0; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI;
     maxYaw = Math.max(maxYaw, Math.abs(d) / r.dt);
   }
-  out.motion = { trip: r.harbourTrips ? 'harbour trip' : 'to the fishing grounds', simCruiseTilesPerS: +r.v0.toFixed(2), maxSpeedVsSimCruise: +(maxStep / r.v0).toFixed(2), maxSpeedTilesPerS: +maxStep.toFixed(2), maxTurnRateDegPerS: +(maxYaw * 180 / Math.PI).toFixed(1), holdSeconds: r.holdSecs };
+  out.motion = { trips: r.trips, jettiesBuilt: r.built, simCruiseTilesPerS: +r.v0.toFixed(2), maxSpeedVsSimCruise: +(maxStep / r.v0).toFixed(2), maxSpeedTilesPerS: +maxStep.toFixed(2), maxTurnRateDegPerS: +(maxYaw * 180 / Math.PI).toFixed(1), holdSeconds: r.holdSecs };
   const cs = r.cs.slice().sort((a, b) => a - b), q = k => cs.length ? cs[Math.min(cs.length - 1, Math.floor(cs.length * k))] : null;
   out.cruiseShare = { p10: q(0.1), median: q(0.5), p90: q(0.9), max: cs[cs.length - 1] };
   // 4. sync with the simulation

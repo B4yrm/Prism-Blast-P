@@ -234,9 +234,11 @@ export class WorldScene extends Phaser.Scene {
     this.tweens.add({ targets: f, y: p.y - 26, duration: 380, yoyo: true, ease: 'Quad.Out', angle: { from: -40, to: 40 }, onComplete: () => f.destroy() });
   }
   craneWork(b) {
-    // only the crane at this boat's own berth, and only once the boat is in
+    // only the crane at this boat's own slip, and only once the boat is in
+    const site = this.fleet.mooredSite(b);
+    if (site >= 4) { this.fleet.jetties.unloading(b.i % VBERTH.length); return; }   // outer berth: the jetty cart
     const bx = VBERTH[b.i % VBERTH.length][0], cr = this.cranes.find(c => Math.abs(c.x - bx) < 1.5);
-    if (cr && this.fleet.moored(b)) cr.t = 1.2;
+    if (cr && site >= 0) cr.t = 1.2;
   }
 
   floatText(x, y, str, col) {
