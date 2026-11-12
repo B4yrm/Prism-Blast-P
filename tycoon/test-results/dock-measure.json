@@ -1,0 +1,1548 @@
+[
+ {
+  "scenario": "start: no upgrades, 1 boat, 2 workers",
+  "trips": 20,
+  "simCruise": 1.9,
+  "fishTimeS": 6,
+  "visualTripKind": "grounds",
+  "simTripS": {
+   "min": 25.07,
+   "median": 25.07,
+   "max": 25.07
+  },
+  "stayAtBerthS": {
+   "min": 3.7,
+   "p10": 3.7,
+   "median": 3.7,
+   "p90": 3.7,
+   "max": 3.73
+  },
+  "shareOfStaysAtTheMinimum": 1,
+  "shareOfStaysWithFullQuay": 0,
+  "unloadingS": {
+   "min": 2.47,
+   "median": 2.47
+  },
+  "visualTripAtCapS": [
+   [
+    24.46,
+    24.46
+   ]
+  ],
+  "cruiseShareNeededNow": [
+   1.5
+  ],
+  "moveToOuterBerthAtCapS": [
+   null
+  ],
+  "pageErrors": [],
+  "visualLateS": {
+   "at5": {
+    "min": 0,
+    "median": 0,
+    "max": 0
+   },
+   "at44": {
+    "min": 0,
+    "median": 0,
+    "max": 0
+   }
+  },
+  "mooredBeforeNextTripS": {
+   "at5": {
+    "min": 3.15,
+    "median": 3.15,
+    "max": 3.18
+   },
+   "at44": {
+    "min": 3.15,
+    "median": 3.15,
+    "max": 3.18
+   }
+  },
+  "shareOfTripsWith2sMoored": {
+   "at5": 1,
+   "at44": 1
+  },
+  "shareOfTripsWith1sMoored": {
+   "at5": 1,
+   "at44": 1
+  }
+ },
+ {
+  "scenario": "start: no upgrades, 4 boats, 6 workers",
+  "trips": 66,
+  "simCruise": 1.9,
+  "fishTimeS": 6,
+  "visualTripKind": "grounds",
+  "simTripS": {
+   "min": 24.93,
+   "median": 25.07,
+   "max": 26.2
+  },
+  "stayAtBerthS": {
+   "min": 3.7,
+   "p10": 3.7,
+   "median": 3.7,
+   "p90": 31.47,
+   "max": 39.67
+  },
+  "shareOfStaysAtTheMinimum": 0.77,
+  "shareOfStaysWithFullQuay": 0.23,
+  "unloadingS": {
+   "min": 2.47,
+   "median": 2.47
+  },
+  "visualTripAtCapS": [
+   [
+    24.46,
+    24.46
+   ],
+   [
+    23.74,
+    23.74
+   ],
+   [
+    24.34,
+    24.34
+   ],
+   [
+    23.86,
+    23.86
+   ]
+  ],
+  "cruiseShareNeededNow": [
+   1.5,
+   1.4,
+   1.35,
+   1.4
+  ],
+  "moveToOuterBerthAtCapS": [
+   null,
+   null,
+   null,
+   null
+  ],
+  "pageErrors": [],
+  "visualLateS": {
+   "at5": {
+    "min": 0,
+    "median": 0,
+    "max": 0
+   },
+   "at44": {
+    "min": 0,
+    "median": 0,
+    "max": 0
+   }
+  },
+  "mooredBeforeNextTripS": {
+   "at5": {
+    "min": 3.15,
+    "median": 3.15,
+    "max": 39.12
+   },
+   "at44": {
+    "min": 3.15,
+    "median": 3.15,
+    "max": 39.12
+   }
+  },
+  "shareOfTripsWith2sMoored": {
+   "at5": 1,
+   "at44": 1
+  },
+  "shareOfTripsWith1sMoored": {
+   "at5": 1,
+   "at44": 1
+  }
+ },
+ {
+  "scenario": "mid: engine 10 / nets 8 / hold 6, 6 workers",
+  "trips": 22,
+  "simCruise": 3.43,
+  "fishTimeS": 3.36,
+  "visualTripKind": "grounds",
+  "simTripS": {
+   "min": 13.83,
+   "median": 13.9,
+   "max": 14.57
+  },
+  "stayAtBerthS": {
+   "min": 3.73,
+   "p10": 3.73,
+   "median": 118.9,
+   "p90": 148.07,
+   "max": 174.33
+  },
+  "shareOfStaysAtTheMinimum": 0.18,
+  "shareOfStaysWithFullQuay": 0.82,
+  "unloadingS": {
+   "min": 2.47,
+   "median": 2.47
+  },
+  "visualTripAtCapS": [
+   [
+    16.75,
+    17.11
+   ],
+   [
+    16.39,
+    16.75
+   ],
+   [
+    16.87,
+    17.23
+   ],
+   [
+    16.51,
+    16.99
+   ]
+  ],
+  "cruiseShareNeededNow": [
+   2.25,
+   2.1,
+   2.05,
+   2.15
+  ],
+  "moveToOuterBerthAtCapS": [
+   null,
+   null,
+   null,
+   null
+  ],
+  "pageErrors": [],
+  "visualLateS": {
+   "at5": {
+    "min": 1.75,
+    "median": 2.01,
+    "max": 2.3
+   },
+   "at44": {
+    "min": 2.11,
+    "median": 2.37,
+    "max": 2.66
+   }
+  },
+  "mooredBeforeNextTripS": {
+   "at5": {
+    "min": 0.88,
+    "median": 116.05,
+    "max": 171.92
+   },
+   "at44": {
+    "min": 0.52,
+    "median": 115.69,
+    "max": 171.44
+   }
+  },
+  "shareOfTripsWith2sMoored": {
+   "at5": 0.73,
+   "at44": 0.73
+  },
+  "shareOfTripsWith1sMoored": {
+   "at5": 0.95,
+   "at44": 0.77
+  }
+ },
+ {
+  "scenario": "unlock: engine 14 / nets 18 / hold 10, 6 workers",
+  "trips": 14,
+  "simCruise": 4.04,
+  "fishTimeS": 1.62,
+  "visualTripKind": "outer",
+  "simTripS": {
+   "min": 10.53,
+   "median": 10.6,
+   "max": 11.13
+  },
+  "stayAtBerthS": {
+   "min": 3.73,
+   "p10": 3.73,
+   "median": 169.63,
+   "p90": 229.1,
+   "max": 283.53
+  },
+  "shareOfStaysAtTheMinimum": 0.14,
+  "shareOfStaysWithFullQuay": 0.86,
+  "unloadingS": {
+   "min": 2.47,
+   "median": 2.47
+  },
+  "visualTripAtCapS": [
+   [
+    13.08,
+    14.16
+   ],
+   [
+    13.2,
+    14.28
+   ],
+   [
+    13.44,
+    14.52
+   ],
+   [
+    15.6,
+    16.92
+   ]
+  ],
+  "cruiseShareNeededNow": [
+   1.95,
+   1.95,
+   1.85,
+   2.45
+  ],
+  "moveToOuterBerthAtCapS": [
+   [
+    13.68,
+    14.76
+   ],
+   [
+    14.16,
+    15.24
+   ],
+   [
+    15.24,
+    16.56
+   ],
+   [
+    16.68,
+    18.12
+   ]
+  ],
+  "pageErrors": [],
+  "visualLateS": {
+   "at5": {
+    "min": 1.76,
+    "median": 2.12,
+    "max": 4.32
+   },
+   "at44": {
+    "min": 2.84,
+    "median": 3.2,
+    "max": 5.64
+   }
+  },
+  "mooredBeforeNextTripS": {
+   "at5": {
+    "min": 1.06,
+    "median": 167.15,
+    "max": 278.66
+   },
+   "at44": {
+    "min": -0.02,
+    "median": 166.07,
+    "max": 277.34
+   }
+  },
+  "shareOfTripsWith2sMoored": {
+   "at5": 0.86,
+   "at44": 0.86
+  },
+  "shareOfTripsWith1sMoored": {
+   "at5": 1,
+   "at44": 0.86
+  }
+ },
+ {
+  "scenario": "unlock: engine 14 / nets 18 / hold 10, strong economy",
+  "trips": 62,
+  "simCruise": 4.04,
+  "fishTimeS": 1.62,
+  "visualTripKind": "outer",
+  "simTripS": {
+   "min": 10.53,
+   "median": 10.6,
+   "max": 11.13
+  },
+  "stayAtBerthS": {
+   "min": 3.7,
+   "p10": 3.7,
+   "median": 3.7,
+   "p90": 118.83,
+   "max": 248.13
+  },
+  "shareOfStaysAtTheMinimum": 0.84,
+  "shareOfStaysWithFullQuay": 0.16,
+  "unloadingS": {
+   "min": 2.47,
+   "median": 2.47
+  },
+  "visualTripAtCapS": [
+   [
+    13.08,
+    14.16
+   ],
+   [
+    13.2,
+    14.28
+   ],
+   [
+    13.44,
+    14.52
+   ],
+   [
+    15.6,
+    16.92
+   ]
+  ],
+  "cruiseShareNeededNow": [
+   1.95,
+   1.95,
+   1.85,
+   2.45
+  ],
+  "moveToOuterBerthAtCapS": [
+   [
+    13.68,
+    14.76
+   ],
+   [
+    14.16,
+    15.24
+   ],
+   [
+    15.24,
+    16.56
+   ],
+   [
+    16.68,
+    18.12
+   ]
+  ],
+  "pageErrors": [],
+  "visualLateS": {
+   "at5": {
+    "min": 1.76,
+    "median": 1.93,
+    "max": 4.32
+   },
+   "at44": {
+    "min": 2.84,
+    "median": 3.01,
+    "max": 5.64
+   }
+  },
+  "mooredBeforeNextTripS": {
+   "at5": {
+    "min": -1.17,
+    "median": 1.22,
+    "max": 243.26
+   },
+   "at44": {
+    "min": -2.49,
+    "median": 0.14,
+    "max": 241.94
+   }
+  },
+  "shareOfTripsWith2sMoored": {
+   "at5": 0.16,
+   "at44": 0.16
+  },
+  "shareOfTripsWith1sMoored": {
+   "at5": 0.79,
+   "at44": 0.16
+  }
+ },
+ {
+  "scenario": "max 30/30, hold 30, 2 workers, small warehouse",
+  "trips": 3,
+  "simCruise": 6.47,
+  "fishTimeS": 0.68,
+  "visualTripKind": "outer",
+  "simTripS": {
+   "min": 6.23,
+   "median": 6.27,
+   "max": 6.27
+  },
+  "stayAtBerthS": {
+   "min": 11.03,
+   "p10": 11.03,
+   "median": 444.67,
+   "p90": 445.53,
+   "max": 445.53
+  },
+  "shareOfStaysAtTheMinimum": 0,
+  "shareOfStaysWithFullQuay": 1,
+  "unloadingS": {
+   "min": 2.47,
+   "median": 2.5
+  },
+  "visualTripAtCapS": [
+   [
+    13.08,
+    14.16
+   ],
+   [
+    13.2,
+    14.28
+   ],
+   [
+    13.2,
+    14.52
+   ],
+   [
+    15.48,
+    16.92
+   ]
+  ],
+  "cruiseShareNeededNow": [
+   2.75,
+   2.8,
+   2.65,
+   null
+  ],
+  "moveToOuterBerthAtCapS": [
+   [
+    13.56,
+    14.76
+   ],
+   [
+    14.04,
+    15.24
+   ],
+   [
+    15.12,
+    16.56
+   ],
+   [
+    16.56,
+    18.12
+   ]
+  ],
+  "pageErrors": [],
+  "visualLateS": {
+   "at5": {
+    "min": 6.26,
+    "median": 6.26,
+    "max": 6.42
+   },
+   "at44": {
+    "min": 7.34,
+    "median": 7.34,
+    "max": 7.5
+   }
+  },
+  "mooredBeforeNextTripS": {
+   "at5": {
+    "min": 4.22,
+    "median": 437.7,
+    "max": 438.72
+   },
+   "at44": {
+    "min": 3.14,
+    "median": 436.62,
+    "max": 437.64
+   }
+  },
+  "shareOfTripsWith2sMoored": {
+   "at5": 1,
+   "at44": 1
+  },
+  "shareOfTripsWith1sMoored": {
+   "at5": 1,
+   "at44": 1
+  }
+ },
+ {
+  "scenario": "max 30/30, hold 30, 6 workers, mid warehouse",
+  "trips": 5,
+  "simCruise": 6.47,
+  "fishTimeS": 0.68,
+  "visualTripKind": "outer",
+  "simTripS": {
+   "min": 6.23,
+   "median": 6.27,
+   "max": 6.6
+  },
+  "stayAtBerthS": {
+   "min": 10.63,
+   "p10": 10.63,
+   "median": 221.57,
+   "p90": 461.57,
+   "max": 461.57
+  },
+  "shareOfStaysAtTheMinimum": 0,
+  "shareOfStaysWithFullQuay": 1,
+  "unloadingS": {
+   "min": 2.47,
+   "median": 2.5
+  },
+  "visualTripAtCapS": [
+   [
+    13.08,
+    14.16
+   ],
+   [
+    13.2,
+    14.28
+   ],
+   [
+    13.2,
+    14.52
+   ],
+   [
+    15.48,
+    16.92
+   ]
+  ],
+  "cruiseShareNeededNow": [
+   2.75,
+   2.8,
+   2.65,
+   null
+  ],
+  "moveToOuterBerthAtCapS": [
+   [
+    13.56,
+    14.76
+   ],
+   [
+    14.04,
+    15.24
+   ],
+   [
+    15.12,
+    16.56
+   ],
+   [
+    16.56,
+    18.12
+   ]
+  ],
+  "pageErrors": [],
+  "visualLateS": {
+   "at5": {
+    "min": 6.05,
+    "median": 6.26,
+    "max": 6.42
+   },
+   "at44": {
+    "min": 7.34,
+    "median": 7.34,
+    "max": 7.5
+   }
+  },
+  "mooredBeforeNextTripS": {
+   "at5": {
+    "min": 3.82,
+    "median": 214.6,
+    "max": 454.97
+   },
+   "at44": {
+    "min": 2.74,
+    "median": 213.52,
+    "max": 453.65
+   }
+  },
+  "shareOfTripsWith2sMoored": {
+   "at5": 1,
+   "at44": 1
+  },
+  "shareOfTripsWith1sMoored": {
+   "at5": 1,
+   "at44": 1
+  }
+ },
+ {
+  "scenario": "max 30/30, hold 30, 10 workers, everything maxed",
+  "trips": 23,
+  "simCruise": 6.47,
+  "fishTimeS": 0.68,
+  "visualTripKind": "outer",
+  "simTripS": {
+   "min": 6.23,
+   "median": 6.27,
+   "max": 6.6
+  },
+  "stayAtBerthS": {
+   "min": 3.7,
+   "p10": 3.7,
+   "median": 4,
+   "p90": 163.43,
+   "max": 306.87
+  },
+  "shareOfStaysAtTheMinimum": 0.39,
+  "shareOfStaysWithFullQuay": 0.61,
+  "unloadingS": {
+   "min": 2.47,
+   "median": 2.47
+  },
+  "visualTripAtCapS": [
+   [
+    13.08,
+    14.16
+   ],
+   [
+    13.2,
+    14.28
+   ],
+   [
+    13.2,
+    14.52
+   ],
+   [
+    15.48,
+    16.92
+   ]
+  ],
+  "cruiseShareNeededNow": [
+   2.75,
+   2.8,
+   2.65,
+   null
+  ],
+  "moveToOuterBerthAtCapS": [
+   [
+    13.56,
+    14.76
+   ],
+   [
+    14.04,
+    15.24
+   ],
+   [
+    15.12,
+    16.56
+   ],
+   [
+    16.56,
+    18.12
+   ]
+  ],
+  "pageErrors": [],
+  "visualLateS": {
+   "at5": {
+    "min": 6.05,
+    "median": 6.26,
+    "max": 8.56
+   },
+   "at44": {
+    "min": 7.34,
+    "median": 7.37,
+    "max": 10
+   }
+  },
+  "mooredBeforeNextTripS": {
+   "at5": {
+    "min": -5.41,
+    "median": -2.9,
+    "max": 299.9
+   },
+   "at44": {
+    "min": -6.85,
+    "median": -4.19,
+    "max": 298.82
+   }
+  },
+  "shareOfTripsWith2sMoored": {
+   "at5": 0.17,
+   "at44": 0.17
+  },
+  "shareOfTripsWith1sMoored": {
+   "at5": 0.17,
+   "at44": 0.17
+  }
+ },
+ {
+  "scenario": "max 30/30, hold 0, 10 workers, everything maxed",
+  "trips": 235,
+  "simCruise": 6.47,
+  "fishTimeS": 0.68,
+  "visualTripKind": "outer",
+  "simTripS": {
+   "min": 6.23,
+   "median": 6.27,
+   "max": 6.6
+  },
+  "stayAtBerthS": {
+   "min": 3.7,
+   "p10": 3.7,
+   "median": 3.7,
+   "p90": 3.7,
+   "max": 3.73
+  },
+  "shareOfStaysAtTheMinimum": 1,
+  "shareOfStaysWithFullQuay": 0,
+  "unloadingS": {
+   "min": 2.47,
+   "median": 2.47
+  },
+  "visualTripAtCapS": [
+   [
+    13.08,
+    14.16
+   ],
+   [
+    13.2,
+    14.28
+   ],
+   [
+    13.2,
+    14.52
+   ],
+   [
+    15.48,
+    16.92
+   ]
+  ],
+  "cruiseShareNeededNow": [
+   2.75,
+   2.8,
+   2.65,
+   null
+  ],
+  "moveToOuterBerthAtCapS": [
+   [
+    13.56,
+    14.76
+   ],
+   [
+    14.04,
+    15.24
+   ],
+   [
+    15.12,
+    16.56
+   ],
+   [
+    16.56,
+    18.12
+   ]
+  ],
+  "pageErrors": [],
+  "visualLateS": {
+   "at5": {
+    "min": 6.05,
+    "median": 6.42,
+    "max": 8.56
+   },
+   "at44": {
+    "min": 7.34,
+    "median": 7.5,
+    "max": 10
+   }
+  },
+  "mooredBeforeNextTripS": {
+   "at5": {
+    "min": -5.41,
+    "median": -3.24,
+    "max": -2.87
+   },
+   "at44": {
+    "min": -6.85,
+    "median": -4.32,
+    "max": -4.16
+   }
+  },
+  "shareOfTripsWith2sMoored": {
+   "at5": 0,
+   "at44": 0
+  },
+  "shareOfTripsWith1sMoored": {
+   "at5": 0,
+   "at44": 0
+  }
+ },
+ {
+  "scenario": "max 30/30, hold 0, 6 workers, mid warehouse",
+  "trips": 64,
+  "simCruise": 6.47,
+  "fishTimeS": 0.68,
+  "visualTripKind": "outer",
+  "simTripS": {
+   "min": 6.23,
+   "median": 6.27,
+   "max": 6.6
+  },
+  "stayAtBerthS": {
+   "min": 3.7,
+   "p10": 3.7,
+   "median": 31.47,
+   "p90": 55.3,
+   "max": 68.73
+  },
+  "shareOfStaysAtTheMinimum": 0.41,
+  "shareOfStaysWithFullQuay": 0.59,
+  "unloadingS": {
+   "min": 2.47,
+   "median": 2.47
+  },
+  "visualTripAtCapS": [
+   [
+    13.08,
+    14.16
+   ],
+   [
+    13.2,
+    14.28
+   ],
+   [
+    13.2,
+    14.52
+   ],
+   [
+    15.48,
+    16.92
+   ]
+  ],
+  "cruiseShareNeededNow": [
+   2.75,
+   2.8,
+   2.65,
+   null
+  ],
+  "moveToOuterBerthAtCapS": [
+   [
+    13.56,
+    14.76
+   ],
+   [
+    14.04,
+    15.24
+   ],
+   [
+    15.12,
+    16.56
+   ],
+   [
+    16.56,
+    18.12
+   ]
+  ],
+  "pageErrors": [],
+  "visualLateS": {
+   "at5": {
+    "min": 6.05,
+    "median": 6.26,
+    "max": 8.56
+   },
+   "at44": {
+    "min": 7.34,
+    "median": 7.37,
+    "max": 10
+   }
+  },
+  "mooredBeforeNextTripS": {
+   "at5": {
+    "min": -5.41,
+    "median": 24.66,
+    "max": 59.62
+   },
+   "at44": {
+    "min": -6.85,
+    "median": 23.58,
+    "max": 58.18
+   }
+  },
+  "shareOfTripsWith2sMoored": {
+   "at5": 0.53,
+   "at44": 0.53
+  },
+  "shareOfTripsWith1sMoored": {
+   "at5": 0.53,
+   "at44": 0.53
+  }
+ },
+ {
+  "scenario": "max 30/30 + sea charts 3, hold 30, 6 workers, mid warehouse",
+  "trips": 3,
+  "simCruise": 8.42,
+  "fishTimeS": 0.68,
+  "visualTripKind": "outer",
+  "simTripS": {
+   "min": 4.93,
+   "median": 5,
+   "max": 5
+  },
+  "stayAtBerthS": {
+   "min": 30.97,
+   "p10": 30.97,
+   "median": 322.87,
+   "p90": 405.6,
+   "max": 405.6
+  },
+  "shareOfStaysAtTheMinimum": 0,
+  "shareOfStaysWithFullQuay": 1,
+  "unloadingS": {
+   "min": 2.47,
+   "median": 2.47
+  },
+  "visualTripAtCapS": [
+   [
+    13.08,
+    14.16
+   ],
+   [
+    13.2,
+    14.28
+   ],
+   [
+    13.2,
+    14.52
+   ],
+   [
+    15.48,
+    16.92
+   ]
+  ],
+  "cruiseShareNeededNow": [
+   null,
+   null,
+   null,
+   null
+  ],
+  "moveToOuterBerthAtCapS": [
+   [
+    13.56,
+    14.76
+   ],
+   [
+    14.04,
+    15.24
+   ],
+   [
+    15.12,
+    16.56
+   ],
+   [
+    16.56,
+    18.12
+   ]
+  ],
+  "pageErrors": [],
+  "visualLateS": {
+   "at5": {
+    "min": 7.53,
+    "median": 7.53,
+    "max": 7.72
+   },
+   "at44": {
+    "min": 8.61,
+    "median": 8.61,
+    "max": 8.8
+   }
+  },
+  "mooredBeforeNextTripS": {
+   "at5": {
+    "min": 22.89,
+    "median": 314.79,
+    "max": 397.33
+   },
+   "at44": {
+    "min": 21.81,
+    "median": 313.71,
+    "max": 396.25
+   }
+  },
+  "shareOfTripsWith2sMoored": {
+   "at5": 1,
+   "at44": 1
+  },
+  "shareOfTripsWith1sMoored": {
+   "at5": 1,
+   "at44": 1
+  }
+ },
+ {
+  "scenario": "max 30/30 + sea charts 3, hold 30, 10 workers, everything maxed",
+  "trips": 17,
+  "simCruise": 8.42,
+  "fishTimeS": 0.68,
+  "visualTripKind": "outer",
+  "simTripS": {
+   "min": 4.93,
+   "median": 5,
+   "max": 5.27
+  },
+  "stayAtBerthS": {
+   "min": 3.7,
+   "p10": 4.1,
+   "median": 6.3,
+   "p90": 170.2,
+   "max": 406.23
+  },
+  "shareOfStaysAtTheMinimum": 0.06,
+  "shareOfStaysWithFullQuay": 0.94,
+  "unloadingS": {
+   "min": 2.4,
+   "median": 2.47
+  },
+  "visualTripAtCapS": [
+   [
+    13.08,
+    14.16
+   ],
+   [
+    13.2,
+    14.28
+   ],
+   [
+    13.2,
+    14.52
+   ],
+   [
+    15.48,
+    16.92
+   ]
+  ],
+  "cruiseShareNeededNow": [
+   null,
+   null,
+   null,
+   null
+  ],
+  "moveToOuterBerthAtCapS": [
+   [
+    13.56,
+    14.76
+   ],
+   [
+    14.04,
+    15.24
+   ],
+   [
+    15.12,
+    16.56
+   ],
+   [
+    16.56,
+    18.12
+   ]
+  ],
+  "pageErrors": [],
+  "visualLateS": {
+   "at5": {
+    "min": 7.38,
+    "median": 7.53,
+    "max": 9.86
+   },
+   "at44": {
+    "min": 8.61,
+    "median": 8.7,
+    "max": 11.3
+   }
+  },
+  "mooredBeforeNextTripS": {
+   "at5": {
+    "min": -4.68,
+    "median": -2.55,
+    "max": 397.96
+   },
+   "at44": {
+    "min": -6.12,
+    "median": -3.63,
+    "max": 396.88
+   }
+  },
+  "shareOfTripsWith2sMoored": {
+   "at5": 0.24,
+   "at44": 0.24
+  },
+  "shareOfTripsWith1sMoored": {
+   "at5": 0.24,
+   "at44": 0.24
+  }
+ },
+ {
+  "scenario": "max 30/30 + sea charts 3, hold 0, 10 workers, everything maxed",
+  "trips": 164,
+  "simCruise": 8.42,
+  "fishTimeS": 0.68,
+  "visualTripKind": "outer",
+  "simTripS": {
+   "min": 4.93,
+   "median": 5,
+   "max": 5.27
+  },
+  "stayAtBerthS": {
+   "min": 3.7,
+   "p10": 3.7,
+   "median": 3.7,
+   "p90": 3.7,
+   "max": 66.53
+  },
+  "shareOfStaysAtTheMinimum": 0.91,
+  "shareOfStaysWithFullQuay": 0.09,
+  "unloadingS": {
+   "min": 2.47,
+   "median": 2.47
+  },
+  "visualTripAtCapS": [
+   [
+    13.08,
+    14.16
+   ],
+   [
+    13.2,
+    14.28
+   ],
+   [
+    13.2,
+    14.52
+   ],
+   [
+    15.48,
+    16.92
+   ]
+  ],
+  "cruiseShareNeededNow": [
+   null,
+   null,
+   null,
+   null
+  ],
+  "moveToOuterBerthAtCapS": [
+   [
+    13.56,
+    14.76
+   ],
+   [
+    14.04,
+    15.24
+   ],
+   [
+    15.12,
+    16.56
+   ],
+   [
+    16.56,
+    18.12
+   ]
+  ],
+  "pageErrors": [],
+  "visualLateS": {
+   "at5": {
+    "min": 7.38,
+    "median": 7.72,
+    "max": 9.86
+   },
+   "at44": {
+    "min": 8.61,
+    "median": 8.8,
+    "max": 11.3
+   }
+  },
+  "mooredBeforeNextTripS": {
+   "at5": {
+    "min": -6.71,
+    "median": -4.38,
+    "max": 56.94
+   },
+   "at44": {
+    "min": -8.15,
+    "median": -5.55,
+    "max": 55.62
+   }
+  },
+  "shareOfTripsWith2sMoored": {
+   "at5": 0.09,
+   "at44": 0.09
+  },
+  "shareOfTripsWith1sMoored": {
+   "at5": 0.09,
+   "at44": 0.09
+  }
+ },
+ {
+  "scenario": "upgrade during play: engine 14 → 30 and nets 18 → 30 bought at 200 s — before the purchase",
+  "trips": 54,
+  "simCruise": 4.04,
+  "fishTimeS": 1.62,
+  "visualTripKind": "outer",
+  "simTripS": {
+   "min": 10.53,
+   "median": 10.6,
+   "max": 11.13
+  },
+  "stayAtBerthS": {
+   "min": 3.7,
+   "p10": 3.7,
+   "median": 3.7,
+   "p90": 3.73,
+   "max": 84.47
+  },
+  "shareOfStaysAtTheMinimum": 0.96,
+  "shareOfStaysWithFullQuay": 0.04,
+  "unloadingS": {
+   "min": 2.47,
+   "median": 2.47
+  },
+  "visualTripAtCapS": [
+   [
+    13.08,
+    14.16
+   ],
+   [
+    13.2,
+    14.28
+   ],
+   [
+    13.44,
+    14.52
+   ],
+   [
+    15.6,
+    16.92
+   ]
+  ],
+  "cruiseShareNeededNow": [
+   1.95,
+   1.95,
+   1.85,
+   2.45
+  ],
+  "moveToOuterBerthAtCapS": [
+   [
+    13.68,
+    14.76
+   ],
+   [
+    14.16,
+    15.24
+   ],
+   [
+    15.24,
+    16.56
+   ],
+   [
+    16.68,
+    18.12
+   ]
+  ],
+  "pageErrors": [],
+  "visualLateS": {
+   "at5": {
+    "min": 1.76,
+    "median": 2.12,
+    "max": 4.32
+   },
+   "at44": {
+    "min": 2.84,
+    "median": 3.2,
+    "max": 5.64
+   }
+  },
+  "mooredBeforeNextTripS": {
+   "at5": {
+    "min": -1.17,
+    "median": 1.22,
+    "max": 81.8
+   },
+   "at44": {
+    "min": -2.49,
+    "median": 0.14,
+    "max": 80.72
+   }
+  },
+  "shareOfTripsWith2sMoored": {
+   "at5": 0.04,
+   "at44": 0.04
+  },
+  "shareOfTripsWith1sMoored": {
+   "at5": 0.76,
+   "at44": 0.04
+  }
+ },
+ {
+  "scenario": "upgrade during play: engine 14 → 30 and nets 18 → 30 bought at 200 s — trips under way at the purchase",
+  "trips": 2,
+  "simCruise": 6.47,
+  "fishTimeS": 0.68,
+  "visualTripKind": "outer",
+  "simTripS": {
+   "min": 7.4,
+   "median": 8.83,
+   "max": 8.83
+  },
+  "stayAtBerthS": {
+   "min": 208.3,
+   "p10": 208.3,
+   "median": 267,
+   "p90": 267,
+   "max": 267
+  },
+  "shareOfStaysAtTheMinimum": 0,
+  "shareOfStaysWithFullQuay": 1,
+  "unloadingS": {
+   "min": 2.47,
+   "median": 2.47
+  },
+  "visualTripAtCapS": [
+   [
+    13.08,
+    14.16
+   ],
+   [
+    13.2,
+    14.28
+   ],
+   [
+    13.2,
+    14.52
+   ],
+   [
+    15.48,
+    16.92
+   ]
+  ],
+  "cruiseShareNeededNow": [
+   2.75,
+   2.8,
+   2.65,
+   null
+  ],
+  "moveToOuterBerthAtCapS": [
+   [
+    13.56,
+    14.76
+   ],
+   [
+    14.04,
+    15.24
+   ],
+   [
+    15.12,
+    16.56
+   ],
+   [
+    16.56,
+    18.12
+   ]
+  ],
+  "pageErrors": [],
+  "visualLateS": {
+   "at5": {
+    "min": 5.25,
+    "median": 6.1,
+    "max": 6.1
+   },
+   "at44": {
+    "min": 6.57,
+    "median": 7.54,
+    "max": 7.54
+   }
+  },
+  "mooredBeforeNextTripS": {
+   "at5": {
+    "min": 202.5,
+    "median": 260.35,
+    "max": 260.35
+   },
+   "at44": {
+    "min": 201.18,
+    "median": 258.91,
+    "max": 258.91
+   }
+  },
+  "shareOfTripsWith2sMoored": {
+   "at5": 1,
+   "at44": 1
+  },
+  "shareOfTripsWith1sMoored": {
+   "at5": 1,
+   "at44": 1
+  }
+ },
+ {
+  "scenario": "upgrade during play: engine 14 → 30 and nets 18 → 30 bought at 200 s — after the purchase",
+  "trips": 5,
+  "simCruise": 6.47,
+  "fishTimeS": 0.68,
+  "visualTripKind": "outer",
+  "simTripS": {
+   "min": 6.23,
+   "median": 6.27,
+   "max": 6.27
+  },
+  "stayAtBerthS": {
+   "min": 107.9,
+   "p10": 107.9,
+   "median": 126.13,
+   "p90": 147.4,
+   "max": 147.4
+  },
+  "shareOfStaysAtTheMinimum": 0,
+  "shareOfStaysWithFullQuay": 1,
+  "unloadingS": {
+   "min": 2.47,
+   "median": 2.47
+  },
+  "visualTripAtCapS": [
+   [
+    13.08,
+    14.16
+   ],
+   [
+    13.2,
+    14.28
+   ],
+   [
+    13.2,
+    14.52
+   ],
+   [
+    15.48,
+    16.92
+   ]
+  ],
+  "cruiseShareNeededNow": [
+   2.75,
+   2.8,
+   2.65,
+   null
+  ],
+  "moveToOuterBerthAtCapS": [
+   [
+    13.56,
+    14.76
+   ],
+   [
+    14.04,
+    15.24
+   ],
+   [
+    15.12,
+    16.56
+   ],
+   [
+    16.56,
+    18.12
+   ]
+  ],
+  "pageErrors": [],
+  "visualLateS": {
+   "at5": {
+    "min": 6.26,
+    "median": 6.26,
+    "max": 6.42
+   },
+   "at44": {
+    "min": 7.34,
+    "median": 7.34,
+    "max": 7.5
+   }
+  },
+  "mooredBeforeNextTripS": {
+   "at5": {
+    "min": 101.09,
+    "median": 119.32,
+    "max": 140.43
+   },
+   "at44": {
+    "min": 100.01,
+    "median": 118.24,
+    "max": 139.35
+   }
+  },
+  "shareOfTripsWith2sMoored": {
+   "at5": 1,
+   "at44": 1
+  },
+  "shareOfTripsWith1sMoored": {
+   "at5": 1,
+   "at44": 1
+  }
+ }
+]
