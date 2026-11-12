@@ -111,6 +111,14 @@ Rows are nets, columns are engine. With the sea-charts research at 3:
 - **Texture memory:** unchanged. The jetties and carts are drawn with existing art and Graphics; there is no new atlas page.
 - **Frame time:** all differences are within the run-to-run noise of this machine (±10 %).
 
+**Android 14 emulator, this build (CI run #43, APK commit `1c553be`):**
+- Every step passed: left rail, centre button, panel, mission card and collect button.
+- Save/load after real play + force-stop: 13 fields equal. Crashes: 0.
+- Medium: FPS 12.2 (revision 3: 11.2), `trip=grounds`, in the slip 0.63 s before unloading, net shown.
+- High: FPS 9.1–9.4 (revision 3: 8.1), in the slip 0.68 s before unloading, net shown.
+- Total PSS 126 MB (revision 3: 107 MB). This is one emulator sample; the JS heap reported by the game is the same, 42.6 MB.
+- The emulator game starts without upgrades, so it shows the start level only. The outer jetties, sector trips and jetty-head trips were tested in the browser only, not on the emulator.
+
 **Not tested on a real phone.** All results above come from headless Chromium and from the Android emulator (CI). Smoothness, speed perception, FPS and touch on a real device have **not** been verified.
 
 **Videos** (`test-results/outer/`):
