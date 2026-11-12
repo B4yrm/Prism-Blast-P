@@ -44,7 +44,14 @@ The reason: the realistic route out to the fishing grounds is about 1.5× longer
   - High: FPS 10.8; the boat was in its slip 0.65 s before unloading, with the net shown;
   - total PSS 105 MB.
   
-  Revision 3's own emulator run follows in its CI run.
+- **Android 14 emulator, revision 3 build (CI run #42, APK commit `9d60d0e`):**
+  - every step passed, including save/load after real play + force-stop (13 fields equal), and 0 crashes;
+  - one game pop-up took the first tap on the centre button, and the step passed on retry;
+  - Medium: FPS 11.2, `trip=grounds`; the boat was in its slip 0.60 s before unloading, with the net shown;
+  - High: FPS 8.1, `trip=grounds`; the net was shown;
+  - total PSS 107 MB.
+  
+  The emulator game starts without upgrades, so it shows the trip to the fishing grounds, not the harbour trip.
 - **Video:** `test-results/boats/boats-maxed.gif` and `boats-maxed.mp4`: 4 boats with every harbour upgrade at 30, 16 s.
 
 ## Revision 2 (after review)
