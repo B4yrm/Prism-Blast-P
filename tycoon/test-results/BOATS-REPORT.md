@@ -2,6 +2,124 @@
 
 **Scope:** boats only (look, movement, docking, contact with the water). Untouched: the simulation (`src/sim/` has no changes), economy, missions, save/load, workers, cranes' look, buildings, the multi-sea system, the Stage 2 backup and Balıqçı Idle.
 
+## Revision 4: outer jetties (variant A)
+
+**Goal.** Boats leave the harbour, cast a net and come back at every level, instead of the harbour trip of revision 3.
+
+**What the player sees**
+- **Start and mid levels:** the existing slips and the full route to the fishing grounds, as before.
+- **Nets ≥ 18 and engine ≥ 14:** two outer jetties are built next to the harbour: piles, then the deck laid from the shore, then bollards and fenders, about 7 s, with dust. No new currency or payment; it is tied to the existing upgrades. Each boat then moves to its own outer berth once, after its next trip; there is no teleport.
+- **From the outer berths:** each boat backs out, sails into its **own sector**, tows its net through a 180° turn for home and comes back alongside the jetty. Forklift carts carry crates from the jetties to the quay while the simulation unloads that boat. The carts are visual only.
+- **The very top only** (for example 30/30, or 30/30 with the sea-charts research): when even the sector trip cannot be made in the simulation's time at up to 3× pace, the boat makes a **jetty-head trip**. It backs straight out of its outer berth until the whole hull is 0.6 tiles past the jetty head, in open water, casts and hauls the net, then glides back in.
+
+**Precomputed routes (no searching in the game).**
+- `tools/boats/zones.mjs` searches the sectors once, at development time, on a 0.1-tile occupancy grid. It now picks the set of zones whose **longest** trip is shortest (branch and bound), with a 15-minute hard limit. This run took 3 min 49 s, with 7,733 tries in the final step.
+- The result is written to `src/render/boatzones.js` and the game only reads it. At run time the only computation is the Dubins route home from the end of the turn: a few arcs, once per trip.
+- The fleet-wide step is cached and is recomputed only when the engine, the nets or the jetties change.
+- Zone lengths (way out + net turn + way home, in tiles): 21.6 / 22.1 / 22.2 / 32.8. Boat 1 went from 33.6 to 22.1 with the new search. Boat 3, on the east side of the east jetty, cannot go below 30.8: that is its shortest clear zone.
+
+**Honest findings**
+- A closed trip that leaves a berth and returns to it needs about 360° of turning, so it is never shorter than about 20 tiles, wherever the zone is. "Nearer zones" off the slips save almost nothing. No clear set of them exists either: they cross the neighbours' lanes. So mid levels keep the full route at a higher pace.
+- At high levels the trip still has to fit the simulation's few seconds. Boats therefore sail faster than the "calm" pace (cruise share 1.6). This was already the case before revision 3 at mid levels, so it is not new.
+
+| Level | Trip | Top speed (tiles/s) | × the simulation's cruise | Top turn (°/s) |
+|---|---|---|---|---|
+| Start, 4 boats | full fishing grounds | 5.4 | 2.85 | 91 |
+| Mid (engine 6 / nets 3) | full fishing grounds | 6.8 | 2.4 | 115 |
+| Mid+ (engine 10 / nets 8) | full fishing grounds (revision 3: harbour trip) | 6.1 | 1.77 | 109 |
+| Engine 20 / nets 18 | outer sectors | 10.5 | 2.12 | 182 |
+| Max 30/30 | outer sectors (boat 3: jetty-head) | 9.9–12.1 | 1.5–1.9 | 198–211 |
+| 30/30 + sea charts 3 | jetty-head trip | 4.3 | 0.51 | 0 |
+
+For comparison: revision 2 reached 19 tiles/s and 350°/s, and revision 3 (harbour trip) 4.8 tiles/s and 0°/s.
+
+**Which trip, by level** (no research; the cruise share needed is in brackets):
+
+| | Engine 0 | 10 | 14 | 18 | 22 | 30 |
+|---|---|---|---|---|---|---|
+| **Nets 0** | grounds (1.35–1.5) | grounds (1.7–1.85) | grounds (1.8–1.9) | grounds (1.85–1.95) | grounds (1.9–2.05) | grounds (2.05–2.1) |
+| **Nets 10** | grounds (1.65–1.8) | grounds (2.15–2.3) | grounds (2.4–2.5) | grounds (2.55–2.75) | grounds (2.65–2.9) | harbour 3, grounds 1 |
+| **Nets 14** | grounds (1.7–1.85) | grounds (2.3–2.4) | grounds (2.45–2.7) | grounds (2.7–3) | harbour 3, grounds 1 | harbour |
+| **Nets 18** | grounds (1.75–1.9) | grounds (2.45–2.6) | **outer** (1.85–2.45) | outer (1.95–2.55) | outer (2.05–2.6) | outer (2.2–2.85) |
+| **Nets 30** | grounds (1.85–2.05) | grounds 3, harbour 1 | **outer** (2.1–2.7) | outer (2.3–2.9) | outer 3, jetty-head 1 | outer 3, jetty-head 1 |
+
+Rows are nets, columns are engine. With the sea-charts research at 3:
+
+| sea charts 3 | Engine 0 | 10 | 14 | 18 | 22 | 30 |
+|---|---|---|---|---|---|---|
+| **Nets 0** | grounds (1.4–1.65) | grounds (1.85–1.95) | grounds (1.9–2) | grounds (2–2.1) | grounds (2.05–2.15) | grounds (2.1–2.2) |
+| **Nets 10** | grounds (1.8–1.95) | grounds (2.5–2.7) | grounds (2.7–2.9) | harbour 3, grounds 1 | harbour | harbour |
+| **Nets 14** | grounds (1.85–2.05) | grounds (2.65–2.9) | harbour 3, grounds 1 | harbour | harbour | harbour |
+| **Nets 18** | grounds (1.95–2.15) | harbour 2, grounds 2 | **outer** (2.05–2.6) | outer (2.15–2.85) | outer (2.25–2.95) | outer 3, jetty-head 1 |
+| **Nets 30** | grounds (2.15–2.4) | harbour | **outer 3, jetty-head 1** | outer 3, jetty-head 1 | outer 2, jetty-head 2 | jetty-head |
+
+- With sea charts at 3, harbour trips start earlier: at engine 14 with nets 14.
+- Known gap: a player who raises the engine far beyond 14 while the nets are still below 18 (or the reverse) gets harbour trips until the jetties unlock. The unlock thresholds are fixed by the approved plan, so they were not changed.
+
+**Collisions and the new jetties**
+- The jetties sit where no existing route runs. The full fishing grounds were searched again with the jetties present (`tools/boats/grounds.mjs`), and every existing route, departure, arrival, harbour trip and decorative boat passes the static check with them.
+- Each boat's outer zone, its way out, way home, the first trip from the slip and the jetty-head trip are clear of land, the jetties, the other berths, decorative boats, buoys and the water where the other boats tow their nets.
+- The zone search and `tests/boat-check.cjs` check the same things; the static check passed with 0 failures.
+
+**Long runs (`tests/boat-sync.cjs`, stepped at 30 FPS, seeded)**
+
+| Scenario | Length | Trips | Overlaps / land / decor contacts | In berth before unloading (s, max) | Slip → outer move (s) | Trips without net | Simulation unchanged |
+|---|---|---|---|---|---|---|---|
+| Start, 4 boats | 15 min | grounds 91 | **0 / 0 / 0** | −0.50 | – | **0** | yes |
+| Start, 1 boat | 5 min | grounds 11 | **0 / 0 / 0** | −0.50 | – | **0** | yes |
+| Mid, engine 6 / nets 3 | 15 min | grounds 41 | **0 / 0 / 0** | −0.40 | – | **0** | yes |
+| Mid+, engine 10 / nets 8 | 10 min | grounds 26 | **0 / 0 / 0** | −0.47 | – | **0** | yes |
+| Engine 20 / nets 18, jetties built during the run | 15 min | harbour 4 → outer 20 | **0 / 0 / 0** | −0.43 | −1.33 … −0.40 | **0** | yes |
+| Max 30/30, jetties built during the run | 15 min | harbour 4 → outer 8 | **0 / 0 / 0** | −0.50 | −1.53 … **+0.73** | **0** | yes |
+| Max 30/30, 1 boat | 5 min | outer 4 | **0 / 0 / 0** | −1.40 | – | **0** | yes |
+| 30/30 + sea charts 3 | 15 min | jetty-head 8 | **0 / 0 / 0** | −0.47 | – | **0** | yes |
+
+- **Arrivals:** every regular arrival was in its berth before the simulation started unloading (negative = early).
+- **One exception:** the single move of one boat from its slip to its new outer berth at 30/30 came in 0.73 s after the simulation docked. This happens at most once per boat, only when the jetties open at levels far above the threshold, for example with an old save. The crane and the carts wait until the boat is moored, so no unloading is shown without the boat.
+- **Fish jumps:** always within 0.42 tiles of the net.
+- **Simulation:** every out, fishing and back leg lasts exactly as long as in a run without visual boats, in all 8 scenarios.
+- **Timeline (`tests/boat-timeline.cjs`, simulation only, 10 min):** with 1 boat, every leg and the catch (211) are identical to the state before phase 2. With 4 boats the catch varies from run to run because the start-up frames run in real time: 651 and 681 now, 661 with revision 3, 711 before phase 2. The legs themselves match in the seeded `boat-sync` runs.
+
+**Construction and saves (`tests/outer-save.cjs`)**
+- Construction progress, once a second: 0.08, 0.22, 0.37, 0.51, 0.65, 0.79, 0.94, 1.
+- `harborOuter = 1` is stored; after a reload the jetties are there at once, with no second construction, and the progress snapshot is unchanged.
+- An old save without the field, below the threshold, loads without jetties and without errors.
+- An old save above the threshold builds the jetties once.
+- A failure during development came from the test's own seeding script (an init script that could restore the seed save on reload). It was not a game bug: the test now seeds the save in a separate page load.
+
+**Browser suite (`tests/run-tests.cjs`):**
+- First run: 14/15. The fail was double tap 6/10 on High; this timing-sensitive touch test also failed earlier when the machine was busy.
+- Second run, alone: **15/15**, including save/load, save/load after real play, old saves and corrupt saves.
+
+**Performance (`tests/bench.cjs`, revision 3 vs. now, mean of 2 runs each; headless Chromium with a software GPU, so compare rows with each other, not with phones).** The new scene `fleetmax` has 4 boats at 30/30 with the jetties built.
+
+| Preset / scene | FPS before → after | Frame ms avg | Frame ms p90 | Update ms | Draw calls | Texture MB | JS heap MB |
+|---|---|---|---|---|---|---|---|
+| low/fit | 37.7 → 44.6 | 27.3 → 22.9 | 41.7 → 41.6 | 0.42 → 0.42 | 1.7 → 1.4 | 37.5 → 37.5 | 42.5 → 44.0 |
+| low/harbour | 60.1 → 60.2 | 16.6 → 16.6 | 16.7 → 16.7 | 0.38 → 0.33 | 1.1 → 1.1 | 37.5 → 37.5 | 42.9 → 43.5 |
+| low/fleet | 17.0 → 17.2 | 59.0 → 58.2 | 116.5 → 100.0 | 0.45 → 0.53 | 2.5 → 2.7 | 37.5 → 37.5 | 45.2 → 45.0 |
+| low/fleetmax | 17.1 → 16.9 | 59.7 → 59.4 | 108.3 → 108.3 | 0.40 → 0.44 | 2.7 → 2.8 | 37.5 → 37.5 | 43.8 → 45.4 |
+| medium/fit | 12.6 → 11.7 | 79.3 → 85.9 | 133.3 → 150.0 | 0.79 → 0.69 | 5.0 → 5.0 | 96.6 → 96.6 | 56.2 → 56.4 |
+| medium/harbour | 12.2 → 11.7 | 82.8 → 85.6 | 141.7 → 158.3 | 0.89 → 0.73 | 5.0 → 5.0 | 96.6 → 96.6 | 55.4 → 56.0 |
+| medium/fleet | 10.4 → 10.2 | 96.5 → 98.1 | 141.7 → 158.3 | 0.98 → 0.69 | 5.0 → 5.0 | 96.6 → 96.6 | 61.7 → 60.8 |
+| medium/fleetmax | 9.8 → 10.2 | 102.8 → 97.8 | 183.3 → 166.6 | 0.50 → 0.57 | 5.0 → 5.0 | 96.6 → 96.6 | 57.5 → 58.1 |
+| high/fit | 9.9 → 10.4 | 100.4 → 95.5 | 175.0 → 174.9 | 1.04 → 0.82 | 5.0 → 5.0 | 98.9 → 98.9 | 56.9 → 57.6 |
+| high/harbour | 10.0 → 9.7 | 100.2 → 104.0 | 168.8 → 183.4 | 0.83 → 0.66 | 5.0 → 5.0 | 98.9 → 98.9 | 58.6 → 58.7 |
+| high/fleet | 8.4 → 9.4 | 118.8 → 106.3 | 191.7 → 183.3 | 0.67 → 0.67 | 5.0 → 5.0 | 98.9 → 98.9 | 61.9 → 61.2 |
+| high/fleetmax | 9.2 → 9.6 | 109.0 → 104.1 | 183.4 → 183.4 | 0.45 → 0.49 | 5.0 → 5.0 | 98.9 → 98.9 | 61.2 → 61.1 |
+
+- **Texture memory:** unchanged. The jetties and carts are drawn with existing art and Graphics; there is no new atlas page.
+- **Frame time:** all differences are within the run-to-run noise of this machine (±10 %).
+
+**Not tested on a real phone.** All results above come from headless Chromium and from the Android emulator (CI). Smoothness, speed perception, FPS and touch on a real device have **not** been verified.
+
+**Videos** (`test-results/outer/`):
+- `outer-start.mp4`: start, full fishing grounds.
+- `outer-mid.mp4`: mid levels.
+- `outer-build.mp4` / `.gif`: the jetties being built.
+- `outer-max.mp4` / `.gif`: 30/30, sector trip with the net in the turn.
+- `outer-top.mp4`: 30/30 + sea charts 3, jetty-head trip.
+
 ## Revision 3: natural motion at the highest levels
 
 **Problem.** In revision 2, boats with maxed upgrades did keep the deadline, but only by speeding up the whole animation: up to 19 tiles/s and 350°/s, about 3× the speed of the old straight-line boats. That did not look natural.
@@ -246,3 +364,9 @@ Script: `tests/bench.cjs`. Headless Chromium with a software GPU, 844×390 at DP
   - `src/render/boatpaths.js` (manoeuvre geometry);
   - `tools/bake/units.js` (boat model);
   - `tools/bake/render.js` (baked reflections)
+- **Revision 4 (outer jetties):**
+  - videos and benchmarks: `test-results/outer/` (`outer-*.mp4`, `outer-build.gif`, `outer-max.gif`, `bench-before*.json` = revision 3, `bench-after*.json` = now);
+  - `src/render/jetties.js`: construction, carts and fenders;
+  - `src/render/boatzones.js`: generated zones and outer-berth moves;
+  - `tools/boats/zones.mjs` and `tools/boats/grounds.mjs`: development-time route search;
+  - `tests/outer-save.cjs` → `test-results/outer-save.json`
