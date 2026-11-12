@@ -2,7 +2,8 @@
 //   node tests/bench.cjs out.json [path/to/index.html]
 // Scenes: "fit" (opening view, whole complex), "harbour" (zoomed on the quay
 // with a boat sailing) and "fleet" (4 boats, zoomed on the harbour after 20
-// game seconds, so boats are backing out, sailing and coming in). Metrics over 5 s: frame time (rAF), Phaser update time,
+// game seconds, so boats are backing out, sailing and coming in), "fleetmax" (the
+// same with engine and nets at 30 and the outer jetties built). Metrics over 5 s: frame time (rAF), Phaser update time,
 // WebGL draw calls per frame, texture memory, JS heap. Headless Chromium with a
 // software GPU, 844×390 at DPR 2.75: compare runs with each other, not with phones.
 const { chromium } = require('playwright');
@@ -12,25 +13,27 @@ const URL = 'file://' + path.resolve(process.argv[3] || path.join(__dirname, '..
   const b = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--enable-precise-memory-info'] });
   const out = {};
   const only = (process.env.BENCH_ONLY || '').split(',').filter(Boolean);   // e.g. BENCH_ONLY=medium/fleet
-  for (const preset of ['low', 'medium', 'high']) for (const scene of ['fit', 'harbour', 'fleet']) {
+  for (const preset of ['low', 'medium', 'high']) for (const scene of ['fit', 'harbour', 'fleet', 'fleetmax']) {
     if (only.length && !only.includes(`${preset}/${scene}`)) continue;
     const ctx = await b.newContext({ viewport: { width: 844, height: 390 }, deviceScaleFactor: 2.75 });
     await ctx.addInitScript(([q, fleet]) => {
       const base = { v: 1, settings: { quality: q }, stats: { caught: 5, sold: 5 }, lastSeen: Date.now() };
       if (fleet) Object.assign(base, { money: 500, boats: 4, workers: 6, level: 9, tier: { harbor: 3, warehouse: 2, market: 2, hq: 2, factory: 0, farm: 0 } });
+      // fleetmax: engine and nets at 30, outer jetties built (older builds ignore the flag)
+      if (fleet === 'max') Object.assign(base, { harborOuter: 1, up: { harbor: { cap: 30, speed: 30, net: 30 } } });
       if (!sessionStorage.getItem('s')) { sessionStorage.setItem('s', 1); localStorage.setItem('fishingTycoon.save', JSON.stringify(base)); }
       // count WebGL draw calls
       const patch = proto => { for (const fn of ['drawElements', 'drawArrays']) { const o = proto[fn]; proto[fn] = function () { window.__draws = (window.__draws || 0) + 1; return o.apply(this, arguments); }; } };
       if (window.WebGLRenderingContext) patch(WebGLRenderingContext.prototype);
       if (window.WebGL2RenderingContext) patch(WebGL2RenderingContext.prototype);
-    }, [preset, scene === 'fleet']);
+    }, [preset, scene === 'fleetmax' ? 'max' : scene === 'fleet']);
     const p = await ctx.newPage();
     await p.goto(URL);
     await p.waitForFunction(() => window.__game && __game.scene.getScene('world') && __game.scene.getScene('world').sim && document.getElementById('loader') === null, null, { timeout: 90000 });
     const r = await p.evaluate(async scene => {
       document.querySelectorAll('[data-m]').forEach(x => x.click());
       const w = __game.scene.getScene('world'), cam = w.cameras.main, dpr = __quality.dpr;
-      if (scene === 'fleet') {
+      if (scene === 'fleet' || scene === 'fleetmax') {
         // 20 game seconds (scene updates only, nothing drawn): boats leaving, sailing, coming in
         let T = performance.now();
         for (let k = 0; k < 600; k++) { T += 1000 / 30; w.update(T, 1000 / 30); }

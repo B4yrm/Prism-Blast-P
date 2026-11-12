@@ -12,6 +12,7 @@
 //   • outer berths and every nearer / sector fishing zone: way out (also from
 //     the slip for the first trip after the jetties are built), tow and way
 //     home clear of everything and of the water where other boats fish
+//   • jetty-head trips from the outer berths: clear, and out past the jetty head
 //   node tests/boat-check.cjs  → prints a JSON report, exit code 1 on failure
 const esbuild = require('esbuild');
 const path = require('path');
@@ -121,6 +122,21 @@ report.zones = [];
       if (minR < P.SEA_R - 0.05) fail(`${z.tier} zone of boat ${i}: turn tighter than ${P.SEA_R} (${minR.toFixed(2)})`);
       report.zones.push({ boat: i, tier: z.tier, at: [z.g.x, z.g.y], routes: routes.length, hits, minRadius: +minR.toFixed(2) });
     }
+  }
+  // jetty-head trips (the very top upgrades): straight back from the outer berth
+  // into open water, net astern, straight back in — clear of the other berths and
+  // of the water where the other boats tow their nets
+  report.jettyHeadTrips = [];
+  for (let i = 0; i < nB; i++) {
+    const s = 4 + i, obs = [...[0, 1, 2, 3, 4, 5, 6, 7].filter(t => t !== i && t !== s).map(t => P.siteHull(t, 0.05)), ...decor, ...buoys, ...[0, 1, 2, 3].filter(j => j !== i).flatMap(j => lingersOf[j].outer)];
+    const dep = P.shortDeparture(s), e = P.shortSpot(s), f = P.shortFishing(s, e);
+    const plan = [...dep, ...f, ...P.shortArrival(s, P.poseAt(f[0].path, f[0].path.len))];
+    const h = P.planHits(plan, obs);
+    // the whole hull is past the jetty head at the turning point
+    const pts = P.hullPoints(e.x, e.y, e.a, 0), clear = Math.min(...pts.map(q => q[1])) - P.JETTIES[P.OUTER_JETTY[i]][3];
+    report.jettyHeadTrips.push({ boat: i, out: +dep[0].path.len.toFixed(2), hits: h.length, hullClearOfJettyHead: +clear.toFixed(2) });
+    if (h.length) fail(`jetty-head trip ${i} touches something at ${JSON.stringify(h[0])}`);
+    if (clear <= 0) fail(`jetty-head trip ${i}: the boat does not get clear of the jetty head (${clear.toFixed(2)})`);
   }
 }
 report.ok = report.fails.length === 0;

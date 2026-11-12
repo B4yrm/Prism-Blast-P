@@ -4,4 +4,4 @@
 // π/16 steps, S = way out + mean way home in tiles); the boat takes the farthest
 // one its trip time allows (the slip ladder starts with the full fishing ground).
 export const OUTER_MOVES = [{"side":-1,"d0":1.25,"R":2.5,"phi":0.873},{"side":1,"d0":1.25,"R":2.5,"phi":0.873},{"side":1,"d0":1.25,"R":2.5,"phi":1.047},{"side":-1,"d0":1.25,"R":2.5,"phi":0.873}];
-export const ZONES = [{"slip":[],"outer":[{"x":4,"y":36,"head":8,"R":3,"sweep":1,"S":21.6}]},{"slip":[],"outer":[{"x":23,"y":36,"head":12,"R":3,"sweep":1,"S":33.6}]},{"slip":[],"outer":[{"x":-10,"y":38,"head":6,"R":3,"sweep":-1,"S":22.2}]},{"slip":[],"outer":[{"x":35,"y":41,"head":8,"R":3,"sweep":1,"S":30.8}]}];
+export const ZONES = [{"slip":[],"outer":[{"x":4,"y":36,"head":8,"R":3,"sweep":1,"S":21.6}]},{"slip":[],"outer":[{"x":23,"y":35,"head":10,"R":3,"sweep":-1,"S":22.1}]},{"slip":[],"outer":[{"x":-10,"y":38,"head":6,"R":3,"sweep":-1,"S":22.2}]},{"slip":[],"outer":[{"x":36,"y":41,"head":6,"R":3,"sweep":1,"S":32.8}]}];

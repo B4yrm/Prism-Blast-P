@@ -1,8 +1,10 @@
 // Visual boats vs. simulation, over long play (render loop paused, seeded random,
 // the game stepped at 30 fps exactly like real frames step it):
 //   • no two boats ever overlap, no hull ever touches land / piers / the quay
-//   • each boat is back in its slip when the simulation starts unloading
-//     (lag of the visual arrival) and leaves when the simulation leaves
+//   • each boat is back in its slip / outer berth when the simulation starts
+//     unloading (lag of the visual arrival) and leaves when the simulation leaves;
+//     the one trip per boat from its slip to its new outer berth is listed apart
+//   • every trip casts a net; fish jump next to the net
 //   • no jumps: largest move, turn rate and speed per frame
 //   • the simulation itself is unchanged: every boat's out / fishing / back legs last
 //     exactly as long as in a run without visual boats (catch and money are shown
@@ -24,12 +26,12 @@ const SCENARIOS = [
   // simulation starts unloading, a net on every trip, the simulation unchanged
   { name: 'start-fleet4', boats: 4, secs: 900, up: {} },
   { name: 'start-fleet1', boats: 1, secs: 300, up: {} },
-  { name: 'mid-fleet4 (engine 6, nets 3)', boats: 4, secs: 600, up: { cap: 4, speed: 6, net: 3 } },
+  { name: 'mid-fleet4 (engine 6, nets 3)', boats: 4, secs: 900, up: { cap: 4, speed: 6, net: 3 } },
   { name: 'mid+-fleet4 (engine 10, nets 8)', boats: 4, secs: 600, up: { cap: 6, speed: 10, net: 8 } },
-  { name: 'late-fleet4 (engine 20, nets 18): jetties are built during the run', boats: 4, secs: 600, up: { cap: 10, speed: 20, net: 18 } },
-  { name: 'max-fleet4 (30/30): jetties built during the run', boats: 4, secs: 400, up: { cap: 30, speed: 30, net: 30 } },
+  { name: 'late-fleet4 (engine 20, nets 18): jetties are built during the run', boats: 4, secs: 900, up: { cap: 10, speed: 20, net: 18 } },
+  { name: 'max-fleet4 (30/30): jetties built during the run', boats: 4, secs: 900, up: { cap: 30, speed: 30, net: 30 } },
   { name: 'max-fleet1 (30/30), jetties already built', boats: 1, secs: 300, up: { cap: 30, speed: 30, net: 30 }, outer: 1 },
-  { name: 'max+research-fleet4 (30/30 + sea charts 3), jetties already built', boats: 4, secs: 400, up: { cap: 30, speed: 30, net: 30 }, research: { nav: 3, nets: 3 }, outer: 1 },
+  { name: 'max+research-fleet4 (30/30 + sea charts 3), jetties already built', boats: 4, secs: 900, up: { cap: 30, speed: 30, net: 30 }, research: { nav: 3, nets: 3 }, outer: 1 },
 ];
 
 async function run(b, sc, withFleet) {
@@ -70,7 +72,7 @@ async function run(b, sc, withFleet) {
       sim.boats.forEach((b, i) => { if (b.state !== lastS[i]) { ev.push([+t.toFixed(3), i, 's', b.state]); lastS[i] = b.state; } });
       if (withFleet) {
         F.boats.forEach((v, i) => {
-          if (v.phase !== lastV[i]) { ev.push([+t.toFixed(3), i, 'v', v.phase]); lastV[i] = v.phase; }
+          if (v.phase !== lastV[i]) { ev.push([+t.toFixed(3), i, 'v', v.phase, v.phase === 'depart' && v.site < 4 && v.target >= 4 ? 'move' : '']); lastV[i] = v.phase; }
           if (v.hold && !v.__h) ev.push([+t.toFixed(3), i, 'h', v.phase + '/' + (v.plan ? v.plan[Math.min(v.st.leg, v.plan.length - 1)].kind : '')]);
           v.__h = v.hold;
           if (v.hold) holdFrames++;
@@ -140,14 +142,16 @@ function analyse(sc, r, plain) {
   const cs = r.cs.slice().sort((a, b) => a - b), q = k => cs.length ? cs[Math.min(cs.length - 1, Math.floor(cs.length * k))] : null;
   out.cruiseShare = { p10: q(0.1), median: q(0.5), p90: q(0.9), max: cs[cs.length - 1] };
   // 4. sync with the simulation
-  const arr = [], dep = [], fishing = [];
+  const arr = [], moves = [], dep = [], fishing = [];
   for (let i = 0; i < n; i++) {
     const E = r.ev.filter(e => e[1] === i);
     for (const e of E) {
       if (e[2] === 's' && e[3] === 'dock' && e[0] > 1) {          // simulation arrives → visual 'settle' (in the slip)
         const v = E.filter(x => x[2] === 'v' && x[3] === 'settle').map(x => x[0]);
         const near = v.reduce((best, x) => Math.abs(x - e[0]) < Math.abs(best - e[0]) ? x : best, Infinity);
-        if (near !== Infinity && Math.abs(near - e[0]) < 15) arr.push(+(near - e[0]).toFixed(2));
+        // the one trip from the slip to the new outer berth is counted on its own
+        const lastDep = E.filter(x => x[2] === 'v' && x[3] === 'depart' && x[0] < near).pop();
+        if (near !== Infinity && Math.abs(near - e[0]) < 15) (lastDep && lastDep[4] === 'move' ? moves : arr).push(+(near - e[0]).toFixed(2));
       }
       if (e[2] === 's' && e[3] === 'out') {
         const v = E.filter(x => x[2] === 'v' && x[3] === 'depart').map(x => x[0]);
@@ -160,20 +164,21 @@ function analyse(sc, r, plain) {
   const stats = a => { const s = a.slice().sort((x, y) => x - y); return { n: s.length, min: s[0], median: s[Math.floor(s.length / 2)], max: s[s.length - 1], mean: +(s.reduce((x, y) => x + y, 0) / Math.max(1, s.length)).toFixed(2) }; };
   out.sync = {
     arrivalLagS: stats(arr),          // visual in the slip minus simulation docking (negative = early)
+    moveToOuterBerthLagS: stats(moves),   // the one trip per boat from its slip to its outer berth (unloading waits for it)
     departureLagS: stats(dep),        // visual starts backing out minus simulation leaving
     towingS: stats(fishing),
     tripsWithoutNets: (() => { let n = 0; for (let i = 0; i < sc.boats; i++) { const V = r.ev.filter(e => e[1] === i && e[2] === 'v'); V.forEach((e, k) => { if (e[3] === 'return' && k > 0 && V[k - 1][3] !== 'fishing') n++; }); } return n; })(),
     netsShortestS: r.nets ? +r.netMin.toFixed(2) : null,
     fishJumps: r.jumps.length, fishJumpFarthestFromNetTiles: r.jumps.length ? Math.max(...r.jumps) : null,
   };
-  // context of arrivals more than 1 s late, for diagnosis
+  // context of late arrivals, for diagnosis
   const late = [];
   for (let i = 0; i < n; i++) {
     const E = r.ev.filter(e => e[1] === i), settles = E.filter(x => x[2] === 'v' && x[3] === 'settle').map(x => x[0]);
     for (const e of E) {
       if (e[2] !== 's' || e[3] !== 'dock' || e[0] <= 1) continue;
       const near = settles.reduce((b, x) => Math.abs(x - e[0]) < Math.abs(b - e[0]) ? x : b, Infinity);
-      if (near - e[0] > 1 && near - e[0] < 15) late.push({ boat: i, simDock: e[0], visualIn: near, events: r.ev.filter(x => x[0] > e[0] - 20 && x[0] <= near && (x[1] === i || x[2] === 'h')).map(x => x.join(' ')) });
+      if (near - e[0] > 0 && near - e[0] < 15) late.push({ boat: i, simDock: e[0], visualIn: near, events: r.ev.filter(x => x[0] > e[0] - 20 && x[0] <= near && (x[1] === i || x[2] === 'h')).map(x => x.join(' ')) });
     }
   }
   out.lateArrivals = late.slice(0, 2);

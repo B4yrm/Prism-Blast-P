@@ -266,14 +266,17 @@ export function arrivalPlan(i, from, R = SEA_R) { return siteArrival(i, from, R)
 // along its own slip until its bow is just clear of the pier heads, casts and
 // hauls its net astern, then goes straight back in. It never leaves its own
 // lane, so it never turns and never crosses another boat's way.
+// From an outer berth (site 4–7, only when even its sector trip cannot be made in
+// time: the very top upgrades) the same trip ends in open water, the whole boat
+// clear of the jetty head.
 export const SHORT_OUT = 0.4;                        // tiles beyond the slip mouth
-export const shortSpot = i => ({ x: VBERTH[i][0], y: MOUTH_Y[i] + SHORT_OUT, a: NORTH });
-export function shortDeparture(i) {
-  const [bx, by] = VBERTH[i], e = shortSpot(i);
+export const shortSpot = s => s < 4 ? { x: VBERTH[s][0], y: MOUTH_Y[s] + SHORT_OUT, a: NORTH } : { x: OUTER_X[s - 4], y: OUTER_MOUTH, a: NORTH };
+export function shortDeparture(s) {
+  const { x: bx, y: by } = siteOf(s), e = shortSpot(s);
   return [{ path: finish(resample(straight(bx, by, SOUTH, e.y - by))), dir: -1, kind: 'reverse', stop: true }];
 }
-export function shortArrival(i, from) {
-  const by = VBERTH[i][1];
+export function shortArrival(s, from) {
+  const by = siteOf(s).y;
   return [{ path: finish(resample(straight(from.x, from.y, NORTH, Math.max(0.05, from.y - by)))), dir: 1, kind: 'glide', stop: true }];
 }
 export function shortFishing(i, from) {                // the net goes out astern; the boat barely moves

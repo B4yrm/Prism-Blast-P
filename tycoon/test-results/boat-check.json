@@ -171,7 +171,7 @@
    "tier": "outer",
    "at": [
     23,
-    36
+    35
    ],
    "routes": 4,
    "hits": 0,
@@ -192,12 +192,38 @@
    "boat": 3,
    "tier": "outer",
    "at": [
-    35,
+    36,
     41
    ],
    "routes": 4,
    "hits": 0,
    "minRadius": 2.8
+  }
+ ],
+ "jettyHeadTrips": [
+  {
+   "boat": 0,
+   "out": 4.24,
+   "hits": 0,
+   "hullClearOfJettyHead": 0.6
+  },
+  {
+   "boat": 1,
+   "out": 4.24,
+   "hits": 0,
+   "hullClearOfJettyHead": 0.6
+  },
+  {
+   "boat": 2,
+   "out": 4.24,
+   "hits": 0,
+   "hullClearOfJettyHead": 0.6
+  },
+  {
+   "boat": 3,
+   "out": 4.24,
+   "hits": 0,
+   "hullClearOfJettyHead": 0.6
   }
  ],
  "ok": true
