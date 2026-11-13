@@ -2,8 +2,10 @@
  {
   "nets": 0,
   "engine": 0,
+  "nav": 0,
   "trips": {
    "grounds": 35,
+   "curve": 0,
    "loop": 0,
    "move": 0,
    "harbour": 0
@@ -11,7 +13,8 @@
   "arrivals": 31,
   "lagMax": -0.5,
   "lagMean": -0.54,
-  "vmax": 3.57,
+  "late": [],
+  "vmax": 3.95,
   "V0": 1.9,
   "shortShareMin": null,
   "shortShareMean": null
@@ -19,8 +22,10 @@
  {
   "nets": 0,
   "engine": 2,
+  "nav": 0,
   "trips": {
    "grounds": 38,
+   "curve": 0,
    "loop": 0,
    "move": 0,
    "harbour": 0
@@ -28,7 +33,8 @@
   "arrivals": 34,
   "lagMax": -0.47,
   "lagMean": -0.51,
-  "vmax": 4.16,
+  "late": [],
+  "vmax": 4.38,
   "V0": 2.21,
   "shortShareMin": null,
   "shortShareMean": null
@@ -36,8 +42,10 @@
  {
   "nets": 0,
   "engine": 4,
+  "nav": 0,
   "trips": {
    "grounds": 40,
+   "curve": 0,
    "loop": 0,
    "move": 0,
    "harbour": 0
@@ -45,7 +53,8 @@
   "arrivals": 38,
   "lagMax": -0.5,
   "lagMean": -0.53,
-  "vmax": 4.57,
+  "late": [],
+  "vmax": 4.64,
   "V0": 2.51,
   "shortShareMin": null,
   "shortShareMean": null
@@ -53,15 +62,18 @@
  {
   "nets": 0,
   "engine": 6,
+  "nav": 0,
   "trips": {
    "grounds": 44,
+   "curve": 0,
    "loop": 0,
    "move": 0,
    "harbour": 0
   },
   "arrivals": 40,
-  "lagMax": -0.4,
+  "lagMax": -0.43,
   "lagMean": -0.52,
+  "late": [],
   "vmax": 5,
   "V0": 2.82,
   "shortShareMin": null,
@@ -70,118 +82,139 @@
  {
   "nets": 0,
   "engine": 8,
+  "nav": 0,
   "trips": {
    "grounds": 10,
+   "curve": 33,
    "loop": 0,
    "move": 0,
-   "harbour": 32
+   "harbour": 0
   },
   "arrivals": 42,
-  "lagMax": -0.4,
-  "lagMean": -1.26,
+  "lagMax": 0,
+  "lagMean": -0.5,
+  "late": [],
   "vmax": 4.87,
   "V0": 3.12,
-  "shortShareMin": 1,
-  "shortShareMean": 1
+  "shortShareMin": null,
+  "shortShareMean": null
  },
  {
   "nets": 0,
   "engine": 10,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 42,
    "loop": 0,
    "move": 0,
-   "harbour": 42
+   "harbour": 0
   },
   "arrivals": 42,
-  "lagMax": -0.83,
-  "lagMean": -1.35,
-  "vmax": 1.54,
+  "lagMax": -0.53,
+  "lagMean": -0.55,
+  "late": [],
+  "vmax": 3.55,
   "V0": 3.43,
-  "shortShareMin": 1,
-  "shortShareMean": 1
+  "shortShareMin": null,
+  "shortShareMean": null
  },
  {
   "nets": 0,
   "engine": 12,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 44,
    "loop": 0,
    "move": 0,
-   "harbour": 44
+   "harbour": 0
   },
-  "arrivals": 42,
-  "lagMax": -0.7,
-  "lagMean": -1.18,
-  "vmax": 1.68,
+  "arrivals": 43,
+  "lagMax": -0.47,
+  "lagMean": -0.5,
+  "late": [],
+  "vmax": 3.76,
   "V0": 3.73,
-  "shortShareMin": 1,
-  "shortShareMean": 1
+  "shortShareMin": null,
+  "shortShareMean": null
  },
  {
   "nets": 0,
   "engine": 14,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 44,
    "loop": 0,
    "move": 0,
-   "harbour": 44
+   "harbour": 0
   },
-  "arrivals": 42,
-  "lagMax": -0.57,
-  "lagMean": -0.99,
-  "vmax": 1.82,
+  "arrivals": 43,
+  "lagMax": -0.47,
+  "lagMean": -0.49,
+  "late": [],
+  "vmax": 4.05,
   "V0": 4.04,
-  "shortShareMin": 1,
-  "shortShareMean": 1
+  "shortShareMin": null,
+  "shortShareMean": null
  },
  {
   "nets": 0,
   "engine": 18,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 45,
    "loop": 0,
    "move": 0,
-   "harbour": 44
+   "harbour": 0
   },
   "arrivals": 43,
   "lagMax": -0.47,
-  "lagMean": -0.82,
-  "vmax": 2.19,
+  "lagMean": -0.49,
+  "late": [],
+  "vmax": 4.48,
   "V0": 4.65,
-  "shortShareMin": 1,
-  "shortShareMean": 1
+  "shortShareMin": null,
+  "shortShareMean": null
  },
  {
   "nets": 0,
   "engine": 22,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 42,
    "loop": 0,
    "move": 0,
-   "harbour": 43
+   "harbour": 0
   },
   "arrivals": 42,
-  "lagMax": -0.47,
-  "lagMean": -0.69,
-  "vmax": 2.62,
+  "lagMax": -0.43,
+  "lagMean": -0.48,
+  "late": [],
+  "vmax": 4.6,
   "V0": 5.26,
-  "shortShareMin": 1,
-  "shortShareMean": 1
+  "shortShareMin": null,
+  "shortShareMean": null
  },
  {
   "nets": 0,
   "engine": 26,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 33,
    "loop": 0,
    "move": 0,
-   "harbour": 43
+   "harbour": 11
   },
-  "arrivals": 42,
-  "lagMax": -0.47,
-  "lagMean": -0.59,
-  "vmax": 2.9,
+  "arrivals": 44,
+  "lagMax": -0.43,
+  "lagMean": -0.46,
+  "late": [],
+  "vmax": 4.6,
   "V0": 5.86,
   "shortShareMin": 1,
   "shortShareMean": 1
@@ -189,16 +222,19 @@
  {
   "nets": 0,
   "engine": 30,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 20,
    "loop": 0,
    "move": 0,
-   "harbour": 42
+   "harbour": 22
   },
   "arrivals": 42,
-  "lagMax": -0.47,
-  "lagMean": -0.54,
-  "vmax": 2.88,
+  "lagMax": -0.43,
+  "lagMean": -0.48,
+  "late": [],
+  "vmax": 4.61,
   "V0": 6.47,
   "shortShareMin": 1,
   "shortShareMean": 1
@@ -206,8 +242,10 @@
  {
   "nets": 6,
   "engine": 0,
+  "nav": 0,
   "trips": {
    "grounds": 36,
+   "curve": 0,
    "loop": 0,
    "move": 0,
    "harbour": 0
@@ -215,7 +253,8 @@
   "arrivals": 34,
   "lagMax": -0.5,
   "lagMean": -0.53,
-  "vmax": 3.86,
+  "late": [],
+  "vmax": 4.28,
   "V0": 1.9,
   "shortShareMin": null,
   "shortShareMean": null
@@ -223,16 +262,19 @@
  {
   "nets": 6,
   "engine": 2,
+  "nav": 0,
   "trips": {
    "grounds": 40,
+   "curve": 0,
    "loop": 0,
    "move": 0,
    "harbour": 0
   },
   "arrivals": 38,
   "lagMax": -0.47,
-  "lagMean": -0.52,
-  "vmax": 4.44,
+  "lagMean": -0.53,
+  "late": [],
+  "vmax": 4.62,
   "V0": 2.21,
   "shortShareMin": null,
   "shortShareMean": null
@@ -240,15 +282,18 @@
  {
   "nets": 6,
   "engine": 4,
+  "nav": 0,
   "trips": {
-   "grounds": 44,
+   "grounds": 43,
+   "curve": 0,
    "loop": 0,
    "move": 0,
    "harbour": 0
   },
   "arrivals": 41,
-  "lagMax": -0.53,
-  "lagMean": -0.54,
+  "lagMax": -0.47,
+  "lagMean": -0.53,
+  "late": [],
   "vmax": 4.8,
   "V0": 2.51,
   "shortShareMin": null,
@@ -257,101 +302,119 @@
  {
   "nets": 6,
   "engine": 6,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 44,
    "loop": 0,
    "move": 0,
-   "harbour": 44
+   "harbour": 0
   },
   "arrivals": 43,
-  "lagMax": -1.23,
-  "lagMean": -1.89,
-  "vmax": 1.27,
+  "lagMax": -0.5,
+  "lagMean": -0.54,
+  "late": [],
+  "vmax": 3.67,
   "V0": 2.82,
-  "shortShareMin": 1,
-  "shortShareMean": 1
+  "shortShareMin": null,
+  "shortShareMean": null
  },
  {
   "nets": 6,
   "engine": 8,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 43,
    "loop": 0,
    "move": 0,
-   "harbour": 43
+   "harbour": 0
   },
   "arrivals": 43,
-  "lagMax": -1.03,
-  "lagMean": -1.62,
-  "vmax": 1.41,
+  "lagMax": -0.47,
+  "lagMean": -0.52,
+  "late": [],
+  "vmax": 3.89,
   "V0": 3.12,
-  "shortShareMin": 1,
-  "shortShareMean": 1
+  "shortShareMin": null,
+  "shortShareMean": null
  },
  {
   "nets": 6,
   "engine": 10,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 46,
    "loop": 0,
    "move": 0,
-   "harbour": 46
+   "harbour": 0
   },
   "arrivals": 42,
-  "lagMax": -0.83,
-  "lagMean": -1.34,
-  "vmax": 1.54,
+  "lagMax": -0.47,
+  "lagMean": -0.52,
+  "late": [],
+  "vmax": 4.05,
   "V0": 3.43,
-  "shortShareMin": 1,
-  "shortShareMean": 1
+  "shortShareMin": null,
+  "shortShareMean": null
  },
  {
   "nets": 6,
   "engine": 12,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 44,
    "loop": 0,
    "move": 0,
-   "harbour": 45
+   "harbour": 0
   },
-  "arrivals": 43,
-  "lagMax": -0.7,
-  "lagMean": -1.18,
-  "vmax": 1.68,
+  "arrivals": 42,
+  "lagMax": -0.47,
+  "lagMean": -0.5,
+  "late": [],
+  "vmax": 4.28,
   "V0": 3.73,
-  "shortShareMin": 1,
-  "shortShareMean": 1
+  "shortShareMin": null,
+  "shortShareMean": null
  },
  {
   "nets": 6,
   "engine": 14,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 44,
    "loop": 0,
    "move": 0,
-   "harbour": 44
+   "harbour": 0
   },
   "arrivals": 43,
-  "lagMax": -0.57,
-  "lagMean": -1,
-  "vmax": 1.82,
+  "lagMax": -0.43,
+  "lagMean": -0.47,
+  "late": [],
+  "vmax": 4.5,
   "V0": 4.04,
-  "shortShareMin": 1,
-  "shortShareMean": 1
+  "shortShareMin": null,
+  "shortShareMean": null
  },
  {
   "nets": 6,
   "engine": 18,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 21,
    "loop": 0,
    "move": 0,
-   "harbour": 43
+   "harbour": 23
   },
-  "arrivals": 42,
-  "lagMax": -0.5,
-  "lagMean": -0.8,
-  "vmax": 2.19,
+  "arrivals": 43,
+  "lagMax": -0.47,
+  "lagMean": -0.49,
+  "late": [],
+  "vmax": 4.51,
   "V0": 4.65,
   "shortShareMin": 1,
   "shortShareMean": 1
@@ -359,8 +422,10 @@
  {
   "nets": 6,
   "engine": 22,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 0,
    "loop": 0,
    "move": 0,
    "harbour": 44
@@ -368,6 +433,7 @@
   "arrivals": 42,
   "lagMax": -0.47,
   "lagMean": -0.68,
+  "late": [],
   "vmax": 2.62,
   "V0": 5.26,
   "shortShareMin": 1,
@@ -376,15 +442,18 @@
  {
   "nets": 6,
   "engine": 26,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 0,
    "loop": 0,
    "move": 0,
-   "harbour": 43
+   "harbour": 41
   },
-  "arrivals": 42,
+  "arrivals": 41,
   "lagMax": -0.47,
   "lagMean": -0.59,
+  "late": [],
   "vmax": 2.9,
   "V0": 5.86,
   "shortShareMin": 1,
@@ -393,15 +462,18 @@
  {
   "nets": 6,
   "engine": 30,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 0,
    "loop": 0,
    "move": 0,
    "harbour": 44
   },
-  "arrivals": 44,
+  "arrivals": 43,
   "lagMax": -0.47,
   "lagMean": -0.53,
+  "late": [],
   "vmax": 2.95,
   "V0": 6.47,
   "shortShareMin": 1,
@@ -410,16 +482,19 @@
  {
   "nets": 12,
   "engine": 0,
+  "nav": 0,
   "trips": {
    "grounds": 39,
+   "curve": 0,
    "loop": 0,
    "move": 0,
    "harbour": 0
   },
   "arrivals": 36,
-  "lagMax": -0.5,
+  "lagMax": -0.47,
   "lagMean": -0.52,
-  "vmax": 4.11,
+  "late": [],
+  "vmax": 4.38,
   "V0": 1.9,
   "shortShareMin": null,
   "shortShareMean": null
@@ -427,8 +502,10 @@
  {
   "nets": 12,
   "engine": 2,
+  "nav": 0,
   "trips": {
    "grounds": 43,
+   "curve": 0,
    "loop": 0,
    "move": 0,
    "harbour": 0
@@ -436,7 +513,8 @@
   "arrivals": 40,
   "lagMax": -0.47,
   "lagMean": -0.53,
-  "vmax": 4.75,
+  "late": [],
+  "vmax": 4.77,
   "V0": 2.21,
   "shortShareMin": null,
   "shortShareMean": null
@@ -444,84 +522,99 @@
  {
   "nets": 12,
   "engine": 4,
+  "nav": 0,
   "trips": {
    "grounds": 33,
+   "curve": 11,
    "loop": 0,
    "move": 0,
-   "harbour": 11
+   "harbour": 0
   },
   "arrivals": 43,
-  "lagMax": -0.47,
-  "lagMean": -0.8,
+  "lagMax": 0.27,
+  "lagMean": -0.49,
+  "late": [],
   "vmax": 4.89,
   "V0": 2.51,
-  "shortShareMin": 1,
-  "shortShareMean": 1
+  "shortShareMin": null,
+  "shortShareMean": null
  },
  {
   "nets": 12,
   "engine": 6,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 43,
    "loop": 0,
    "move": 0,
-   "harbour": 44
+   "harbour": 0
   },
   "arrivals": 43,
-  "lagMax": -1.23,
-  "lagMean": -1.9,
-  "vmax": 1.27,
+  "lagMax": -0.47,
+  "lagMean": -0.52,
+  "late": [],
+  "vmax": 3.9,
   "V0": 2.82,
-  "shortShareMin": 1,
-  "shortShareMean": 1
+  "shortShareMin": null,
+  "shortShareMean": null
  },
  {
   "nets": 12,
   "engine": 8,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 44,
    "loop": 0,
    "move": 0,
-   "harbour": 44
+   "harbour": 0
   },
-  "arrivals": 42,
-  "lagMax": -1.03,
-  "lagMean": -1.6,
-  "vmax": 1.41,
+  "arrivals": 43,
+  "lagMax": -0.5,
+  "lagMean": -0.51,
+  "late": [],
+  "vmax": 4.21,
   "V0": 3.12,
-  "shortShareMin": 1,
-  "shortShareMean": 1
+  "shortShareMin": null,
+  "shortShareMean": null
  },
  {
   "nets": 12,
   "engine": 10,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 45,
    "loop": 0,
    "move": 0,
-   "harbour": 44
+   "harbour": 0
   },
-  "arrivals": 44,
-  "lagMax": -0.83,
-  "lagMean": -1.37,
-  "vmax": 1.54,
+  "arrivals": 42,
+  "lagMax": -0.47,
+  "lagMean": -0.51,
+  "late": [],
+  "vmax": 4.52,
   "V0": 3.43,
-  "shortShareMin": 1,
-  "shortShareMean": 1
+  "shortShareMin": null,
+  "shortShareMean": null
  },
  {
   "nets": 12,
   "engine": 12,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 33,
    "loop": 0,
    "move": 0,
-   "harbour": 44
+   "harbour": 11
   },
   "arrivals": 44,
-  "lagMax": -0.7,
-  "lagMean": -1.18,
-  "vmax": 1.68,
+  "lagMax": -0.47,
+  "lagMean": -0.54,
+  "late": [],
+  "vmax": 4.5,
   "V0": 3.73,
   "shortShareMin": 1,
   "shortShareMean": 1
@@ -529,16 +622,19 @@
  {
   "nets": 12,
   "engine": 14,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 20,
    "loop": 0,
    "move": 0,
-   "harbour": 43
+   "harbour": 22
   },
-  "arrivals": 43,
-  "lagMax": -0.57,
-  "lagMean": -1,
-  "vmax": 1.82,
+  "arrivals": 42,
+  "lagMax": -0.47,
+  "lagMean": -0.53,
+  "late": [],
+  "vmax": 4.42,
   "V0": 4.04,
   "shortShareMin": 1,
   "shortShareMean": 1
@@ -546,15 +642,18 @@
  {
   "nets": 12,
   "engine": 18,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 0,
    "loop": 0,
    "move": 0,
-   "harbour": 44
+   "harbour": 42
   },
-  "arrivals": 44,
+  "arrivals": 42,
   "lagMax": -0.5,
-  "lagMean": -0.82,
+  "lagMean": -0.8,
+  "late": [],
   "vmax": 2.19,
   "V0": 4.65,
   "shortShareMin": 1,
@@ -563,15 +662,18 @@
  {
   "nets": 12,
   "engine": 22,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 0,
    "loop": 0,
    "move": 0,
    "harbour": 45
   },
-  "arrivals": 43,
+  "arrivals": 45,
   "lagMax": -0.47,
-  "lagMean": -0.68,
+  "lagMean": -0.69,
+  "late": [],
   "vmax": 2.62,
   "V0": 5.26,
   "shortShareMin": 1,
@@ -580,8 +682,10 @@
  {
   "nets": 12,
   "engine": 26,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 0,
    "loop": 0,
    "move": 0,
    "harbour": 44
@@ -589,6 +693,7 @@
   "arrivals": 44,
   "lagMax": -0.47,
   "lagMean": -0.59,
+  "late": [],
   "vmax": 2.9,
   "V0": 5.86,
   "shortShareMin": 1,
@@ -597,15 +702,18 @@
  {
   "nets": 12,
   "engine": 30,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 0,
    "loop": 0,
    "move": 0,
    "harbour": 44
   },
-  "arrivals": 44,
+  "arrivals": 43,
   "lagMax": -0.47,
   "lagMean": -0.54,
+  "late": [],
   "vmax": 2.75,
   "V0": 6.47,
   "shortShareMin": 0.85,
@@ -614,8 +722,10 @@
  {
   "nets": 17,
   "engine": 0,
+  "nav": 0,
   "trips": {
    "grounds": 40,
+   "curve": 0,
    "loop": 0,
    "move": 0,
    "harbour": 0
@@ -623,7 +733,8 @@
   "arrivals": 36,
   "lagMax": -0.5,
   "lagMean": -0.54,
-  "vmax": 4.24,
+  "late": [],
+  "vmax": 4.5,
   "V0": 1.9,
   "shortShareMin": null,
   "shortShareMean": null
@@ -631,16 +742,19 @@
  {
   "nets": 17,
   "engine": 2,
+  "nav": 0,
   "trips": {
    "grounds": 44,
+   "curve": 0,
    "loop": 0,
    "move": 0,
    "harbour": 0
   },
   "arrivals": 42,
-  "lagMax": -0.43,
-  "lagMean": -0.54,
-  "vmax": 4.75,
+  "lagMax": -0.27,
+  "lagMean": -0.53,
+  "late": [],
+  "vmax": 4.82,
   "V0": 2.21,
   "shortShareMin": null,
   "shortShareMean": null
@@ -648,67 +762,95 @@
  {
   "nets": 17,
   "engine": 4,
+  "nav": 0,
   "trips": {
    "grounds": 11,
+   "curve": 33,
    "loop": 0,
    "move": 0,
-   "harbour": 33
+   "harbour": 0
   },
-  "arrivals": 44,
-  "lagMax": -0.47,
-  "lagMean": -1.88,
-  "vmax": 4.7,
+  "arrivals": 43,
+  "lagMax": 0.83,
+  "lagMean": -0.48,
+  "late": [
+   [
+    22.9,
+    2,
+    0.83,
+    "zone",
+    1
+   ]
+  ],
+  "vmax": 4.73,
   "V0": 2.51,
-  "shortShareMin": 1,
-  "shortShareMean": 1
+  "shortShareMin": null,
+  "shortShareMean": null
  },
  {
   "nets": 17,
   "engine": 6,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 44,
    "loop": 0,
    "move": 0,
-   "harbour": 44
+   "harbour": 0
   },
   "arrivals": 42,
-  "lagMax": -1.4,
-  "lagMean": -1.97,
-  "vmax": 1.34,
+  "lagMax": -0.5,
+  "lagMean": -0.57,
+  "late": [],
+  "vmax": 4.14,
   "V0": 2.82,
-  "shortShareMin": 1,
-  "shortShareMean": 1
+  "shortShareMin": null,
+  "shortShareMean": null
  },
  {
   "nets": 17,
   "engine": 8,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 44,
    "loop": 0,
    "move": 0,
-   "harbour": 45
+   "harbour": 0
   },
   "arrivals": 44,
-  "lagMax": -1.23,
-  "lagMean": -1.76,
-  "vmax": 1.54,
+  "lagMax": -0.47,
+  "lagMean": -0.62,
+  "late": [],
+  "vmax": 4.43,
   "V0": 3.12,
-  "shortShareMin": 1,
-  "shortShareMean": 1
+  "shortShareMin": null,
+  "shortShareMean": null
  },
  {
   "nets": 17,
   "engine": 10,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 33,
    "loop": 0,
    "move": 0,
-   "harbour": 44
+   "harbour": 11
   },
-  "arrivals": 44,
-  "lagMax": -0.87,
-  "lagMean": -1.38,
-  "vmax": 1.7,
+  "arrivals": 43,
+  "lagMax": 0.57,
+  "lagMean": -0.64,
+  "late": [
+   [
+    228.9,
+    3,
+    0.57,
+    "loop",
+    1
+   ]
+  ],
+  "vmax": 4.5,
   "V0": 3.43,
   "shortShareMin": 1,
   "shortShareMean": 1
@@ -716,16 +858,19 @@
  {
   "nets": 17,
   "engine": 12,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 21,
    "loop": 0,
    "move": 0,
-   "harbour": 42
+   "harbour": 22
   },
   "arrivals": 42,
-  "lagMax": -0.73,
-  "lagMean": -1.19,
-  "vmax": 1.89,
+  "lagMax": -0.47,
+  "lagMean": -0.61,
+  "late": [],
+  "vmax": 4.39,
   "V0": 3.73,
   "shortShareMin": 1,
   "shortShareMean": 1
@@ -733,15 +878,18 @@
  {
   "nets": 17,
   "engine": 14,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 0,
    "loop": 0,
    "move": 0,
-   "harbour": 46
+   "harbour": 44
   },
-  "arrivals": 44,
+  "arrivals": 43,
   "lagMax": -0.6,
-  "lagMean": -1.02,
+  "lagMean": -1.01,
+  "late": [],
   "vmax": 2.06,
   "V0": 4.04,
   "shortShareMin": 1,
@@ -750,15 +898,18 @@
  {
   "nets": 17,
   "engine": 18,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 0,
    "loop": 0,
    "move": 0,
    "harbour": 44
   },
-  "arrivals": 44,
+  "arrivals": 43,
   "lagMax": -0.5,
   "lagMean": -0.82,
+  "late": [],
   "vmax": 2.49,
   "V0": 4.65,
   "shortShareMin": 1,
@@ -767,15 +918,18 @@
  {
   "nets": 17,
   "engine": 22,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 0,
    "loop": 0,
    "move": 0,
-   "harbour": 43
+   "harbour": 44
   },
-  "arrivals": 42,
+  "arrivals": 44,
   "lagMax": -0.47,
-  "lagMean": -0.69,
+  "lagMean": -0.7,
+  "late": [],
   "vmax": 2.75,
   "V0": 5.26,
   "shortShareMin": 1,
@@ -784,25 +938,30 @@
  {
   "nets": 17,
   "engine": 26,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 0,
    "loop": 0,
    "move": 0,
-   "harbour": 44
+   "harbour": 42
   },
-  "arrivals": 44,
+  "arrivals": 42,
   "lagMax": -0.5,
-  "lagMean": -0.61,
+  "lagMean": -0.6,
+  "late": [],
   "vmax": 2.75,
   "V0": 5.86,
   "shortShareMin": 0.85,
-  "shortShareMean": 0.93
+  "shortShareMean": 0.92
  },
  {
   "nets": 17,
   "engine": 30,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 0,
    "loop": 0,
    "move": 0,
    "harbour": 43
@@ -810,6 +969,7 @@
   "arrivals": 42,
   "lagMax": -0.67,
   "lagMean": -0.7,
+  "late": [],
   "vmax": 2.75,
   "V0": 6.47,
   "shortShareMin": 0.7,
@@ -818,16 +978,19 @@
  {
   "nets": 18,
   "engine": 0,
+  "nav": 0,
   "trips": {
    "grounds": 40,
+   "curve": 0,
    "loop": 0,
    "move": 0,
    "harbour": 0
   },
   "arrivals": 36,
-  "lagMax": -0.5,
-  "lagMean": -0.51,
-  "vmax": 4.14,
+  "lagMax": -0.47,
+  "lagMean": -0.5,
+  "late": [],
+  "vmax": 4.58,
   "V0": 1.9,
   "shortShareMin": null,
   "shortShareMean": null
@@ -835,16 +998,19 @@
  {
   "nets": 18,
   "engine": 2,
+  "nav": 0,
   "trips": {
    "grounds": 43,
+   "curve": 0,
    "loop": 0,
    "move": 0,
    "harbour": 0
   },
-  "arrivals": 42,
-  "lagMax": -0.33,
-  "lagMean": -0.52,
-  "vmax": 4.75,
+  "arrivals": 41,
+  "lagMax": 0.13,
+  "lagMean": -0.5,
+  "late": [],
+  "vmax": 4.82,
   "V0": 2.21,
   "shortShareMin": null,
   "shortShareMean": null
@@ -852,67 +1018,87 @@
  {
   "nets": 18,
   "engine": 4,
+  "nav": 0,
   "trips": {
    "grounds": 10,
+   "curve": 33,
    "loop": 0,
    "move": 0,
-   "harbour": 33
+   "harbour": 0
   },
   "arrivals": 43,
-  "lagMax": -0.5,
-  "lagMean": -1.91,
-  "vmax": 4.7,
+  "lagMax": 0.93,
+  "lagMean": -0.48,
+  "late": [
+   [
+    23,
+    2,
+    0.93,
+    "zone",
+    1
+   ]
+  ],
+  "vmax": 4.73,
   "V0": 2.51,
-  "shortShareMin": 1,
-  "shortShareMean": 1
+  "shortShareMin": null,
+  "shortShareMean": null
  },
  {
   "nets": 18,
   "engine": 6,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 43,
    "loop": 0,
    "move": 0,
-   "harbour": 46
+   "harbour": 0
   },
   "arrivals": 43,
-  "lagMax": -1.4,
-  "lagMean": -2.04,
-  "vmax": 1.4,
+  "lagMax": -0.5,
+  "lagMean": -0.54,
+  "late": [],
+  "vmax": 4.17,
   "V0": 2.82,
-  "shortShareMin": 1,
-  "shortShareMean": 1
+  "shortShareMin": null,
+  "shortShareMean": null
  },
  {
   "nets": 18,
   "engine": 8,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 44,
    "loop": 0,
    "move": 0,
-   "harbour": 44
+   "harbour": 0
   },
-  "arrivals": 44,
-  "lagMax": -1.2,
-  "lagMean": -1.74,
-  "vmax": 1.56,
+  "arrivals": 43,
+  "lagMax": -0.47,
+  "lagMean": -0.69,
+  "late": [],
+  "vmax": 4.5,
   "V0": 3.12,
-  "shortShareMin": 1,
-  "shortShareMean": 1
+  "shortShareMin": null,
+  "shortShareMean": null
  },
  {
   "nets": 18,
   "engine": 10,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 31,
    "loop": 0,
    "move": 0,
-   "harbour": 44
+   "harbour": 11
   },
-  "arrivals": 44,
-  "lagMax": -0.83,
-  "lagMean": -1.36,
-  "vmax": 1.75,
+  "arrivals": 42,
+  "lagMax": -0.47,
+  "lagMean": -0.62,
+  "late": [],
+  "vmax": 4.52,
   "V0": 3.43,
   "shortShareMin": 1,
   "shortShareMean": 1
@@ -920,16 +1106,19 @@
  {
   "nets": 18,
   "engine": 12,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 22,
    "loop": 0,
    "move": 0,
-   "harbour": 44
+   "harbour": 23
   },
-  "arrivals": 43,
-  "lagMax": -0.73,
-  "lagMean": -1.2,
-  "vmax": 1.97,
+  "arrivals": 44,
+  "lagMax": -0.47,
+  "lagMean": -0.61,
+  "late": [],
+  "vmax": 4.47,
   "V0": 3.73,
   "shortShareMin": 1,
   "shortShareMean": 1
@@ -937,16 +1126,19 @@
  {
   "nets": 24,
   "engine": 0,
+  "nav": 0,
   "trips": {
    "grounds": 42,
+   "curve": 0,
    "loop": 0,
    "move": 0,
    "harbour": 0
   },
   "arrivals": 38,
   "lagMax": -0.47,
-  "lagMean": -0.52,
-  "vmax": 4.31,
+  "lagMean": -0.51,
+  "late": [],
+  "vmax": 4.64,
   "V0": 1.9,
   "shortShareMin": null,
   "shortShareMean": null
@@ -954,15 +1146,26 @@
  {
   "nets": 24,
   "engine": 2,
+  "nav": 0,
   "trips": {
    "grounds": 44,
+   "curve": 0,
    "loop": 0,
    "move": 0,
    "harbour": 0
   },
   "arrivals": 43,
-  "lagMax": 0.2,
-  "lagMean": -0.5,
+  "lagMax": 0.67,
+  "lagMean": -0.48,
+  "late": [
+   [
+    230.9,
+    0,
+    0.67,
+    "zone",
+    1
+   ]
+  ],
   "vmax": 4.82,
   "V0": 2.21,
   "shortShareMin": null,
@@ -971,50 +1174,59 @@
  {
   "nets": 24,
   "engine": 4,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 42,
    "loop": 0,
    "move": 0,
-   "harbour": 42
+   "harbour": 0
   },
   "arrivals": 42,
-  "lagMax": -1.77,
-  "lagMean": -2.47,
-  "vmax": 1.39,
+  "lagMax": -0.5,
+  "lagMean": -0.58,
+  "late": [],
+  "vmax": 3.93,
   "V0": 2.51,
-  "shortShareMin": 1,
-  "shortShareMean": 1
+  "shortShareMin": null,
+  "shortShareMean": null
  },
  {
   "nets": 24,
   "engine": 6,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 44,
    "loop": 0,
    "move": 0,
-   "harbour": 44
+   "harbour": 0
   },
-  "arrivals": 42,
-  "lagMax": -1.4,
-  "lagMean": -2.03,
-  "vmax": 1.58,
+  "arrivals": 43,
+  "lagMax": -0.5,
+  "lagMean": -0.67,
+  "late": [],
+  "vmax": 4.29,
   "V0": 2.82,
-  "shortShareMin": 1,
-  "shortShareMean": 1
+  "shortShareMin": null,
+  "shortShareMean": null
  },
  {
   "nets": 24,
   "engine": 8,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 35,
    "loop": 0,
    "move": 0,
-   "harbour": 45
+   "harbour": 12
   },
-  "arrivals": 45,
-  "lagMax": -1.2,
-  "lagMean": -1.72,
-  "vmax": 1.83,
+  "arrivals": 46,
+  "lagMax": -0.5,
+  "lagMean": -0.82,
+  "late": [],
+  "vmax": 4.39,
   "V0": 3.12,
   "shortShareMin": 1,
   "shortShareMean": 1
@@ -1022,16 +1234,19 @@
  {
   "nets": 24,
   "engine": 10,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 20,
    "loop": 0,
    "move": 0,
-   "harbour": 44
+   "harbour": 22
   },
   "arrivals": 42,
-  "lagMax": -0.83,
-  "lagMean": -1.35,
-  "vmax": 2.08,
+  "lagMax": -0.47,
+  "lagMean": -0.67,
+  "late": [],
+  "vmax": 4.42,
   "V0": 3.43,
   "shortShareMin": 1,
   "shortShareMean": 1
@@ -1039,15 +1254,18 @@
  {
   "nets": 24,
   "engine": 12,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 0,
    "loop": 0,
    "move": 0,
-   "harbour": 46
+   "harbour": 45
   },
   "arrivals": 43,
   "lagMax": -0.73,
   "lagMean": -1.2,
+  "late": [],
   "vmax": 2.38,
   "V0": 3.73,
   "shortShareMin": 1,
@@ -1056,16 +1274,19 @@
  {
   "nets": 30,
   "engine": 0,
+  "nav": 0,
   "trips": {
    "grounds": 42,
+   "curve": 0,
    "loop": 0,
    "move": 0,
    "harbour": 0
   },
   "arrivals": 38,
-  "lagMax": -0.5,
-  "lagMean": -0.53,
-  "vmax": 4.52,
+  "lagMax": -0.4,
+  "lagMean": -0.52,
+  "late": [],
+  "vmax": 4.97,
   "V0": 1.9,
   "shortShareMin": null,
   "shortShareMean": null
@@ -1073,15 +1294,26 @@
  {
   "nets": 30,
   "engine": 2,
+  "nav": 0,
   "trips": {
-   "grounds": 42,
+   "grounds": 43,
+   "curve": 0,
    "loop": 0,
    "move": 0,
    "harbour": 0
   },
-  "arrivals": 42,
-  "lagMax": 0.73,
-  "lagMean": -0.48,
+  "arrivals": 43,
+  "lagMax": 1.2,
+  "lagMean": -0.45,
+  "late": [
+   [
+    227.4,
+    0,
+    1.2,
+    "zone",
+    1
+   ]
+  ],
   "vmax": 4.82,
   "V0": 2.21,
   "shortShareMin": null,
@@ -1090,50 +1322,59 @@
  {
   "nets": 30,
   "engine": 4,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 43,
    "loop": 0,
    "move": 0,
-   "harbour": 44
+   "harbour": 0
   },
-  "arrivals": 43,
-  "lagMax": -1.8,
-  "lagMean": -2.49,
-  "vmax": 1.46,
+  "arrivals": 42,
+  "lagMax": -0.47,
+  "lagMean": -0.61,
+  "late": [],
+  "vmax": 4.28,
   "V0": 2.51,
-  "shortShareMin": 1,
-  "shortShareMean": 1
+  "shortShareMin": null,
+  "shortShareMean": null
  },
  {
   "nets": 30,
   "engine": 6,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 46,
    "loop": 0,
    "move": 0,
-   "harbour": 46
+   "harbour": 0
   },
   "arrivals": 44,
-  "lagMax": -1.4,
-  "lagMean": -2.09,
-  "vmax": 1.72,
+  "lagMax": -0.5,
+  "lagMean": -0.72,
+  "late": [],
+  "vmax": 4.42,
   "V0": 2.82,
-  "shortShareMin": 1,
-  "shortShareMean": 1
+  "shortShareMin": null,
+  "shortShareMean": null
  },
  {
   "nets": 30,
   "engine": 8,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 33,
    "loop": 0,
    "move": 0,
-   "harbour": 44
+   "harbour": 11
   },
   "arrivals": 44,
-  "lagMax": -1.23,
-  "lagMean": -1.81,
-  "vmax": 2.05,
+  "lagMax": -0.5,
+  "lagMean": -0.83,
+  "late": [],
+  "vmax": 4.5,
   "V0": 3.12,
   "shortShareMin": 1,
   "shortShareMean": 1
@@ -1141,16 +1382,19 @@
  {
   "nets": 30,
   "engine": 10,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 21,
    "loop": 0,
    "move": 0,
-   "harbour": 44
+   "harbour": 22
   },
   "arrivals": 43,
-  "lagMax": -0.87,
-  "lagMean": -1.42,
-  "vmax": 2.26,
+  "lagMax": -0.47,
+  "lagMean": -0.8,
+  "late": [],
+  "vmax": 4.52,
   "V0": 3.43,
   "shortShareMin": 1,
   "shortShareMean": 1
@@ -1158,15 +1402,18 @@
  {
   "nets": 30,
   "engine": 12,
+  "nav": 0,
   "trips": {
    "grounds": 0,
+   "curve": 0,
    "loop": 0,
    "move": 0,
-   "harbour": 42
+   "harbour": 43
   },
   "arrivals": 42,
   "lagMax": -0.87,
-  "lagMean": -1.27,
+  "lagMean": -1.28,
+  "late": [],
   "vmax": 2.46,
   "V0": 3.73,
   "shortShareMin": 1,

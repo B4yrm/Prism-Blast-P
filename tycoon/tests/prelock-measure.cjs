@@ -14,6 +14,7 @@ const NAV = +(process.env.NAV || 0);                 // sea-charts research leve
   const out = [];
   for (const net of NETS) for (const sp of ENG) {
     if (net >= 18 && sp >= 14) continue;             // the jetties are open there
+    if (process.env.ONLY && !process.env.ONLY.split(',').includes(net + ':' + sp)) continue;      // e.g. ONLY=30:6,0:14
     const ctx = await b.newContext({ viewport: { width: 844, height: 390 } });
     await ctx.addInitScript(([net, sp, nav]) => {
       if (sessionStorage.getItem('s')) return; sessionStorage.setItem('s', 1);
@@ -28,18 +29,19 @@ const NAV = +(process.env.NAV || 0);                 // sea-charts research leve
       const w = __game.scene.getScene('world'), sim = w.sim, F = w.fleet, dt = 1 / 30, prev = [], share = [];
       let t = 0, vmax = 0;
       const st = F.start.bind(F); F.start = (vb, ph) => { st(vb, ph); if (ph === 'depart' && vb.mode === 'short') share.push(vb.shortF); };
+      const late = [], lagFn = F.lag.bind(F); F.lag = vb => { if (vb.simDockAt !== undefined && vb.inAt !== undefined) { const l = vb.inAt - vb.simDockAt; if (l > 0.5) late.push([+t.toFixed(1), vb.i, +l.toFixed(2), vb.mode, vb.shortF]); } lagFn(vb); };
       for (let k = 0; k < 240 * 30; k++) {
         Math.random = rnd; sim.update(dt); Math.random = vr; F.update(t, dt); t += dt;
         F.boats.forEach((v, i) => { if (prev[i] && v.phase !== 'docked' && v.phase !== 'settle' && v.phase !== 'castoff') vmax = Math.max(vmax, Math.hypot(v.x - prev[i][0], v.y - prev[i][1]) / dt); prev[i] = [v.x, v.y]; });
         if (k % 200 === 0) { Math.random = rnd; sim.collect(true); }
       }
       const S = F.stats;
-      return { trips: S.trips, arrivals: S.arrivals, lagMax: S.arrivals ? +S.lagMax.toFixed(2) : null, lagMean: S.arrivals ? +(S.lagSum / S.arrivals).toFixed(2) : null, vmax: +vmax.toFixed(2), V0: +F.V0.toFixed(2), shortShareMin: share.length ? Math.min(...share) : null, shortShareMean: share.length ? +(share.reduce((a, c) => a + c, 0) / share.length).toFixed(2) : null };
+      return { trips: S.trips, arrivals: S.arrivals, lagMax: S.arrivals ? +S.lagMax.toFixed(2) : null, lagMean: S.arrivals ? +(S.lagSum / S.arrivals).toFixed(2) : null, late, vmax: +vmax.toFixed(2), V0: +F.V0.toFixed(2), shortShareMin: share.length ? Math.min(...share) : null, shortShareMean: share.length ? +(share.reduce((a, c) => a + c, 0) / share.length).toFixed(2) : null };
     });
     await ctx.close();
     out.push({ nets: net, engine: sp, nav: NAV, ...r });
     console.error(JSON.stringify(out[out.length - 1]));
   }
   await b.close();
-  fs.writeFileSync(path.join(__dirname, '../test-results/prelock-measure' + (NAV ? '-nav' + NAV : '') + '.json'), JSON.stringify(out, null, 1));
+  if (!process.env.ONLY) fs.writeFileSync(path.join(__dirname, '../test-results/prelock-measure' + (NAV ? '-nav' + NAV : '') + '.json'), JSON.stringify(out, null, 1));
 })();
