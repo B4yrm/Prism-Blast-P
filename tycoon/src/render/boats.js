@@ -257,7 +257,7 @@ export class Fleet {
         // lines ashore, then (loop berths) hauled in alongside; quicker when the simulation is already waiting to leave
         const quick = away || (b.state === 'dock' && b.load <= 0), T = vb.site >= 4 ? (quick ? 0.6 : 1.0) : 1.1;
         vb.rope = Math.min(1, vb.rope + dt / T);
-        if (vb.rope > 0.3) vb.warp = Math.min(1, vb.warp + dt / (quick ? 0.55 : 0.9));
+        if (vb.rope > 0.3) vb.warp = Math.min(1, vb.warp + dt / (quick ? 0.6 : 1.0));
         if (vb.rope >= 1 && vb.warp >= 1 && (vb.site >= 4 || vb.settleT > 1.3)) vb.phase = 'docked';
         break;
       }

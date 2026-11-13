@@ -7,9 +7,9 @@
  "radius": 2.8,
  "marginUnderWay": 0.3,
  "offPierUnderWay": 0.95,
- "offPierMadeFast": 0.3,
+ "offPierMadeFast": 0.4,
  "sternSwing": 0.58,
- "searchSeconds": 82,
+ "searchSeconds": 85,
  "candidates": 1495,
  "sceneChanges": {
   "decorative boat 2": "moved from (34, 26.6) to (28, 26.5)",
@@ -28,7 +28,7 @@
    ],
    "madeFast": [
     2.9,
-    32.51
+    32.61
    ],
    "headingDeg": 0,
    "newDeckTiles": 6.5,
@@ -92,7 +92,7 @@
    ],
    "madeFast": [
     28.6,
-    32.51
+    32.61
    ],
    "headingDeg": 180,
    "newDeckTiles": 2,
@@ -156,7 +156,7 @@
    ],
    "madeFast": [
     -5.4,
-    32.51
+    32.61
    ],
    "headingDeg": 180,
    "newDeckTiles": 2,
@@ -189,7 +189,7 @@
     28
    ],
    "madeFast": [
-    31.91,
+    32.01,
     28
    ],
    "headingDeg": 90,

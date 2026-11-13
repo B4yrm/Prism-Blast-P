@@ -36,7 +36,8 @@ export const BERTH_MOVES = [
 
 // Decorative moored boats [x, y, class, heading index (8 directions), sprite scale],
 // placed clear of every manoeuvre (checked by tests/boat-check.cjs).
-export const DECOR_BOATS = [[24.6, 24.6, 1, 0, 0.55], [2.0, 25.6, 0, 1, 0.6], [34.0, 26.6, 1, 5, 0.7], [27.5, 23.6, 2, 2, 0.5]]
+export const DECOR_HOME = [[24.6, 24.6, 1, 0, 0.55], [2.0, 25.6, 0, 1, 0.6], [34.0, 26.6, 1, 5, 0.7], [27.5, 23.6, 2, 2, 0.5]];
+export const DECOR_BOATS = DECOR_HOME
   .map((d, i) => DECOR_MOVES[i] ? [DECOR_MOVES[i][0], DECOR_MOVES[i][1], ...d.slice(2)] : d);   // out of the way of the loops (tools/boats/loops.cjs)
 export const CLASS_S = [1.45, 1.7, 2.0];             // hull size factor of each baked boat class
 export const decorHull = ([x, y, c, d, sc], grow = 0) => hullAt(x, y, d * Math.PI / 4, grow, CLASS_S[c] / CLASS_S[0] * sc);

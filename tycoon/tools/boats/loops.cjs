@@ -24,7 +24,7 @@ const R = +(0.7125 * LEN).toFixed(2);                                 // 2.8 til
 const MARGIN = +(0.25 * BEAM).toFixed(2);                             // clearance while under way
 const SWING = Math.hypot(R, STERN) - R;                               // how far the stern swings out when the boat turns away
 const OFF = +(SWING + MARGIN + 0.07).toFixed(2);                           // hull side to pier face while moving
-const SNUG = +(0.25 * BEAM).toFixed(2);                               // hull side to pier face when made fast (hauled in by the lines)
+const SNUG = +(0.33 * BEAM).toFixed(2);                               // hull side to pier face when made fast (hauled in by the lines)
 const VMAX = 5, WMAX = Math.PI / 2, DS = 0.08;
 const DECK = { y0: 30.6, y1: 31.6 }, JET = P.JETTIES;
 const SEA = { x0: -8.9, x1: 45.5, y1: 45 };                           // west: rocks and shoal along x ≈ −9.5; elsewhere the water the game shows
@@ -61,7 +61,7 @@ paint((x, y) => C.isLand(Math.floor(x), Math.floor(y)) || inRects(C.PIERS, x, y)
 const ROCKS = W.surfRocks().map(r => ({ x: r.x, y: r.y, r: 0.42 * r.s }));
 for (const r of ROCKS) paint((x, y) => Math.hypot(x - r.x, y - r.y) <= r.r, r.x - r.r, r.y - r.r, r.x + r.r, r.y + r.r, HARD);
 [0, 1, 2, 3].forEach(g => P.buoysAt(g).forEach(([bx, by]) => paint((x, y) => Math.hypot(x - bx, y - by) <= 0.3, bx - 0.3, by - 0.3, bx + 0.3, by + 0.3, BUOY << g)));
-P.DECOR_BOATS.forEach((d, i) => paintPoly(P.decorHull(d), DECO << i));
+P.DECOR_HOME.forEach((d, i) => paintPoly(P.decorHull(d), DECO << i));
 [0, 1, 2, 3].forEach(i => paintPoly(P.dockedHull(i), SLIP << i));
 const inRect = (r, x, y) => x >= r[0] && x <= r[2] && y >= r[1] && y <= r[3];
 const hullPts = (q, grow) => P.hullPoints(q.x, q.y, q.a, grow / SC, SC);
@@ -121,7 +121,7 @@ function candidates() {
   }
   return list;
 }
-const softList = h => [...[0, 1, 2, 3].filter(g => h & (BUOY << g)).map(g => 'buoys of ground ' + (g + 1)), ...P.DECOR_BOATS.map((_, d) => d).filter(d => h & (DECO << d)).map(d => 'decorative boat ' + d), ...[0, 1, 2, 3].filter(i => h & (SLIP << i)).map(i => 'slip ' + (i + 1) + ' empty')];
+const softList = h => [...[0, 1, 2, 3].filter(g => h & (BUOY << g)).map(g => 'buoys of ground ' + (g + 1)), ...P.DECOR_HOME.map((_, d) => d).filter(d => h & (DECO << d)).map(d => 'decorative boat ' + d), ...[0, 1, 2, 3].filter(i => h & (SLIP << i)).map(i => 'slip ' + (i + 1) + ' empty')];
 const bits = h => { let n = 0; for (let b = 1; b < 16; b++) if (h & (1 << b)) n++; return n; };
 
 // ---- layout: four berths with separate water, as few changes to the scene as possible, then the least new deck
@@ -192,11 +192,11 @@ for (let n = 1; n <= 12; n++) base.forEach((c, k) => {
 });
 
 // ---- decorative boats in the way: nearest place clear of every loop, move route (checked below) and slip route
-const movedDecor = P.DECOR_BOATS.map((_, d) => d).filter(d => softAll & (DECO << d));
+const movedDecor = P.DECOR_HOME.map((_, d) => d).filter(d => softAll & (DECO << d));
 const slipSweeps = [0, 1, 2, 3].flatMap(i => { const dep = P.departurePlan(i), end = P.poseAt(dep[1].path, dep[1].path.len), f = P.fishingPlan(i, end); return [...dep, ...f, ...P.arrivalPlan(i, P.poseAt(f[0].path, P.LINGER))].map(l => sweep(ptsOf(l.path, l.dir), 0.2)); });
 const loopSweeps = ladders.flatMap(l => l.map(v => v.sw));
 function placeDecor(d) {
-  const [x0, y0, cls, dir, sc] = P.DECOR_BOATS[d];
+  const [x0, y0, cls, dir, sc] = P.DECOR_HOME[d];
   let best = null;
   for (let x = x0 - 8; x <= x0 + 10; x += 0.5) for (let y = 23; y <= 31; y += 0.5) {
     const poly = P.decorHull([x, y, cls, dir, sc], 0.35), G = new Uint16Array(GW * GH); paintPoly(poly, 1, G);
@@ -210,7 +210,7 @@ function placeDecor(d) {
   }
   return best;
 }
-const decorNew = {}; for (const d of movedDecor) { const b = placeDecor(d); decorNew[d] = b; if (b) paintPoly(P.decorHull([b.x, b.y, ...P.DECOR_BOATS[d].slice(2)]), HARD); }
+const decorNew = {}; for (const d of movedDecor) { const b = placeDecor(d); decorNew[d] = b; if (b) paintPoly(P.decorHull([b.x, b.y, ...P.DECOR_HOME[d].slice(2)]), HARD); }
 
 // ---- the one move from slip k to its new berth: back out, a way point at sea, in on the last quarter of the loop's line
 const mooredHull = (c, grow = 0.1) => P.hullAt(c.mx, c.my, c.a, grow / SC, SC);
@@ -268,7 +268,7 @@ const clearance = () => base.map((c, k) => {      // smallest distance of the hu
 });
 const cl = clearance();
 const result = { hullScale: SC, hull: { length: +LEN.toFixed(2), beam: +BEAM.toFixed(2) }, radius: R, marginUnderWay: MARGIN, offPierUnderWay: OFF, offPierMadeFast: SNUG, sternSwing: +SWING.toFixed(2), searchSeconds: Math.round((Date.now() - T0) / 1000), candidates: all.length,
-  sceneChanges: { ...Object.fromEntries(movedDecor.map(d => ['decorative boat ' + d, decorNew[d] ? `moved from (${P.DECOR_BOATS[d][0]}, ${P.DECOR_BOATS[d][1]}) to (${decorNew[d].x}, ${decorNew[d].y})` : 'no clear place found'])), other: softList(softAll & ~(DECO * 15)) },
+  sceneChanges: { ...Object.fromEntries(movedDecor.map(d => ['decorative boat ' + d, decorNew[d] ? `moved from (${P.DECOR_HOME[d][0]}, ${P.DECOR_HOME[d][1]}) to (${decorNew[d].x}, ${decorNew[d].y})` : 'no clear place found'])), other: softList(softAll & ~(DECO * 15)) },
   boats: base.map((c, k) => ({ boat: k + 1, jetty: c.jetty ? 'west' : 'east', berth: c.fam === 'head' ? 'head arm, sea face' : 'jetty stem, outer face', start: [c.x, c.y], madeFast: [c.mx, c.my], headingDeg: Math.round(c.a * 180 / Math.PI), newDeckTiles: c.deck ? +(c.deck[2] - c.deck[0] - 1).toFixed(1) : 0, loops: ladders[k].map(v => ({ n: v.n, tiles: v.len, briskS: v.tBrisk, calmS: v.tCalm })), longerLoopsStopAt: ladders[k].stop || 'limit (12)', clearance: cl[k], move: moves[k] ? { order: moves[k].order, tiles: +moves[k].tiles.toFixed(1), briskS: moves[k].briskS, calmS: moves[k].calmS } : null })) };
 console.log(JSON.stringify(result.sceneChanges)); result.boats.forEach(b => console.log(` boat ${b.boat}: loops ${b.loops.map(l => l.tiles).join('/')} (stop: ${b.longerLoopsStopAt}); clearance ${JSON.stringify(b.clearance)}; move ${JSON.stringify(b.move)}`));
 fs.mkdirSync(path.join(root, 'test-results/loops'), { recursive: true });

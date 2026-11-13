@@ -20,26 +20,37 @@ const bundled = path.join(root, '.preview', 'boatpaths.cjs');
 fs.mkdirSync(path.dirname(bundled), { recursive: true });
 esbuild.buildSync({ entryPoints: [path.join(root, 'src/render/boatpaths.js')], bundle: true, format: 'cjs', outfile: bundled, logLevel: 'error' });
 const P = require(bundled);
+const bundle2 = (src, name) => { const o = path.join(root, '.preview', name); esbuild.buildSync({ entryPoints: [path.join(root, src)], bundle: true, format: 'cjs', outfile: o, logLevel: 'error' }); return require(o); };
+const CFG = bundle2('src/config.js', 'config.cjs'), ROCKS = bundle2('src/render/water.js', 'water.cjs').surfRocks().map(q => ({ x: q.x, y: q.y, r: 0.42 * q.s }));
 
+const MAXUP = { warehouse: { cap: 30, load: 30, cold: 30 }, factory: { speed: 30, out: 30, qual: 30 }, market: { price: 30, ads: 30, till: 30 }, hq: { train: 30, carry: 30 } };
+const STRONG = { workers: 10, tier: { harbor: 3, warehouse: 3, market: 3, hq: 3, factory: 3, farm: 0 }, upAll: MAXUP };
 const SCENARIOS = [
-  // every scenario: no overlaps, the visual boat in its slip / berth before the
-  // simulation starts unloading, a net on every trip, the simulation unchanged
+  // every scenario: no overlaps or contacts, never faster than 5 tiles/s or 90°/s, a net on every trip, one visual
+  // trip per simulation trip, no unloading shown without the boat, the simulation unchanged.
+  // Slip trips: in the slip before the simulation unloads. Loop trips: lateness reported; ready for the next trip.
   { name: 'start-fleet4', boats: 4, secs: 900, up: {} },
   { name: 'start-fleet1', boats: 1, secs: 300, up: {} },
   { name: 'mid-fleet4 (engine 6, nets 3)', boats: 4, secs: 900, up: { cap: 4, speed: 6, net: 3 } },
   { name: 'mid+-fleet4 (engine 10, nets 8)', boats: 4, secs: 600, up: { cap: 6, speed: 10, net: 8 } },
-  { name: 'late-fleet4 (engine 20, nets 18): jetties are built during the run', boats: 4, secs: 900, up: { cap: 10, speed: 20, net: 18 } },
-  { name: 'max-fleet4 (30/30): jetties built during the run', boats: 4, secs: 900, up: { cap: 30, speed: 30, net: 30 } },
-  { name: 'max-fleet1 (30/30), jetties already built', boats: 1, secs: 300, up: { cap: 30, speed: 30, net: 30 }, outer: 1 },
-  { name: 'max+research-fleet4 (30/30 + sea charts 3), jetties already built', boats: 4, secs: 900, up: { cap: 30, speed: 30, net: 30 }, research: { nav: 3, nets: 3 }, outer: 1 },
+  { name: 'unlock (engine 14, nets 18): jetties and head arms are built, the boats move one by one', boats: 4, secs: 900, up: { cap: 0, speed: 14, net: 18 }, ...STRONG },
+  { name: 'unlock, 2 boats (harbour tier 2)', boats: 2, secs: 600, up: { cap: 0, speed: 14, net: 18 }, ...STRONG, tier: { ...STRONG.tier, harbor: 2 } },
+  { name: 'engine 20, nets 18, loop berths', boats: 4, secs: 900, up: { cap: 0, speed: 20, net: 18 }, outer: 2, ...STRONG },
+  { name: 'max 30/30 from an old save: everything is built and the boats move at the top level', boats: 4, secs: 900, up: { cap: 0, speed: 30, net: 30 }, ...STRONG },
+  { name: 'max 30/30, loop berths, strong economy (shortest stays)', boats: 4, secs: 900, up: { cap: 0, speed: 30, net: 30 }, outer: 2, ...STRONG },
+  { name: 'max 30/30, loop berths, hold 30 (long stays)', boats: 4, secs: 600, up: { cap: 30, speed: 30, net: 30 }, outer: 2 },
+  { name: 'max 30/30, 1 boat, loop berths', boats: 1, secs: 300, up: { cap: 0, speed: 30, net: 30 }, outer: 2, ...STRONG },
+  { name: 'max 30/30 + sea charts 3, loop berths, strong economy', boats: 4, secs: 900, up: { cap: 0, speed: 30, net: 30 }, research: { nav: 3, nets: 3, ergo: 3 }, outer: 2, ...STRONG },
+  { name: 'max 30/30 + sea charts 3, loop berths, hold 30', boats: 4, secs: 600, up: { cap: 30, speed: 30, net: 30 }, research: { nav: 3, nets: 3 }, outer: 2 },
 ];
+const ONLY = process.env.SYNC_ONLY;
 
 async function run(b, sc, withFleet) {
   const ctx = await b.newContext({ viewport: { width: 844, height: 390 } });
   await ctx.addInitScript(sc => {
     if (sessionStorage.getItem('s')) return; sessionStorage.setItem('s', 1);
-    localStorage.setItem('fishingTycoon.save', JSON.stringify({ v: 1, money: 500, harborOuter: sc.outer || 0, boats: sc.boats, workers: sc.boats === 4 ? 6 : 2, level: 9, settings: { quality: 'medium' },
-      tier: { harbor: sc.boats === 4 ? 3 : 1, warehouse: 2, market: 2, hq: 2, factory: 0, farm: 0 }, up: { harbor: { cap: 0, speed: 0, net: 0, ...sc.up } }, research: { lv: sc.research || {}, active: null },
+    localStorage.setItem('fishingTycoon.save', JSON.stringify({ v: 1, money: 500, harborOuter: sc.outer || 0, boats: sc.boats, workers: sc.workers || (sc.boats === 4 ? 6 : 2), level: 12, settings: { quality: 'medium' },
+      tier: sc.tier || { harbor: sc.boats === 4 ? 3 : 1, warehouse: 2, market: 2, hq: 2, factory: 0, farm: 0 }, up: { ...(sc.upAll || {}), harbor: { cap: 0, speed: 0, net: 0, ...sc.up } }, research: { lv: sc.research || {}, active: null },
       stats: { caught: 1, sold: 1 }, lastSeen: Date.now() }));
   }, sc);
   const p = await ctx.newPage();
@@ -63,6 +74,14 @@ async function run(b, sc, withFleet) {
       jumps.push(+d.toFixed(2)); jump(x, y);
     };
     const traj = [], ev = [];
+    // unloading shown (crane or jetty cart) while the boat is not made fast
+    let unloadShownAway = 0, unloadsShown = 0, armsAt = null, stemAt = null;
+    if (withFleet) {
+      const moored = b => { const v = F.view(b); return v && (v.phase === 'docked' || v.phase === 'settle' || v.phase === 'castoff'); };
+      const ju = F.jetties.unloading.bind(F.jetties); F.jetties.unloading = i => { unloadsShown++; if (!moored(sim.boats[i])) unloadShownAway++; ju(i); };
+      const cw = w.craneWork.bind(w);
+      w.craneWork = b => { const before = w.cranes.map(c => c.t); cw(b); if (w.cranes.some((c, n) => c.t !== before[n] && c.t > 1)) { unloadsShown++; if (!moored(b)) unloadShownAway++; } };
+    }
     const lastS = sim.boats.map(b => b.state), lastV = [];
     let t = 0, holdFrames = 0, cs = [];
     for (let k = 0; k < Math.round(secs / dt); k++) {
@@ -72,17 +91,19 @@ async function run(b, sc, withFleet) {
       sim.boats.forEach((b, i) => { if (b.state !== lastS[i]) { ev.push([+t.toFixed(3), i, 's', b.state]); lastS[i] = b.state; } });
       if (withFleet) {
         F.boats.forEach((v, i) => {
-          if (v.phase !== lastV[i]) { ev.push([+t.toFixed(3), i, 'v', v.phase, v.phase === 'depart' && v.site < 4 && v.target >= 4 ? 'move' : '']); lastV[i] = v.phase; }
+          if (v.phase !== lastV[i]) { ev.push([+t.toFixed(3), i, 'v', v.phase, v.phase === 'depart' ? (v.site < 4 && v.target >= 4 ? 'move' : v.mode) : '']); lastV[i] = v.phase; }
           if (v.hold && !v.__h) ev.push([+t.toFixed(3), i, 'h', v.phase + '/' + (v.plan ? v.plan[Math.min(v.st.leg, v.plan.length - 1)].kind : '')]);
           v.__h = v.hold;
           if (v.hold) holdFrames++;
           if ((v.phase === 'depart' || v.phase === 'return') && k % 15 === 0) cs.push(+v.c.toFixed(2));
         });
         traj.push(F.boats.map(v => [+v.x.toFixed(4), +v.y.toFixed(4), +v.h.toFixed(4), v.phase === 'docked' || v.phase === 'castoff' || v.phase === 'settle' ? 1 : 0]));
+        if (F.jetties.built && stemAt === null) stemAt = t;
+        if (F.jetties.arms && armsAt === null) armsAt = t;
       }
       if (k % 200 === 0) { Math.random = simRandom; sim.collect(true); }
     }
-    return { v0: F.V0, trips: F.stats.trips, built: F.jetties.built, jumps, nets: F.stats.nets, netMin: F.stats.netMin, traj, ev, holdSecs: +(holdFrames * dt).toFixed(1), cs, caught: sim.S.stats.caught, money: Math.floor(sim.S.money), dt };
+    return { unloadShownAway, unloadsShown, armsAt, stemAt, sites: F.boats.map(v => v.site), flag: sim.S.harborOuter, v0: F.V0, trips: F.stats.trips, built: F.jetties.built, jumps, nets: F.stats.nets, netMin: F.stats.netMin, traj, ev, holdSecs: +(holdFrames * dt).toFixed(1), cs, caught: sim.S.stats.caught, money: Math.floor(sim.S.money), dt };
   }, [sc.secs, withFleet]);
   r.errs = errs;
   await ctx.close();
@@ -106,7 +127,9 @@ function analyse(sc, r, plain) {
     caught: { withVisuals: r.caught, without: plain.caught }, money: { withVisuals: r.money, without: plain.money } };
   // 2. hulls: boat–boat overlap and boat–land contact, every 3rd frame
   const docked = [0, 1, 2, 3].map(P.dockedHull), decor = P.DECOR_BOATS.map(d => P.decorHull(d));
-  let overlaps = 0, landHits = 0, decorHits = 0, minGap = Infinity, firstOverlap = null;
+  const armsFrom = r.armsAt === null ? Infinity : r.armsAt / r.dt;
+  const hard = (x, y, f) => P.solidAt(x, y) || CFG.isLand(Math.floor(x), Math.floor(y)) || ROCKS.some(q => Math.hypot(x - q.x, y - q.y) <= q.r) || (f >= armsFrom && P.HEAD_ARMS.some(([x0, y0, x1, y1]) => x >= x0 && x <= x1 && y >= y0 && y <= y1));
+  let overlaps = 0, landHits = 0, decorHits = 0, minGap = Infinity, firstOverlap = null, firstLand = null;
   const n = r.traj[0] ? r.traj[0].length : 0;
   for (let f = 0; f < r.traj.length; f += 3) {
     const row = r.traj[f], polys = row.map(([x, y, h]) => P.hullAt(x, y, h));
@@ -114,7 +137,7 @@ function analyse(sc, r, plain) {
       const [x, y, h, moored] = row[i];
       if (!moored) {
         const pts = P.hullPoints(x, y, h, 0);
-        if (pts.some(([px, py]) => P.solidAt(px, py))) landHits++;
+        if (pts.some(([px, py]) => hard(px, py, f))) { landHits++; if (!firstLand) firstLand = { t: +(f * r.dt).toFixed(2), boat: i, at: [x, y] }; }
         if (pts.some(([px, py]) => decor.some(d => P.pointInPoly(px, py, d)))) decorHits++;
       }
       for (let j = i + 1; j < n; j++) {
@@ -129,60 +152,64 @@ function analyse(sc, r, plain) {
       }
     }
   }
-  out.hulls = { overlapSamples: overlaps, firstOverlap, minGapTiles: +minGap.toFixed(3), landContactSamples: landHits, decorContactSamples: decorHits };
+  out.hulls = { overlapSamples: overlaps, firstOverlap, minGapTiles: +minGap.toFixed(3), landContactSamples: landHits, firstLandContact: firstLand, decorContactSamples: decorHits };
   // 3. smoothness: largest jump, turn rate and speed between frames
-  let maxStep = 0, maxYaw = 0;
+  let maxStep = 0, maxYaw = 0, maxHaul = 0, haulAt = null;
   for (let f = 1; f < r.traj.length; f++) for (let i = 0; i < n; i++) {
-    const [x0, y0, h0] = r.traj[f - 1][i], [x1, y1, h1] = r.traj[f][i];
+    const [x0, y0, h0, m0] = r.traj[f - 1][i], [x1, y1, h1, m1] = r.traj[f][i];
+    if (m0 || m1) { const hv = Math.hypot(x1 - x0, y1 - y0) / r.dt; if (hv > maxHaul) { maxHaul = hv; haulAt = [+(f * r.dt).toFixed(2), i, m0, m1, +x0.toFixed(2), +y0.toFixed(2), +x1.toFixed(2), +y1.toFixed(2)]; } continue; }      // made fast: only the lines move it
     maxStep = Math.max(maxStep, Math.hypot(x1 - x0, y1 - y0) / r.dt);
     let d = h1 - h0; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI;
     maxYaw = Math.max(maxYaw, Math.abs(d) / r.dt);
   }
-  out.motion = { trips: r.trips, jettiesBuilt: r.built, simCruiseTilesPerS: +r.v0.toFixed(2), maxSpeedVsSimCruise: +(maxStep / r.v0).toFixed(2), maxSpeedTilesPerS: +maxStep.toFixed(2), maxTurnRateDegPerS: +(maxYaw * 180 / Math.PI).toFixed(1), holdSeconds: r.holdSecs };
+  out.motion = { trips: r.trips, jettiesBuilt: r.built, simCruiseTilesPerS: +r.v0.toFixed(2), maxSpeedVsSimCruise: +(maxStep / r.v0).toFixed(2), maxSpeedTilesPerS: +maxStep.toFixed(2), maxTurnRateDegPerS: +(maxYaw * 180 / Math.PI).toFixed(1), haulingInTilesPerS: +maxHaul.toFixed(2), haulingFastestAt: haulAt, holdSeconds: r.holdSecs, jetties: { stemsAt: r.stemAt, headArmsAt: r.armsAt, saved: r.flag, sites: r.sites } };
   const cs = r.cs.slice().sort((a, b) => a - b), q = k => cs.length ? cs[Math.min(cs.length - 1, Math.floor(cs.length * k))] : null;
   out.cruiseShare = { p10: q(0.1), median: q(0.5), p90: q(0.9), max: cs[cs.length - 1] };
-  // 4. sync with the simulation
-  const arr = [], moves = [], dep = [], fishing = [];
+  // 4. sync with the simulation: the j-th trip of the simulation is the j-th visual trip of that boat
+  const groups = { slip: [], loop: [], move: [] }, depLag = { slip: [], loop: [], afterMove: [] }, mooredS = [], fishing = [], perBoat = [];
+  let skipped = 0;
   for (let i = 0; i < n; i++) {
-    const E = r.ev.filter(e => e[1] === i);
-    for (const e of E) {
-      if (e[2] === 's' && e[3] === 'dock' && e[0] > 1) {          // simulation arrives → visual 'settle' (in the slip)
-        const v = E.filter(x => x[2] === 'v' && x[3] === 'settle').map(x => x[0]);
-        const near = v.reduce((best, x) => Math.abs(x - e[0]) < Math.abs(best - e[0]) ? x : best, Infinity);
-        // the one trip from the slip to the new outer berth is counted on its own
-        const lastDep = E.filter(x => x[2] === 'v' && x[3] === 'depart' && x[0] < near).pop();
-        if (near !== Infinity && Math.abs(near - e[0]) < 15) (lastDep && lastDep[4] === 'move' ? moves : arr).push(+(near - e[0]).toFixed(2));
-      }
-      if (e[2] === 's' && e[3] === 'out') {
-        const v = E.filter(x => x[2] === 'v' && x[3] === 'depart').map(x => x[0]);
-        const near = v.reduce((best, x) => Math.abs(x - e[0]) < Math.abs(best - e[0]) ? x : best, Infinity);
-        if (near !== Infinity && Math.abs(near - e[0]) < 15) dep.push(+(near - e[0]).toFixed(2));
-      }
-      if (e[2] === 'v' && e[3] === 'fishing') { const nx = E.find(x => x[2] === 'v' && x[0] > e[0] && x[3] !== 'fishing'); if (nx) fishing.push(+(nx[0] - e[0]).toFixed(2)); }
+    const E = r.ev.filter(e => e[1] === i), simOut = E.filter(e => e[2] === 's' && e[3] === 'out').map(e => e[0]);
+    const simDock = E.filter(e => e[2] === 's' && e[3] === 'dock' && simOut.length && e[0] > simOut[0]).map(e => e[0]);
+    const visDep = E.filter(e => e[2] === 'v' && e[3] === 'depart'), visIn = E.filter(e => e[2] === 'v' && e[3] === 'settle').map(e => e[0]);
+    const kind = j => visDep[j][4] === 'loop' ? 'loop' : visDep[j][4] === 'move' ? 'move' : 'slip';
+    const pb = { boat: i, simTrips: simDock.length, visualTrips: visIn.length, loop: { n: 0, lateMax: -Infinity, lateSum: 0, mooredMin: Infinity } };
+    for (let j = 0; j < Math.min(simDock.length, visIn.length); j++) {
+      const lag = +(visIn[j] - simDock[j]).toFixed(2); groups[kind(j)].push(lag);
+      if (kind(j) === 'loop') { pb.loop.n++; pb.loop.lateMax = Math.max(pb.loop.lateMax, lag); pb.loop.lateSum += lag; }
     }
+    for (let j = 0; j < Math.min(simOut.length, visDep.length); j++) {
+      const d = +(visDep[j][0] - simOut[j]).toFixed(2);
+      (j > 0 && kind(j - 1) === 'move' ? depLag.afterMove : depLag[kind(j) === 'loop' ? 'loop' : 'slip']).push(d);
+      if (j > 0 && visIn[j - 1] !== undefined && kind(j) === 'loop' && kind(j - 1) === 'loop') { const m = +(visDep[j][0] - visIn[j - 1]).toFixed(2); mooredS.push(m); pb.loop.mooredMin = Math.min(pb.loop.mooredMin, m); }
+    }
+    skipped += Math.max(0, simDock.length - visIn.length - 1);
+    for (const e of E) if (e[2] === 'v' && e[3] === 'fishing') { const nx = E.find(x => x[2] === 'v' && x[0] > e[0] && x[3] !== 'fishing'); if (nx) fishing.push(+(nx[0] - e[0]).toFixed(2)); }
+    pb.loop = pb.loop.n ? { trips: pb.loop.n, lateMaxS: pb.loop.lateMax, lateMeanS: +(pb.loop.lateSum / pb.loop.n).toFixed(2), mooredMinS: pb.loop.mooredMin === Infinity ? null : pb.loop.mooredMin } : null;
+    perBoat.push(pb);
   }
-  const stats = a => { const s = a.slice().sort((x, y) => x - y); return { n: s.length, min: s[0], median: s[Math.floor(s.length / 2)], max: s[s.length - 1], mean: +(s.reduce((x, y) => x + y, 0) / Math.max(1, s.length)).toFixed(2) }; };
+  const stats = a => { const s = a.slice().sort((x, y) => x - y); return s.length ? { n: s.length, min: s[0], median: s[Math.floor(s.length / 2)], max: s[s.length - 1], mean: +(s.reduce((x, y) => x + y, 0) / s.length).toFixed(2) } : { n: 0 }; };
   out.sync = {
-    arrivalLagS: stats(arr),          // visual in the slip minus simulation docking (negative = early)
-    moveToOuterBerthLagS: stats(moves),   // the one trip per boat from its slip to its outer berth (unloading waits for it)
-    departureLagS: stats(dep),        // visual starts backing out minus simulation leaving
-    towingS: stats(fishing),
-    tripsWithoutNets: (() => { let n = 0; for (let i = 0; i < sc.boats; i++) { const V = r.ev.filter(e => e[1] === i && e[2] === 'v'); V.forEach((e, k) => { if (e[3] === 'return' && k > 0 && V[k - 1][3] !== 'fishing') n++; }); } return n; })(),
+    // made fast minus the simulation docking (negative = early)
+    slipTripArrivalS: stats(groups.slip), loopTripArrivalS: stats(groups.loop), moveToLoopBerthArrivalS: stats(groups.move),
+    // starts to move minus the simulation leaving (about −0.55 = ready and leaving with it)
+    slipTripDepartureS: stats(depLag.slip), loopTripDepartureS: stats(depLag.loop), firstTripAfterTheMoveDepartureS: stats(depLag.afterMove),
+    madeFastBetweenLoopTripsS: stats(mooredS),
+    tripsSkipped: skipped, perBoat,
+    unloadingShown: r.unloadsShown, unloadingShownWithoutTheBoat: r.unloadShownAway,
+    netS: stats(fishing),
+    tripsWithoutNets: (() => { let c = 0; for (let i = 0; i < sc.boats; i++) { const V = r.ev.filter(e => e[1] === i && e[2] === 'v'); V.forEach((e, k) => { if (e[3] === 'return' && k > 0 && V[k - 1][3] !== 'fishing') c++; }); } return c; })(),
     netsShortestS: r.nets ? +r.netMin.toFixed(2) : null,
     fishJumps: r.jumps.length, fishJumpFarthestFromNetTiles: r.jumps.length ? Math.max(...r.jumps) : null,
   };
-  // context of late arrivals, for diagnosis
-  const late = [];
-  for (let i = 0; i < n; i++) {
-    const E = r.ev.filter(e => e[1] === i), settles = E.filter(x => x[2] === 'v' && x[3] === 'settle').map(x => x[0]);
-    for (const e of E) {
-      if (e[2] !== 's' || e[3] !== 'dock' || e[0] <= 1) continue;
-      const near = settles.reduce((b, x) => Math.abs(x - e[0]) < Math.abs(b - e[0]) ? x : b, Infinity);
-      if (near - e[0] > 0 && near - e[0] < 15) late.push({ boat: i, simDock: e[0], visualIn: near, events: r.ev.filter(x => x[0] > e[0] - 20 && x[0] <= near && (x[1] === i || x[2] === 'h')).map(x => x.join(' ')) });
-    }
-  }
-  out.lateArrivals = late.slice(0, 2);
-  out.ok = out.simulation.identicalToRunWithout && overlaps === 0 && landHits === 0 && decorHits === 0 && !r.errs.length && (arr.length ? Math.max(...arr) < 0 : true) && out.sync.tripsWithoutNets === 0 && (out.sync.fishJumpFarthestFromNetTiles || 0) <= 1;
+  const mx = a => a.length ? Math.max(...a) : -Infinity;
+  out.checks = {
+    simulationUnchanged: out.simulation.identicalToRunWithout, noOverlap: overlaps === 0, noContact: landHits === 0 && decorHits === 0, noPageError: !r.errs.length,
+    speedWithin5: maxStep <= 5.05, turnWithin90: maxYaw * 180 / Math.PI <= 90.5,
+    slipTripsInBeforeUnloading: mx(groups.slip) < 0, loopBoatsReadyForTheNextTrip: mx(depLag.loop) <= 0.05, noTripSkipped: skipped === 0,
+    noUnloadingShownWithoutTheBoat: r.unloadShownAway === 0, netOnEveryTrip: out.sync.tripsWithoutNets === 0, fishJumpAtTheNet: (out.sync.fishJumpFarthestFromNetTiles || 0) <= 1,
+  };
+  out.ok = Object.values(out.checks).every(Boolean);
   return out;
 }
 
@@ -190,6 +217,7 @@ function analyse(sc, r, plain) {
   const b = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
   const report = [];
   for (const sc of SCENARIOS) {
+    if (ONLY && !sc.name.includes(ONLY)) continue;
     const t0 = Date.now();
     const plain = await run(b, sc, false), r = await run(b, sc, true);
     const a = analyse(sc, r, plain);
@@ -199,6 +227,6 @@ function analyse(sc, r, plain) {
   }
   await b.close();
   fs.mkdirSync(path.join(root, 'test-results'), { recursive: true });
-  fs.writeFileSync(path.join(root, 'test-results', 'boat-sync.json'), JSON.stringify(report, null, 1));
+  if (!ONLY) fs.writeFileSync(path.join(root, 'test-results', 'boat-sync.json'), JSON.stringify(report, null, 1));
   process.exit(report.every(x => x.ok) ? 0 : 1);
 })();
