@@ -55,7 +55,7 @@ const C_MIN = 0.6, C_OUT = 1.6, C_LIMIT = 3, C_HARBOUR = 1.2;
 const C_FULL = 2.0;        // a trip to the fishing grounds may need at most this
 const warp = c => Math.max(1, c / C_OUT);
 export const V_CAP = 5;           // tiles/s: no boat sails faster, at any level
-export const W_CAP = 0.95 * Math.PI / 2; // rad/s: no boat turns faster than 90°/s (planned at 95 % of it)
+export const W_CAP = 0.96 * Math.PI / 2; // rad/s: no boat turns faster than 90°/s (planned at 96 % of it)
 // The limits hold from the first engine upgrade or sea-charts research on. Without either (the start of the game) a boat
 // that had to wait may still catch up as before: its top speed there is 5.7 tiles/s anyway.
 let vCap = V_CAP, wCap = W_CAP;
@@ -89,9 +89,16 @@ function routeLen(B) {                           // the way out and the way back
 function turnCap(path, s, rate, dec) {
   if (path.tcKey !== rate * 1000 + dec) {
     const n = path.n, tc = path.tc || (path.tc = new Float32Array(n));
+    if (!path.kl) {
+      // local curvature: the sharpest bend within half a tile, from the headings themselves (path.k is an average
+      // over a tile, which hides where an arc begins and where a right turn meets a left turn)
+      const raw = new Float32Array(n);
+      for (let i = 1; i < n - 1; i++) { let d = path.a[i + 1] - path.a[i - 1]; while (d > Math.PI) d -= TAU; while (d < -Math.PI) d += TAU; raw[i] = Math.abs(d) / Math.max(1e-6, path.s[i + 1] - path.s[i - 1]); }
+      path.kl = new Float32Array(n);
+      for (let i = 0; i < n; i++) { let m = 0; for (let j = Math.max(0, i - 6); j <= Math.min(n - 1, i + 6); j++) if (raw[j] > m) m = raw[j]; path.kl[i] = m; }
+    }
     for (let i = n - 1; i >= 0; i--) {
-      // the sharpest curvature within 0.16 tiles (the stored values are smoothed where an arc begins)
-      const kk = Math.max(path.k[i], path.k[Math.max(0, i - 2)], path.k[Math.min(n - 1, i + 2)]), own = kk > 1e-3 ? rate / kk : 1e9;
+      const kk = path.kl[i], own = kk > 1e-3 ? rate / kk : 1e9;
       tc[i] = i === n - 1 ? own : Math.min(own, Math.sqrt(tc[i + 1] * tc[i + 1] + 2 * dec * (path.s[i + 1] - path.s[i])));
     }
     path.tcKey = rate * 1000 + dec;
@@ -435,8 +442,8 @@ export class Fleet {
     if (this.canMove(vb)) return this.moveOption(k);
     if (this.jetties.built) return null;          // waiting for its turn to move: harbour trips only
     const o = this.tripOption(k, k, this.fullGround(k), 'grounds');
-    // 0.8 s kept in hand for giving way to another boat: a late boat is never made faster than V_CAP
-    return this.tripTime(o, C_LIMIT) > budget - (this.boats.length > 1 ? 0.8 : 0) ? null : o;
+    // 1.5 s kept in hand for giving way to another boat: a late boat is never made faster than the limits
+    return this.tripTime(o, C_LIMIT) > budget - (this.boats.length > 1 && vCap < 99 ? 1.5 : 0) ? null : o;
   }
   // Harbour trip: how far out of the slip (share of the full way) so that it is home in time at the limits
   shortShare(vb) {

@@ -257,7 +257,11 @@ export function movePlan(k) {
   const pre = [B.x - Math.cos(B.a) * M.run, B.y - Math.sin(B.a) * M.run, B.a];
   // each part starts exactly where the one before ends, heading included, so the joins have no kink;
   // the run-in is a gentle curve onto the berth's line, ending at the berth
-  const endOf = pl => { const a = pl[pl.length - 1], b = pl[pl.length - 4] || pl[0]; return [a[0], a[1], Math.atan2(a[1] - b[1], a[0] - b[0])]; };
+  const endOf = pl => {        // end point and the tangent there (the last chord, carried on by half the change between the last two)
+    const n = pl.length, c = pl[n - 1], b = pl[n - 2], a = pl[n - 3] || b, a1 = Math.atan2(c[1] - b[1], c[0] - b[0]), a0 = a === b ? a1 : Math.atan2(b[1] - a[1], b[0] - a[0]);
+    let d = a1 - a0; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI;
+    return [c[0], c[1], a1 + d / 2];
+  };
   const d1 = dubins([e.x, e.y, head], M.via, LOOP_R), d2 = dubins(endOf(d1), pre, LOOP_R), q = endOf(d2);
   const last = spline([[q[0], q[1]], [B.x - Math.cos(B.a) * M.run * 0.5, B.y - Math.sin(B.a) * M.run * 0.5], [B.x, B.y]], q[2], B.a);
   const sea = finish(resample(cat(cat(d1, d2), last)));

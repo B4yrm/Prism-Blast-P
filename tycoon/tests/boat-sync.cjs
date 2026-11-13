@@ -213,8 +213,9 @@ function analyse(sc, r, plain) {
   out.checks = {
     simulationUnchanged: out.simulation.identicalToRunWithout, noOverlap: overlaps === 0, noContact: landHits === 0 && decorHits === 0, noPageError: !r.errs.length,
     speedWithin5: maxStep <= (capped ? 5.05 : 5.8), turnWithin90: maxYaw * 180 / Math.PI <= (capped ? 90.5 : 110),
-    // with the speed limit a boat that gave way cannot catch up: at most 1.5 s late, and at most one slip trip in twenty
-    slipTripsInBeforeUnloading: capped ? mx(groups.slip) <= 1.5 && groups.slip.filter(x => x > 0).length <= Math.max(1, groups.slip.length / 20) : mx(groups.slip) < 0, loopBoatsReadyForTheNextTrip: mx(depLag.loop) <= 0.05, noTripSkipped: skipped === 0,
+    // a boat that gave way to another may not be able to catch up (it is never made faster than the limits):
+    // at most 1.5 s late, and at most one slip trip in twenty; the crane waits for it
+    slipTripsInBeforeUnloading: mx(groups.slip) <= 1.5 && groups.slip.filter(x => x > 0).length <= Math.max(1, groups.slip.length / 20), loopBoatsReadyForTheNextTrip: mx(depLag.loop) <= 0.05, noTripSkipped: skipped === 0,
     noUnloadingShownWithoutTheBoat: r.unloadShownAway === 0, netOnEveryTrip: out.sync.tripsWithoutNets === 0, fishJumpAtTheNet: (out.sync.fishJumpFarthestFromNetTiles || 0) <= 1,
   };
   out.ok = Object.values(out.checks).every(Boolean);

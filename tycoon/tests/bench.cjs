@@ -20,7 +20,7 @@ const URL = 'file://' + path.resolve(process.argv[3] || path.join(__dirname, '..
       const base = { v: 1, settings: { quality: q }, stats: { caught: 5, sold: 5 }, lastSeen: Date.now() };
       if (fleet) Object.assign(base, { money: 500, boats: 4, workers: 6, level: 9, tier: { harbor: 3, warehouse: 2, market: 2, hq: 2, factory: 0, farm: 0 } });
       // fleetmax: engine and nets at 30, outer jetties built (older builds ignore the flag)
-      if (fleet === 'max') Object.assign(base, { harborOuter: 1, up: { harbor: { cap: 30, speed: 30, net: 30 } } });
+      if (fleet === 'max') Object.assign(base, { harborOuter: +(new URLSearchParams(location.search).get('outer') || 1), up: { harbor: { cap: 30, speed: 30, net: 30 } } });
       if (!sessionStorage.getItem('s')) { sessionStorage.setItem('s', 1); localStorage.setItem('fishingTycoon.save', JSON.stringify(base)); }
       // count WebGL draw calls
       const patch = proto => { for (const fn of ['drawElements', 'drawArrays']) { const o = proto[fn]; proto[fn] = function () { window.__draws = (window.__draws || 0) + 1; return o.apply(this, arguments); }; } };
@@ -28,7 +28,7 @@ const URL = 'file://' + path.resolve(process.argv[3] || path.join(__dirname, '..
       if (window.WebGL2RenderingContext) patch(WebGL2RenderingContext.prototype);
     }, [preset, scene === 'fleetmax' ? 'max' : scene === 'fleet']);
     const p = await ctx.newPage();
-    await p.goto(URL);
+    await p.goto(URL + (process.env.BENCH_OUTER ? '?outer=' + process.env.BENCH_OUTER : ''));   // BENCH_OUTER=2: jetties with head arms (loop berths)
     await p.waitForFunction(() => window.__game && __game.scene.getScene('world') && __game.scene.getScene('world').sim && document.getElementById('loader') === null, null, { timeout: 90000 });
     const r = await p.evaluate(async scene => {
       document.querySelectorAll('[data-m]').forEach(x => x.click());
