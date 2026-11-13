@@ -170,6 +170,8 @@ export const SEA_R = 2.8;                            // turning radius at sea (t
 // approach (checked by tests/boat-check.cjs).
 export const RETURN_FROM = [11, 10.25, 5.25, 10];
 
+// a path (arrays with headings and curvature) from a list of points
+export const pathOf = P => finish(resample(P));
 const cat = (...parts) => parts.reduce((acc, p) => acc.concat(acc.length ? p.slice(1) : p), []);
 
 export function poseAt(path, s, out) {

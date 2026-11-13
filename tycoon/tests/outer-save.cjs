@@ -5,9 +5,9 @@
 //      the other boats move in order; after a reload every boat lies at its loop
 //      berth, nothing is built twice and the progress snapshot is unchanged;
 //   3. an old save without the field, below the threshold, loads with no jetties;
-//   4. the same old save above the threshold builds them once;
-//   5. a save of the previous build (harborOuter = 1, boats at the old outer
-//      berths) loads without errors and goes on to build the head arms.
+//   4. the same old save above the threshold loads with jetties, head arms and
+//      the boats at their loop berths in place (nothing to build, no boat to move);
+//   5. so does a save of the previous build (harborOuter = 1).
 //   node tests/outer-save.cjs [path/to/index.html]  → test-results/outer-save.json
 const { chromium } = require('playwright');
 const path = require('path'), fs = require('fs');
@@ -39,19 +39,19 @@ const snap = p => p.evaluate(() => { const S = __game.scene.getScene('world').si
   const play = (p, secs) => p.evaluate(secs => { __game.loop.sleep(); let T = performance.now(); const w = __game.scene.getScene('world'), J = w.fleet.jetties, seen = [], arm = []; for (let k = 0; k < 30 * secs; k++) { T += 33.3; __game.step(T, 33.3); if (k % 30 === 0) { seen.push(+J.progress.toFixed(2)); arm.push(+J.armProgress.toFixed(2)); } } __game.loop.wake(); return { seen, arm }; }, secs);
   // 1 + 2
   {
-    const s = await session(b, { ...base, up: { ...MAXUP, harbor: { cap: 0, speed: 14, net: 18 } } });
+    const s = await session(b, { ...base, up: { ...MAXUP, harbor: { cap: 0, speed: 14, net: 17 } } });
     const before = await state(s.p);
+    await s.p.evaluate(() => { __game.scene.getScene('world').sim.S.up.harbor.net = 18; });      // the last upgrade is bought in play
     const st1 = await play(s.p, 9);
     const after = await state(s.p);
-    await s.p.reload(); await ready(s.p);
-    const reloaded = await state(s.p);
-    report.jetties = { before, constructionProgressEverySecond: st1.seen, after, reloaded, errors: s.errs.slice() };
-    report.jetties.pass = !before.built && after.built && after.stored >= 1 && reloaded.built && reloaded.progress === 1 && st1.seen.some(x => x > 0 && x < 1) && !s.errs.length;
+    report.jetties = { before, constructionProgressEverySecond: st1.seen, after, errors: s.errs.slice() };
+    report.jetties.pass = !before.built && after.built && after.stored >= 1 && st1.seen.some(x => x > 0 && x < 1) && !s.errs.length;
     // play on until every boat lies at its loop berth (at most 6 minutes of game time)
-    let st = reloaded, armStages = [], secs = 0;
+    let st = after, armStages = [], secs = 0;
     while (secs < 360 && !(st.arms && st.sites.every(x => x >= 4))) { const r = await play(s.p, 20); armStages.push(...r.arm.filter(x => x > 0 && x < 1)); secs += 20; st = await state(s.p); }
-    const snap1 = await snap(s.p);
     await s.p.evaluate(() => window.dispatchEvent(new Event('pagehide')));
+    st = await state(s.p);
+    const snap1 = await snap(s.p);
     await s.p.reload(); await ready(s.p);
     const again = await state(s.p), snap2 = await snap(s.p);
     report.headArmsAndMoves = { gameSecondsNeeded: secs, armProgressSeen: armStages.slice(0, 6), afterPlaying: st, afterReload: again, errors: s.errs.slice() };
@@ -70,9 +70,12 @@ const snap = p => p.evaluate(() => { const S = __game.scene.getScene('world').si
   // 4. old save above the threshold: built once
   {
     const s = await session(b, { ...base, up: { harbor: { cap: 2, speed: 20, net: 22 } } });
+    const atLoad = await state(s.p);
     await play(s.p, 9);
+    await s.p.evaluate(() => window.dispatchEvent(new Event('pagehide')));
     const st = await state(s.p);
-    report.oldSaveAbove = { ...st, errors: s.errs, pass: st.built && st.stored >= 1 && !s.errs.length };
+    if (!(atLoad.built && atLoad.arms && atLoad.progress === 1 && atLoad.armProgress === 1 && atLoad.sites.every(x => x >= 4))) s.errs.push('not in place at load: ' + JSON.stringify(atLoad));
+    report.oldSaveAbove = { ...st, errors: s.errs, pass: st.built && st.arms && st.stored === 2 && st.sites.every(x => x >= 4) && !s.errs.length };
     await s.ctx.close();
   }
   // 5. a save of the previous build: jetties built (1), no head arms yet
@@ -80,8 +83,8 @@ const snap = p => p.evaluate(() => { const S = __game.scene.getScene('world').si
     const s = await session(b, { ...base, harborOuter: 1, up: { ...MAXUP, harbor: { cap: 0, speed: 30, net: 30 } } });
     const st0 = await state(s.p);
     let st = st0, secs = 0;
-    while (secs < 360 && !(st.arms && st.sites.every(x => x >= 4))) { await play(s.p, 20); secs += 20; st = await state(s.p); }
-    report.previousBuildSave = { atLoad: st0, gameSecondsNeeded: secs, afterPlaying: st, errors: s.errs, pass: st0.built && !st0.arms && st0.progress === 1 && st.arms && st.stored === 2 && st.sites.every(x => x >= 4) && !s.errs.length };
+    await play(s.p, 5); await s.p.evaluate(() => window.dispatchEvent(new Event('pagehide'))); st = await state(s.p);
+    report.previousBuildSave = { atLoad: st0, gameSecondsNeeded: secs, afterPlaying: st, errors: s.errs, pass: st0.built && st0.arms && st0.progress === 1 && st0.armProgress === 1 && st0.sites.every(x => x >= 4) && st.stored === 2 && !s.errs.length };
     await s.ctx.close();
   }
   await b.close();

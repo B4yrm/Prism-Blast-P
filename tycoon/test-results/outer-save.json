@@ -10,17 +10,17 @@
     2,
     3
    ],
-   "progress": 0.05,
+   "progress": 0,
    "flag": 0
   },
   "constructionProgressEverySecond": [
-   0.05,
-   0.2,
-   0.34,
-   0.48,
-   0.63,
-   0.77,
-   0.91,
+   0.01,
+   0.15,
+   0.29,
+   0.44,
+   0.58,
+   0.72,
+   0.86,
    1,
    1
   ],
@@ -38,30 +38,16 @@
    "flag": 1,
    "stored": 1
   },
-  "reloaded": {
-   "built": true,
-   "arms": false,
-   "armProgress": 0.11,
-   "sites": [
-    0,
-    1,
-    2,
-    7
-   ],
-   "progress": 1,
-   "flag": 1,
-   "stored": 1
-  },
   "errors": [],
   "pass": true
  },
  "headArmsAndMoves": {
-  "gameSecondsNeeded": 60,
+  "gameSecondsNeeded": 100,
   "armProgressSeen": [
-   0.12,
-   0.37,
-   0.62,
-   0.87
+   0.08,
+   0.33,
+   0.58,
+   0.83
   ],
   "afterPlaying": {
    "built": true,
@@ -100,10 +86,10 @@
    "money": 900,
    "gems": 33,
    "level": 12,
-   "xp": 56,
+   "xp": 106,
    "boats": 4,
    "workers": 10,
-   "caught": 230,
+   "caught": 350,
    "up": "{\"warehouse\":{\"cap\":30,\"load\":30,\"cold\":30},\"factory\":{\"speed\":30,\"out\":30,\"qual\":30},\"market\":{\"price\":30,\"ads\":30,\"till\":30},\"hq\":{\"train\":30,\"carry\":30},\"harbor\":{\"cap\":0,\"speed\":14,\"net\":18}}",
    "tier": "{\"harbor\":3,\"warehouse\":3,\"market\":3,\"hq\":3,\"factory\":3,\"farm\":0}"
   },
@@ -111,10 +97,10 @@
    "money": 900,
    "gems": 33,
    "level": 12,
-   "xp": 56,
+   "xp": 106,
    "boats": 4,
    "workers": 10,
-   "caught": 230,
+   "caught": 350,
    "up": "{\"warehouse\":{\"cap\":30,\"load\":30,\"cold\":30},\"factory\":{\"speed\":30,\"out\":30,\"qual\":30},\"market\":{\"price\":30,\"ads\":30,\"till\":30},\"hq\":{\"train\":30,\"carry\":30},\"harbor\":{\"cap\":0,\"speed\":14,\"net\":18}}",
    "tier": "{\"harbor\":3,\"warehouse\":3,\"market\":3,\"hq\":3,\"factory\":3,\"farm\":0}"
   }
@@ -136,36 +122,36 @@
  },
  "oldSaveAbove": {
   "built": true,
-  "arms": false,
-  "armProgress": 0,
+  "arms": true,
+  "armProgress": 1,
   "sites": [
-   0,
-   1,
-   2,
-   3
+   4,
+   5,
+   6,
+   7
   ],
   "progress": 1,
-  "flag": 1,
-  "stored": 1,
+  "flag": 2,
+  "stored": 2,
   "errors": [],
   "pass": true
  },
  "previousBuildSave": {
   "atLoad": {
    "built": true,
-   "arms": false,
-   "armProgress": 0.11,
+   "arms": true,
+   "armProgress": 1,
    "sites": [
-    0,
-    1,
-    2,
+    4,
+    5,
+    6,
     7
    ],
    "progress": 1,
-   "flag": 1,
+   "flag": 2,
    "stored": 1
   },
-  "gameSecondsNeeded": 60,
+  "gameSecondsNeeded": 0,
   "afterPlaying": {
    "built": true,
    "arms": true,

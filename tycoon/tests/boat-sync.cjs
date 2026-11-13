@@ -29,14 +29,15 @@ const SCENARIOS = [
   // every scenario: no overlaps or contacts, never faster than 5 tiles/s or 90°/s, a net on every trip, one visual
   // trip per simulation trip, no unloading shown without the boat, the simulation unchanged.
   // Slip trips: in the slip before the simulation unloads. Loop trips: lateness reported; ready for the next trip.
-  { name: 'start-fleet4', boats: 4, secs: 900, up: {} },
+  { name: 'start-fleet4', boats: 4, secs: 1800, up: {} },
   { name: 'start-fleet1', boats: 1, secs: 300, up: {} },
   { name: 'mid-fleet4 (engine 6, nets 3)', boats: 4, secs: 900, up: { cap: 4, speed: 6, net: 3 } },
   { name: 'mid+-fleet4 (engine 10, nets 8)', boats: 4, secs: 600, up: { cap: 6, speed: 10, net: 8 } },
-  { name: 'unlock (engine 14, nets 18): jetties and head arms are built, the boats move one by one', boats: 4, secs: 900, up: { cap: 0, speed: 14, net: 18 }, ...STRONG },
-  { name: 'unlock, 2 boats (harbour tier 2)', boats: 2, secs: 600, up: { cap: 0, speed: 14, net: 18 }, ...STRONG, tier: { ...STRONG.tier, harbor: 2 } },
+  { name: 'unlock in play (engine 14, nets 17 → 18 bought at 5 s): jetties and head arms are built, the boats move one by one', boats: 4, secs: 900, up: { cap: 0, speed: 14, net: 17 }, buy: { at: 5, up: { net: 18 } }, ...STRONG },
+  { name: 'unlock in play, 2 boats (harbour tier 2)', boats: 2, secs: 600, up: { cap: 0, speed: 14, net: 17 }, buy: { at: 5, up: { net: 18 } }, ...STRONG, tier: { ...STRONG.tier, harbor: 2 } },
   { name: 'engine 20, nets 18, loop berths', boats: 4, secs: 900, up: { cap: 0, speed: 20, net: 18 }, outer: 2, ...STRONG },
-  { name: 'max 30/30 from an old save: everything is built and the boats move at the top level', boats: 4, secs: 900, up: { cap: 0, speed: 30, net: 30 }, ...STRONG },
+  { name: 'max 30/30 loaded from an old save (no jetties stored): loop berths in place at load', boats: 4, secs: 900, up: { cap: 0, speed: 30, net: 30 }, ...STRONG },
+  { name: 'unlock in play far above the threshold (engine 30, nets 17 → 18 bought at 5 s): the move is late once', boats: 4, secs: 900, up: { cap: 0, speed: 30, net: 17 }, buy: { at: 5, up: { net: 18 } }, ...STRONG },
   { name: 'max 30/30, loop berths, strong economy (shortest stays)', boats: 4, secs: 900, up: { cap: 0, speed: 30, net: 30 }, outer: 2, ...STRONG },
   { name: 'max 30/30, loop berths, hold 30 (long stays)', boats: 4, secs: 600, up: { cap: 30, speed: 30, net: 30 }, outer: 2 },
   { name: 'max 30/30, 1 boat, loop berths', boats: 1, secs: 300, up: { cap: 0, speed: 30, net: 30 }, outer: 2, ...STRONG },
@@ -58,7 +59,7 @@ async function run(b, sc, withFleet) {
   p.on('pageerror', e => errs.push(e.message));
   await p.goto('file://' + FILE);
   await p.waitForFunction(() => window.__game && __game.scene.getScene('world') && __game.scene.getScene('world').fleet && document.getElementById('loader') === null, null, { timeout: 90000 });
-  const r = await p.evaluate(([secs, withFleet]) => {
+  const r = await p.evaluate(([secs, withFleet, buy]) => {
     __game.loop.sleep();
     let seed = 777; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
     const w = __game.scene.getScene('world'), sim = w.sim, F = w.fleet, dt = 1 / 30;
@@ -84,7 +85,9 @@ async function run(b, sc, withFleet) {
     }
     const lastS = sim.boats.map(b => b.state), lastV = [];
     let t = 0, holdFrames = 0, cs = [];
+    let bought = false;
     for (let k = 0; k < Math.round(secs / dt); k++) {
+      if (buy && !bought && t >= buy.at) { Object.assign(sim.S.up.harbor, buy.up); bought = true; }      // an upgrade bought during play (both runs)
       Math.random = simRandom; sim.update(dt);
       Math.random = visRandom; if (withFleet) F.update(t, dt);
       t += dt;
@@ -105,7 +108,7 @@ async function run(b, sc, withFleet) {
       if (k % 200 === 0) { Math.random = simRandom; sim.collect(true); }
     }
     return { unloadShownAway, unloadsShown, armsAt, stemAt, allMovedAt, sites: F.boats.map(v => v.site), flag: sim.S.harborOuter, v0: F.V0, trips: F.stats.trips, built: F.jetties.built, jumps, nets: F.stats.nets, netMin: F.stats.netMin, traj, ev, holdSecs: +(holdFrames * dt).toFixed(1), cs, caught: sim.S.stats.caught, money: Math.floor(sim.S.money), dt };
-  }, [sc.secs, withFleet]);
+  }, [sc.secs, withFleet, sc.buy || null]);
   r.errs = errs;
   await ctx.close();
   return r;
@@ -119,7 +122,7 @@ function analyse(sc, r, plain) {
     const L = {};
     for (let i = 0; i < sc.boats; i++) {
       const E = run.ev.filter(e => e[1] === i && e[2] === 's');
-      for (let k = 1; k + 1 < E.length; k++) if (E[k][3] !== 'dock') (L[`${i}/${E[k][3]}`] = L[`${i}/${E[k][3]}`] || new Set()).add((E[k + 1][0] - E[k][0]).toFixed(2));
+      for (let k = 1; k + 1 < E.length; k++) if (E[k][3] !== 'dock' && !(sc.buy && E[k][0] < sc.buy.at + 30))  /* legs under way when an upgrade is bought differ with the start-up frames */ (L[`${i}/${E[k][3]}`] = L[`${i}/${E[k][3]}`] || new Set()).add((E[k + 1][0] - E[k][0]).toFixed(2));
     }
     return Object.fromEntries(Object.entries(L).map(([k, v]) => [k, [...v].sort().join(',')]));
   };
@@ -177,7 +180,8 @@ function analyse(sc, r, plain) {
   for (let i = 0; i < n; i++) {
     const E = r.ev.filter(e => e[1] === i), simOut = E.filter(e => e[2] === 's' && e[3] === 'out').map(e => e[0]);
     const simDock = E.filter(e => e[2] === 's' && e[3] === 'dock' && simOut.length && e[0] > simOut[0]).map(e => e[0]);
-    const visDep = E.filter(e => e[2] === 'v' && e[3] === 'depart'), visIn = E.filter(e => e[2] === 'v' && e[3] === 'settle').map(e => e[0]);
+    const visDep = E.filter(e => e[2] === 'v' && e[3] === 'depart'), V = E.filter(e => e[2] === 'v');
+    const visIn = V.filter((e, q) => e[3] === 'settle' && q > 0 && V[q - 1][3] === 'return').map(e => e[0]);     // made fast after a trip (not: lines put back while waiting)
     const kind = j => visDep[j][4] === 'loop' ? 'loop' : visDep[j][4] === 'move' ? 'move' : 'slip';
     const loopDur = []; for (let j = 0; j < Math.min(visDep.length, visIn.length); j++) if (visDep[j][4] === 'loop') loopDur.push(visIn[j] - visDep[j][0]);
     const pb = { boat: i + 1, topSpeedTilesPerS: +(bSpeed[i] || 0).toFixed(2), topTurnDegPerS: +(bTurn[i] || 0).toFixed(1), loopTripS: loopDur.length ? +(loopDur.reduce((a, c) => a + c, 0) / loopDur.length).toFixed(2) : null, simTrips: simDock.length, visualTrips: visIn.length, loop: { n: 0, lateMax: -Infinity, lateSum: 0, mooredMin: Infinity } };

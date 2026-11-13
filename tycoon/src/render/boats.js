@@ -37,6 +37,7 @@ const DWELL = 0.55;        // s stopped while the gearbox goes from astern to ah
 const PRE_RETURN = 1.0;    // s before the simulation's catch is complete the nets come in
 const CAST_AT = 1.15;      // s before the simulation leaves, the lines are let go
 const LEAVE_AT = 0.55;     // … and the boat starts backing out
+const LOOP_LEAVE_AT = 1.15; // a loop berth is left this long before the simulation leaves (as soon as it has unloaded)
 // Visual fishing (cast the net, tow, haul it in) lasts in proportion to the
 // simulation's fishing time, never less than FISH_HARD seconds.
 const fishVis = F => clamp(0.45 * F, 0.9, 2.5);
@@ -234,13 +235,15 @@ export class Fleet {
     const away = b.state === 'out' || b.state === 'fish';     // the simulation has left the berth
     switch (vb.phase) {
       case 'docked':       // (a boat that is home early waits for the simulation to dock and unload)
-        if (away || (b.state === 'dock' && b.load <= 0 && b.t <= CAST_AT)) { vb.phase = 'castoff'; vb.trip = this.chooseTrip(vb); }
+        if (away || (b.state === 'dock' && b.load <= 0 && b.t <= CAST_AT) || this.unloadedSoon(vb)) { vb.phase = 'castoff'; vb.trip = this.chooseTrip(vb); }
         break;
       case 'castoff':
+        // the quay filled up after all (lines were let go a moment early): make fast again and wait
+        if (b.state === 'dock' && b.load > 0 && b.blocked) { vb.phase = 'settle'; vb.settleT = 9; vb.trip = null; break; }
         // lines let go; at a loop berth the boat is also pushed off the pier (quicker when it is late)
         vb.rope = Math.max(0, vb.rope - dt / (away ? 0.5 : 0.6));
         vb.warp = Math.max(0, vb.warp - dt / (away ? 0.5 : 0.6));
-        if (vb.rope <= 0 && vb.holdT <= 0 && (away || (b.state === 'dock' && b.t <= LEAVE_AT))) this.start(vb, 'depart');
+        if (vb.rope <= 0 && vb.holdT <= 0 && (away || (b.state === 'dock' && b.load <= 0 && b.t <= (vb.site >= 4 ? LOOP_LEAVE_AT : LEAVE_AT)))) this.start(vb, 'depart');
         break;
       case 'depart':
         if (vb.mode === 'loop') {                // one plan all the way: the net goes out at s0
@@ -289,6 +292,14 @@ export class Fleet {
       const q = this.netEnd(vb), p = iso(q.x + (Math.random() - 0.5) * 0.8, q.y + (Math.random() - 0.5) * 0.8, SEA_Z);
       this.sc.wakeFx.emitParticleAt(p.x, p.y, 1);
     }
+  }
+  // Loop berths: the lines are let go while the last fish are landed, so that the boat moves off as soon as the
+  // simulation has finished unloading (it then has LOOP_LEAVE_AT more seconds for the loop).
+  unloadedSoon(vb) {
+    const b = vb.b;
+    if (vb.site < 4 || b.state !== 'dock' || b.load <= 0 || b.blocked) return false;
+    if (stat.quayCap() - G.S.stock.quay < b.load) return false;       // not if the quay may fill up first
+    return b.load / (stat.boatCap() / 2.5) <= 0.6;
   }
   lag(vb) {                                       // both ends of a trip seen: record the arrival lag
     if (vb.simDockAt === undefined || vb.inAt === undefined || Math.abs(vb.inAt - vb.simDockAt) > 20) return;
@@ -435,7 +446,9 @@ export class Fleet {
   // when it is this boat's turn; the full fishing ground while that can be made in time; else the harbour trip.
   chooseTrip(vb) {
     const b = vb.b, k = vb.k;
-    const wait = b.state === 'dock' ? Math.max(0, b.t - LEAVE_AT) : 0, budget = this.toDock(b) - wait - DOCK_EARLY - 0.15;
+    const lead = vb.site >= 4 ? LOOP_LEAVE_AT : LEAVE_AT, Lr = routeLen(b.berth);
+    // still at the berth: the boat leaves `lead` before the simulation and must be back when that docks again
+    const budget = (b.state === 'dock' ? lead + simOutTime(0, Lr, this.V0) + stat.fishTime() + simBackTime(Lr, this.V0) : this.toDock(b)) - DOCK_EARLY - 0.15;
     if (vb.site >= 4) {
       let best = this.loopOption(k, 0);
       if (this.allMoved()) for (const n of LOOP_BERTHS[k].loops) { if (!n) continue; const o = this.loopOption(k, n); if (this.tripTime(o, C_OUT) <= budget) best = o; else break; }
@@ -550,17 +563,17 @@ export class Fleet {
     // (the capsules used here are a little fuller than the hulls).
     const N = 60, M = 30, mv = new Map(), hd = new Map();
     for (const vb of act) { const n = vb.phase === 'castoff' ? N : M; mv.set(vb, this.track(vb, false, N)); hd.set(vb, this.track(vb, true, n)); }
+    const onLoop = vb => vb.site >= 4 && (vb.phase === 'castoff' ? !!(vb.trip && vb.trip.loop) : vb.mode === 'loop');
     const clash = (A, B, n, safe) => { for (let j = 0; j < n && j < A.length && j < B.length; j++) if (capGap(A[j], B[j]) < safe) return true; return false; };
     for (let a = 0; a < act.length; a++) for (let c = a + 1; c < act.length; c++) {
       let lo = act[a], hi = act[c];
+      if (onLoop(lo) && onLoop(hi)) continue;        // loops share no water (tools/boats/loops.cjs, tests/boat-check.cjs)
       if (this.prio(lo) > this.prio(hi)) [lo, hi] = [hi, lo];
       const n = lo.phase === 'castoff' ? N : M, safe = (SAFE_BEAMS * 2 * HULL.half + SAFE_PAD) * Math.max(lo.scale, hi.scale);
       if (!clash(mv.get(lo), mv.get(hi), n, safe)) continue;
       const hold = vb => { if (vb.holdT <= 0) this.stats.waits++; vb.holdT = 0.8; };
       if (!clash(hd.get(lo), mv.get(hi), n, safe)) { hold(lo); continue; }
-      if (this.canHold(hi) && !clash(mv.get(lo), hd.get(hi), M, safe)) { hold(hi); continue; }
-      // neither giving way alone is enough: both stop; whoever is then clear of the other goes on first
-      if (this.canHold(hi) && this.canHold(lo)) { hold(lo); hold(hi); }
+      if (this.canHold(hi) && !clash(mv.get(lo), hd.get(hi), M, safe)) hold(hi);
     }
   }
 
@@ -740,5 +753,11 @@ export class Fleet {
   // the crane at a berth works only while the boat is in
   moored(b) { const vb = this.view(b); return !!vb && (vb.phase === 'docked' || vb.phase === 'settle' || vb.phase === 'castoff'); }
   // where it lies while the simulation unloads it: slip 0–3, outer berth 4–7, -1 not in yet
+  // what the boat on screen is doing, in the simulation's words (for the harbour panel)
+  shownState(b) {
+    const vb = this.view(b);
+    if (!vb) return b.state;
+    return vb.phase === 'depart' ? 'out' : vb.phase === 'fishing' ? 'fish' : vb.phase === 'return' ? 'back' : 'dock';
+  }
   mooredSite(b) { const vb = this.view(b); return vb && this.moored(b) ? vb.site : -1; }
 }

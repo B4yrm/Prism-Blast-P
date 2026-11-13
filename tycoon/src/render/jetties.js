@@ -29,6 +29,10 @@ const CART_ROUTES = [
 export class Jetties {
   constructor(scene) {
     this.sc = scene;
+    // A save that is already past the unlock level when it is loaded (an old save, or one of the previous build)
+    // gets the jetties and their head arms as they are when finished: the boats lie at their loop berths from the
+    // start, and no boat has to cross the harbour at a level where that trip cannot be made in time.
+    if (outerUnlocked() && G.S.harborOuter < 2) G.S.harborOuter = 2;
     this.built = G.S.harborOuter >= 1;
     this.progress = this.built ? 1 : 0;
     this.arms = G.S.harborOuter >= 2;

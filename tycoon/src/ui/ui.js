@@ -245,9 +245,13 @@ const PLACE = { quay: 'iskələ', wh: 'anbar', facOut: 'zavod', mRaw: 'bazar', m
 function boatRows() {
   const sim = G.sim;
   return sim.boats.map((b, i) => {
-    const p = b.state === 'fish' ? 1 - Math.max(0, b.t) / stat.fishTime() : b.state === 'dock' ? (b.load ? 1 - b.load / stat.boatCap() : 1) : b.m.path ? b.m.idx / b.m.path.length : 0;
-    return `<div class="row">${ri('boats')}<span class="rt"><b>Qayıq #${i + 1} · ${BOAT_STATE[b.state]}${b.blocked ? ' · iskələ dolub!' : ''}</b>
-      <small>Yük: ${fmt(b.load)} / ${stat.boatCap()} balıq</small>${bar(p * 100, 100, 'blue', b.state === 'fish' ? Math.ceil(Math.max(0, b.t)) + ' s' : '')}</span><span></span></div>`;
+    let p = b.state === 'fish' ? 1 - Math.max(0, b.t) / stat.fishTime() : b.state === 'dock' ? (b.load ? 1 - b.load / stat.boatCap() : 1) : b.m.path ? b.m.idx / b.m.path.length : 0;
+    // The label says what the boat on screen is doing (it can be a second ahead of or behind the simulation's
+    // clock); load and catch are the simulation's own numbers.
+    const seen = G.world && G.world.fleet && G.world.fleet.shownState ? G.world.fleet.shownState(b) : b.state;
+    if (seen !== b.state) p = seen === 'back' ? 0.97 : seen === 'out' ? 0.03 : p;
+    return `<div class="row">${ri('boats')}<span class="rt"><b>Qayıq #${i + 1} · ${BOAT_STATE[seen]}${b.blocked ? ' · iskələ dolub!' : ''}</b>
+      <small>Yük: ${fmt(b.load)} / ${stat.boatCap()} balıq</small>${bar(p * 100, 100, 'blue', b.state === 'fish' && seen === 'fish' ? Math.ceil(Math.max(0, b.t)) + ' s' : '')}</span><span></span></div>`;
   }).join('');
 }
 
