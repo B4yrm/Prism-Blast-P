@@ -250,8 +250,10 @@ function boatRows() {
     // clock); load and catch are the simulation's own numbers.
     const seen = G.world && G.world.fleet && G.world.fleet.shownState ? G.world.fleet.shownState(b) : b.state;
     if (seen !== b.state) p = seen === 'back' ? 0.97 : seen === 'out' ? 0.03 : p;
+    // a boat still coming in (the simulation already unloads it): the panel shows the full hold it is bringing
+    const shownLoad = seen === 'back' && b.state === 'dock' ? (b.cap || stat.boatCap()) : b.load;
     return `<div class="row">${ri('boats')}<span class="rt"><b>Qayıq #${i + 1} · ${BOAT_STATE[seen]}${b.blocked ? ' · iskələ dolub!' : ''}</b>
-      <small>Yük: ${fmt(b.load)} / ${stat.boatCap()} balıq</small>${bar(p * 100, 100, 'blue', b.state === 'fish' && seen === 'fish' ? Math.ceil(Math.max(0, b.t)) + ' s' : '')}</span><span></span></div>`;
+      <small>Yük: ${fmt(shownLoad)} / ${stat.boatCap()} balıq</small>${bar(p * 100, 100, 'blue', b.state === 'fish' && seen === 'fish' ? Math.ceil(Math.max(0, b.t)) + ' s' : '')}</span><span></span></div>`;
   }).join('');
 }
 

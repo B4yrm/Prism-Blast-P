@@ -3,21 +3,22 @@
 // limits. 4 boats, 4 game minutes per level, stepped at 30 FPS with a seeded random.
 // Per level: trips to the fishing grounds / harbour trips, how far out of the slip
 // the harbour trips go, how late the latest arrival was, top speed.
-//   node tests/prelock-measure.cjs [path/to/index.html]  → test-results/prelock-measure.json
+//   [NAV=3] node tests/prelock-measure.cjs [path/to/index.html]  → test-results/prelock-measure[-nav3].json
 const { chromium } = require('playwright');
 const path = require('path'), fs = require('fs');
 const FILE = 'file://' + path.resolve(process.argv[2] || path.join(__dirname, '../index.html'));
 const ENG = [0, 2, 4, 6, 8, 10, 12, 14, 18, 22, 26, 30], NETS = [0, 6, 12, 17, 18, 24, 30];
+const NAV = +(process.env.NAV || 0);                 // sea-charts research level
 (async () => {
   const b = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
   const out = [];
   for (const net of NETS) for (const sp of ENG) {
     if (net >= 18 && sp >= 14) continue;             // the jetties are open there
     const ctx = await b.newContext({ viewport: { width: 844, height: 390 } });
-    await ctx.addInitScript(([net, sp]) => {
+    await ctx.addInitScript(([net, sp, nav]) => {
       if (sessionStorage.getItem('s')) return; sessionStorage.setItem('s', 1);
-      localStorage.setItem('fishingTycoon.save', JSON.stringify({ v: 1, money: 500, boats: 4, workers: 6, level: 12, settings: { quality: 'low' }, tier: { harbor: 3, warehouse: 2, market: 2, hq: 2, factory: 0, farm: 0 }, up: { harbor: { cap: 0, speed: sp, net } }, stats: { caught: 1, sold: 1 }, lastSeen: Date.now() }));
-    }, [net, sp]);
+      localStorage.setItem('fishingTycoon.save', JSON.stringify({ v: 1, money: 500, boats: 4, workers: 6, level: 12, settings: { quality: 'low' }, tier: { harbor: 3, warehouse: 2, market: 2, hq: 2, factory: 0, farm: 0 }, up: { harbor: { cap: 0, speed: sp, net } }, research: { lv: nav ? { nav, nets: 0 } : {}, active: null }, stats: { caught: 1, sold: 1 }, lastSeen: Date.now() }));
+    }, [net, sp, NAV]);
     const p = await ctx.newPage();
     await p.goto(FILE);
     await p.waitForFunction(() => window.__game && __game.scene.getScene('world') && __game.scene.getScene('world').fleet && document.getElementById('loader') === null, null, { timeout: 90000 });
@@ -36,9 +37,9 @@ const ENG = [0, 2, 4, 6, 8, 10, 12, 14, 18, 22, 26, 30], NETS = [0, 6, 12, 17, 1
       return { trips: S.trips, arrivals: S.arrivals, lagMax: S.arrivals ? +S.lagMax.toFixed(2) : null, lagMean: S.arrivals ? +(S.lagSum / S.arrivals).toFixed(2) : null, vmax: +vmax.toFixed(2), V0: +F.V0.toFixed(2), shortShareMin: share.length ? Math.min(...share) : null, shortShareMean: share.length ? +(share.reduce((a, c) => a + c, 0) / share.length).toFixed(2) : null };
     });
     await ctx.close();
-    out.push({ nets: net, engine: sp, ...r });
+    out.push({ nets: net, engine: sp, nav: NAV, ...r });
     console.error(JSON.stringify(out[out.length - 1]));
   }
   await b.close();
-  fs.writeFileSync(path.join(__dirname, '../test-results/prelock-measure.json'), JSON.stringify(out, null, 1));
+  fs.writeFileSync(path.join(__dirname, '../test-results/prelock-measure' + (NAV ? '-nav' + NAV : '') + '.json'), JSON.stringify(out, null, 1));
 })();

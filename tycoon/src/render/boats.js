@@ -243,7 +243,12 @@ export class Fleet {
         // lines let go; at a loop berth the boat is also pushed off the pier (quicker when it is late)
         vb.rope = Math.max(0, vb.rope - dt / (away ? 0.5 : 0.6));
         vb.warp = Math.max(0, vb.warp - dt / (away ? 0.5 : 0.6));
-        if (vb.rope <= 0 && vb.holdT <= 0 && (away || (b.state === 'dock' && b.load <= 0 && b.t <= (vb.site >= 4 ? LOOP_LEAVE_AT : LEAVE_AT)))) this.start(vb, 'depart');
+        if (vb.rope <= 0 && vb.holdT <= 0 && (away || (b.state === 'dock' && b.load <= 0 && b.t <= (vb.site >= 4 ? LOOP_LEAVE_AT : LEAVE_AT)))) {
+          // kept waiting at the berth (giving way): the trip is chosen again from what the simulation's clock allows now,
+          // so a boat that lost time takes a shorter trip rather than being late or faster
+          if (away && vb.site < 4 && vb.trip && !vb.trip.move && vb.trip.label !== 'move') vb.trip = this.chooseTrip(vb);
+          this.start(vb, 'depart');
+        }
         break;
       case 'depart':
         if (vb.mode === 'loop') {                // one plan all the way: the net goes out at s0
@@ -459,12 +464,12 @@ export class Fleet {
     if (this.canMove(vb)) return this.moveOption(k);
     if (this.jetties.built) return null;          // waiting for its turn to move: harbour trips only
     // Slip trips, in this order: the full route to the fishing grounds; the short curve to sea (it crosses its
-    // neighbours' water, so boats may have to give way: 1.2 s kept in hand); the harbour trip as the last resort.
+    // neighbours' water, so boats may have to give way: 0.5 s kept in hand); the harbour trip as the last resort.
     // A boat that is late is never made faster than the limits.
     const o = this.tripTime(this.tripOption(k, k, this.fullGround(k), 'grounds'), C_LIMIT) <= budget - (this.boats.length > 1 && vCap < 99 ? 1.5 : 0) ? this.tripOption(k, k, this.fullGround(k), 'grounds') : null;
     if (o) return o;
     const cu = this.curveOption(k);
-    return this.tripTime(cu, C_LIMIT) <= budget - (this.boats.length > 1 ? 1.2 : 0) ? cu : null;
+    return this.tripTime(cu, C_LIMIT) <= budget - (this.boats.length > 1 ? 0.5 : 0) ? cu : null;
   }
   // Harbour trip: how far out of the slip (share of the full way) so that it is home in time at the limits
   shortShare(vb) {
