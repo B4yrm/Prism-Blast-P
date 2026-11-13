@@ -1,0 +1,254 @@
+{
+ "hullScale": 1,
+ "hull": {
+  "length": 3.93,
+  "beam": 1.22
+ },
+ "radius": 2.8,
+ "marginUnderWay": 0.3,
+ "offPierUnderWay": 0.95,
+ "offPierMadeFast": 0.3,
+ "sternSwing": 0.58,
+ "searchSeconds": 82,
+ "candidates": 1495,
+ "sceneChanges": {
+  "decorative boat 2": "moved from (34, 26.6) to (28, 26.5)",
+  "other": [
+   "buoys of ground 3"
+  ]
+ },
+ "boats": [
+  {
+   "boat": 1,
+   "jetty": "west",
+   "berth": "head arm, sea face",
+   "start": [
+    2.9,
+    33.16
+   ],
+   "madeFast": [
+    2.9,
+    32.51
+   ],
+   "headingDeg": 0,
+   "newDeckTiles": 6.5,
+   "loops": [
+    {
+     "n": 0,
+     "tiles": 17.6,
+     "briskS": 6.44,
+     "calmS": 7.23
+    },
+    {
+     "n": 1,
+     "tiles": 19.6,
+     "briskS": 6.89,
+     "calmS": 7.68
+    },
+    {
+     "n": 2,
+     "tiles": 21.6,
+     "briskS": 7.33,
+     "calmS": 8.13
+    },
+    {
+     "n": 3,
+     "tiles": 23.6,
+     "briskS": 7.76,
+     "calmS": 8.59
+    },
+    {
+     "n": 4,
+     "tiles": 25.6,
+     "briskS": 8.17,
+     "calmS": 9.03
+    },
+    {
+     "n": 5,
+     "tiles": 27.6,
+     "briskS": 8.58,
+     "calmS": 9.46
+    }
+   ],
+   "longerLoopsStopAt": "land, rocks or the edge of the sea",
+   "clearance": {
+    "toObstacles": 0.46,
+    "toOtherLoops": 0.53
+   },
+   "move": {
+    "order": 4,
+    "tiles": 28.9,
+    "briskS": 11.6,
+    "calmS": 12.9
+   }
+  },
+  {
+   "boat": 2,
+   "jetty": "east",
+   "berth": "head arm, sea face",
+   "start": [
+    28.6,
+    33.16
+   ],
+   "madeFast": [
+    28.6,
+    32.51
+   ],
+   "headingDeg": 180,
+   "newDeckTiles": 2,
+   "loops": [
+    {
+     "n": 0,
+     "tiles": 17.6,
+     "briskS": 6.44,
+     "calmS": 7.23
+    },
+    {
+     "n": 1,
+     "tiles": 19.6,
+     "briskS": 6.89,
+     "calmS": 7.68
+    },
+    {
+     "n": 2,
+     "tiles": 21.6,
+     "briskS": 7.33,
+     "calmS": 8.13
+    },
+    {
+     "n": 3,
+     "tiles": 23.6,
+     "briskS": 7.76,
+     "calmS": 8.59
+    },
+    {
+     "n": 4,
+     "tiles": 25.6,
+     "briskS": 8.17,
+     "calmS": 9.03
+    },
+    {
+     "n": 5,
+     "tiles": 27.6,
+     "briskS": 8.58,
+     "calmS": 9.46
+    }
+   ],
+   "longerLoopsStopAt": "land, rocks or the edge of the sea",
+   "clearance": {
+    "toObstacles": 0.44,
+    "toOtherLoops": 2.69
+   },
+   "move": {
+    "order": 3,
+    "tiles": 32.4,
+    "briskS": 12.3,
+    "calmS": 13.6
+   }
+  },
+  {
+   "boat": 3,
+   "jetty": "west",
+   "berth": "head arm, sea face",
+   "start": [
+    -5.4,
+    33.16
+   ],
+   "madeFast": [
+    -5.4,
+    32.51
+   ],
+   "headingDeg": 180,
+   "newDeckTiles": 2,
+   "loops": [
+    {
+     "n": 0,
+     "tiles": 17.6,
+     "briskS": 6.44,
+     "calmS": 7.23
+    }
+   ],
+   "longerLoopsStopAt": "land, rocks or the edge of the sea",
+   "clearance": {
+    "toObstacles": 0.46,
+    "toOtherLoops": 0.52
+   },
+   "move": {
+    "order": 2,
+    "tiles": 29.6,
+    "briskS": 12.1,
+    "calmS": 13.4
+   }
+  },
+  {
+   "boat": 4,
+   "jetty": "east",
+   "berth": "jetty stem, outer face",
+   "start": [
+    32.56,
+    28
+   ],
+   "madeFast": [
+    31.91,
+    28
+   ],
+   "headingDeg": 90,
+   "newDeckTiles": 0,
+   "loops": [
+    {
+     "n": 0,
+     "tiles": 18.6,
+     "briskS": 6.67,
+     "calmS": 7.45
+    },
+    {
+     "n": 1,
+     "tiles": 20.6,
+     "briskS": 7.12,
+     "calmS": 7.91
+    },
+    {
+     "n": 2,
+     "tiles": 22.6,
+     "briskS": 7.56,
+     "calmS": 8.36
+    },
+    {
+     "n": 3,
+     "tiles": 24.6,
+     "briskS": 7.98,
+     "calmS": 8.81
+    },
+    {
+     "n": 4,
+     "tiles": 26.6,
+     "briskS": 8.39,
+     "calmS": 9.25
+    },
+    {
+     "n": 5,
+     "tiles": 28.6,
+     "briskS": 8.79,
+     "calmS": 9.67
+    },
+    {
+     "n": 6,
+     "tiles": 30.6,
+     "briskS": 9.19,
+     "calmS": 10.09
+    }
+   ],
+   "longerLoopsStopAt": "land, rocks or the edge of the sea",
+   "clearance": {
+    "toObstacles": 0.43,
+    "toOtherLoops": 2.66
+   },
+   "move": {
+    "order": 1,
+    "tiles": 33.7,
+    "briskS": 12.3,
+    "calmS": 13.5
+   }
+  }
+ ]
+}
