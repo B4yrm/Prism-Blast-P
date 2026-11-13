@@ -155,9 +155,10 @@ function analyse(sc, r, plain) {
   }
   out.hulls = { overlapSamples: overlaps, firstOverlap, minGapTiles: +minGap.toFixed(3), landContactSamples: landHits, firstLandContact: firstLand, decorContactSamples: decorHits };
   // 3. smoothness: largest jump, turn rate and speed between frames
-  let maxStep = 0, maxYaw = 0, maxHaul = 0, haulAt = null, maxKink = 0;
+  let maxStep = 0, maxYaw = 0, maxHaul = 0, haulAt = null, maxKink = 0; const bSpeed = [], bTurn = [];
   for (let f = 1; f < r.traj.length; f++) for (let i = 0; i < n; i++) {
     const [x0, y0, h0, m0] = r.traj[f - 1][i], [x1, y1, h1, m1] = r.traj[f][i];
+    if (!(m0 || m1)) { bSpeed[i] = Math.max(bSpeed[i] || 0, Math.hypot(x1 - x0, y1 - y0) / r.dt); if (f >= 3 && !r.traj[f - 3][i][3]) { let d = h1 - r.traj[f - 3][i][2]; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI; bTurn[i] = Math.max(bTurn[i] || 0, Math.abs(d) / (3 * r.dt) * 180 / Math.PI); } }
     if (m0 || m1) { const hv = Math.hypot(x1 - x0, y1 - y0) / r.dt; if (hv > maxHaul) { maxHaul = hv; haulAt = [+(f * r.dt).toFixed(2), i, m0, m1, +x0.toFixed(2), +y0.toFixed(2), +x1.toFixed(2), +y1.toFixed(2)]; } continue; }      // made fast: only the lines move it
     maxStep = Math.max(maxStep, Math.hypot(x1 - x0, y1 - y0) / r.dt);
     // turn rate over 0.1 s (three frames), so a kink of a degree where two curves join does not count as a turn
@@ -178,7 +179,8 @@ function analyse(sc, r, plain) {
     const simDock = E.filter(e => e[2] === 's' && e[3] === 'dock' && simOut.length && e[0] > simOut[0]).map(e => e[0]);
     const visDep = E.filter(e => e[2] === 'v' && e[3] === 'depart'), visIn = E.filter(e => e[2] === 'v' && e[3] === 'settle').map(e => e[0]);
     const kind = j => visDep[j][4] === 'loop' ? 'loop' : visDep[j][4] === 'move' ? 'move' : 'slip';
-    const pb = { boat: i, simTrips: simDock.length, visualTrips: visIn.length, loop: { n: 0, lateMax: -Infinity, lateSum: 0, mooredMin: Infinity } };
+    const loopDur = []; for (let j = 0; j < Math.min(visDep.length, visIn.length); j++) if (visDep[j][4] === 'loop') loopDur.push(visIn[j] - visDep[j][0]);
+    const pb = { boat: i + 1, topSpeedTilesPerS: +(bSpeed[i] || 0).toFixed(2), topTurnDegPerS: +(bTurn[i] || 0).toFixed(1), loopTripS: loopDur.length ? +(loopDur.reduce((a, c) => a + c, 0) / loopDur.length).toFixed(2) : null, simTrips: simDock.length, visualTrips: visIn.length, loop: { n: 0, lateMax: -Infinity, lateSum: 0, mooredMin: Infinity } };
     for (let j = 0; j < Math.min(simDock.length, visIn.length); j++) {
       const lag = +(visIn[j] - simDock[j]).toFixed(2), ch = kind(j) !== 'move' && changing(visDep[j][0]); groups[kind(j) + (ch ? 'Changing' : '')].push(lag);
       if (ch && lag > 0) lastLate = Math.max(lastLate || 0, visIn[j]);

@@ -1,0 +1,134 @@
+{
+ "low/fit": {
+  "frames": 271,
+  "frameMsAvg": 18.5,
+  "frameMsP90": 16.8,
+  "fps": 54.1,
+  "updateMsAvg": 0.4,
+  "drawCallsPerFrame": 1.2,
+  "textureMB": 37.5,
+  "heapMB": 41.8,
+  "objects": 790
+ },
+ "low/harbour": {
+  "frames": 301,
+  "frameMsAvg": 16.6,
+  "frameMsP90": 16.7,
+  "fps": 60.1,
+  "updateMsAvg": 0.36,
+  "drawCallsPerFrame": 1.1,
+  "textureMB": 37.5,
+  "heapMB": 41.8,
+  "objects": 789
+ },
+ "low/fleet": {
+  "frames": 110,
+  "frameMsAvg": 45.8,
+  "frameMsP90": 99.9,
+  "fps": 21.8,
+  "updateMsAvg": 0.47,
+  "drawCallsPerFrame": 2.3,
+  "textureMB": 37.5,
+  "heapMB": 45.9,
+  "objects": 805
+ },
+ "low/fleetmax": {
+  "frames": 99,
+  "frameMsAvg": 50.6,
+  "frameMsP90": 116.5,
+  "fps": 19.7,
+  "updateMsAvg": 0.43,
+  "drawCallsPerFrame": 2.4,
+  "textureMB": 37.5,
+  "heapMB": 45.7,
+  "objects": 805
+ },
+ "medium/fit": {
+  "frames": 56,
+  "frameMsAvg": 89.4,
+  "frameMsP90": 150.1,
+  "fps": 11.2,
+  "updateMsAvg": 0.76,
+  "drawCallsPerFrame": 5,
+  "textureMB": 96.6,
+  "heapMB": 55,
+  "objects": 867
+ },
+ "medium/harbour": {
+  "frames": 62,
+  "frameMsAvg": 81.1,
+  "frameMsP90": 149.9,
+  "fps": 12.3,
+  "updateMsAvg": 0.47,
+  "drawCallsPerFrame": 5,
+  "textureMB": 96.6,
+  "heapMB": 57.5,
+  "objects": 867
+ },
+ "medium/fleet": {
+  "frames": 52,
+  "frameMsAvg": 96.7,
+  "frameMsP90": 166.6,
+  "fps": 10.3,
+  "updateMsAvg": 0.83,
+  "drawCallsPerFrame": 5,
+  "textureMB": 96.6,
+  "heapMB": 59,
+  "objects": 887
+ },
+ "medium/fleetmax": {
+  "frames": 47,
+  "frameMsAvg": 110,
+  "frameMsP90": 183.3,
+  "fps": 9.1,
+  "updateMsAvg": 0.51,
+  "drawCallsPerFrame": 5,
+  "textureMB": 96.6,
+  "heapMB": 59,
+  "objects": 886
+ },
+ "high/fit": {
+  "frames": 46,
+  "frameMsAvg": 110,
+  "frameMsP90": 209.5,
+  "fps": 9.1,
+  "updateMsAvg": 0.7,
+  "drawCallsPerFrame": 5,
+  "textureMB": 98.9,
+  "heapMB": 57.6,
+  "objects": 798
+ },
+ "high/harbour": {
+  "frames": 45,
+  "frameMsAvg": 112.7,
+  "frameMsP90": 216.7,
+  "fps": 8.9,
+  "updateMsAvg": 0.73,
+  "drawCallsPerFrame": 5,
+  "textureMB": 98.9,
+  "heapMB": 56.7,
+  "objects": 798
+ },
+ "high/fleet": {
+  "frames": 42,
+  "frameMsAvg": 119.4,
+  "frameMsP90": 199.9,
+  "fps": 8.4,
+  "updateMsAvg": 0.88,
+  "drawCallsPerFrame": 5,
+  "textureMB": 98.9,
+  "heapMB": 64.2,
+  "objects": 817
+ },
+ "high/fleetmax": {
+  "frames": 38,
+  "frameMsAvg": 133.1,
+  "frameMsP90": 233.3,
+  "fps": 7.5,
+  "updateMsAvg": 0.53,
+  "drawCallsPerFrame": 5,
+  "textureMB": 98.9,
+  "heapMB": 64.4,
+  "objects": 817
+ }
+}
