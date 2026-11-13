@@ -129,6 +129,8 @@ function segDist(ax, ay, bx, by, cx, cy, dx, dy) {     // closest distance of tw
   const sc = Math.abs(sN) < 1e-9 ? 0 : sN / sD, tc = Math.abs(tN) < 1e-9 ? 0 : tN / tD;
   return Math.hypot(wx + sc * ux - tc * vx, wy + sc * uy - tc * vy);
 }
+const SAFE_BEAMS = 0.5;       // boats under way keep at least half a beam of the bigger hull between them
+const SAFE_PAD = 0.35;        // … plus what two boats can close between two looks ahead (tiles, per unit of hull scale)
 export const capGap = (A, B) => segDist(A[0], A[1], A[2], A[3], B[0], B[1], B[2], B[3]) - A[4] - B[4];
 
 export class Fleet {
@@ -543,16 +545,22 @@ export class Fleet {
   resolve() {
     const act = this.boats.filter(vb => vb.phase === 'depart' || vb.phase === 'fishing' || vb.phase === 'return' || (vb.phase === 'castoff' && vb.rope <= 0));
     if (act.length < 2) return;
-    const N = 30, mv = new Map(), hd = new Map();
-    for (const vb of act) { mv.set(vb, this.track(vb, false, N)); hd.set(vb, this.track(vb, true, N)); }
-    const clash = (A, B, n) => { for (let j = 0; j < n; j++) if (capGap(A[j], B[j]) < 0.4) return true; return false; };
+    // A boat still at its berth looks 15 s ahead (it does not start to back out into the way of a boat that will
+    // pass its slip mouth), boats under way 7.5 s. Hulls are kept SAFE apart: half a beam of the bigger boat
+    // (the capsules used here are a little fuller than the hulls).
+    const N = 60, M = 30, mv = new Map(), hd = new Map();
+    for (const vb of act) { const n = vb.phase === 'castoff' ? N : M; mv.set(vb, this.track(vb, false, N)); hd.set(vb, this.track(vb, true, n)); }
+    const clash = (A, B, n, safe) => { for (let j = 0; j < n && j < A.length && j < B.length; j++) if (capGap(A[j], B[j]) < safe) return true; return false; };
     for (let a = 0; a < act.length; a++) for (let c = a + 1; c < act.length; c++) {
       let lo = act[a], hi = act[c];
       if (this.prio(lo) > this.prio(hi)) [lo, hi] = [hi, lo];
-      const n = lo.phase === 'castoff' || this.prio(lo) < 2 ? N : 20;     // leaving a slip (also while backing out): look further ahead
-      if (!clash(mv.get(lo), mv.get(hi), n)) continue;
-      if (!clash(hd.get(lo), mv.get(hi), n)) { if (lo.holdT <= 0) this.stats.waits++; lo.holdT = 0.8; continue; }
-      if (this.canHold(hi) && !clash(mv.get(lo), hd.get(hi), n)) { if (hi.holdT <= 0) this.stats.waits++; hi.holdT = 0.8; }
+      const n = lo.phase === 'castoff' ? N : M, safe = (SAFE_BEAMS * 2 * HULL.half + SAFE_PAD) * Math.max(lo.scale, hi.scale);
+      if (!clash(mv.get(lo), mv.get(hi), n, safe)) continue;
+      const hold = vb => { if (vb.holdT <= 0) this.stats.waits++; vb.holdT = 0.8; };
+      if (!clash(hd.get(lo), mv.get(hi), n, safe)) { hold(lo); continue; }
+      if (this.canHold(hi) && !clash(mv.get(lo), hd.get(hi), M, safe)) { hold(hi); continue; }
+      // neither giving way alone is enough: both stop; whoever is then clear of the other goes on first
+      if (this.canHold(hi) && this.canHold(lo)) { hold(lo); hold(hi); }
     }
   }
 

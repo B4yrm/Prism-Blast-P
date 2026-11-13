@@ -213,7 +213,7 @@ function analyse(sc, r, plain) {
   };
   const mx = a => a.length ? Math.max(...a) : -Infinity, capped = (sc.up.speed || 0) > 0 || !!(sc.research && sc.research.nav);   // the limits start with the first engine upgrade
   out.checks = {
-    simulationUnchanged: out.simulation.identicalToRunWithout, noOverlap: overlaps === 0, noContact: landHits === 0 && decorHits === 0, noPageError: !r.errs.length,
+    simulationUnchanged: out.simulation.identicalToRunWithout, noOverlap: overlaps === 0, hullsAQuarterBeamApart: !(minGap < 0.3), noContact: landHits === 0 && decorHits === 0, noPageError: !r.errs.length,
     speedWithin5: maxStep <= (capped ? 5.05 : 5.8), turnWithin90: maxYaw * 180 / Math.PI <= (capped ? 90.5 : 110),
     // a boat that gave way to another may not be able to catch up (it is never made faster than the limits):
     // at most 1.5 s late, and at most one slip trip in twenty; the crane waits for it
