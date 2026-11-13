@@ -14,10 +14,10 @@
    "flag": 0
   },
   "constructionProgressEverySecond": [
-   0.01,
+   0,
    0.15,
    0.29,
-   0.44,
+   0.43,
    0.58,
    0.72,
    0.86,
@@ -44,10 +44,10 @@
  "headArmsAndMoves": {
   "gameSecondsNeeded": 100,
   "armProgressSeen": [
-   0.08,
-   0.33,
-   0.58,
-   0.83
+   0.02,
+   0.27,
+   0.52,
+   0.77
   ],
   "afterPlaying": {
    "built": true,
@@ -86,7 +86,7 @@
    "money": 900,
    "gems": 33,
    "level": 12,
-   "xp": 106,
+   "xp": 113,
    "boats": 4,
    "workers": 10,
    "caught": 350,
@@ -97,7 +97,7 @@
    "money": 900,
    "gems": 33,
    "level": 12,
-   "xp": 106,
+   "xp": 113,
    "boats": 4,
    "workers": 10,
    "caught": 350,
