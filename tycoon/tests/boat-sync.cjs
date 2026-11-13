@@ -31,17 +31,20 @@ const SCENARIOS = [
   // Slip trips: in the slip before the simulation unloads. Loop trips: lateness reported; ready for the next trip.
   { name: 'start-fleet4', boats: 4, secs: 1800, up: {} },
   { name: 'start-fleet1', boats: 1, secs: 300, up: {} },
-  { name: 'mid-fleet4 (engine 6, nets 3)', boats: 4, secs: 900, up: { cap: 4, speed: 6, net: 3 } },
-  { name: 'mid+-fleet4 (engine 10, nets 8)', boats: 4, secs: 600, up: { cap: 6, speed: 10, net: 8 } },
-  { name: 'unlock in play (engine 14, nets 17 → 18 bought at 5 s): jetties and head arms are built, the boats move one by one', boats: 4, secs: 900, up: { cap: 0, speed: 14, net: 17 }, buy: { at: 5, up: { net: 18 } }, ...STRONG },
+  { name: 'mid-fleet4 (engine 6, nets 3)', boats: 4, secs: 1800, up: { cap: 4, speed: 6, net: 3 } },
+  { name: 'mid+-fleet4 (engine 10, nets 8): short curves to sea', boats: 4, secs: 1800, up: { cap: 6, speed: 10, net: 8 } },
+  { name: 'mid++-fleet4 (engine 14, nets 12): just under the unlock', boats: 4, secs: 1800, up: { cap: 8, speed: 14, net: 12 } },
+  { name: 'mid+ with sea charts 2 (engine 10, nets 8)', boats: 4, secs: 900, up: { cap: 6, speed: 10, net: 8 }, research: { nav: 2, nets: 1 } },
+  { name: 'lopsided (engine 22, nets 12)', boats: 4, secs: 900, up: { cap: 6, speed: 22, net: 12 } },
+  { name: 'unlock in play (engine 14, nets 17 → 18 bought at 5 s): jetties and head arms are built, the boats move one by one', boats: 4, secs: 1800, up: { cap: 0, speed: 14, net: 17 }, buy: { at: 5, up: { net: 18 } }, ...STRONG },
   { name: 'unlock in play, 2 boats (harbour tier 2)', boats: 2, secs: 600, up: { cap: 0, speed: 14, net: 17 }, buy: { at: 5, up: { net: 18 } }, ...STRONG, tier: { ...STRONG.tier, harbor: 2 } },
-  { name: 'engine 20, nets 18, loop berths', boats: 4, secs: 900, up: { cap: 0, speed: 20, net: 18 }, outer: 2, ...STRONG },
+  { name: 'engine 20, nets 18, loop berths', boats: 4, secs: 1800, up: { cap: 0, speed: 20, net: 18 }, outer: 2, ...STRONG },
   { name: 'max 30/30 loaded from an old save (no jetties stored): loop berths in place at load', boats: 4, secs: 900, up: { cap: 0, speed: 30, net: 30 }, ...STRONG },
   { name: 'unlock in play far above the threshold (engine 30, nets 17 → 18 bought at 5 s): the move is late once', boats: 4, secs: 900, up: { cap: 0, speed: 30, net: 17 }, buy: { at: 5, up: { net: 18 } }, ...STRONG },
-  { name: 'max 30/30, loop berths, strong economy (shortest stays)', boats: 4, secs: 900, up: { cap: 0, speed: 30, net: 30 }, outer: 2, ...STRONG },
+  { name: 'max 30/30, loop berths, strong economy (shortest stays)', boats: 4, secs: 1800, up: { cap: 0, speed: 30, net: 30 }, outer: 2, ...STRONG },
   { name: 'max 30/30, loop berths, hold 30 (long stays)', boats: 4, secs: 600, up: { cap: 30, speed: 30, net: 30 }, outer: 2 },
   { name: 'max 30/30, 1 boat, loop berths', boats: 1, secs: 300, up: { cap: 0, speed: 30, net: 30 }, outer: 2, ...STRONG },
-  { name: 'max 30/30 + sea charts 3, loop berths, strong economy', boats: 4, secs: 900, up: { cap: 0, speed: 30, net: 30 }, research: { nav: 3, nets: 3, ergo: 3 }, outer: 2, ...STRONG },
+  { name: 'max 30/30 + sea charts 3, loop berths, strong economy', boats: 4, secs: 1800, up: { cap: 0, speed: 30, net: 30 }, research: { nav: 3, nets: 3, ergo: 3 }, outer: 2, ...STRONG },
   { name: 'max 30/30 + sea charts 3, loop berths, hold 30', boats: 4, secs: 600, up: { cap: 30, speed: 30, net: 30 }, research: { nav: 3, nets: 3 }, outer: 2 },
 ];
 const ONLY = process.env.SYNC_ONLY;
@@ -94,7 +97,7 @@ async function run(b, sc, withFleet) {
       sim.boats.forEach((b, i) => { if (b.state !== lastS[i]) { ev.push([+t.toFixed(3), i, 's', b.state]); lastS[i] = b.state; } });
       if (withFleet) {
         F.boats.forEach((v, i) => {
-          if (v.phase !== lastV[i]) { ev.push([+t.toFixed(3), i, 'v', v.phase, v.phase === 'depart' ? (v.site < 4 && v.target >= 4 ? 'move' : v.mode) : '']); lastV[i] = v.phase; }
+          if (v.phase !== lastV[i]) { ev.push([+t.toFixed(3), i, 'v', v.phase, v.phase === 'depart' ? (v.site < 4 && v.target >= 4 ? 'move' : v.mode === 'loop' && v.site < 4 ? 'curve' : v.mode) : '']); lastV[i] = v.phase; }
           if (v.hold && !v.__h) ev.push([+t.toFixed(3), i, 'h', v.phase + '/' + (v.plan ? v.plan[Math.min(v.st.leg, v.plan.length - 1)].kind : '')]);
           v.__h = v.hold;
           if (v.hold) holdFrames++;
@@ -174,7 +177,7 @@ function analyse(sc, r, plain) {
   // 4. sync with the simulation: the j-th trip of the simulation is the j-th visual trip of that boat
   // the change-over (jetties appear → every boat at its loop berth → back on the simulation's clock) is reported on its own
   const changing = t => r.stemAt !== null && r.stemAt > 1 && t >= r.stemAt - 1 && (r.allMovedAt === null || t <= r.allMovedAt + 90);
-  const groups = { slip: [], loop: [], move: [], slipChanging: [], loopChanging: [] }, depLag = { slip: [], loop: [], afterMove: [], changing: [] }, mooredS = [], fishing = [], perBoat = [];
+  const groups = { slip: [], curve: [], loop: [], move: [], slipChanging: [], curveChanging: [], loopChanging: [] }, depLag = { slip: [], loop: [], afterMove: [], changing: [] }, mooredS = [], fishing = [], perBoat = [];
   let lastLate = null;
   let skipped = 0;
   for (let i = 0; i < n; i++) {
@@ -182,7 +185,7 @@ function analyse(sc, r, plain) {
     const simDock = E.filter(e => e[2] === 's' && e[3] === 'dock' && simOut.length && e[0] > simOut[0]).map(e => e[0]);
     const visDep = E.filter(e => e[2] === 'v' && e[3] === 'depart'), V = E.filter(e => e[2] === 'v');
     const visIn = V.filter((e, q) => e[3] === 'settle' && q > 0 && V[q - 1][3] === 'return').map(e => e[0]);     // made fast after a trip (not: lines put back while waiting)
-    const kind = j => visDep[j][4] === 'loop' ? 'loop' : visDep[j][4] === 'move' ? 'move' : 'slip';
+    const kind = j => visDep[j][4] === 'loop' ? 'loop' : visDep[j][4] === 'move' ? 'move' : visDep[j][4] === 'curve' ? 'curve' : 'slip';
     const loopDur = []; for (let j = 0; j < Math.min(visDep.length, visIn.length); j++) if (visDep[j][4] === 'loop') loopDur.push(visIn[j] - visDep[j][0]);
     const pb = { boat: i + 1, topSpeedTilesPerS: +(bSpeed[i] || 0).toFixed(2), topTurnDegPerS: +(bTurn[i] || 0).toFixed(1), loopTripS: loopDur.length ? +(loopDur.reduce((a, c) => a + c, 0) / loopDur.length).toFixed(2) : null, simTrips: simDock.length, visualTrips: visIn.length, loop: { n: 0, lateMax: -Infinity, lateSum: 0, mooredMin: Infinity } };
     for (let j = 0; j < Math.min(simDock.length, visIn.length); j++) {
@@ -203,7 +206,7 @@ function analyse(sc, r, plain) {
   const stats = a => { const s = a.slice().sort((x, y) => x - y); return s.length ? { n: s.length, min: s[0], median: s[Math.floor(s.length / 2)], max: s[s.length - 1], mean: +(s.reduce((x, y) => x + y, 0) / s.length).toFixed(2) } : { n: 0 }; };
   out.sync = {
     // made fast minus the simulation docking (negative = early)
-    slipTripsLate: groups.slip.filter(x => x > 0).length, slipTripArrivalS: stats(groups.slip), loopTripArrivalS: stats(groups.loop), moveToLoopBerthArrivalS: stats(groups.move),
+    slipTripsLate: groups.slip.filter(x => x > 0).length, slipTripArrivalS: stats(groups.slip), curveTripsLate: groups.curve.filter(x => x > 0).length, curveTripArrivalS: stats(groups.curve), loopTripArrivalS: stats(groups.loop), moveToLoopBerthArrivalS: stats(groups.move),
     duringTheChangeOver: { slipTripArrivalS: stats(groups.slipChanging), loopTripArrivalS: stats(groups.loopChanging), departureS: stats(depLag.changing), everyBoatMovedAt: r.allMovedAt, lastLateArrivalSecondsAfterTheLastMove: lastLate && r.allMovedAt ? +(lastLate - r.allMovedAt).toFixed(1) : null },
     // starts to move minus the simulation leaving (about −0.55 = ready and leaving with it)
     slipTripDepartureS: stats(depLag.slip), loopTripDepartureS: stats(depLag.loop), firstTripAfterTheMoveDepartureS: stats(depLag.afterMove),
@@ -221,7 +224,8 @@ function analyse(sc, r, plain) {
     speedWithin5: maxStep <= (capped ? 5.05 : 5.8), turnWithin90: maxYaw * 180 / Math.PI <= (capped ? 90.5 : 110),
     // a boat that gave way to another may not be able to catch up (it is never made faster than the limits):
     // at most 1.5 s late, and at most one slip trip in twenty; the crane waits for it
-    slipTripsInBeforeUnloading: mx(groups.slip) <= 1.5 && groups.slip.filter(x => x > 0).length <= Math.max(1, groups.slip.length / 20), loopBoatsReadyForTheNextTrip: mx(depLag.loop) <= 0.05, noTripSkipped: skipped === 0,
+    slipTripsInBeforeUnloading: mx(groups.slip) <= 1.5 && groups.slip.filter(x => x > 0).length <= Math.max(1, groups.slip.length / 20),
+    curveTripsInTime: mx(groups.curve) <= 1.5 && groups.curve.filter(x => x > 0).length <= Math.max(1, groups.curve.length / 8), loopBoatsReadyForTheNextTrip: mx(depLag.loop) <= 0.05, noTripSkipped: skipped === 0,
     noUnloadingShownWithoutTheBoat: r.unloadShownAway === 0, netOnEveryTrip: out.sync.tripsWithoutNets === 0, fishJumpAtTheNet: (out.sync.fishJumpFarthestFromNetTiles || 0) <= 1,
   };
   out.ok = Object.values(out.checks).every(Boolean);

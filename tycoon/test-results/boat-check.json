@@ -396,5 +396,39 @@
    "harbourTrip": false
   }
  ],
+ "curves": [
+  {
+   "boat": 0,
+   "tiles": 32.8,
+   "netTiles": 10.4,
+   "touches": null,
+   "closed": true,
+   "minRadius": 2.8
+  },
+  {
+   "boat": 1,
+   "tiles": 30.2,
+   "netTiles": 7.3,
+   "touches": null,
+   "closed": true,
+   "minRadius": 2.8
+  },
+  {
+   "boat": 2,
+   "tiles": 29.4,
+   "netTiles": 7.3,
+   "touches": null,
+   "closed": true,
+   "minRadius": 2.8
+  },
+  {
+   "boat": 3,
+   "tiles": 26.8,
+   "netTiles": 7.4,
+   "touches": null,
+   "closed": true,
+   "minRadius": 2.8
+  }
+ ],
  "ok": true
 }

@@ -104,7 +104,7 @@ P.DECOR_BOATS.forEach((d, k) => {
   const MARGIN = +(0.25 * 2 * P.HULL.half).toFixed(2);
   const rocks = W.surfRocks().map(r => ({ x: r.x, y: r.y, r: 0.42 * r.s }));
   const inRects = (rs, x, y) => rs.some(([x0, y0, x1, y1]) => x >= x0 && x < x1 + 1 && y >= y0 && y < y1 + 1);
-  const hardAt = (x, y) => C.isLand(Math.floor(x), Math.floor(y)) || inRects(C.PIERS, x, y) || P.JETTIES.some(([x0, y0, x1, y1]) => x >= x0 && x <= x1 && y >= y0 && y <= y1) || rocks.some(r => Math.hypot(x - r.x, y - r.y) <= r.r);
+  const hardAt = (x, y, dol = true) => (dol && P.DOLPHINS.some(d => d.piles.some(([px, py]) => Math.hypot(x - px, y - py) <= 0.2))) || C.isLand(Math.floor(x), Math.floor(y)) || inRects(C.PIERS, x, y) || P.JETTIES.some(([x0, y0, x1, y1]) => x >= x0 && x <= x1 && y >= y0 && y <= y1) || rocks.some(r => Math.hypot(x - r.x, y - r.y) <= r.r);
   const armAt = (x, y) => P.HEAD_ARMS.some(([x0, y0, x1, y1]) => x >= x0 && x <= x1 && y >= y0 && y <= y1);
   const decorPolys = P.DECOR_BOATS.map(d => P.decorHull(d));
   const moored = k => P.siteHull(4 + k, 0.05);
@@ -113,7 +113,7 @@ P.DECOR_BOATS.forEach((d, k) => {
     for (let s = s0; s <= s1 + 1e-6; s += 0.16) {
       const q = P.poseAt(leg.path, Math.min(s, leg.path.len)), h = leg.dir > 0 ? q.a : q.a + Math.PI;
       for (const [x, y] of P.hullPoints(q.x, q.y, h, grow)) {
-        if (hardAt(x, y)) return ['land, pier, jetty or rock', +q.x.toFixed(2), +q.y.toFixed(2)];
+        if (hardAt(x, y, opt.dol !== false)) return ['land, pier, jetty or rock', +q.x.toFixed(2), +q.y.toFixed(2)];
         if (opt.arms && armAt(x, y)) return ['head arm', +q.x.toFixed(2), +q.y.toFixed(2)];
         if (decorPolys.some(o => P.pointInPoly(x, y, o))) return ['decorative boat', +q.x.toFixed(2), +q.y.toFixed(2)];
         if ((opt.polys || []).some(o => P.pointInPoly(x, y, o))) return ['boat', +q.x.toFixed(2), +q.y.toFixed(2)];
@@ -159,6 +159,22 @@ P.DECOR_BOATS.forEach((d, k) => {
     if (t2) fail(`move of boat ${k} comes within ${MARGIN} tiles of ${t2[0]} near its new berth`);
     if (Math.hypot(endM.x - B.x, endM.y - B.y) >= 0.05) fail(`move of boat ${k} does not end at its berth`);
     if (rM < P.LOOP_R - 0.06) fail(`move of boat ${k} turns tighter than ${P.LOOP_R}`);
+  }
+  // ---- short curves to sea from the slips (middle levels, tools/boats/curves.cjs): sailed only before the jetties are
+  // built, so the head arms and dolphins are not there; the jetty stems are. Other slips' boats lie in their slips.
+  report.curves = [];
+  for (let k = 0; k < nB; k++) {
+    const cp = P.curvePlan(k), others = [0, 1, 2, 3].filter(j => j !== k).map(j => P.dockedHull(j)), [rev, sea, glide] = cp.plan;
+    const t0 = touch(rev, 0.06, { arms: false, dol: false, polys: others }), t1 = touch(sea, MARGIN, { arms: false, dol: false, polys: others, buoys: [0, 1, 2, 3] }, 3.5), t2 = touch(glide, 0.06, { arms: false, dol: false, polys: others });
+    const end = P.poseAt(glide.path, glide.path.len), S = P.siteOf(k), closed = Math.hypot(end.x - S.x, end.y - S.y) < 0.05, rMin = P.minRadius(sea.path);
+    // the net is out on a stretch of the sea leg beyond the slip mouths
+    const n = cp.net, yAt = s => P.poseAt(sea.path, s).y;
+    const netOk = n.s1 - n.s0 >= 5 && yAt(n.s0) > S.my + 0.5 && yAt(n.s1) > S.my + 0.5;
+    report.curves.push({ boat: k, tiles: +(rev.path.len + sea.path.len + glide.path.len).toFixed(1), netTiles: +(n.s1 - n.s0).toFixed(1), touches: t0 || t1 || t2, closed, minRadius: +rMin.toFixed(2) });
+    if (t0 || t1 || t2) fail(`curve of boat ${k} touches ${(t0 || t1 || t2)[0]} at (${(t0 || t1 || t2)[1]}, ${(t0 || t1 || t2)[2]})`);
+    if (!closed) fail(`curve of boat ${k} does not end in its slip`);
+    if (rMin < P.LOOP_R - 0.06) fail(`curve of boat ${k} turns tighter than ${P.LOOP_R}: ${rMin.toFixed(2)}`);
+    if (!netOk) fail(`curve of boat ${k}: the net is not out on a stretch of open water`);
   }
   // which slip routes run where the head arms will be (for information: the game builds the arms only when no
   // boat is out on a slip trip, and from then on slip boats make harbour trips until they move)

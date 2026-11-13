@@ -11,7 +11,7 @@
 // to the crate pile on the quay; the simulation's unloading is unchanged.
 import { SEA_Z } from '../config.js';
 import { addSprite, has } from './atlas.js';
-import { JETTIES, HEAD_ARMS, LOOP_BERTHS, outerBollards, siteOf } from './boatpaths.js';
+import { JETTIES, HEAD_ARMS, DOLPHINS, LOOP_BERTHS, outerBollards, siteOf } from './boatpaths.js';
 import { G } from '../core/economy.js';
 import { save } from '../core/state.js';
 
@@ -49,6 +49,7 @@ export class Jetties {
       for (let y = y0; y < y1 - 1e-6; y += 1) this.rows.push({ j, x0, x1, ya: y, yb: Math.min(y1, y + 1), g: scene.add.graphics().setDepth(depthAt(x1, Math.min(y1, y + 1)) - 2) });
     }
     this.extras = [];                               // bollards and fenders
+    this.dol = DOLPHINS.map(d => scene.add.graphics().setDepth(depthAt(d.piles[0][0], d.piles[0][1]) + 1));      // mooring dolphins: piles in the water
     this.armExtras = [];
     for (let i = 0; i < 4; i++) for (const [x, y] of outerBollards(i)) {
       if (!has('prop/bollard')) continue;
@@ -166,12 +167,25 @@ export class Jetties {
       }
     }
     for (const e of this.armExtras) e.setVisible(aFit > 0).setAlpha(aFit);
+    // mooring dolphins: three piles driven in the first part of the build, a plank cap on top once the arm is done
+    DOLPHINS.forEach((d, i) => {
+      const g = this.dol[i]; g.clear();
+      if (A <= 0) return;
+      const h = 26 * Math.min(1, aPiles * 1.6), capOn = Math.max(0, Math.min(1, (A - 0.55) / 0.25));
+      for (const [x, y] of d.piles) { const a = iso(x, y, SEA_Z + h), b = iso(x, y, SEA_Z - 6); g.fillStyle(0x4a2f1c, 1).fillRect(a.x - 3, a.y, 6, b.y - a.y); g.fillStyle(0x6b4a2e, 1).fillEllipse(a.x, a.y, 7, 4); }
+      if (capOn > 0) {
+        const cx = d.piles.reduce((q, p) => q + p[0], 0) / 3, cy = d.piles.reduce((q, p) => q + p[1], 0) / 3, c = iso(cx, cy, SEA_Z + 26 + 2);
+        g.fillStyle(0xa87445, capOn).fillEllipse(c.x, c.y, 24, 11); g.lineStyle(1.2, 0x6e4526, capOn).strokeEllipse(c.x, c.y, 24, 11);
+      }
+    });
     // tyre fenders on the pier face of each berth
     LOOP_BERTHS.forEach((B, i) => {
       const f = this.fenders[i], on = B.fam === 'stem' ? fit : aFit, S = siteOf(4 + i); f.clear();
       if (on <= 0) return;
       for (const d of [-1.2, 0, 1.2]) {
         const x = S.x + Math.cos(S.a) * d + B.px * (0.61 + 0.3 - 0.04), y = S.y + Math.sin(S.a) * d + B.py * (0.61 + 0.3 - 0.04), q = iso(x, y, -3);
+        // a tyre hangs only where there is a deck or a dolphin to hang it from
+        if (B.fam === 'head' && !(HEAD_ARMS.some(([x0, , x1]) => x >= x0 - 0.05 && x <= x1 + 0.05) || DOLPHINS.some(o => o.piles.some(([px]) => Math.abs(px - x) < 0.45)))) continue;
         f.fillStyle(0x23262b, on).fillEllipse(q.x, q.y, 7, 9);
       }
     });

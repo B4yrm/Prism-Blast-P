@@ -17,7 +17,7 @@
 // preset (quality.boatFx: 2 high, 1 medium, 0 low).
 import { iso, SEA_Z, BERTHS } from '../config.js';
 import { addSprite, setSprite, has } from './atlas.js';
-import { departurePlan, arrivalPlan, fishingPlan, poseAt, curvAt, hullLocal, groundPose, shortDeparture, shortArrival, shortFishing, shortSpot, siteOf, siteDeparture, siteArrival, outerBollards, loopPlan, movePlan, LOOP_BERTHS, MOVE_ORDER, VBERTH, BOLLARDS, HULL, CLASS_S, DECOR_BOATS, RETURN_FROM, SEA_R, STEP, LINGER } from './boatpaths.js';
+import { departurePlan, arrivalPlan, fishingPlan, poseAt, curvAt, hullLocal, groundPose, shortDeparture, shortArrival, shortFishing, shortSpot, siteOf, siteDeparture, siteArrival, outerBollards, loopPlan, movePlan, curvePlan, LOOP_BERTHS, MOVE_ORDER, VBERTH, BOLLARDS, HULL, CLASS_S, DECOR_BOATS, RETURN_FROM, SEA_R, STEP, LINGER } from './boatpaths.js';
 import { Jetties } from './jetties.js';
 import { G, stat } from '../core/economy.js';
 
@@ -141,7 +141,7 @@ export class Fleet {
     this.boats = []; this.decor = []; this.depPlans = [];
     this.V0 = 1; this.checkT = 0; this.t = 0;
     // for the logs: how late (s) a boat reached its slip after the simulation docked, waits
-    this.stats = { arrivals: 0, lagMax: -Infinity, lagSum: 0, waits: 0, nets: 0, netMin: Infinity, simTrips: 0, visTrips: 0, trips: { grounds: 0, loop: 0, move: 0, harbour: 0 } };
+    this.stats = { arrivals: 0, lagMax: -Infinity, lagSum: 0, waits: 0, nets: 0, netMin: Infinity, simTrips: 0, visTrips: 0, trips: { grounds: 0, curve: 0, loop: 0, move: 0, harbour: 0 } };
     this.under = scene.add.graphics().setDepth(D_UNDER);
     this.still = scene.add.graphics().setDepth(D_UNDER);           // decorative boats: drawn once
     this.A = Array.from({ length: 40 }, () => ({ x: 0, y: 0 }));   // scratch screen points
@@ -256,7 +256,7 @@ export class Fleet {
         break;
       case 'fishing': {
         if (vb.mode === 'loop') {
-          if (vb.st.s >= vb.net.s1 || vb.st.done) { this.stats.nets++; this.stats.netMin = Math.min(this.stats.netMin, this.t - vb.fishAt); vb.phase = 'return'; break; }
+          if (vb.st.leg > vb.net.leg || vb.st.s >= vb.net.s1 || vb.st.done) { this.stats.nets++; this.stats.netMin = Math.min(this.stats.netMin, this.t - vb.fishAt); vb.phase = 'return'; break; }
           this.netLife(vb, dt);
           break;
         }
@@ -339,7 +339,7 @@ export class Fleet {
   }
   // net: 0 → 0.25 paid out, towed until 0.65, hauled in by 1
   netPhase(vb) {
-    if (vb.mode === 'loop') return clamp((vb.st.s - vb.net.s0) / (vb.net.s1 - vb.net.s0), 0, 1);
+    if (vb.mode === 'loop') return vb.st.leg !== vb.net.leg ? (vb.st.leg > vb.net.leg ? 1 : 0) : clamp((vb.st.s - vb.net.s0) / (vb.net.s1 - vb.net.s0), 0, 1);
     return clamp((this.t - vb.fishAt) / Math.max(0.01, vb.fishUntil - vb.fishAt), 0, 1);
   }
   netOut(vb) {
@@ -426,13 +426,15 @@ export class Fleet {
   }
   // a loop from the loop berth (n tiles longer), or the one move from the slip to it: one plan all the way
   loopOption(k, n) { const L = loopPlan(k, n); return { loop: true, target: 4 + k, plan: L.plan, net: L.net, label: 'loop', n }; }
+  // the short curve to sea from slip k (middle levels): one plan all the way, like a loop
+  curveOption(k) { const M = this.curveP || (this.curveP = []), L = M[k] || (M[k] = curvePlan(k)); return { loop: true, curve: true, target: k, plan: L.plan, net: L.net, label: 'curve' }; }
   moveOption(k) { const M = this.moveP || (this.moveP = []), L = M[k] || (M[k] = movePlan(k)); return { loop: true, target: 4 + k, plan: L.plan, net: L.net, label: 'move' }; }
   // Is boat k's loop berth there (after a restart the boat lies at it)? The stem berth comes with the
   // jetties; the head arms are built once the stem boat has moved and no boat is out on a slip trip.
   berthReady(k) { return LOOP_BERTHS[k].fam === 'stem' ? this.jetties.built : this.jetties.arms; }
   armsWanted() {
     if (!this.jetties.built || this.jetties.arms) return false;
-    return this.boats.every(vb => (LOOP_BERTHS[vb.k].fam !== 'stem' || vb.site >= 4) && (vb.site >= 4 || vb.phase === 'docked' || vb.phase === 'castoff' || vb.phase === 'settle' || vb.mode === 'short'));
+    return this.boats.every(vb => (LOOP_BERTHS[vb.k].fam !== 'stem' || vb.site >= 4) && (vb.site >= 4 || ((vb.phase === 'docked' || vb.phase === 'settle' || (vb.phase === 'castoff' && !(vb.trip && vb.trip.curve))) || vb.mode === 'short')));
   }
   // a boat moves when its berth is there and every boat before it in MOVE_ORDER has moved
   canMove(vb) {
@@ -456,9 +458,13 @@ export class Fleet {
     }
     if (this.canMove(vb)) return this.moveOption(k);
     if (this.jetties.built) return null;          // waiting for its turn to move: harbour trips only
-    const o = this.tripOption(k, k, this.fullGround(k), 'grounds');
-    // 1.5 s kept in hand for giving way to another boat: a late boat is never made faster than the limits
-    return this.tripTime(o, C_LIMIT) > budget - (this.boats.length > 1 && vCap < 99 ? 1.5 : 0) ? null : o;
+    // Slip trips, in this order: the full route to the fishing grounds; the short curve to sea (it crosses its
+    // neighbours' water, so boats may have to give way: 1.2 s kept in hand); the harbour trip as the last resort.
+    // A boat that is late is never made faster than the limits.
+    const o = this.tripTime(this.tripOption(k, k, this.fullGround(k), 'grounds'), C_LIMIT) <= budget - (this.boats.length > 1 && vCap < 99 ? 1.5 : 0) ? this.tripOption(k, k, this.fullGround(k), 'grounds') : null;
+    if (o) return o;
+    const cu = this.curveOption(k);
+    return this.tripTime(cu, C_LIMIT) <= budget - (this.boats.length > 1 ? 1.2 : 0) ? cu : null;
   }
   // Harbour trip: how far out of the slip (share of the full way) so that it is home in time at the limits
   shortShare(vb) {

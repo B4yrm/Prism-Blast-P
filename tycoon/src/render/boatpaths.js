@@ -7,8 +7,8 @@
 // the slip. Pure geometry: shared by the game and by the automatic clearance
 // check (tests/boat-check.cjs).
 import { BERTHS, PIERS, BOUNDS, isLand } from '../config.js';
-import { LOOP_R, HEAD_ARMS, LOOP_BERTHS, MOVE_ORDER, DECOR_MOVES } from './boatloops.js';
-export { LOOP_R, HEAD_ARMS, LOOP_BERTHS, MOVE_ORDER };
+import { LOOP_R, HEAD_ARMS, DOLPHINS, LOOP_BERTHS, MOVE_ORDER, DECOR_MOVES } from './boatloops.js';
+export { LOOP_R, HEAD_ARMS, DOLPHINS, LOOP_BERTHS, MOVE_ORDER };
 
 // Class-0 hull at the waterline (tiles): bow tip, stern, half beam.
 export const HULL = { bow: 2.04, stern: 1.89, half: 0.61 };
@@ -212,6 +212,8 @@ export const buoysAt = i => {
 };
 export const buoyPoly = ([x, y], r = 0.3) => Array.from({ length: 8 }, (_, k) => [x + r * Math.cos(k * Math.PI / 4), y + r * Math.sin(k * Math.PI / 4)]);
 
+import { CURVES } from './boatcurves.js';
+export { CURVES };
 // ---- mooring sites -------------------------------------------------------------
 // Sites 0–3 are the slips: the boat lies bow north, leaves by backing out with the
 // stern swinging and comes in by a straight glide from the slip's mouth.
@@ -250,8 +252,25 @@ export function loopPlan(k, n = 0) {
   }
   return L;
 }
+// end point of a polyline and the tangent there (the last chord, carried on by half the change between the last two)
+const endOf = pl => {
+  const n = pl.length, c = pl[n - 1], b = pl[n - 2], a = pl[n - 3] || b, a1 = Math.atan2(c[1] - b[1], c[0] - b[0]), a0 = a === b ? a1 : Math.atan2(b[1] - a[1], b[0] - a[0]);
+  let d = a1 - a0; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI;
+  return [c[0], c[1], a1 + d / 2];
+};
 // The one trip of boat k from its slip to its loop berth: back out, a way point at
 // sea, then in along the berth's line. The net is out on the middle of the sea leg.
+// A short trip to sea from slip k for the middle levels (tools/boats/curves.cjs): back out as always, one curve round
+// the way point `via` with the net out, straight back into the slip. Three legs; the net is out on the sea leg
+// between tiles net[0] and net[1].
+export function curvePlan(k, via = CURVES[k].via, net = CURVES[k].net) {
+  const s = siteOf(k), mv = s.mv;
+  const back = cat(mv.d0 > 0 ? straight(s.x, s.y, SOUTH, mv.d0) : [[s.x, s.y]], arc(s.x, s.y + mv.d0, SOUTH, mv.R, -mv.side * mv.phi));
+  const rev = finish(resample(back)), e = poseAt(rev, rev.len), head = e.a + Math.PI;
+  const d1 = dubins([e.x, e.y, head], via, LOOP_R), d2 = dubins(endOf(d1), [s.x, s.my, NORTH], LOOP_R);
+  const sea = finish(resample(cat(d1, d2))), glide = finish(resample(straight(s.x, s.my, NORTH, s.my - s.y)));
+  return { plan: [{ path: rev, dir: -1, kind: 'reverse', stop: true }, { path: sea, dir: 1, kind: 'sea', stop: false }, { path: glide, dir: 1, kind: 'glide', stop: true }], net: { leg: 1, s0: net[0], s1: net[1] } };
+}
 export function movePlan(k) {
   const B = LOOP_BERTHS[k], M = B.move, s = siteOf(k), mv = M.mv || s.mv;
   const back = cat(mv.d0 > 0 ? straight(s.x, s.y, SOUTH, mv.d0) : [[s.x, s.y]], arc(s.x, s.y + mv.d0, SOUTH, mv.R, -mv.side * mv.phi));
@@ -259,11 +278,6 @@ export function movePlan(k) {
   const pre = [B.x - Math.cos(B.a) * M.run, B.y - Math.sin(B.a) * M.run, B.a];
   // each part starts exactly where the one before ends, heading included, so the joins have no kink;
   // the run-in is a gentle curve onto the berth's line, ending at the berth
-  const endOf = pl => {        // end point and the tangent there (the last chord, carried on by half the change between the last two)
-    const n = pl.length, c = pl[n - 1], b = pl[n - 2], a = pl[n - 3] || b, a1 = Math.atan2(c[1] - b[1], c[0] - b[0]), a0 = a === b ? a1 : Math.atan2(b[1] - a[1], b[0] - a[0]);
-    let d = a1 - a0; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI;
-    return [c[0], c[1], a1 + d / 2];
-  };
   const d1 = dubins([e.x, e.y, head], M.via, LOOP_R), d2 = dubins(endOf(d1), pre, LOOP_R), q = endOf(d2);
   const last = spline([[q[0], q[1]], [B.x - Math.cos(B.a) * M.run * 0.5, B.y - Math.sin(B.a) * M.run * 0.5], [B.x, B.y]], q[2], B.a);
   const sea = finish(resample(cat(cat(d1, d2), last)));
