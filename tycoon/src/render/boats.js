@@ -7,12 +7,17 @@
 // is back in its slip when the simulation starts unloading.
 //   docked → cast off → back out of the slip, stop, go ahead → tow the nets
 //   → turn for home → glide into the slip → settle and make fast
+// From the loop berths at the outer jetties (high levels) a boat leaves ahead,
+// sails one closed loop with its net out and comes back ahead; the lines haul
+// it in the last bit. No boat ever sails faster than V_CAP or turns faster than
+// W_CAP: when a trip cannot be made in the simulation's time the boat is late,
+// never faster.
 // Boats leaving wait (or stop) for boats coming home. Hull, reflection,
 // shadow, waterline, bow wave, prop wash and mooring lines are drawn per
 // preset (quality.boatFx: 2 high, 1 medium, 0 low).
 import { iso, SEA_Z, BERTHS } from '../config.js';
 import { addSprite, setSprite, has } from './atlas.js';
-import { departurePlan, arrivalPlan, fishingPlan, poseAt, curvAt, hullLocal, groundPose, shortDeparture, shortArrival, shortFishing, shortSpot, siteOf, siteDeparture, siteArrival, outerBollards, fishTurnPlan, ZONES, VBERTH, BOLLARDS, HULL, CLASS_S, DECOR_BOATS, RETURN_FROM, SEA_R, STEP, LINGER } from './boatpaths.js';
+import { departurePlan, arrivalPlan, fishingPlan, poseAt, curvAt, hullLocal, groundPose, shortDeparture, shortArrival, shortFishing, shortSpot, siteOf, siteDeparture, siteArrival, outerBollards, loopPlan, movePlan, LOOP_BERTHS, MOVE_ORDER, VBERTH, BOLLARDS, HULL, CLASS_S, DECOR_BOATS, RETURN_FROM, SEA_R, STEP, LINGER } from './boatpaths.js';
 import { Jetties } from './jetties.js';
 import { G, stat } from '../core/economy.js';
 
@@ -49,7 +54,9 @@ const TURN_RATE = 1.0;     // rad/s at the starting engine: a boat slows down ra
 const C_MIN = 0.6, C_OUT = 1.6, C_LIMIT = 3, C_HARBOUR = 1.2;
 const C_FULL = 2.0;        // a trip to the fishing grounds may need at most this
 const warp = c => Math.max(1, c / C_OUT);
-const Vof = (V0, c, kind) => V0 * (kind === 'sea' || kind === 'fishturn' ? c : Math.min(c, C_HARBOUR * warp(c)));
+export const V_CAP = 5;           // tiles/s: no boat sails faster, at any level
+export const W_CAP = 0.95 * Math.PI / 2; // rad/s: no boat turns faster than 90°/s (planned at 95 % of it)
+const Vof = (V0, c, kind) => Math.min(V_CAP, V0 * (kind === 'sea' || kind === 'fishturn' ? c : Math.min(c, C_HARBOUR * warp(c))));
 
 // ---- simulation timing (the formulas of sim.js updBoat, read only)
 function simOutTime(run, rem, base) {          // speed = base·min(1, 0.3 + run/2.5)
@@ -120,7 +127,7 @@ export class Fleet {
     this.boats = []; this.decor = []; this.depPlans = [];
     this.V0 = 1; this.checkT = 0; this.t = 0;
     // for the logs: how late (s) a boat reached its slip after the simulation docked, waits
-    this.stats = { arrivals: 0, lagMax: -Infinity, lagSum: 0, waits: 0, nets: 0, netMin: Infinity, trips: { grounds: 0, near: 0, outer: 0, harbour: 0, jettyHead: 0 } };
+    this.stats = { arrivals: 0, lagMax: -Infinity, lagSum: 0, waits: 0, nets: 0, netMin: Infinity, simTrips: 0, visTrips: 0, trips: { grounds: 0, loop: 0, move: 0, harbour: 0 } };
     this.under = scene.add.graphics().setDepth(D_UNDER);
     this.still = scene.add.graphics().setDepth(D_UNDER);           // decorative boats: drawn once
     this.A = Array.from({ length: 40 }, () => ({ x: 0, y: 0 }));   // scratch screen points
@@ -151,15 +158,17 @@ export class Fleet {
   }
   makeBoat(b) {
     const k = b.i % VBERTH.length, cls = this.classOf(b.i);
-    const site = this.fleetLevel().tier === 'outer' ? 4 + k : k;      // after a restart: where the fleet's step moors
+    const site = this.berthReady(k) ? 4 + k : k;      // after a restart: at its loop berth once that is built
     const vb = {
       b, k, i: b.i, phase: 'docked', plan: null, st: null, c: 1, replanT: 0, holdT: 0, hold: false, site,
-      x: siteOf(site).x, y: siteOf(site).y, h: -Math.PI / 2, prevH: -Math.PI / 2, v: 0, accel: 0,
+      x: siteOf(site).x, y: siteOf(site).y, h: siteOf(site).a, prevH: siteOf(site).a, v: 0, accel: 0, warp: 1,
       lean: 0, trim: 0, rope: 1, settleT: 99, settleV: 0, cls, ss: 1, scale: CLASS_S[cls] / CLASS_S[0],
     };
     this.sprites(vb);
-    Object.assign(vb, { target: site, mode: 'zone', retP: this.tripOption(site, site, this.fleetLevel().z(k), '').ret, retCache: new Map() });
+    Object.assign(vb, { target: site, mode: 'zone', retP: this.tripOption(k, k, this.fullGround(k), '').ret, retCache: new Map() });
+    if (site >= 4 && this.sc.retireBuoys) this.sc.retireBuoys(k);
     // a boat already out at sea (only after a very long first frame) starts where the simulation has it
+    if (site >= 4) return vb;
     if (b.state === 'out' || b.state === 'fish') {
       const g = this.depPlan(k)[1].path, e = poseAt(g, g.len);
       Object.assign(vb, { x: e.x, y: e.y, h: e.a, prevH: e.a, rope: 0 });
@@ -182,6 +191,7 @@ export class Fleet {
     const sim = this.sc.sim;
     this.t = t;
     this.V0 = stat.boatSpeed() * 1.12;
+    this.jetties.armsWanted = this.armsWanted();
     this.jetties.update(t, dt);
     while (this.boats.length < sim.boats.length) this.boats.push(this.makeBoat(sim.boats[this.boats.length]));
     this.checkT -= dt;
@@ -204,7 +214,7 @@ export class Fleet {
   think(vb, dt) {
     const b = vb.b;
     if (b.state !== vb.simState) {
-      if (b.state === 'dock' && vb.simState === 'back') { vb.simDockAt = this.t; this.lag(vb); }
+      if (b.state === 'dock' && vb.simState === 'back') { vb.simDockAt = this.t; vb.simBack = true; this.stats.simTrips++; this.lag(vb); }
       vb.simState = b.state;
     }
     const away = b.state === 'out' || b.state === 'fish';     // the simulation has left the berth
@@ -213,39 +223,57 @@ export class Fleet {
         if (away || (b.state === 'dock' && b.load <= 0 && b.t <= CAST_AT)) { vb.phase = 'castoff'; vb.trip = this.chooseTrip(vb); }
         break;
       case 'castoff':
-        vb.rope = Math.max(0, vb.rope - dt / 0.6);
+        // lines let go; at a loop berth the boat is also pushed off the pier (quicker when it is late)
+        vb.rope = Math.max(0, vb.rope - dt / (away ? 0.4 : 0.6));
+        vb.warp = Math.max(0, vb.warp - dt / (away ? 0.4 : 0.6));
         if (vb.rope <= 0 && vb.holdT <= 0 && (away || (b.state === 'dock' && b.t <= LEAVE_AT))) this.start(vb, 'depart');
         break;
       case 'depart':
+        if (vb.mode === 'loop') {                // one plan all the way: the net goes out at s0
+          if (vb.st.leg === vb.net.leg && vb.st.s >= vb.net.s0) { vb.phase = 'fishing'; vb.fishAt = this.t; vb.jumps = 0; }
+          break;
+        }
         if (vb.st.done) this.start(vb, b.state === 'dock' ? 'return' : 'fishing');
         // only if hopelessly late (the simulation already docked): turn round on the way out
-        else if (b.state === 'dock' && vb.st.leg === 1 && vb.st.s >= RETURN_FROM[vb.k]) this.start(vb, 'return');
+        else if (b.state === 'dock' && vb.mode === 'zone' && vb.st.leg === 1 && vb.st.s >= RETURN_FROM[vb.k]) this.start(vb, 'return');
         break;
       case 'fishing': {
+        if (vb.mode === 'loop') {
+          if (vb.st.s >= vb.net.s1 || vb.st.done) { this.stats.nets++; this.stats.netMin = Math.min(this.stats.netMin, this.t - vb.fishAt); vb.phase = 'return'; break; }
+          this.netLife(vb, dt);
+          break;
+        }
         vb.fishT -= dt;
         if (vb.fishT <= 0) { vb.fishT = 0.25; vb.fishUntil = Math.min(vb.fishUntil, this.fishEnd(vb)); }
-        if (vb.arcP ? vb.st.done : (this.t >= vb.fishUntil || b.state === 'dock')) { this.stats.nets++; this.stats.netMin = Math.min(this.stats.netMin, this.t - vb.fishAt); this.start(vb, 'return'); break; }
-        // fish jump out of the net while it is hauled in
-        const u = this.netPhase(vb), J = [0.6, 0.7, 0.8, 0.88, 0.95];
-        while (vb.jumps < J.length && u >= J[vb.jumps]) {
-          vb.jumps++;
-          const q = this.netEnd(vb);
-          if (this.sc.fishJump) this.sc.fishJump(q.x + (Math.random() - 0.5) * 0.6, q.y + (Math.random() - 0.5) * 0.6);
-        }
-        if (Math.random() < dt * 2.5 && this.sc.wakeFx && u > 0.15) {          // churn round the net
-          const q = this.netEnd(vb), p = iso(q.x + (Math.random() - 0.5) * 0.8, q.y + (Math.random() - 0.5) * 0.8, SEA_Z);
-          this.sc.wakeFx.emitParticleAt(p.x, p.y, 1);
-        }
+        if (this.t >= vb.fishUntil || b.state === 'dock') { this.stats.nets++; this.stats.netMin = Math.min(this.stats.netMin, this.t - vb.fishAt); this.start(vb, 'return'); break; }
+        this.netLife(vb, dt);
         break;
       }
       case 'return':
-        if (vb.st.done) { vb.phase = 'settle'; vb.site = vb.target; vb.settleT = 0; vb.settleV = 0.16; vb.inAt = this.t; this.lag(vb); }
+        if (vb.st.done) { vb.phase = 'settle'; vb.site = vb.target; vb.settleT = 0; vb.settleV = 0.16; vb.warp = vb.site >= 4 ? 0 : 1; vb.inAt = this.t; this.stats.visTrips++; this.lag(vb); }
         break;
-      case 'settle':
+      case 'settle': {
         vb.settleT += dt;
-        vb.rope = Math.min(1, vb.rope + dt / 1.1);
-        if (vb.rope >= 1 && vb.settleT > 1.3) vb.phase = 'docked';
+        // lines ashore, then (loop berths) hauled in alongside; quicker when the simulation is already waiting to leave
+        const quick = away || (b.state === 'dock' && b.load <= 0), T = vb.site >= 4 ? (quick ? 0.6 : 1.0) : 1.1;
+        vb.rope = Math.min(1, vb.rope + dt / T);
+        if (vb.rope > 0.3) vb.warp = Math.min(1, vb.warp + dt / (quick ? 0.55 : 0.9));
+        if (vb.rope >= 1 && vb.warp >= 1 && (vb.site >= 4 || vb.settleT > 1.3)) vb.phase = 'docked';
         break;
+      }
+    }
+  }
+  // fish jump out of the net while it is hauled in; the water churns round it
+  netLife(vb, dt) {
+    const u = this.netPhase(vb), J = [0.6, 0.7, 0.8, 0.88, 0.95];
+    while (vb.jumps < J.length && u >= J[vb.jumps]) {
+      vb.jumps++;
+      const q = this.netEnd(vb);
+      if (this.sc.fishJump) this.sc.fishJump(q.x + (Math.random() - 0.5) * 0.6, q.y + (Math.random() - 0.5) * 0.6);
+    }
+    if (Math.random() < dt * 2.5 && this.sc.wakeFx && u > 0.15) {
+      const q = this.netEnd(vb), p = iso(q.x + (Math.random() - 0.5) * 0.8, q.y + (Math.random() - 0.5) * 0.8, SEA_Z);
+      this.sc.wakeFx.emitParticleAt(p.x, p.y, 1);
     }
   }
   lag(vb) {                                       // both ends of a trip seen: record the arrival lag
@@ -256,7 +284,7 @@ export class Fleet {
   }
   logLine() {
     const S = this.stats;
-    return `BOATS n=${this.boats.length} phases=${this.boats.map(v => v.phase).join(',')} arrivals=${S.arrivals} lagMean=${S.arrivals ? (S.lagSum / S.arrivals).toFixed(2) : 'n/a'} lagMax=${S.arrivals ? S.lagMax.toFixed(2) : 'n/a'} waits=${S.waits} trips=${Object.entries(S.trips).map(([a, n]) => a + ':' + n).join(',')} jetties=${this.jetties.built ? 1 : 0} nets=${S.nets} netMinS=${S.nets ? S.netMin.toFixed(2) : 'n/a'} fx=${this.fx}`;
+    return `BOATS n=${this.boats.length} phases=${this.boats.map(v => v.phase).join(',')} arrivals=${S.arrivals} lagMean=${S.arrivals ? (S.lagSum / S.arrivals).toFixed(2) : 'n/a'} lagMax=${S.arrivals ? S.lagMax.toFixed(2) : 'n/a'} waits=${S.waits} trips=${Object.entries(S.trips).map(([a, n]) => a + ':' + n).join(',')} jetties=${this.jetties.built ? (this.jetties.arms ? 2 : 1) : 0} simTrips=${S.simTrips} visTrips=${S.visTrips} nets=${S.nets} netMinS=${S.nets ? S.netMin.toFixed(2) : 'n/a'} fx=${this.fx}`;
   }
   start(vb, phase) {
     vb.phase = phase;
@@ -265,18 +293,19 @@ export class Fleet {
     if (phase === 'depart') {
       const T = vb.trip || this.chooseTrip(vb);
       vb.trip = null;
-      vb.mode = T ? 'zone' : 'short';
-      vb.depPlan = T ? T.dep.plan : null;
-      vb.zone = T ? T.z : null;
-      vb.arcP = T && T.arcP ? T.arcP : null;
+      vb.mode = T ? (T.loop ? 'loop' : 'zone') : 'short';
+      vb.depPlan = T ? (T.loop ? T.plan : T.dep.plan) : null;
+      vb.net = T && T.loop ? T.net : null;
       vb.target = T ? T.target : vb.site;
       vb.retP = T ? T.ret : { plan: shortArrival(vb.site, shortSpot(vb.site)), phase: 'return', st: { leg: 0, s: 0, v: 0, dwell: 0, done: false } };
       vb.retCache = new Map();
-      this.stats.trips[T ? T.label : vb.site >= 4 ? 'jettyHead' : 'harbour']++;
+      vb.simBack = false;
+      if (T && T.label === 'move' && this.sc.retireBuoys) this.sc.retireBuoys(vb.k);   // its fishing ground is given up
+      this.stats.trips[T ? T.label : 'harbour']++;
     }
     const short = vb.mode === 'short';
     vb.plan = phase === 'depart' ? (short ? shortDeparture(vb.site) : vb.depPlan)
-      : phase === 'fishing' ? (short ? shortFishing(vb.k, from) : vb.arcP ? fishTurnPlan(from, vb.zone.R, vb.zone.sweep) : fishingPlan(vb.k, from))
+      : phase === 'fishing' ? (short ? shortFishing(vb.k, from) : fishingPlan(vb.k, from))
         : (short ? shortArrival(vb.site, from) : siteArrival(vb.target, from));
     vb.st = { leg: 0, s: 0, v: phase === 'depart' ? 0 : Math.max(0, vb.v), dwell: 0, done: false };
     vb.replanT = vb.i * 0.06;                     // boats plan on different frames
@@ -284,7 +313,7 @@ export class Fleet {
   }
   // net: 0 → 0.25 paid out, towed until 0.65, hauled in by 1
   netPhase(vb) {
-    if (vb.arcP && vb.st && vb.plan[0].kind === 'fishturn') return clamp(vb.st.s / vb.plan[0].path.len, 0, 1);
+    if (vb.mode === 'loop') return clamp((vb.st.s - vb.net.s0) / (vb.net.s1 - vb.net.s0), 0, 1);
     return clamp((this.t - vb.fishAt) / Math.max(0.01, vb.fishUntil - vb.fishAt), 0, 1);
   }
   netOut(vb) {
@@ -300,10 +329,10 @@ export class Fleet {
   vLimit(P, L, s, c) {
     const lg = P.plan[L], V = Vof(this.V0, c, lg.kind);
     if (lg.kind === 'fish') return Math.min(FISH_V * this.V0, Math.sqrt(2 * DEC.fish * this.V0 * (lg.path.len - s)));
-    const k = curvAt(lg.path, s), rate = TURN_RATE * Math.sqrt(this.V0 / 1.904) * warp(c);
+    const k = curvAt(lg.path, s), rate = Math.min(W_CAP, TURN_RATE * Math.sqrt(this.V0 / 1.904) * warp(c));
     const cap = Math.min(CAP[lg.kind] * V * (1 - 0.12 * Math.min(1, k * SEA_R)), turnCap(lg.path, s, rate, DEC.sea * this.V0));
     let vEnd = 0;
-    if (!lg.stop) vEnd = L + 1 < P.plan.length ? this.entry(P, L + 1, c) : (P.phase === 'depart' ? (P.plan.arc ? CAP.fishturn * Vof(this.V0, c, 'sea') : FISH_V * this.V0) : cap);
+    if (!lg.stop) vEnd = L + 1 < P.plan.length ? this.entry(P, L + 1, c) : (P.phase === 'depart' ? FISH_V * this.V0 : cap);
     return Math.min(cap, Math.sqrt(vEnd * vEnd + 2 * DEC[lg.kind] * V * (lg.path.len - s)));
   }
   entry(P, L, c) {
@@ -358,72 +387,54 @@ export class Fleet {
   retEst(vb, c) {
     const key = Math.round(c * 20), C = vb.retCache || (vb.retCache = new Map());
     let v = C.get(key);
-    if (v === undefined) { vb.retP.st.v = vb.mode === 'short' ? 0 : vb.arcP ? this.arcExitV(key / 20) : FISH_V * this.V0; C.set(key, v = this.timeToGo(vb.retP, key / 20)); }
+    if (v === undefined) { vb.retP.st.v = vb.mode === 'short' ? 0 : FISH_V * this.V0; C.set(key, v = this.timeToGo(vb.retP, key / 20)); }
     return v;
   }
-  // Fleet-wide ladder of fishing zones, far to near: the full grounds, nearer
-  // zones (if any) and — once the jetties are built — the outer sectors. All
-  // boats use the same step (zones of one step are checked clear of each other).
-  levels() {
-    const full = k => { const g = groundPose(k); return { x: g.x, y: g.y, head: Math.round(g.a * 16 / Math.PI) }; };
-    const L = [{ tier: 'slip', label: 'grounds', z: full }];
-    ZONES[0].slip.forEach((_, n) => L.push({ tier: 'slip', label: 'near', z: k => ZONES[k].slip[n] }));
-    if (this.jetties.built) ZONES[0].outer.forEach((_, n) => L.push({ tier: 'outer', label: 'outer', z: k => ZONES[k].outer[n] }));
-    return L;
-  }
+  // ---- which trip
+  fullGround(k) { const g = groundPose(k); return { x: g.x, y: g.y, head: Math.round(g.a * 16 / Math.PI) }; }
+  // from a slip to the fishing ground and back (to `target`)
   tripOption(site, target, z, label) {
     const st0 = v => ({ leg: 0, s: 0, v, dwell: 0, done: false }), pose = { x: z.x, y: z.y, a: z.head * Math.PI / 16 };
     const mid = { x: pose.x + Math.cos(pose.a) * LINGER * 0.5, y: pose.y + Math.sin(pose.a) * LINGER * 0.5, a: pose.a };
-    const dep = { plan: siteDeparture(site, pose), phase: 'depart', st: st0(0) };
-    if (z.R) {                                   // outer sectors: the net is towed through the turn for home
-      const arcPlan = fishTurnPlan(pose, z.R, z.sweep), e = poseAt(arcPlan[0].path, arcPlan[0].path.len);
-      dep.plan.arc = true;
-      const arcP = { plan: arcPlan, phase: 'fishing', st: st0(0) };
-      return { target, pose, dep, arcP, z, ret: { plan: siteArrival(target, e), phase: 'return', st: st0(0) }, label };
-    }
-    const ret = { plan: siteArrival(target, mid), phase: 'return', st: st0(FISH_V * this.V0) };
-    return { target, pose, dep, ret, z, label };
+    return { target, pose, dep: { plan: siteDeparture(site, pose), phase: 'depart', st: st0(0) }, ret: { plan: siteArrival(target, mid), phase: 'return', st: st0(FISH_V * this.V0) }, z, label };
   }
-  // The farthest step every boat can make at a natural pace with the current
-  // upgrades (recomputed only when the engine, nets or jetties change).
-  fleetLevel() {
-    const F = stat.fishTime(), V0 = stat.boatSpeed() * 1.12, L = this.levels(), key = `${V0.toFixed(3)}/${F.toFixed(3)}/${L.length}`;
-    if (this.levelKey === key) return L[this.levelIdx];
-    this.V0 = V0;
-    let idx = L.length - 1;
-    for (let n = 0; n < L.length; n++) {
-      const fits = [0, 1, 2, 3].every(k => {
-        const site = L[n].tier === 'outer' ? 4 + k : k, Lr = routeLen(BERTHS[k]);
-        const budget = LEAVE_AT + simOutTime(0, Lr, V0) + F + simBackTime(Lr, V0) - DOCK_EARLY - 0.15;
-        const o = this.tripOption(site, site, L[n].z(k), L[n].label);
-        return this.tripTime(o, C_OUT, F) <= budget;
-      });
-      if (fits) { idx = n; break; }
-    }
-    this.levelKey = key; this.levelIdx = idx;
-    return L[idx];
+  // a loop from the loop berth (n tiles longer), or the one move from the slip to it: one plan all the way
+  loopOption(k, n) { const L = loopPlan(k, n); return { loop: true, target: 4 + k, plan: L.plan, net: L.net, label: 'loop', n }; }
+  moveOption(k) { const M = this.moveP || (this.moveP = []), L = M[k] || (M[k] = movePlan(k)); return { loop: true, target: 4 + k, plan: L.plan, net: L.net, label: 'move' }; }
+  // Is boat k's loop berth there (after a restart the boat lies at it)? The stem berth comes with the
+  // jetties; the head arms are built once the stem boat has moved and no boat is out on a slip trip.
+  berthReady(k) { return LOOP_BERTHS[k].fam === 'stem' ? this.jetties.built : this.jetties.arms; }
+  armsWanted() {
+    if (!this.jetties.built || this.jetties.arms) return false;
+    return this.boats.every(vb => (LOOP_BERTHS[vb.k].fam !== 'stem' || vb.site >= 4) && (vb.site >= 4 || vb.phase === 'docked' || vb.phase === 'castoff' || vb.phase === 'settle' || vb.mode === 'short'));
   }
-  // Before a trip: this boat's zone of the fleet's step, sailing from wherever it lies now.
+  // a boat moves when its berth is there and every boat before it in MOVE_ORDER has moved
+  canMove(vb) {
+    if (vb.site >= 4 || !this.berthReady(vb.k)) return false;
+    const before = MOVE_ORDER.slice(0, MOVE_ORDER.indexOf(vb.k));
+    return this.boats.every(o => !before.includes(o.k) || o.site >= 4);
+  }
+  allMoved() { return this.boats.every(vb => vb.site >= 4); }
+  // Before a trip. Loop berth: the longest loop that is home in time at a calm pace (longer loops only
+  // once every boat has moved and the old fishing grounds are given up). Slip: the move to the loop berth
+  // when it is this boat's turn; the full fishing ground while that can be made in time; else the harbour trip.
   chooseTrip(vb) {
-    const b = vb.b, k = vb.k, D = fishVis(stat.fishTime());
-    let lv = this.fleetLevel();
-    if (vb.site >= 4 && lv.tier === 'slip') lv = this.levels().find(l => l.tier === 'outer') || lv;   // never back into the slips
-    const target = lv.tier === 'outer' ? 4 + k : k, o = this.tripOption(vb.site, target, lv.z(k), lv.label);
+    const b = vb.b, k = vb.k;
     const wait = b.state === 'dock' ? Math.max(0, b.t - LEAVE_AT) : 0, budget = this.toDock(b) - wait - DOCK_EARLY - 0.15;
-    // Too far even a little faster: the short trip as a last resort — out of the
-    // slip to the pier heads (before the jetties exist), or from an outer berth
-    // to open water off the jetty head (the very top upgrades). The one move from
-    // a slip to the outer berth is always sailed: unloading waits for the boat.
-    if (!(vb.site < 4 && target >= 4) && this.tripTime(o, C_LIMIT) > budget) return null;
-    return o;
+    if (vb.site >= 4) {
+      let best = this.loopOption(k, 0);
+      if (this.allMoved()) for (const n of LOOP_BERTHS[k].loops) { if (!n) continue; const o = this.loopOption(k, n); if (this.tripTime(o, C_OUT) <= budget) best = o; else break; }
+      return best;
+    }
+    if (this.canMove(vb)) return this.moveOption(k);
+    if (this.jetties.built) return null;          // waiting for its turn to move: harbour trips only
+    const o = this.tripOption(k, k, this.fullGround(k), 'grounds');
+    return this.tripTime(o, C_LIMIT) > budget ? null : o;
   }
-  // a whole trip at cruise share c: way out, net (towed in the turn, or the visual fishing time), way home
-  arcTime(arcP, c) { arcP.st.v = CAP.fishturn * Vof(this.V0, c, 'sea'); return this.timeToGo(arcP, c); }
-  // the way home after a turn starts at towing speed, not from a standstill
-  arcExitV(c) { return CAP.fishturn * Vof(this.V0, c, 'sea') * (1 - 0.12); }
+  // a whole trip at cruise share c
   tripTime(o, c, F = stat.fishTime()) {
-    if (o.arcP) o.ret.st.v = this.arcExitV(c);
-    return this.timeToGo(o.dep, c) + (o.arcP ? this.arcTime(o.arcP, c) : fishVis(F)) + this.timeToGo(o.ret, c);
+    if (o.loop) return this.timeToGo({ plan: o.plan, phase: 'depart', st: { leg: 0, s: 0, v: 0, dwell: 0, done: false } }, c);
+    return this.timeToGo(o.dep, c) + fishVis(F) + this.timeToGo(o.ret, c);
   }
   // when the nets must be in so the boat is home in time
   fishEnd(vb) {
@@ -436,20 +447,22 @@ export class Fleet {
   // seconds left: to the start of the visual towing (depart) or to the simulation's unloading (return)
   replan(vb) {
     const b = vb.b, F = stat.fishTime();
+    if (vb.mode === 'loop') {
+      // home when the simulation docks; if that cannot be done the boat is late, not faster (V_CAP, W_CAP)
+      vb.c = clamp(this.solve(vb, vb.simBack ? 0 : this.toDock(b) - DOCK_EARLY), C_MIN, C_LIMIT);
+      return;
+    }
     if (vb.phase === 'depart') {
       // 1. comfortable: reach the spot in time for the nets before the catch is complete;
       // 2. binding: out + nets + home must fit before the simulation docks
       const D = fishVis(F), toDock = this.toDock(b);
       const cNat = this.solve(vb, this.toFishEnd(b) - PRE_RETURN - D);
-      vb.cTrip = vb.arcP ? this.solveFor(c => this.timeToGo(vb, c) + this.arcTime(vb.arcP, c) + this.retEst(vb, c), toDock - DOCK_EARLY - 0.15)
-        : this.solveFor(c => this.timeToGo(vb, c) + this.retEst(vb, c), toDock - DOCK_EARLY - 0.15 - D);
+      vb.cTrip = this.solveFor(c => this.timeToGo(vb, c) + this.retEst(vb, c), toDock - DOCK_EARLY - 0.15 - D);
       vb.c = clamp(Math.max(Math.min(C_OUT, cNat), vb.cTrip), C_MIN, C_LIMIT);
     } else if (vb.phase === 'return') {
       const c = this.solve(vb, this.toDock(b) - DOCK_EARLY);
       // gentle corrections, except when needed to be in on time
       vb.c = c > vb.c ? c : Math.max(c, vb.c - 0.2);
-    } else if (vb.phase === 'fishing' && vb.arcP) {     // towing through the turn: keep the deadline
-      vb.c = this.solveFor(c => this.timeToGo(vb, c) + this.retEst(vb, c), this.toDock(b) - DOCK_EARLY);
     } else vb.c = 1;
   }
   move(vb, dt) {
@@ -466,10 +479,16 @@ export class Fleet {
       vb.accel = dt > 0 ? (vb.v - v0) / dt : 0;
     } else {
       // at the berth; after arriving the boat surges a little and the lines take it back
-      const { x: bx, y: by } = siteOf(vb.site);
-      let off = 0;
-      if (vb.phase === 'settle') { const w = 2.6, t = vb.settleT; off = vb.settleV / w * Math.exp(-0.9 * t) * Math.sin(w * t); }
-      vb.x = bx; vb.y = by - off; vb.h = -Math.PI / 2; vb.v = 0; vb.accel = 0;
+      const S = siteOf(vb.site);
+      if (vb.site >= 4) {                     // loop berth: hauled in by the lines / pushed off, smoothly
+        const w = vb.warp * vb.warp * (3 - 2 * vb.warp), d = (1 - w) * S.haul;
+        vb.x = S.x - S.px * d; vb.y = S.y - S.py * d;
+      } else {
+        let off = 0;
+        if (vb.phase === 'settle') { const w = 2.6, t = vb.settleT; off = vb.settleV / w * Math.exp(-0.9 * t) * Math.sin(w * t); }
+        vb.x = S.x; vb.y = S.y - off;
+      }
+      vb.h = S.a; vb.v = 0; vb.accel = 0;
     }
   }
 
@@ -485,7 +504,7 @@ export class Fleet {
   }
   track(vb, hold, n) {                            // hull capsules every 0.5 s (held: braking to a stop)
     let P = vb, st = vb.st;
-    if (vb.phase === 'castoff') { P = { plan: vb.trip ? vb.trip.dep.plan : shortDeparture(vb.site), phase: 'depart' }; st = { leg: 0, s: 0, v: 0, dwell: 0, done: false }; }
+    if (vb.phase === 'castoff') { P = { plan: vb.trip ? (vb.trip.loop ? vb.trip.plan : vb.trip.dep.plan) : shortDeparture(vb.site), phase: 'depart' }; st = { leg: 0, s: 0, v: 0, dwell: 0, done: false }; }
     st = { ...st };
     const out = [];
     for (let j = 0; j < n; j++) {

@@ -153,11 +153,11 @@ export class WorldScene extends Phaser.Scene {
     for (const [x, y] of [[36.4, 13.6], [38.3, 17.4], [36.2, 18.2], [38.5, 14.2]]) prop('prop/rock', x, y, 1.3);
     this.beam = this.add.image(lp.x, lp.y - 3.05 * UZ * 1.2, 'puff').setScale(0.9).setAlpha(0.6).setTint(0xfff2a6).setDepth(depthAt(...LIGHTHOUSE) + 1).setBlendMode('ADD');
     // fishing-ground buoys, either side of where each boat tows its nets
-    this.buoys = [];
+    this.buoys = []; this.buoyOf = [];
     BERTHS.forEach((B, k) => {
       for (const [x, y] of buoysAt(k)) {
         const p = iso(x, y, SEA_Z);
-        if (has('prop/buoy')) this.buoys.push(addSprite(this, p.x, p.y, 'prop/buoy').setDepth(depthAt(x, y)));
+        if (has('prop/buoy')) { this.buoys.push(addSprite(this, p.x, p.y, 'prop/buoy').setDepth(depthAt(x, y))); this.buoyOf.push(k); }
       }
     });
     this.gulls = [];
@@ -233,6 +233,8 @@ export class WorldScene extends Phaser.Scene {
     const f = this.add.image(p.x, p.y, 'fishjump').setDepth(9300).setScale(0.8);
     this.tweens.add({ targets: f, y: p.y - 26, duration: 380, yoyo: true, ease: 'Quad.Out', angle: { from: -40, to: 40 }, onComplete: () => f.destroy() });
   }
+  // a boat that has moved to its loop berth has given up its old fishing ground: its buoys are taken in
+  retireBuoys(k) { if (this.buoys) this.buoys.forEach((s, i) => { if (this.buoyOf[i] === k) s.setVisible(false); }); }
   craneWork(b) {
     // only the crane at this boat's own slip, and only once the boat is in
     const site = this.fleet.mooredSite(b);

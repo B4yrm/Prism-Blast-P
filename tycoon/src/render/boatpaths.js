@@ -7,8 +7,8 @@
 // the slip. Pure geometry: shared by the game and by the automatic clearance
 // check (tests/boat-check.cjs).
 import { BERTHS, PIERS, BOUNDS, isLand } from '../config.js';
-import { OUTER_MOVES, ZONES } from './boatzones.js';
-export { OUTER_MOVES, ZONES };
+import { LOOP_R, HEAD_ARMS, LOOP_BERTHS, MOVE_ORDER, DECOR_MOVES } from './boatloops.js';
+export { LOOP_R, HEAD_ARMS, LOOP_BERTHS, MOVE_ORDER };
 
 // Class-0 hull at the waterline (tiles): bow tip, stern, half beam.
 export const HULL = { bow: 2.04, stern: 1.89, half: 0.61 };
@@ -36,7 +36,8 @@ export const BERTH_MOVES = [
 
 // Decorative moored boats [x, y, class, heading index (8 directions), sprite scale],
 // placed clear of every manoeuvre (checked by tests/boat-check.cjs).
-export const DECOR_BOATS = [[24.6, 24.6, 1, 0, 0.55], [2.0, 25.6, 0, 1, 0.6], [34.0, 26.6, 1, 5, 0.7], [27.5, 23.6, 2, 2, 0.5]];
+export const DECOR_BOATS = [[24.6, 24.6, 1, 0, 0.55], [2.0, 25.6, 0, 1, 0.6], [34.0, 26.6, 1, 5, 0.7], [27.5, 23.6, 2, 2, 0.5]]
+  .map((d, i) => DECOR_MOVES[i] ? [DECOR_MOVES[i][0], DECOR_MOVES[i][1], ...d.slice(2)] : d);   // out of the way of the loops (tools/boats/loops.cjs)
 export const CLASS_S = [1.45, 1.7, 2.0];             // hull size factor of each baked boat class
 export const decorHull = ([x, y, c, d, sc], grow = 0) => hullAt(x, y, d * Math.PI / 4, grow, CLASS_S[c] / CLASS_S[0] * sc);
 
@@ -209,25 +210,53 @@ export const buoysAt = i => {
 export const buoyPoly = ([x, y], r = 0.3) => Array.from({ length: 8 }, (_, k) => [x + r * Math.cos(k * Math.PI / 4), y + r * Math.sin(k * Math.PI / 4)]);
 
 // ---- mooring sites -------------------------------------------------------------
-// Sites 0–3 are the slips. Sites 4–7 are the outer berths along the two outer
-// jetties (built at high upgrade levels): boat i's outer site is 4 + i. Every
-// boat lies bow north; it leaves by backing out with the stern swinging (moves
-// found by tools/boats/search.mjs and tools/boats/zones.mjs) and comes in by a
-// straight glide from its site's mouth.
+// Sites 0–3 are the slips: the boat lies bow north, leaves by backing out with the
+// stern swinging and comes in by a straight glide from the slip's mouth.
+// Sites 4–7 are the loop berths at the outer jetties (boat i's is 4 + i, found by
+// tools/boats/loops.cjs): the boat lies alongside, leaves AHEAD, sails one closed
+// loop with its net out and comes back AHEAD to where it started. Under way it
+// keeps `haul` tiles more off the pier than when made fast: the lines haul it in.
 export const JETTIES = [[30, 22, 31, 30.6], [-4, 22, -3, 30.6]];       // x0, y0, x1, y1 (east, west)
-export const OUTER_Y = 29.0;                                          // boat centre at an outer berth
-export const OUTER_X = [-2.24, 29.24, -4.76, 31.76];                  // boat i's outer berth
-export const OUTER_JETTY = [1, 0, 1, 0];
-export const OUTER_MOUTH = JETTIES[0][3] + HULL.bow + 0.6;            // glide starts here (bow clear of the jetty end)
-export const siteOf = s => s < 4
-  ? { x: VBERTH[s][0], y: VBERTH[s][1], my: MOUTH_Y[s] + APPROACH, mv: BERTH_MOVES[s] }
-  : { x: OUTER_X[s - 4], y: OUTER_Y, my: OUTER_MOUTH, mv: OUTER_MOVES[s - 4] };
-export const siteHull = (s, grow = 0) => hullAt(siteOf(s).x, siteOf(s).y, -Math.PI / 2, grow);
-// bow line and stern line bollards of an outer berth, on its jetty
-export const outerBollards = i => {
-  const J = JETTIES[OUTER_JETTY[i]], x = OUTER_X[i] < J[0] ? J[0] + 0.2 : J[2] - 0.2;
-  return [[x, OUTER_Y - 1.6], [x, OUTER_Y + 1.3]];
+export const loopBerth = s => LOOP_BERTHS[s - 4];
+export const siteOf = s => {
+  if (s < 4) return { x: VBERTH[s][0], y: VBERTH[s][1], a: NORTH, my: MOUTH_Y[s] + APPROACH, mv: BERTH_MOVES[s] };
+  const B = loopBerth(s);
+  return { x: B.x + B.px * B.haul, y: B.y + B.py * B.haul, a: B.a, ox: B.x, oy: B.y, haul: B.haul, px: B.px, py: B.py };
 };
+export const siteHull = (s, grow = 0) => hullAt(siteOf(s).x, siteOf(s).y, siteOf(s).a, grow);
+// bow line and stern line bollards of a loop berth, on its pier
+export const outerBollards = i => LOOP_BERTHS[i].bollards;
+// The loop of boat k, n tiles longer on each long side: one leg, ahead all the way.
+// The net is out between s0 and s1 (cast after leaving, hauled before coming alongside).
+const loopCache = new Map();
+export function loopPlan(k, n = 0) {
+  const key = k * 100 + n;
+  let L = loopCache.get(key);
+  if (!L) {
+    const B = LOOP_BERTHS[k], q = B.sense * Math.PI / 2;
+    let P = [[B.x, B.y]], a = B.a;
+    const add = part => { P = cat(P, part); };
+    const end = () => P[P.length - 1];
+    for (const seg of [n, B.sb, n, B.sb]) {       // quarter turn, long side, quarter turn, run-in length, … (as tools/boats/loops.cjs)
+      add(arc(end()[0], end()[1], a, LOOP_R, q)); a += q;
+      if (seg > 0) add(straight(end()[0], end()[1], a, seg));
+    }
+    const path = finish(resample(P));
+    L = { plan: [{ path, dir: 1, kind: 'sea', stop: true }], net: { leg: 0, s0: 0.17 * path.len, s1: 0.8 * path.len } };
+    loopCache.set(key, L);
+  }
+  return L;
+}
+// The one trip of boat k from its slip to its loop berth: back out, a way point at
+// sea, then in along the berth's line. The net is out on the middle of the sea leg.
+export function movePlan(k) {
+  const B = LOOP_BERTHS[k], M = B.move, s = siteOf(k), mv = M.mv || s.mv;
+  const back = cat(mv.d0 > 0 ? straight(s.x, s.y, SOUTH, mv.d0) : [[s.x, s.y]], arc(s.x, s.y + mv.d0, SOUTH, mv.R, -mv.side * mv.phi));
+  const rev = finish(resample(back)), e = poseAt(rev, rev.len), head = e.a + Math.PI;
+  const pre = [B.x - Math.cos(B.a) * M.run, B.y - Math.sin(B.a) * M.run, B.a];
+  const sea = finish(resample(cat(cat(dubins([e.x, e.y, head], M.via, LOOP_R), dubins(M.via, pre, LOOP_R)), straight(pre[0], pre[1], B.a, M.run))));
+  return { plan: [{ path: rev, dir: -1, kind: 'reverse', stop: true }, { path: sea, dir: 1, kind: 'sea', stop: true }], net: { leg: 1, s0: M.net[0], s1: M.net[1] } };
+}
 
 // From site s: back out, stop, then the shortest smooth way to the pose `to`.
 export function siteDeparture(s, to, mv = siteOf(s).mv, R = SEA_R) {
@@ -266,11 +295,8 @@ export function arrivalPlan(i, from, R = SEA_R) { return siteArrival(i, from, R)
 // along its own slip until its bow is just clear of the pier heads, casts and
 // hauls its net astern, then goes straight back in. It never leaves its own
 // lane, so it never turns and never crosses another boat's way.
-// From an outer berth (site 4–7, only when even its sector trip cannot be made in
-// time: the very top upgrades) the same trip ends in open water, the whole boat
-// clear of the jetty head.
 export const SHORT_OUT = 0.4;                        // tiles beyond the slip mouth
-export const shortSpot = s => s < 4 ? { x: VBERTH[s][0], y: MOUTH_Y[s] + SHORT_OUT, a: NORTH } : { x: OUTER_X[s - 4], y: OUTER_MOUTH, a: NORTH };
+export const shortSpot = s => ({ x: VBERTH[s][0], y: MOUTH_Y[s] + SHORT_OUT, a: NORTH });
 export function shortDeparture(s) {
   const { x: bx, y: by } = siteOf(s), e = shortSpot(s);
   return [{ path: finish(resample(straight(bx, by, SOUTH, e.y - by))), dir: -1, kind: 'reverse', stop: true }];
@@ -281,12 +307,6 @@ export function shortArrival(s, from) {
 }
 export function shortFishing(i, from) {                // the net goes out astern; the boat barely moves
   return [{ path: finish(resample(straight(from.x, from.y, from.a, 0.3))), dir: 1, kind: 'fish', stop: true }];
-}
-
-// Outer sectors: the net is towed while the boat makes its turn for home — an arc
-// of radius R through 180° (sweep +1 towards larger angles, −1 the other way).
-export function fishTurnPlan(from, R, sweep) {
-  return [{ path: finish(resample(arc(from.x, from.y, from.a, R, sweep * Math.PI))), dir: 1, kind: 'fishturn', stop: false }];
 }
 
 // Towing the nets: slowly straight on for LINGER tiles, then lying still until called home.

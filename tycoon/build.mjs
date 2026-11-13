@@ -37,6 +37,7 @@ const html = fs.readFileSync('src/index.template.html', 'utf8')
 const full = html
   .replace('<!--DOC-->', '<!doctype html>\n<html lang="az">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">')
   .replace('<!--BODY-->', '</head>\n<body>') + '</body>\n</html>\n';
-fs.writeFileSync('index.html', full);
-fs.writeFileSync(process.env.ARTIFACT_OUT || '.artifact.html', html.replace('<!--DOC-->\n', '').replace('<!--BODY-->\n', ''));
-console.log('index.html', (full.length / 1024).toFixed(0) + ' KB');
+// BUILD_OUT=path writes a development build elsewhere and leaves index.html (the APK's page) alone
+fs.writeFileSync(process.env.BUILD_OUT || 'index.html', full);
+if (!process.env.BUILD_OUT || process.env.ARTIFACT_OUT) fs.writeFileSync(process.env.ARTIFACT_OUT || '.artifact.html', html.replace('<!--DOC-->\n', '').replace('<!--BODY-->\n', ''));
+console.log(process.env.BUILD_OUT || 'index.html', (full.length / 1024).toFixed(0) + ' KB');

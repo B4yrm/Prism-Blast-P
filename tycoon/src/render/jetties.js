@@ -3,17 +3,22 @@
 // short visible sequence: piles are driven, the deck is laid from the shore
 // outwards, then bollards and fenders go on. When finished, G.S.harborOuter = 1
 // is saved, so after a restart they are simply there.
+// Their head arms (short decks across the jetty heads, where boats lie alongside
+// the sea face) are built in a second step, when the fleet asks for them
+// (armsWanted: the boats that would be in the way have left their slips);
+// then G.S.harborOuter = 2.
 // Carts (visual only) shuttle crates from a boat unloading at an outer berth
 // to the crate pile on the quay; the simulation's unloading is unchanged.
 import { SEA_Z } from '../config.js';
 import { addSprite, has } from './atlas.js';
-import { JETTIES, OUTER_X, OUTER_JETTY, outerBollards } from './boatpaths.js';
+import { JETTIES, HEAD_ARMS, LOOP_BERTHS, outerBollards, siteOf } from './boatpaths.js';
 import { G } from '../core/economy.js';
 import { save } from '../core/state.js';
 
 const iso = (x, y, z = 0) => ({ x: (x - y) * 32, y: (x + y) * 16 - z });
 const depthAt = (x, y) => (x + y) * 16;
 const BUILD_S = 7;                                   // seconds the construction takes
+const ARMS_S = 4;                                    // … and the head arms
 export const outerUnlocked = () => G.S.up.harbor.net >= 18 && G.S.up.harbor.speed >= 14;
 // cart routes: jetty berth area → jetty root → along the shore → crate pile on the quay
 const CART_ROUTES = [
@@ -24,20 +29,29 @@ const CART_ROUTES = [
 export class Jetties {
   constructor(scene) {
     this.sc = scene;
-    this.built = G.S.harborOuter === 1;
+    this.built = G.S.harborOuter >= 1;
     this.progress = this.built ? 1 : 0;
+    this.arms = G.S.harborOuter >= 2;
+    this.armProgress = this.arms ? 1 : 0;
+    this.armsWanted = false;
+    this.cols = [];                                  // head arms, per tile column: graphics
+    for (const [x0, y0, x1, y1] of HEAD_ARMS) for (let x = x0; x < x1 - 1e-6; x += 1) {
+      const xb = Math.min(x1, x + 1);
+      this.cols.push({ x0, x1, y0, y1, xa: x, xb, g: scene.add.graphics().setDepth(depthAt(xb, y1) - 2) });
+    }
     this.rows = [];                                  // per jetty, per tile row: graphics
     for (let j = 0; j < JETTIES.length; j++) {
       const [x0, y0, x1, y1] = JETTIES[j];
       for (let y = y0; y < y1 - 1e-6; y += 1) this.rows.push({ j, x0, x1, ya: y, yb: Math.min(y1, y + 1), g: scene.add.graphics().setDepth(depthAt(x1, Math.min(y1, y + 1)) - 2) });
     }
     this.extras = [];                               // bollards and fenders
+    this.armExtras = [];
     for (let i = 0; i < 4; i++) for (const [x, y] of outerBollards(i)) {
       if (!has('prop/bollard')) continue;
       const p = iso(x, y);
-      this.extras.push(addSprite(scene, p.x, p.y, 'prop/bollard', 1.15).setDepth(depthAt(x, y) + 2));
+      (LOOP_BERTHS[i].fam === 'stem' ? this.extras : this.armExtras).push(addSprite(scene, p.x, p.y, 'prop/bollard', 1.15).setDepth(depthAt(x, y) + 2));
     }
-    this.fenders = JETTIES.map(([, , x1, y1]) => scene.add.graphics().setDepth(depthAt(x1, y1) - 1));
+    this.fenders = LOOP_BERTHS.map((B, i) => scene.add.graphics().setDepth(depthAt(siteOf(4 + i).x, siteOf(4 + i).y) - 1));
     this.carts = CART_ROUTES.map(route => this.makeCart(route));
     this.dust = scene.add.particles(0, 0, 'puff', { speed: { min: 6, max: 20 }, scale: { start: 0.12, end: 0.4 }, alpha: { start: 0.55, end: 0 }, lifespan: 900, emitting: false, tint: 0xd9c7a5 }).setDepth(9000);
     this.dustT = 0;
@@ -53,7 +67,7 @@ export class Jetties {
     return { pts, segs, L, s: 0, dir: 1, busy: 0, spr, box };
   }
   // the simulation unloads a boat at outer berth i: keep its jetty's cart going
-  unloading(i) { const c = this.carts[OUTER_JETTY[i]]; if (c) c.busy = 2.5; }
+  unloading(i) { const c = this.carts[LOOP_BERTHS[i].jetty]; if (c) c.busy = 2.5; }
   update(t, dt) {
     if (!this.built && outerUnlocked()) {
       this.progress = Math.min(1, this.progress + dt / BUILD_S);
@@ -65,6 +79,17 @@ export class Jetties {
       }
       this.draw();
       if (this.progress >= 1) { this.built = true; G.S.harborOuter = 1; save(G.S); console.log('OUTER jetties built'); }
+    }
+    if (this.built && !this.arms && this.armsWanted) {
+      this.armProgress = Math.min(1, this.armProgress + dt / ARMS_S);
+      this.dustT -= dt;
+      if (this.dustT <= 0) {
+        this.dustT = 0.12;
+        const [x0, y0, x1, y1] = HEAD_ARMS[Math.floor(Math.random() * HEAD_ARMS.length)], q = iso(x0 + (x1 - x0) * Math.random(), (y0 + y1) / 2, 6);
+        this.dust.emitParticleAt(q.x, q.y, 2);
+      }
+      this.draw();
+      if (this.armProgress >= 1) { this.arms = true; G.S.harborOuter = 2; save(G.S); console.log('OUTER head arms built'); }
     }
     for (const c of this.carts) this.moveCart(c, dt);
   }
@@ -114,11 +139,37 @@ export class Jetties {
       }
     }
     for (const e of this.extras) e.setVisible(fit > 0).setAlpha(fit);
-    // tyre fenders along the berth sides
-    for (const f of this.fenders) f.clear();
-    if (fit > 0) for (let i = 0; i < 4; i++) {
-      const [x0, , x1] = JETTIES[OUTER_JETTY[i]], x = OUTER_X[i] < x0 ? x0 - 0.04 : x1 + 0.04, f = this.fenders[OUTER_JETTY[i]];
-      for (const y of [27.6, 29.0, 30.2]) { const q = iso(x, y, -3); f.fillStyle(0x23262b, fit).fillEllipse(q.x, q.y, 7, 9); }
+    // head arms: piles, then the deck laid from the jetty outwards, then bollards and fenders
+    const A = this.armProgress, aPiles = Math.min(1, A / 0.35), aDeck = Math.max(0, Math.min(1, (A - 0.35) / 0.45)), aFit = Math.max(0, (A - 0.8) / 0.2);
+    for (const c of this.cols) {
+      const g = c.g; g.clear();
+      if (A <= 0) continue;
+      // distance of this column from the jetty stem, as a share of the arm
+      const J = JETTIES.find(([jx0, , jx1]) => c.x0 <= jx1 && c.x1 >= jx0), jm = (J[0] + J[2]) / 2, far = Math.max(Math.abs(c.x0 - jm), Math.abs(c.x1 - jm));
+      const d0 = Math.min(Math.abs(c.xa - jm), Math.abs(c.xb - jm)) / far, d1 = Math.max(Math.abs(c.xa - jm), Math.abs(c.xb - jm)) / far;
+      if (aPiles > d0) {
+        const h = 22 * Math.min(1, (aPiles - d0) * 3);
+        for (const x of [c.xa + 0.2, c.xb - 0.2]) for (const y of [c.y0 + 0.1, c.y1 - 0.1]) { const a = iso(x, y, SEA_Z + h), b = iso(x, y, SEA_Z - 6); g.fillStyle(0x4a2f1c, 1).fillRect(a.x - 2.5, a.y, 5, b.y - a.y); }
+      }
+      if (aDeck > d0) {
+        const f = Math.min(1, (aDeck - d0) / Math.max(1e-3, d1 - d0)), west = (c.xa + c.xb) / 2 < jm;
+        const xa = west ? c.xb - (c.xb - c.xa) * f : c.xa, xb = west ? c.xb : c.xa + (c.xb - c.xa) * f;
+        g.fillStyle(0x9c6a3e, 1).fillPoints([iso(xb, c.y0), iso(xb, c.y1), iso(xb, c.y1, -6), iso(xb, c.y0, -6)], true);
+        g.fillStyle(0x8a5a33, 1).fillPoints([iso(xa, c.y1), iso(xb, c.y1), iso(xb, c.y1, -6), iso(xa, c.y1, -6)], true);
+        g.fillStyle(0xc68a52, 1).fillPoints([iso(xa, c.y0), iso(xb, c.y0), iso(xb, c.y1), iso(xa, c.y1)], true);
+        g.lineStyle(1, 0x8f5d33, 0.8);
+        for (let x = Math.ceil(xa * 4 + 0.01) / 4; x < xb - 0.01; x += 0.25) { const a = iso(x, c.y0), b = iso(x, c.y1); g.lineBetween(a.x, a.y, b.x, b.y); }
+      }
     }
+    for (const e of this.armExtras) e.setVisible(aFit > 0).setAlpha(aFit);
+    // tyre fenders on the pier face of each berth
+    LOOP_BERTHS.forEach((B, i) => {
+      const f = this.fenders[i], on = B.fam === 'stem' ? fit : aFit, S = siteOf(4 + i); f.clear();
+      if (on <= 0) return;
+      for (const d of [-1.2, 0, 1.2]) {
+        const x = S.x + Math.cos(S.a) * d + B.px * (0.61 + 0.3 - 0.04), y = S.y + Math.sin(S.a) * d + B.py * (0.61 + 0.3 - 0.04), q = iso(x, y, -3);
+        f.fillStyle(0x23262b, on).fillEllipse(q.x, q.y, 7, 9);
+      }
+    });
   }
 }
