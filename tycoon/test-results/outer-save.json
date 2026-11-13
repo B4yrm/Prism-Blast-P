@@ -1,32 +1,95 @@
 {
- "build": {
+ "jetties": {
   "before": {
    "built": false,
-   "progress": 0.08,
+   "arms": false,
+   "armProgress": 0,
+   "sites": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "progress": 0.05,
    "flag": 0
   },
   "constructionProgressEverySecond": [
-   0.08,
-   0.22,
-   0.37,
-   0.51,
-   0.65,
-   0.79,
-   0.94,
+   0.05,
+   0.2,
+   0.34,
+   0.48,
+   0.63,
+   0.77,
+   0.91,
    1,
    1
   ],
   "after": {
    "built": true,
+   "arms": false,
+   "armProgress": 0,
+   "sites": [
+    0,
+    1,
+    2,
+    3
+   ],
    "progress": 1,
    "flag": 1,
    "stored": 1
   },
   "reloaded": {
    "built": true,
+   "arms": false,
+   "armProgress": 0.11,
+   "sites": [
+    0,
+    1,
+    2,
+    7
+   ],
    "progress": 1,
    "flag": 1,
    "stored": 1
+  },
+  "errors": [],
+  "pass": true
+ },
+ "headArmsAndMoves": {
+  "gameSecondsNeeded": 60,
+  "armProgressSeen": [
+   0.12,
+   0.37,
+   0.62,
+   0.87
+  ],
+  "afterPlaying": {
+   "built": true,
+   "arms": true,
+   "armProgress": 1,
+   "sites": [
+    4,
+    5,
+    6,
+    7
+   ],
+   "progress": 1,
+   "flag": 2,
+   "stored": 2
+  },
+  "afterReload": {
+   "built": true,
+   "arms": true,
+   "armProgress": 1,
+   "sites": [
+    4,
+    5,
+    6,
+    7
+   ],
+   "progress": 1,
+   "flag": 2,
+   "stored": 2
   },
   "errors": [],
   "pass": true
@@ -37,27 +100,35 @@
    "money": 900,
    "gems": 33,
    "level": 12,
-   "xp": 2,
+   "xp": 56,
    "boats": 4,
-   "workers": 6,
-   "caught": 100,
-   "up": "{\"harbor\":{\"cap\":5,\"speed\":14,\"net\":18},\"warehouse\":{\"cap\":0,\"load\":0,\"cold\":0},\"factory\":{\"speed\":0,\"out\":0,\"qual\":0},\"market\":{\"price\":0,\"ads\":0,\"till\":0},\"hq\":{\"train\":0,\"carry\":0}}",
-   "tier": "{\"harbor\":3,\"warehouse\":2,\"market\":2,\"hq\":2,\"factory\":1,\"farm\":0}"
+   "workers": 10,
+   "caught": 230,
+   "up": "{\"warehouse\":{\"cap\":30,\"load\":30,\"cold\":30},\"factory\":{\"speed\":30,\"out\":30,\"qual\":30},\"market\":{\"price\":30,\"ads\":30,\"till\":30},\"hq\":{\"train\":30,\"carry\":30},\"harbor\":{\"cap\":0,\"speed\":14,\"net\":18}}",
+   "tier": "{\"harbor\":3,\"warehouse\":3,\"market\":3,\"hq\":3,\"factory\":3,\"farm\":0}"
   },
   "after": {
    "money": 900,
    "gems": 33,
    "level": 12,
-   "xp": 2,
+   "xp": 56,
    "boats": 4,
-   "workers": 6,
-   "caught": 100,
-   "up": "{\"harbor\":{\"cap\":5,\"speed\":14,\"net\":18},\"warehouse\":{\"cap\":0,\"load\":0,\"cold\":0},\"factory\":{\"speed\":0,\"out\":0,\"qual\":0},\"market\":{\"price\":0,\"ads\":0,\"till\":0},\"hq\":{\"train\":0,\"carry\":0}}",
-   "tier": "{\"harbor\":3,\"warehouse\":2,\"market\":2,\"hq\":2,\"factory\":1,\"farm\":0}"
+   "workers": 10,
+   "caught": 230,
+   "up": "{\"warehouse\":{\"cap\":30,\"load\":30,\"cold\":30},\"factory\":{\"speed\":30,\"out\":30,\"qual\":30},\"market\":{\"price\":30,\"ads\":30,\"till\":30},\"hq\":{\"train\":30,\"carry\":30},\"harbor\":{\"cap\":0,\"speed\":14,\"net\":18}}",
+   "tier": "{\"harbor\":3,\"warehouse\":3,\"market\":3,\"hq\":3,\"factory\":3,\"farm\":0}"
   }
  },
  "oldSaveBelow": {
   "built": false,
+  "arms": false,
+  "armProgress": 0,
+  "sites": [
+   0,
+   1,
+   2,
+   3
+  ],
   "progress": 0,
   "flag": 0,
   "errors": [],
@@ -65,9 +136,50 @@
  },
  "oldSaveAbove": {
   "built": true,
+  "arms": false,
+  "armProgress": 0,
+  "sites": [
+   0,
+   1,
+   2,
+   3
+  ],
   "progress": 1,
   "flag": 1,
   "stored": 1,
+  "errors": [],
+  "pass": true
+ },
+ "previousBuildSave": {
+  "atLoad": {
+   "built": true,
+   "arms": false,
+   "armProgress": 0.11,
+   "sites": [
+    0,
+    1,
+    2,
+    7
+   ],
+   "progress": 1,
+   "flag": 1,
+   "stored": 1
+  },
+  "gameSecondsNeeded": 60,
+  "afterPlaying": {
+   "built": true,
+   "arms": true,
+   "armProgress": 1,
+   "sites": [
+    4,
+    5,
+    6,
+    7
+   ],
+   "progress": 1,
+   "flag": 2,
+   "stored": 2
+  },
   "errors": [],
   "pass": true
  },
