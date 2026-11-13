@@ -5,7 +5,7 @@
 // label stability and the graphics presets.
 const { chromium } = require('playwright');
 const path = require('path');
-const URL = 'file://' + path.resolve(__dirname, '../index.html');
+const URL = 'file://' + path.resolve(process.argv[2] || path.join(__dirname, '../index.html'));   // optional: another build
 const ARGS = ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--enable-precise-memory-info'];
 const report = {};
 const ok = (name, pass, info) => { report[name] = { pass: !!pass, ...(info || {}) }; };

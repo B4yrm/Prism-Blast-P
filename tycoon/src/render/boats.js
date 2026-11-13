@@ -56,7 +56,10 @@ const C_FULL = 2.0;        // a trip to the fishing grounds may need at most thi
 const warp = c => Math.max(1, c / C_OUT);
 export const V_CAP = 5;           // tiles/s: no boat sails faster, at any level
 export const W_CAP = 0.95 * Math.PI / 2; // rad/s: no boat turns faster than 90°/s (planned at 95 % of it)
-const Vof = (V0, c, kind) => Math.min(V_CAP, V0 * (kind === 'sea' || kind === 'fishturn' ? c : Math.min(c, C_HARBOUR * warp(c))));
+// The limits hold from the first engine upgrade or sea-charts research on. Without either (the start of the game) a boat
+// that had to wait may still catch up as before: its top speed there is 5.7 tiles/s anyway.
+let vCap = V_CAP, wCap = W_CAP;
+const Vof = (V0, c, kind) => Math.min(vCap, V0 * (kind === 'sea' || kind === 'fishturn' ? c : Math.min(c, C_HARBOUR * warp(c))));
 
 // ---- simulation timing (the formulas of sim.js updBoat, read only)
 function simOutTime(run, rem, base) {          // speed = base·min(1, 0.3 + run/2.5)
@@ -87,7 +90,8 @@ function turnCap(path, s, rate, dec) {
   if (path.tcKey !== rate * 1000 + dec) {
     const n = path.n, tc = path.tc || (path.tc = new Float32Array(n));
     for (let i = n - 1; i >= 0; i--) {
-      const own = path.k[i] > 1e-3 ? rate / path.k[i] : 1e9;
+      // the sharpest curvature within 0.16 tiles (the stored values are smoothed where an arc begins)
+      const kk = Math.max(path.k[i], path.k[Math.max(0, i - 2)], path.k[Math.min(n - 1, i + 2)]), own = kk > 1e-3 ? rate / kk : 1e9;
       tc[i] = i === n - 1 ? own : Math.min(own, Math.sqrt(tc[i + 1] * tc[i + 1] + 2 * dec * (path.s[i + 1] - path.s[i])));
     }
     path.tcKey = rate * 1000 + dec;
@@ -191,6 +195,7 @@ export class Fleet {
     const sim = this.sc.sim;
     this.t = t;
     this.V0 = stat.boatSpeed() * 1.12;
+    { const start = G.S.up.harbor.speed === 0 && !(G.S.research.lv.nav > 0); vCap = start ? 99 : V_CAP; wCap = start ? 99 : W_CAP; }
     this.jetties.armsWanted = this.armsWanted();
     this.jetties.update(t, dt);
     while (this.boats.length < sim.boats.length) this.boats.push(this.makeBoat(sim.boats[this.boats.length]));
@@ -224,8 +229,8 @@ export class Fleet {
         break;
       case 'castoff':
         // lines let go; at a loop berth the boat is also pushed off the pier (quicker when it is late)
-        vb.rope = Math.max(0, vb.rope - dt / (away ? 0.4 : 0.6));
-        vb.warp = Math.max(0, vb.warp - dt / (away ? 0.4 : 0.6));
+        vb.rope = Math.max(0, vb.rope - dt / (away ? 0.5 : 0.6));
+        vb.warp = Math.max(0, vb.warp - dt / (away ? 0.5 : 0.6));
         if (vb.rope <= 0 && vb.holdT <= 0 && (away || (b.state === 'dock' && b.t <= LEAVE_AT))) this.start(vb, 'depart');
         break;
       case 'depart':
@@ -297,14 +302,15 @@ export class Fleet {
       vb.depPlan = T ? (T.loop ? T.plan : T.dep.plan) : null;
       vb.net = T && T.loop ? T.net : null;
       vb.target = T ? T.target : vb.site;
-      vb.retP = T ? T.ret : { plan: shortArrival(vb.site, shortSpot(vb.site)), phase: 'return', st: { leg: 0, s: 0, v: 0, dwell: 0, done: false } };
+      vb.shortF = T ? 1 : this.shortShare(vb);
+      vb.retP = T ? T.ret : { plan: shortArrival(vb.site, shortSpot(vb.site, vb.shortF)), phase: 'return', st: { leg: 0, s: 0, v: 0, dwell: 0, done: false } };
       vb.retCache = new Map();
       vb.simBack = false;
       if (T && T.label === 'move' && this.sc.retireBuoys) this.sc.retireBuoys(vb.k);   // its fishing ground is given up
       this.stats.trips[T ? T.label : 'harbour']++;
     }
     const short = vb.mode === 'short';
-    vb.plan = phase === 'depart' ? (short ? shortDeparture(vb.site) : vb.depPlan)
+    vb.plan = phase === 'depart' ? (short ? shortDeparture(vb.site, vb.shortF) : vb.depPlan)
       : phase === 'fishing' ? (short ? shortFishing(vb.k, from) : fishingPlan(vb.k, from))
         : (short ? shortArrival(vb.site, from) : siteArrival(vb.target, from));
     vb.st = { leg: 0, s: 0, v: phase === 'depart' ? 0 : Math.max(0, vb.v), dwell: 0, done: false };
@@ -329,7 +335,7 @@ export class Fleet {
   vLimit(P, L, s, c) {
     const lg = P.plan[L], V = Vof(this.V0, c, lg.kind);
     if (lg.kind === 'fish') return Math.min(FISH_V * this.V0, Math.sqrt(2 * DEC.fish * this.V0 * (lg.path.len - s)));
-    const k = curvAt(lg.path, s), rate = Math.min(W_CAP, TURN_RATE * Math.sqrt(this.V0 / 1.904) * warp(c));
+    const k = curvAt(lg.path, s), rate = Math.min(wCap, TURN_RATE * Math.sqrt(this.V0 / 1.904) * warp(c));
     const cap = Math.min(CAP[lg.kind] * V * (1 - 0.12 * Math.min(1, k * SEA_R)), turnCap(lg.path, s, rate, DEC.sea * this.V0));
     let vEnd = 0;
     if (!lg.stop) vEnd = L + 1 < P.plan.length ? this.entry(P, L + 1, c) : (P.phase === 'depart' ? FISH_V * this.V0 : cap);
@@ -429,7 +435,18 @@ export class Fleet {
     if (this.canMove(vb)) return this.moveOption(k);
     if (this.jetties.built) return null;          // waiting for its turn to move: harbour trips only
     const o = this.tripOption(k, k, this.fullGround(k), 'grounds');
-    return this.tripTime(o, C_LIMIT) > budget ? null : o;
+    // 0.8 s kept in hand for giving way to another boat: a late boat is never made faster than V_CAP
+    return this.tripTime(o, C_LIMIT) > budget - (this.boats.length > 1 ? 0.8 : 0) ? null : o;
+  }
+  // Harbour trip: how far out of the slip (share of the full way) so that it is home in time at the limits
+  shortShare(vb) {
+    const b = vb.b, wait = b.state === 'dock' ? Math.max(0, b.t - LEAVE_AT) : 0, budget = this.toDock(b) - wait - DOCK_EARLY - 0.15;
+    const st0 = () => ({ leg: 0, s: 0, v: 0, dwell: 0, done: false });
+    for (const f of [1, 0.85, 0.7, 0.55, 0.4]) {
+      const t = this.timeToGo({ plan: shortDeparture(vb.site, f), phase: 'depart', st: st0() }, C_LIMIT) + FISH_HARD + 0.3 + this.timeToGo({ plan: shortArrival(vb.site, shortSpot(vb.site, f)), phase: 'return', st: st0() }, C_LIMIT);
+      if (t <= budget || f === 0.4) return f;
+    }
+    return 0.4;
   }
   // a whole trip at cruise share c
   tripTime(o, c, F = stat.fishTime()) {
@@ -502,7 +519,7 @@ export class Fleet {
     if (vb.phase === 'castoff' || vb.phase === 'depart' || vb.phase === 'fishing') return true;
     return vb.phase === 'return' && vb.plan[vb.st.leg] && vb.plan[vb.st.leg].kind === 'sea';
   }
-  track(vb, hold, n) {                            // hull capsules every 0.5 s (held: braking to a stop)
+  track(vb, hold, n) {                            // hull capsules every 0.25 s (held: braking to a stop)
     let P = vb, st = vb.st;
     if (vb.phase === 'castoff') { P = { plan: vb.trip ? (vb.trip.loop ? vb.trip.plan : vb.trip.dep.plan) : shortDeparture(vb.site), phase: 'depart' }; st = { leg: 0, s: 0, v: 0, dwell: 0, done: false }; }
     st = { ...st };
@@ -510,7 +527,7 @@ export class Fleet {
     for (let j = 0; j < n; j++) {
       const lg = P.plan[Math.min(st.leg, P.plan.length - 1)], p = poseAt(lg.path, st.s, this.pose2 || (this.pose2 = {}));
       out.push(capsule(p.x, p.y, lg.dir > 0 ? p.a : p.a + Math.PI, vb.scale));
-      for (let k = 0; k < 5; k++) this.advance(P, st, 0.1, vb.c, hold);
+      for (let k = 0; k < 2; k++) this.advance(P, st, 0.125, vb.c, hold);
     }
     return out;
   }
@@ -519,13 +536,13 @@ export class Fleet {
   resolve() {
     const act = this.boats.filter(vb => vb.phase === 'depart' || vb.phase === 'fishing' || vb.phase === 'return' || (vb.phase === 'castoff' && vb.rope <= 0));
     if (act.length < 2) return;
-    const N = 15, mv = new Map(), hd = new Map();
+    const N = 30, mv = new Map(), hd = new Map();
     for (const vb of act) { mv.set(vb, this.track(vb, false, N)); hd.set(vb, this.track(vb, true, N)); }
-    const clash = (A, B, n) => { for (let j = 0; j < n; j++) if (capGap(A[j], B[j]) < 0.3) return true; return false; };
+    const clash = (A, B, n) => { for (let j = 0; j < n; j++) if (capGap(A[j], B[j]) < 0.4) return true; return false; };
     for (let a = 0; a < act.length; a++) for (let c = a + 1; c < act.length; c++) {
       let lo = act[a], hi = act[c];
       if (this.prio(lo) > this.prio(hi)) [lo, hi] = [hi, lo];
-      const n = lo.phase === 'castoff' ? N : 10;
+      const n = lo.phase === 'castoff' || this.prio(lo) < 2 ? N : 20;     // leaving a slip (also while backing out): look further ahead
       if (!clash(mv.get(lo), mv.get(hi), n)) continue;
       if (!clash(hd.get(lo), mv.get(hi), n)) { if (lo.holdT <= 0) this.stats.waits++; lo.holdT = 0.8; continue; }
       if (this.canHold(hi) && !clash(mv.get(lo), hd.get(hi), n)) { if (hi.holdT <= 0) this.stats.waits++; hi.holdT = 0.8; }

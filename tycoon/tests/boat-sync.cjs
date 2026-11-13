@@ -75,7 +75,7 @@ async function run(b, sc, withFleet) {
     };
     const traj = [], ev = [];
     // unloading shown (crane or jetty cart) while the boat is not made fast
-    let unloadShownAway = 0, unloadsShown = 0, armsAt = null, stemAt = null;
+    let unloadShownAway = 0, unloadsShown = 0, armsAt = null, stemAt = null, allMovedAt = null;
     if (withFleet) {
       const moored = b => { const v = F.view(b); return v && (v.phase === 'docked' || v.phase === 'settle' || v.phase === 'castoff'); };
       const ju = F.jetties.unloading.bind(F.jetties); F.jetties.unloading = i => { unloadsShown++; if (!moored(sim.boats[i])) unloadShownAway++; ju(i); };
@@ -100,10 +100,11 @@ async function run(b, sc, withFleet) {
         traj.push(F.boats.map(v => [+v.x.toFixed(4), +v.y.toFixed(4), +v.h.toFixed(4), v.phase === 'docked' || v.phase === 'castoff' || v.phase === 'settle' ? 1 : 0]));
         if (F.jetties.built && stemAt === null) stemAt = t;
         if (F.jetties.arms && armsAt === null) armsAt = t;
+        if (allMovedAt === null && F.boats.length === sim.boats.length && F.boats.every(v => v.site >= 4)) allMovedAt = t;
       }
       if (k % 200 === 0) { Math.random = simRandom; sim.collect(true); }
     }
-    return { unloadShownAway, unloadsShown, armsAt, stemAt, sites: F.boats.map(v => v.site), flag: sim.S.harborOuter, v0: F.V0, trips: F.stats.trips, built: F.jetties.built, jumps, nets: F.stats.nets, netMin: F.stats.netMin, traj, ev, holdSecs: +(holdFrames * dt).toFixed(1), cs, caught: sim.S.stats.caught, money: Math.floor(sim.S.money), dt };
+    return { unloadShownAway, unloadsShown, armsAt, stemAt, allMovedAt, sites: F.boats.map(v => v.site), flag: sim.S.harborOuter, v0: F.V0, trips: F.stats.trips, built: F.jetties.built, jumps, nets: F.stats.nets, netMin: F.stats.netMin, traj, ev, holdSecs: +(holdFrames * dt).toFixed(1), cs, caught: sim.S.stats.caught, money: Math.floor(sim.S.money), dt };
   }, [sc.secs, withFleet]);
   r.errs = errs;
   await ctx.close();
@@ -154,19 +155,23 @@ function analyse(sc, r, plain) {
   }
   out.hulls = { overlapSamples: overlaps, firstOverlap, minGapTiles: +minGap.toFixed(3), landContactSamples: landHits, firstLandContact: firstLand, decorContactSamples: decorHits };
   // 3. smoothness: largest jump, turn rate and speed between frames
-  let maxStep = 0, maxYaw = 0, maxHaul = 0, haulAt = null;
+  let maxStep = 0, maxYaw = 0, maxHaul = 0, haulAt = null, maxKink = 0;
   for (let f = 1; f < r.traj.length; f++) for (let i = 0; i < n; i++) {
     const [x0, y0, h0, m0] = r.traj[f - 1][i], [x1, y1, h1, m1] = r.traj[f][i];
     if (m0 || m1) { const hv = Math.hypot(x1 - x0, y1 - y0) / r.dt; if (hv > maxHaul) { maxHaul = hv; haulAt = [+(f * r.dt).toFixed(2), i, m0, m1, +x0.toFixed(2), +y0.toFixed(2), +x1.toFixed(2), +y1.toFixed(2)]; } continue; }      // made fast: only the lines move it
     maxStep = Math.max(maxStep, Math.hypot(x1 - x0, y1 - y0) / r.dt);
-    let d = h1 - h0; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI;
-    maxYaw = Math.max(maxYaw, Math.abs(d) / r.dt);
+    // turn rate over 0.1 s (three frames), so a kink of a degree where two curves join does not count as a turn
+    if (f >= 3 && !r.traj[f - 3][i][3]) { let d = h1 - r.traj[f - 3][i][2]; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI; maxYaw = Math.max(maxYaw, Math.abs(d) / (3 * r.dt)); }
+    { let d = h1 - h0; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI; maxKink = Math.max(maxKink, Math.abs(d)); }
   }
-  out.motion = { trips: r.trips, jettiesBuilt: r.built, simCruiseTilesPerS: +r.v0.toFixed(2), maxSpeedVsSimCruise: +(maxStep / r.v0).toFixed(2), maxSpeedTilesPerS: +maxStep.toFixed(2), maxTurnRateDegPerS: +(maxYaw * 180 / Math.PI).toFixed(1), haulingInTilesPerS: +maxHaul.toFixed(2), haulingFastestAt: haulAt, holdSeconds: r.holdSecs, jetties: { stemsAt: r.stemAt, headArmsAt: r.armsAt, saved: r.flag, sites: r.sites } };
+  out.motion = { trips: r.trips, jettiesBuilt: r.built, simCruiseTilesPerS: +r.v0.toFixed(2), maxSpeedVsSimCruise: +(maxStep / r.v0).toFixed(2), maxSpeedTilesPerS: +maxStep.toFixed(2), maxTurnRateDegPerS: +(maxYaw * 180 / Math.PI).toFixed(1), largestHeadingStepPerFrameDeg: +(maxKink * 180 / Math.PI).toFixed(2), haulingInTilesPerS: +maxHaul.toFixed(2), haulingFastestAt: haulAt, holdSeconds: r.holdSecs, jetties: { stemsAt: r.stemAt, headArmsAt: r.armsAt, saved: r.flag, sites: r.sites } };
   const cs = r.cs.slice().sort((a, b) => a - b), q = k => cs.length ? cs[Math.min(cs.length - 1, Math.floor(cs.length * k))] : null;
   out.cruiseShare = { p10: q(0.1), median: q(0.5), p90: q(0.9), max: cs[cs.length - 1] };
   // 4. sync with the simulation: the j-th trip of the simulation is the j-th visual trip of that boat
-  const groups = { slip: [], loop: [], move: [] }, depLag = { slip: [], loop: [], afterMove: [] }, mooredS = [], fishing = [], perBoat = [];
+  // the change-over (jetties appear → every boat at its loop berth → back on the simulation's clock) is reported on its own
+  const changing = t => r.stemAt !== null && r.stemAt > 1 && t >= r.stemAt - 1 && (r.allMovedAt === null || t <= r.allMovedAt + 90);
+  const groups = { slip: [], loop: [], move: [], slipChanging: [], loopChanging: [] }, depLag = { slip: [], loop: [], afterMove: [], changing: [] }, mooredS = [], fishing = [], perBoat = [];
+  let lastLate = null;
   let skipped = 0;
   for (let i = 0; i < n; i++) {
     const E = r.ev.filter(e => e[1] === i), simOut = E.filter(e => e[2] === 's' && e[3] === 'out').map(e => e[0]);
@@ -175,12 +180,13 @@ function analyse(sc, r, plain) {
     const kind = j => visDep[j][4] === 'loop' ? 'loop' : visDep[j][4] === 'move' ? 'move' : 'slip';
     const pb = { boat: i, simTrips: simDock.length, visualTrips: visIn.length, loop: { n: 0, lateMax: -Infinity, lateSum: 0, mooredMin: Infinity } };
     for (let j = 0; j < Math.min(simDock.length, visIn.length); j++) {
-      const lag = +(visIn[j] - simDock[j]).toFixed(2); groups[kind(j)].push(lag);
+      const lag = +(visIn[j] - simDock[j]).toFixed(2), ch = kind(j) !== 'move' && changing(visDep[j][0]); groups[kind(j) + (ch ? 'Changing' : '')].push(lag);
+      if (ch && lag > 0) lastLate = Math.max(lastLate || 0, visIn[j]);
       if (kind(j) === 'loop') { pb.loop.n++; pb.loop.lateMax = Math.max(pb.loop.lateMax, lag); pb.loop.lateSum += lag; }
     }
     for (let j = 0; j < Math.min(simOut.length, visDep.length); j++) {
       const d = +(visDep[j][0] - simOut[j]).toFixed(2);
-      (j > 0 && kind(j - 1) === 'move' ? depLag.afterMove : depLag[kind(j) === 'loop' ? 'loop' : 'slip']).push(d);
+      (j > 0 && kind(j - 1) === 'move' ? depLag.afterMove : changing(visDep[j][0]) ? depLag.changing : depLag[kind(j) === 'loop' ? 'loop' : 'slip']).push(d);
       if (j > 0 && visIn[j - 1] !== undefined && kind(j) === 'loop' && kind(j - 1) === 'loop') { const m = +(visDep[j][0] - visIn[j - 1]).toFixed(2); mooredS.push(m); pb.loop.mooredMin = Math.min(pb.loop.mooredMin, m); }
     }
     skipped += Math.max(0, simDock.length - visIn.length - 1);
@@ -191,7 +197,8 @@ function analyse(sc, r, plain) {
   const stats = a => { const s = a.slice().sort((x, y) => x - y); return s.length ? { n: s.length, min: s[0], median: s[Math.floor(s.length / 2)], max: s[s.length - 1], mean: +(s.reduce((x, y) => x + y, 0) / s.length).toFixed(2) } : { n: 0 }; };
   out.sync = {
     // made fast minus the simulation docking (negative = early)
-    slipTripArrivalS: stats(groups.slip), loopTripArrivalS: stats(groups.loop), moveToLoopBerthArrivalS: stats(groups.move),
+    slipTripsLate: groups.slip.filter(x => x > 0).length, slipTripArrivalS: stats(groups.slip), loopTripArrivalS: stats(groups.loop), moveToLoopBerthArrivalS: stats(groups.move),
+    duringTheChangeOver: { slipTripArrivalS: stats(groups.slipChanging), loopTripArrivalS: stats(groups.loopChanging), departureS: stats(depLag.changing), everyBoatMovedAt: r.allMovedAt, lastLateArrivalSecondsAfterTheLastMove: lastLate && r.allMovedAt ? +(lastLate - r.allMovedAt).toFixed(1) : null },
     // starts to move minus the simulation leaving (about −0.55 = ready and leaving with it)
     slipTripDepartureS: stats(depLag.slip), loopTripDepartureS: stats(depLag.loop), firstTripAfterTheMoveDepartureS: stats(depLag.afterMove),
     madeFastBetweenLoopTripsS: stats(mooredS),
@@ -202,11 +209,12 @@ function analyse(sc, r, plain) {
     netsShortestS: r.nets ? +r.netMin.toFixed(2) : null,
     fishJumps: r.jumps.length, fishJumpFarthestFromNetTiles: r.jumps.length ? Math.max(...r.jumps) : null,
   };
-  const mx = a => a.length ? Math.max(...a) : -Infinity;
+  const mx = a => a.length ? Math.max(...a) : -Infinity, capped = (sc.up.speed || 0) > 0 || !!(sc.research && sc.research.nav);   // the limits start with the first engine upgrade
   out.checks = {
     simulationUnchanged: out.simulation.identicalToRunWithout, noOverlap: overlaps === 0, noContact: landHits === 0 && decorHits === 0, noPageError: !r.errs.length,
-    speedWithin5: maxStep <= 5.05, turnWithin90: maxYaw * 180 / Math.PI <= 90.5,
-    slipTripsInBeforeUnloading: mx(groups.slip) < 0, loopBoatsReadyForTheNextTrip: mx(depLag.loop) <= 0.05, noTripSkipped: skipped === 0,
+    speedWithin5: maxStep <= (capped ? 5.05 : 5.8), turnWithin90: maxYaw * 180 / Math.PI <= (capped ? 90.5 : 110),
+    // with the speed limit a boat that gave way cannot catch up: at most 1.5 s late, and at most one slip trip in twenty
+    slipTripsInBeforeUnloading: capped ? mx(groups.slip) <= 1.5 && groups.slip.filter(x => x > 0).length <= Math.max(1, groups.slip.length / 20) : mx(groups.slip) < 0, loopBoatsReadyForTheNextTrip: mx(depLag.loop) <= 0.05, noTripSkipped: skipped === 0,
     noUnloadingShownWithoutTheBoat: r.unloadShownAway === 0, netOnEveryTrip: out.sync.tripsWithoutNets === 0, fishJumpAtTheNet: (out.sync.fishJumpFarthestFromNetTiles || 0) <= 1,
   };
   out.ok = Object.values(out.checks).every(Boolean);

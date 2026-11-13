@@ -9,7 +9,7 @@
  "offPierUnderWay": 0.95,
  "offPierMadeFast": 0.4,
  "sternSwing": 0.58,
- "searchSeconds": 85,
+ "searchSeconds": 77,
  "candidates": 1495,
  "sceneChanges": {
   "decorative boat 2": "moved from (34, 26.6) to (28, 26.5)",

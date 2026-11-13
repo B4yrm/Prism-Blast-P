@@ -255,7 +255,12 @@ export function movePlan(k) {
   const back = cat(mv.d0 > 0 ? straight(s.x, s.y, SOUTH, mv.d0) : [[s.x, s.y]], arc(s.x, s.y + mv.d0, SOUTH, mv.R, -mv.side * mv.phi));
   const rev = finish(resample(back)), e = poseAt(rev, rev.len), head = e.a + Math.PI;
   const pre = [B.x - Math.cos(B.a) * M.run, B.y - Math.sin(B.a) * M.run, B.a];
-  const sea = finish(resample(cat(cat(dubins([e.x, e.y, head], M.via, LOOP_R), dubins(M.via, pre, LOOP_R)), straight(pre[0], pre[1], B.a, M.run))));
+  // each part starts exactly where the one before ends, heading included, so the joins have no kink;
+  // the run-in is a gentle curve onto the berth's line, ending at the berth
+  const endOf = pl => { const a = pl[pl.length - 1], b = pl[pl.length - 4] || pl[0]; return [a[0], a[1], Math.atan2(a[1] - b[1], a[0] - b[0])]; };
+  const d1 = dubins([e.x, e.y, head], M.via, LOOP_R), d2 = dubins(endOf(d1), pre, LOOP_R), q = endOf(d2);
+  const last = spline([[q[0], q[1]], [B.x - Math.cos(B.a) * M.run * 0.5, B.y - Math.sin(B.a) * M.run * 0.5], [B.x, B.y]], q[2], B.a);
+  const sea = finish(resample(cat(cat(d1, d2), last)));
   return { plan: [{ path: rev, dir: -1, kind: 'reverse', stop: true }, { path: sea, dir: 1, kind: 'sea', stop: true }], net: { leg: 1, s0: M.net[0], s1: M.net[1] } };
 }
 
@@ -297,9 +302,10 @@ export function arrivalPlan(i, from, R = SEA_R) { return siteArrival(i, from, R)
 // hauls its net astern, then goes straight back in. It never leaves its own
 // lane, so it never turns and never crosses another boat's way.
 export const SHORT_OUT = 0.4;                        // tiles beyond the slip mouth
-export const shortSpot = s => ({ x: VBERTH[s][0], y: MOUTH_Y[s] + SHORT_OUT, a: NORTH });
-export function shortDeparture(s) {
-  const { x: bx, y: by } = siteOf(s), e = shortSpot(s);
+// f < 1: only that share of the way out (when even the whole harbour trip cannot be made in time at the speed limit)
+export const shortSpot = (s, f = 1) => ({ x: VBERTH[s][0], y: VBERTH[s][1] + (MOUTH_Y[s] + SHORT_OUT - VBERTH[s][1]) * f, a: NORTH });
+export function shortDeparture(s, f = 1) {
+  const { x: bx, y: by } = siteOf(s), e = shortSpot(s, f);
   return [{ path: finish(resample(straight(bx, by, SOUTH, e.y - by))), dir: -1, kind: 'reverse', stop: true }];
 }
 export function shortArrival(s, from) {
