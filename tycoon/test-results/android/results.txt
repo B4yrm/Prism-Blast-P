@@ -1,18 +1,18 @@
 INFO  app window is inset 127px from the display cutout (UI is not under the notch)
-INFO  closed a game pop-up before: left rail opens (notch-safe position)
 PASS  left rail opens (notch-safe position)
 PASS  left rail closes
 PASS  centre button
 PASS  dock button opens panel
 PASS  panel close button
+INFO  closed a game pop-up before: mission chip expands
 PASS  mission chip expands
+INFO  mission chip expands: first tap was taken by a game pop-up, passed on retry
 PASS  mission card collapses
 INFO  double tap via adb: 3/3 recognised (adb cannot send two taps with exact timing)
 PASS  collect button
-PASS  save/load after real play + force-stop: 13 fields equal (level 2, money 334, upgrades 2-0-0-0-0, workers 1)
-INFO  preset medium: water mode=layers requested=layers; fps=12.2 textureMB=96.6 heapMB=42.6 preset=medium
-INFO  preset medium: boats n=1 phases=depart arrivals=1 lagMean=-0.63 lagMax=-0.63 waits=0 trips=grounds:2,near:0,outer:0,harbour:0,jettyHead:0 jetties=0 nets=1 netMinS=1.25 fx=1
-INFO  closed a game pop-up before: settings
-INFO  preset high: water mode=shader requested=shader; fps=9.1 textureMB=98.9 heapMB=42.6 preset=high
-INFO  preset high: boats n=1 phases=return arrivals=0 lagMean=n/a lagMax=n/a waits=0 trips=grounds:1,near:0,outer:0,harbour:0,jettyHead:0 jetties=0 nets=1 netMinS=1.22 fx=2
+PASS  save/load after real play + force-stop: 13 fields equal (level 2, money 250, upgrades 2-0-0-0-0, workers 1)
+INFO  preset medium: water mode=layers requested=layers; fps=11.9 textureMB=96.6 heapMB=42.6 preset=medium
+INFO  preset medium: boats n=1 phases=depart arrivals=1 lagMean=-0.47 lagMax=-0.47 waits=0 trips=grounds:2,curve:0,loop:0,move:0,harbour:0 jetties=0 simTrips=1 visTrips=1 nets=1 netMinS=1.13 fx=1
+INFO  preset high: water mode=shader requested=shader; fps=8.8 textureMB=98.9 heapMB=42.6 preset=high
+INFO  preset high: boats n=1 phases=return arrivals=0 lagMean=n/a lagMax=n/a waits=0 trips=grounds:1,curve:0,loop:0,move:0,harbour:0 jetties=0 simTrips=0 visTrips=0 nets=1 netMinS=1.27 fx=2
 INFO  crashes: 0

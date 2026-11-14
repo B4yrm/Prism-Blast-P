@@ -1,2 +1,2 @@
-SAVED  {"money":334,"register":68,"gems":15,"level":2,"xp":74,"tiers":"111100","upgrades":"2-0-0-0-0","workers":1,"boats":1,"caught":106,"sold":87,"mission":0,"research":0}
-LOADED {"money":334,"register":68,"gems":15,"level":2,"xp":74,"tiers":"111100","upgrades":"2-0-0-0-0","workers":1,"boats":1,"caught":106,"sold":87,"mission":0,"research":0}
+SAVED  {"money":250,"register":84,"gems":15,"level":2,"xp":56,"tiers":"111100","upgrades":"2-0-0-0-0","workers":1,"boats":1,"caught":99,"sold":70,"mission":0,"research":0}
+LOADED {"money":250,"register":84,"gems":15,"level":2,"xp":56,"tiers":"111100","upgrades":"2-0-0-0-0","workers":1,"boats":1,"caught":99,"sold":70,"mission":0,"research":0}

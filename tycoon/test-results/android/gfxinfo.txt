@@ -1,29 +1,29 @@
 Applications Graphics Acceleration Info:
-Uptime: 614890 Realtime: 614890
+Uptime: 563998 Realtime: 563998
 
-** Graphics info for pid 7239 [az.fishing.tycoon] **
+** Graphics info for pid 7028 [az.fishing.tycoon] **
 
-Stats since: 445247592109ns
-Total frames rendered: 1614
-Janky frames: 1600 (99.13%)
-Janky frames (legacy): 1613 (99.94%)
+Stats since: 398034938920ns
+Total frames rendered: 1607
+Janky frames: 1588 (98.82%)
+Janky frames (legacy): 1607 (100.00%)
 50th percentile: 150ms
 90th percentile: 250ms
 95th percentile: 250ms
 99th percentile: 350ms
-Number Missed Vsync: 1421
-Number High input latency: 26
-Number Slow UI thread: 999
-Number Slow bitmap uploads: 416
-Number Slow issue draw commands: 1600
-Number Frame deadline missed: 1600
-Number Frame deadline missed (legacy): 1601
-HISTOGRAM: 5ms=0 6ms=0 7ms=0 8ms=0 9ms=0 10ms=0 11ms=0 12ms=0 13ms=0 14ms=0 15ms=0 16ms=0 17ms=0 18ms=0 19ms=0 20ms=0 21ms=0 22ms=0 23ms=0 24ms=0 25ms=0 26ms=0 27ms=0 28ms=0 29ms=0 30ms=0 31ms=0 32ms=2 34ms=3 36ms=0 38ms=0 40ms=0 42ms=2 44ms=1 46ms=1 48ms=5 53ms=1 57ms=2 61ms=2 65ms=7 69ms=6 73ms=7 77ms=5 81ms=12 85ms=7 89ms=11 93ms=14 97ms=15 101ms=13 105ms=14 109ms=14 113ms=27 117ms=27 121ms=30 125ms=22 129ms=35 133ms=33 150ms=717 200ms=383 250ms=122 300ms=51 350ms=14 400ms=2 450ms=1 500ms=0 550ms=1 600ms=0 650ms=1 700ms=0 750ms=0 800ms=0 850ms=0 900ms=0 950ms=0 1000ms=0 1050ms=0 1100ms=0 1150ms=0 1200ms=1 1250ms=0 1300ms=1 1350ms=0 1400ms=0 1450ms=0 1500ms=0 1550ms=0 1600ms=0 1650ms=0 1700ms=0 1750ms=0 1800ms=1 1850ms=0 1900ms=0 1950ms=0 2000ms=0 2050ms=0 2100ms=0 2150ms=0 2200ms=0 2250ms=0 2300ms=0 2350ms=0 2400ms=0 2450ms=0 2500ms=0 2550ms=0 2600ms=0 2650ms=0 2700ms=0 2750ms=0 2800ms=0 2850ms=0 2900ms=0 2950ms=0 3000ms=0 3050ms=0 3100ms=0 3150ms=0 3200ms=0 3250ms=0 3300ms=0 3350ms=0 3400ms=0 3450ms=0 3500ms=0 3550ms=0 3600ms=0 3650ms=0 3700ms=0 3750ms=0 3800ms=0 3850ms=0 3900ms=0 3950ms=0 4000ms=0 4050ms=0 4100ms=0 4150ms=0 4200ms=0 4250ms=0 4300ms=0 4350ms=0 4400ms=0 4450ms=0 4500ms=0 4550ms=0 4600ms=0 4650ms=0 4700ms=0 4750ms=0 4800ms=0 4850ms=0 4900ms=0 4950ms=1
+Number Missed Vsync: 1391
+Number High input latency: 34
+Number Slow UI thread: 1012
+Number Slow bitmap uploads: 369
+Number Slow issue draw commands: 1588
+Number Frame deadline missed: 1588
+Number Frame deadline missed (legacy): 1592
+HISTOGRAM: 5ms=0 6ms=0 7ms=0 8ms=0 9ms=0 10ms=0 11ms=0 12ms=0 13ms=0 14ms=0 15ms=0 16ms=0 17ms=0 18ms=0 19ms=0 20ms=0 21ms=0 22ms=0 23ms=0 24ms=0 25ms=0 26ms=0 27ms=0 28ms=0 29ms=1 30ms=0 31ms=0 32ms=4 34ms=1 36ms=0 38ms=0 40ms=0 42ms=1 44ms=0 46ms=1 48ms=8 53ms=2 57ms=4 61ms=4 65ms=4 69ms=8 73ms=3 77ms=3 81ms=3 85ms=17 89ms=10 93ms=15 97ms=8 101ms=14 105ms=24 109ms=27 113ms=21 117ms=17 121ms=30 125ms=37 129ms=39 133ms=26 150ms=733 200ms=356 250ms=110 300ms=47 350ms=15 400ms=4 450ms=2 500ms=1 550ms=2 600ms=0 650ms=0 700ms=0 750ms=0 800ms=0 850ms=0 900ms=0 950ms=0 1000ms=1 1050ms=0 1100ms=0 1150ms=1 1200ms=0 1250ms=0 1300ms=0 1350ms=0 1400ms=0 1450ms=0 1500ms=0 1550ms=0 1600ms=0 1650ms=1 1700ms=0 1750ms=0 1800ms=0 1850ms=0 1900ms=0 1950ms=0 2000ms=0 2050ms=0 2100ms=0 2150ms=0 2200ms=0 2250ms=0 2300ms=0 2350ms=0 2400ms=0 2450ms=0 2500ms=0 2550ms=0 2600ms=0 2650ms=0 2700ms=0 2750ms=0 2800ms=0 2850ms=0 2900ms=0 2950ms=0 3000ms=0 3050ms=0 3100ms=0 3150ms=0 3200ms=0 3250ms=0 3300ms=0 3350ms=0 3400ms=0 3450ms=0 3500ms=0 3550ms=0 3600ms=0 3650ms=0 3700ms=0 3750ms=0 3800ms=0 3850ms=0 3900ms=0 3950ms=0 4000ms=0 4050ms=0 4100ms=0 4150ms=0 4200ms=0 4250ms=0 4300ms=0 4350ms=0 4400ms=0 4450ms=0 4500ms=0 4550ms=0 4600ms=0 4650ms=0 4700ms=0 4750ms=1 4800ms=1 4850ms=0 4900ms=0 4950ms=0
 50th gpu percentile: 17ms
 90th gpu percentile: 4950ms
 95th gpu percentile: 4950ms
 99th gpu percentile: 4950ms
-GPU HISTOGRAM: 1ms=2 2ms=80 3ms=32 4ms=37 5ms=52 6ms=37 7ms=34 8ms=48 9ms=48 10ms=53 11ms=47 12ms=52 13ms=62 14ms=57 15ms=71 16ms=52 17ms=59 18ms=56 19ms=65 20ms=46 21ms=42 22ms=34 23ms=30 24ms=21 25ms=12 4950ms=485
+GPU HISTOGRAM: 1ms=0 2ms=98 3ms=28 4ms=31 5ms=26 6ms=43 7ms=55 8ms=43 9ms=46 10ms=61 11ms=58 12ms=46 13ms=39 14ms=69 15ms=53 16ms=76 17ms=65 18ms=65 19ms=58 20ms=46 21ms=37 22ms=33 23ms=32 24ms=25 25ms=29 4950ms=445
 
 Pipeline=Skia (OpenGL)
 Memory policy:
@@ -45,10 +45,10 @@ Total GPU memory usage:
 
 Profile data in ms:
 
-	az.fishing.tycoon/az.universitet.tycoon.MainActivity/android.view.ViewRootImpl@699d89a (visibility=0)
+	az.fishing.tycoon/az.universitet.tycoon.MainActivity/android.view.ViewRootImpl@fb4abce (visibility=0)
 View hierarchy:
 
-  az.fishing.tycoon/az.universitet.tycoon.MainActivity/android.view.ViewRootImpl@699d89a
+  az.fishing.tycoon/az.universitet.tycoon.MainActivity/android.view.ViewRootImpl@fb4abce
   5 views, 9.46 kB of render nodes
 
 
