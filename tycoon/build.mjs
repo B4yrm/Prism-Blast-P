@@ -3,8 +3,12 @@
 import * as esbuild from 'esbuild';
 import fs from 'fs';
 
+// ECO=1 builds the development entry with the eco layer (src/main-eco.js). It must go to BUILD_OUT:
+// the production page (index.html, packed into the APK) is only ever built from src/main.js.
+const ECO = process.env.ECO === '1';
+if (ECO && !process.env.BUILD_OUT) { console.error('ECO=1 needs BUILD_OUT (index.html is built without the eco layer)'); process.exit(1); }
 const r = await esbuild.build({
-  entryPoints: ['src/main.js'], bundle: true, minify: true, format: 'iife',
+  entryPoints: [ECO ? 'src/main-eco.js' : 'src/main.js'], bundle: true, minify: true, format: 'iife',
   target: 'es2019', write: false, legalComments: 'none',
 });
 const esc = s => s.replace(/<\/script/gi, '<\\/script');

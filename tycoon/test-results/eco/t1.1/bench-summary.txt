@@ -1,0 +1,5 @@
+bench-base-run1 rc=0 secs=121
+bench-eco-run1 rc=0 secs=123
+bench-base-run2 rc=0 secs=124
+bench-eco-run2 rc=0 secs=121
+DONE

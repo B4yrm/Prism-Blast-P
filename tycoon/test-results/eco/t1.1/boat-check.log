@@ -1,0 +1,434 @@
+{
+ "departures": [
+  {
+   "berth": 0,
+   "reverse": 4.55,
+   "sea": 14.94,
+   "reverseRadius": 2.5,
+   "minSeaRadius": 2.8,
+   "hits": 0
+  },
+  {
+   "berth": 1,
+   "reverse": 4.68,
+   "sea": 15.4,
+   "reverseRadius": 2.5,
+   "minSeaRadius": 2.8,
+   "hits": 0
+  },
+  {
+   "berth": 2,
+   "reverse": 4.18,
+   "sea": 12.29,
+   "reverseRadius": 2.5,
+   "minSeaRadius": 2.8,
+   "hits": 0
+  },
+  {
+   "berth": 3,
+   "reverse": 2.93,
+   "sea": 12.27,
+   "reverseRadius": 2.5,
+   "minSeaRadius": 2.8,
+   "hits": 0
+  }
+ ],
+ "arrivals": [
+  {
+   "berth": 0,
+   "starts": 40,
+   "withHits": 0,
+   "clearFromAnyOf16Headings": 9,
+   "minRadius": 2.8,
+   "longest": 19.83,
+   "meanFromFishing": 15.99
+  },
+  {
+   "berth": 1,
+   "starts": 45,
+   "withHits": 0,
+   "clearFromAnyOf16Headings": 3,
+   "minRadius": 2.8,
+   "longest": 19.32,
+   "meanFromFishing": 13.27
+  },
+  {
+   "berth": 2,
+   "starts": 54,
+   "withHits": 0,
+   "clearFromAnyOf16Headings": 5,
+   "minRadius": 2.8,
+   "longest": 22.69,
+   "meanFromFishing": 19.91
+  },
+  {
+   "berth": 3,
+   "starts": 34,
+   "withHits": 0,
+   "clearFromAnyOf16Headings": 7,
+   "minRadius": 2.8,
+   "longest": 22.55,
+   "meanFromFishing": 21.61
+  }
+ ],
+ "fishing": [
+  {
+   "berth": 0,
+   "len": 2,
+   "hits": 0
+  },
+  {
+   "berth": 1,
+   "len": 2,
+   "hits": 0
+  },
+  {
+   "berth": 2,
+   "len": 2,
+   "hits": 0
+  },
+  {
+   "berth": 3,
+   "len": 2,
+   "hits": 0
+  }
+ ],
+ "decor": [
+  {
+   "k": 0,
+   "at": [
+    24.6,
+    24.6
+   ],
+   "onSolid": 0,
+   "onBoat": 0
+  },
+  {
+   "k": 1,
+   "at": [
+    2,
+    25.6
+   ],
+   "onSolid": 0,
+   "onBoat": 0
+  },
+  {
+   "k": 2,
+   "at": [
+    28,
+    26.5
+   ],
+   "onSolid": 0,
+   "onBoat": 0
+  },
+  {
+   "k": 3,
+   "at": [
+    27.5,
+    23.6
+   ],
+   "onSolid": 0,
+   "onBoat": 0
+  }
+ ],
+ "fails": [],
+ "harbourTrips": [
+  {
+   "berth": 0,
+   "out": 6.3,
+   "hits": 0
+  },
+  {
+   "berth": 1,
+   "out": 6.3,
+   "hits": 0
+  },
+  {
+   "berth": 2,
+   "out": 5.8,
+   "hits": 0
+  },
+  {
+   "berth": 3,
+   "out": 4.5,
+   "hits": 0
+  }
+ ],
+ "loops": [
+  {
+   "boat": 0,
+   "extra": 0,
+   "tiles": 17.6,
+   "touches": null,
+   "sharesWaterWithBoat": [],
+   "closed": true,
+   "minRadius": 2.8
+  },
+  {
+   "boat": 0,
+   "extra": 1,
+   "tiles": 19.6,
+   "touches": null,
+   "sharesWaterWithBoat": [],
+   "closed": true,
+   "minRadius": 2.8
+  },
+  {
+   "boat": 0,
+   "extra": 2,
+   "tiles": 21.6,
+   "touches": null,
+   "sharesWaterWithBoat": [],
+   "closed": true,
+   "minRadius": 2.8
+  },
+  {
+   "boat": 0,
+   "extra": 3,
+   "tiles": 23.6,
+   "touches": null,
+   "sharesWaterWithBoat": [],
+   "closed": true,
+   "minRadius": 2.8
+  },
+  {
+   "boat": 0,
+   "extra": 4,
+   "tiles": 25.6,
+   "touches": null,
+   "sharesWaterWithBoat": [],
+   "closed": true,
+   "minRadius": 2.8
+  },
+  {
+   "boat": 0,
+   "extra": 5,
+   "tiles": 27.6,
+   "touches": null,
+   "sharesWaterWithBoat": [],
+   "closed": true,
+   "minRadius": 2.8
+  },
+  {
+   "boat": 1,
+   "extra": 0,
+   "tiles": 17.6,
+   "touches": null,
+   "sharesWaterWithBoat": [],
+   "closed": true,
+   "minRadius": 2.8
+  },
+  {
+   "boat": 1,
+   "extra": 1,
+   "tiles": 19.6,
+   "touches": null,
+   "sharesWaterWithBoat": [],
+   "closed": true,
+   "minRadius": 2.8
+  },
+  {
+   "boat": 1,
+   "extra": 2,
+   "tiles": 21.6,
+   "touches": null,
+   "sharesWaterWithBoat": [],
+   "closed": true,
+   "minRadius": 2.8
+  },
+  {
+   "boat": 1,
+   "extra": 3,
+   "tiles": 23.6,
+   "touches": null,
+   "sharesWaterWithBoat": [],
+   "closed": true,
+   "minRadius": 2.8
+  },
+  {
+   "boat": 1,
+   "extra": 4,
+   "tiles": 25.6,
+   "touches": null,
+   "sharesWaterWithBoat": [],
+   "closed": true,
+   "minRadius": 2.8
+  },
+  {
+   "boat": 1,
+   "extra": 5,
+   "tiles": 27.6,
+   "touches": null,
+   "sharesWaterWithBoat": [],
+   "closed": true,
+   "minRadius": 2.8
+  },
+  {
+   "boat": 2,
+   "extra": 0,
+   "tiles": 17.6,
+   "touches": null,
+   "sharesWaterWithBoat": [],
+   "closed": true,
+   "minRadius": 2.8
+  },
+  {
+   "boat": 3,
+   "extra": 0,
+   "tiles": 18.6,
+   "touches": null,
+   "sharesWaterWithBoat": [],
+   "closed": true,
+   "minRadius": 2.8
+  },
+  {
+   "boat": 3,
+   "extra": 1,
+   "tiles": 20.6,
+   "touches": null,
+   "sharesWaterWithBoat": [],
+   "closed": true,
+   "minRadius": 2.8
+  },
+  {
+   "boat": 3,
+   "extra": 2,
+   "tiles": 22.6,
+   "touches": null,
+   "sharesWaterWithBoat": [],
+   "closed": true,
+   "minRadius": 2.8
+  },
+  {
+   "boat": 3,
+   "extra": 3,
+   "tiles": 24.6,
+   "touches": null,
+   "sharesWaterWithBoat": [],
+   "closed": true,
+   "minRadius": 2.8
+  },
+  {
+   "boat": 3,
+   "extra": 4,
+   "tiles": 26.6,
+   "touches": null,
+   "sharesWaterWithBoat": [],
+   "closed": true,
+   "minRadius": 2.8
+  },
+  {
+   "boat": 3,
+   "extra": 5,
+   "tiles": 28.6,
+   "touches": null,
+   "sharesWaterWithBoat": [],
+   "closed": true,
+   "minRadius": 2.8
+  },
+  {
+   "boat": 3,
+   "extra": 6,
+   "tiles": 30.6,
+   "touches": null,
+   "sharesWaterWithBoat": [],
+   "closed": true,
+   "minRadius": 2.8
+  }
+ ],
+ "moves": [
+  {
+   "boat": 0,
+   "order": 4,
+   "tiles": 28.9,
+   "touches": null,
+   "lastPartWithinMargin": null,
+   "endsAtBerth": true,
+   "minRadius": 2.8
+  },
+  {
+   "boat": 1,
+   "order": 3,
+   "tiles": 32.4,
+   "touches": null,
+   "lastPartWithinMargin": null,
+   "endsAtBerth": true,
+   "minRadius": 2.8
+  },
+  {
+   "boat": 2,
+   "order": 2,
+   "tiles": 29.6,
+   "touches": null,
+   "lastPartWithinMargin": null,
+   "endsAtBerth": true,
+   "minRadius": 2.8
+  },
+  {
+   "boat": 3,
+   "order": 1,
+   "tiles": 33.7,
+   "touches": null,
+   "lastPartWithinMargin": null,
+   "endsAtBerth": true,
+   "minRadius": 2.8
+  }
+ ],
+ "slipRoutesAcrossHeadArms": [
+  {
+   "slip": 0,
+   "tripToTheGrounds": false,
+   "harbourTrip": false
+  },
+  {
+   "slip": 1,
+   "tripToTheGrounds": false,
+   "harbourTrip": false
+  },
+  {
+   "slip": 2,
+   "tripToTheGrounds": true,
+   "harbourTrip": false
+  },
+  {
+   "slip": 3,
+   "tripToTheGrounds": true,
+   "harbourTrip": false
+  }
+ ],
+ "curves": [
+  {
+   "boat": 0,
+   "tiles": 32.8,
+   "netTiles": 10.4,
+   "touches": null,
+   "closed": true,
+   "minRadius": 2.8
+  },
+  {
+   "boat": 1,
+   "tiles": 30.2,
+   "netTiles": 7.3,
+   "touches": null,
+   "closed": true,
+   "minRadius": 2.8
+  },
+  {
+   "boat": 2,
+   "tiles": 29.4,
+   "netTiles": 7.3,
+   "touches": null,
+   "closed": true,
+   "minRadius": 2.8
+  },
+  {
+   "boat": 3,
+   "tiles": 26.8,
+   "netTiles": 7.4,
+   "touches": null,
+   "closed": true,
+   "minRadius": 2.8
+  }
+ ],
+ "ok": true
+}

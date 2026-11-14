@@ -56,6 +56,14 @@ Phase B and later worker phases, new economic systems, APK and production build,
 verification of phase A. Untouched by phase A: `src/sim/*`, `src/core/*` (economy, save/load, offline income),
 boat routes and approved berths, multi-sea system, Stage 2 branch, Balıqçı Idle (`fishing/`).
 
+## Eco layer — T1.1 (skeleton) state
+
+- Plan and design: `docs/FISHING-TYCOON-GDD-V1.md`, `docs/ROADMAP-28-DAYS.md`, `docs/ECONOMY-ARCHITECTURE.md`.
+- T1.1 done: `src/eco/` (adapter, rng, clock, index), `src/main-eco.js`, `ECO=1` in `build.mjs` (dev only, needs `BUILD_OUT`).
+  Every eco system is off; nothing in the economy, save or offline earnings changes. The build without `ECO` is byte-identical
+  to before. Report: `test-results/eco/T1.1-REPORT.md`; baseline: `test-results/eco/perf-M0.md`.
+- Waiting for approval before T1.2 (eco save subtree; Q3 is conditional on the save tests).
+
 ## Where things are
 
 - Tests: `tests/workers-regress.cjs`, `pose-sync.cjs`, `walk-anim.cjs`, `decor-check.cjs`, `decor-dynamic.cjs`,

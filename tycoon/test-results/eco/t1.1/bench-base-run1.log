@@ -1,0 +1,12 @@
+low fit {"frames":259,"frameMsAvg":19.4,"frameMsP90":33.3,"fps":51.7,"updateMsAvg":0.4,"drawCallsPerFrame":1.3,"textureMB":37.5,"heapMB":42.6,"objects":792}
+low harbour {"frames":301,"frameMsAvg":16.6,"frameMsP90":16.7,"fps":60.2,"updateMsAvg":0.35,"drawCallsPerFrame":1.1,"textureMB":37.5,"heapMB":43.1,"objects":792}
+low fleet {"frames":104,"frameMsAvg":49,"frameMsP90":100,"fps":20.4,"updateMsAvg":0.56,"drawCallsPerFrame":2.2,"textureMB":37.5,"heapMB":46.5,"objects":808}
+low fleetmax {"frames":99,"frameMsAvg":50.7,"frameMsP90":116.6,"fps":19.7,"updateMsAvg":0.51,"drawCallsPerFrame":2.4,"textureMB":37.5,"heapMB":44.5,"objects":808}
+medium fit {"frames":67,"frameMsAvg":75.5,"frameMsP90":133.3,"fps":13.2,"updateMsAvg":0.69,"drawCallsPerFrame":5,"textureMB":96.6,"heapMB":55.8,"objects":870}
+medium harbour {"frames":64,"frameMsAvg":79.2,"frameMsP90":150,"fps":12.6,"updateMsAvg":0.65,"drawCallsPerFrame":5,"textureMB":96.6,"heapMB":55.3,"objects":870}
+medium fleet {"frames":51,"frameMsAvg":99.5,"frameMsP90":150,"fps":10.1,"updateMsAvg":0.68,"drawCallsPerFrame":5,"textureMB":96.6,"heapMB":57.5,"objects":889}
+medium fleetmax {"frames":54,"frameMsAvg":93.7,"frameMsP90":150,"fps":10.7,"updateMsAvg":0.56,"drawCallsPerFrame":5,"textureMB":96.6,"heapMB":63.4,"objects":889}
+high fit {"frames":48,"frameMsAvg":104.2,"frameMsP90":199.9,"fps":9.6,"updateMsAvg":0.64,"drawCallsPerFrame":5,"textureMB":98.9,"heapMB":57.3,"objects":801}
+high harbour {"frames":44,"frameMsAvg":113.7,"frameMsP90":200,"fps":8.8,"updateMsAvg":0.59,"drawCallsPerFrame":5,"textureMB":98.9,"heapMB":57.9,"objects":801}
+high fleet {"frames":45,"frameMsAvg":114,"frameMsP90":183.3,"fps":8.8,"updateMsAvg":0.68,"drawCallsPerFrame":5,"textureMB":98.9,"heapMB":61.5,"objects":820}
+high fleetmax {"frames":45,"frameMsAvg":111.9,"frameMsP90":183.4,"fps":8.9,"updateMsAvg":0.48,"drawCallsPerFrame":5,"textureMB":98.9,"heapMB":62,"objects":821}
