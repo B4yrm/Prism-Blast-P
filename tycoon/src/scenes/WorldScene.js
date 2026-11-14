@@ -5,6 +5,7 @@ import { A, has, addSprite, setSprite } from '../render/atlas.js';
 import { Life } from './life.js';
 import { Water } from '../render/water.js';
 import { Fleet } from '../render/boats.js';
+import { SlipCarts } from '../render/slipcarts.js';
 import { VBERTH, buoysAt } from '../render/boatpaths.js';
 import { isRoad, isWalk } from '../sim/path.js';
 import { Sim, CONVEY_TIME } from '../sim/sim.js';
@@ -13,6 +14,8 @@ import { bus } from '../core/bus.js';
 
 const D_WATER = -100, D_GROUND = -50;
 const depthAt = (x, y) => (x + y) * 16;
+// haulers as drawn: see drawWalkers
+const POSE_MIN = 0.32, LAG_MAX = 0.25, CATCH_UP = 1.6, HIST = 64, STRIDE = 0.35;
 const UZ = 39.2;   // world px per model unit of height (2:1 dimetric)
 
 export class WorldScene extends Phaser.Scene {
@@ -34,6 +37,8 @@ export class WorldScene extends Phaser.Scene {
     this.makeFx();
     this.fleet = new Fleet(this, Q);
     this.life = new Life(this);
+    // slips without a crane get a small forklift cart for their unloading
+    this.slipCarts = new SlipCarts(this, VBERTH.map(([x], k) => ({ k, x })).filter(({ x }) => !CRANES.some(([cx]) => Math.abs(cx + 0.5 - x) < 1.5)));
     this.workerSpr = []; this.custSpr = []; this.custPool = [];
     this.floats = [];
 
@@ -133,8 +138,9 @@ export class WorldScene extends Phaser.Scene {
     for (const [x, y] of [[11.5, 8.4], [21, 18.4], [31, 8.4]]) prop('prop/flowers', x, y);
     // harbour: containers, pallets, barrels, cones, life on the quay
     prop('prop/container_yard', 20.9, 23.45);
-    for (const [x, y, n] of [[3.6, 22.5, 'pallet_raw'], [5.0, 22.45, 'fishbox_stack'], [6.6, 22.45, 'fishbox_stack'], [16.6, 22.45, 'fishbox_stack'], [18.3, 22.5, 'forklift_parked'],
-      [19.4, 22.5, 'barrels'], [11.6, 23.5, 'cones'], [6.5, 25.6, 'netpile'], [13.5, 26.8, 'netpile'], [20.5, 25.2, 'netpile'], [2.6, 23.5, 'pallet_prod']]) prop('prop/' + n, x, y);
+    // (the fish-box stack, the parked forklift and the barrels stand on the pier edge, clear of the haulers' quay → warehouse line)
+    for (const [x, y, n] of [[3.6, 22.5, 'pallet_raw'], [5.0, 22.45, 'fishbox_stack'], [6.6, 22.45, 'fishbox_stack'], [15.3, 23.55, 'fishbox_stack'], [18.4, 23.55, 'forklift_parked'],
+      [19.4, 23.55, 'barrels'], [11.6, 23.5, 'cones'], [6.5, 25.6, 'netpile'], [13.5, 26.8, 'netpile'], [20.5, 25.2, 'netpile'], [2.6, 23.5, 'pallet_prod']]) prop('prop/' + n, x, y);
     // (moored decorative boats and the bollards are part of the fleet, render/boats.js)
     // cranes on the quay
     this.cranes = CRANES.map(([x, y]) => {
@@ -239,8 +245,9 @@ export class WorldScene extends Phaser.Scene {
     // only the crane at this boat's own slip, and only once the boat is in
     const site = this.fleet.mooredSite(b);
     if (site >= 4) { this.fleet.jetties.unloading(b.i % VBERTH.length); return; }   // outer berth: the jetty cart
-    const bx = VBERTH[b.i % VBERTH.length][0], cr = this.cranes.find(c => Math.abs(c.x - bx) < 1.5);
-    if (cr && site >= 0) cr.t = 1.2;
+    if (site < 0) return;                                                         // not moored yet: nothing is shown
+    const bx = VBERTH[site][0], cr = this.cranes.find(c => Math.abs(c.x - bx) < 1.5);
+    if (cr) cr.t = 1.2; else this.slipCarts.unloading(site);
   }
 
   floatText(x, y, str, col) {
@@ -420,6 +427,7 @@ export class WorldScene extends Phaser.Scene {
     this.life.update(t, dt, [...this.sim.workers.map(w => w.m), ...this.sim.customers.map(c => c.m)]);
     this.drawConveyor();
     this.drawCranes(dt);
+    this.slipCarts.update(dt);
     bus.emit('frame');
   }
 
@@ -427,22 +435,38 @@ export class WorldScene extends Phaser.Scene {
     this.fleet.update(t, dt);          // same time step as the simulation, so the two stay in step
   }
 
+  // Haulers are drawn from the simulation's own positions, a fraction of a second behind at most. The
+  // simulation is never changed: every frame its state is recorded, and the figure replays that record.
+  // When the simulation's pick-up or drop is shorter than POSE_MIN (high warehouse levels) the figure holds
+  // the bending pose a little longer and then catches up at CATCH_UP × speed; it is never more than
+  // LAG_MAX seconds behind, so the delay cannot build up from one job to the next.
   drawWalkers(t) {
-    const sim = this.sim;
+    const sim = this.sim, dt = this.walkT0 === undefined ? 0 : Math.max(0, Math.min(0.25, t - this.walkT0));
+    this.walkT0 = t;
     // keep people from overlapping (visual offsets only)
     this.life.separate([...sim.workers.map(w => w.m), ...sim.customers.map(c => c.m)]);
-    // haulers: walk cycle, or bend & lift while loading / unloading
     while (this.workerSpr.length < sim.workers.length) this.workerSpr.push(addSprite(this, 0, 0, 'p/worker/none/1/0'));
+    const loadT = Math.max(0.01, stat.loadTime()), shownPose = Math.max(loadT, POSE_MIN);
     sim.workers.forEach((w, i) => {
       const s = this.workerSpr[i]; s.look = 'worker';
+      const v = s.view || (s.view = { hist: Array.from({ length: HIST }, () => ({})), n: 0, head: -1, vt: t, poseT: 0, phase: 0 });
+      // 1. record the simulation's state of this frame
+      v.head = (v.head + 1) % HIST; v.n = Math.min(HIST, v.n + 1);
+      const r = v.hist[v.head], m = w.m;
+      r.t = t; r.x = m.x; r.y = m.y; r.dx = m.dx; r.dy = m.dy; r.moving = m.moving; r.state = w.state; r.carry = w.carry; r.kind = w.kind || (w.job ? w.job.kind : 'raw');
+      if (t - v.vt > 1) v.vt = t;                                   // after a long pause: no replay
+      // 2. where the figure is in that record
+      const q = this.replay(v, v.vt), inPose = q.state === 'pick' || q.state === 'drop';
+      v.poseT = inPose ? v.poseT + dt : 0;
+      const hold = inPose && v.poseT < POSE_MIN && t - v.vt < LAG_MAX;
+      const rate = hold ? 0 : (t - v.vt > 1e-4 ? CATCH_UP : 1);
+      v.vt = Math.min(t, v.vt + dt * rate);
       let pose = null;
-      if (w.state === 'pick' || w.state === 'drop') {
-        const prog = 1 - Math.max(0, w.t) / Math.max(0.05, stat.loadTime());
-        const kind = w.job ? w.job.kind : 'raw';
-        const lifting = w.state === 'pick' ? prog > 0.5 : prog < 0.5;
-        pose = lifting ? `${kind === 'can' ? 'can' : kind}/b1` : 'none/b0';
+      if (inPose) {
+        const prog = Math.min(1, v.poseT / shownPose), lifting = q.state === 'pick' ? prog > 0.5 : prog < 0.5;
+        pose = lifting ? `${q.kind === 'can' ? 'can' : q.kind}/b1` : 'none/b0';
       }
-      this.placeWalker(s, w.m, w.carry > 0 ? w.kind : 'none', w, t, pose);
+      this.placeWalker(s, { x: q.x, y: q.y, dx: q.dx, dy: q.dy, moving: q.moving && !hold, speed: m.speed * rate, ox: m.ox, oy: m.oy }, q.carry > 0 ? q.kind : 'none', v, t, pose, dt);
     });
     // customers (pooled sprites)
     const used = new Set();
@@ -452,28 +476,41 @@ export class WorldScene extends Phaser.Scene {
         c.spr.look = 'c' + c.look; c.spr.setVisible(true);
       }
       used.add(c.spr);
-      this.placeWalker(c.spr, c.m, c.state === 'out' && c.bag ? 'bag' : 'none', c, t);
+      this.placeWalker(c.spr, c.m, c.state === 'out' && c.bag ? 'bag' : 'none', c, t, null, dt);
     }
     for (const s of this.custSpr) if (!used.has(s)) { s.setVisible(false); this.custPool.push(s); }
     this.custSpr = [...used];
   }
-  placeWalker(s, m, carry, ent, t, pose) {
+  // state of a hauler's record at time vt (positions interpolated between the two frames around it)
+  replay(v, vt) {
+    const H = v.hist, out = this.replayOut || (this.replayOut = {});
+    let a = H[v.head], b = a;
+    for (let k = 1; k < v.n && a.t > vt; k++) { b = a; a = H[(v.head - k + HIST) % HIST]; }
+    const f = b === a || b.t <= a.t ? 0 : Math.max(0, Math.min(1, (vt - a.t) / (b.t - a.t))), src = f > 0.5 ? b : a;
+    out.x = a.x + (b.x - a.x) * f; out.y = a.y + (b.y - a.y) * f;
+    out.dx = src.dx; out.dy = src.dy; out.moving = src.moving; out.state = src.state; out.carry = src.carry; out.kind = src.kind;
+    return out;
+  }
+  // m: anything with x, y, dx, dy, moving (and speed, ox, oy); ent keeps the walk-cycle phase.
+  // The walk cycle runs on time and distance, not on frames: one step per STRIDE tiles, between 5 and 12
+  // steps a second, so it looks the same at 15, 30 or 60 FPS.
+  placeWalker(s, m, carry, ent, t, pose, dt = 0) {
     const x = m.x + (m.ox || 0), y = m.y + (m.oy || 0);
     const p = iso(x, y);
     let dir = Math.abs(m.dx) > Math.abs(m.dy) ? (m.dx > 0 ? 0 : 2) : (m.dy > 0 ? 1 : 3);
     // people waiting in the queue look around now and then
     if (!m.moving && !pose && ent.state === 'queue') {
-      ent.lookT = (ent.lookT || Math.random() * 3) - this.game.loop.delta / 1000;
+      ent.lookT = (ent.lookT || Math.random() * 3) - dt;
       if (ent.lookT <= 0) { ent.lookT = 1.5 + Math.random() * 3; ent.lookDir = Math.random() < 0.5 ? 3 : (Math.random() < 0.5 ? 0 : 2); }
       if (ent.lookDir !== undefined) dir = ent.lookDir;
     }
-    ent.walkT = (ent.walkT || 0) + (m.moving ? 1 : 0);
-    const k = m.moving ? Math.floor(ent.walkT / 7) % 4 : 0;
+    if (m.moving) ent.phase = (ent.phase || 0) + dt * Math.max(5, Math.min(12, (m.speed || 2) / STRIDE));
+    const k = m.moving ? Math.floor(ent.phase || 0) % 4 : 0;
     let name = pose ? `p/worker/${pose.split('/')[0]}/${dir}/${pose.split('/')[1]}` : `p/${s.look}/${carry}/${dir}/${k}`;
     if (!has(name)) name = `p/${s.look}/${carry}/${dir}/${k}`;
     if (s.frame.name !== name && has(name)) setSprite(s, name);
     // idle breathing bob
-    const idle = !m.moving && !pose ? Math.sin(t * 3 + (ent.walkT || 0)) * 0.4 : 0;
+    const idle = !m.moving && !pose ? Math.sin(t * 3 + (ent.phase || 0)) * 0.4 : 0;
     s.setPosition(p.x, p.y + idle).setDepth(depthAt(x, y) + 1);
   }
 

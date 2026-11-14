@@ -1,0 +1,123 @@
+{
+ "props": [
+  {
+   "prop": "pallet_raw@3.6",
+   "at": [
+    3.6,
+    22.5
+   ],
+   "moved": false,
+   "issues": [
+    "west jetty cart"
+   ],
+   "routeClearance": 1.04
+  },
+  {
+   "prop": "fishbox_stack@5",
+   "at": [
+    5,
+    22.45
+   ],
+   "moved": false,
+   "issues": [
+    "west jetty cart"
+   ],
+   "routeClearance": 0.56
+  },
+  {
+   "prop": "fishbox_stack@6.6",
+   "at": [
+    6.6,
+    22.45
+   ],
+   "moved": false,
+   "issues": [
+    "hauler route quay→rest",
+    "west jetty cart"
+   ],
+   "routeClearance": 0.99
+  },
+  {
+   "prop": "fishbox_stack@15.3",
+   "at": [
+    15.3,
+    23.55
+   ],
+   "moved": true,
+   "issues": [],
+   "routeClearance": 0.09
+  },
+  {
+   "prop": "forklift_parked@18.4",
+   "at": [
+    18.4,
+    23.55
+   ],
+   "moved": true,
+   "issues": [],
+   "routeClearance": 0.04
+  },
+  {
+   "prop": "barrels@19.4",
+   "at": [
+    19.4,
+    23.55
+   ],
+   "moved": true,
+   "issues": [],
+   "routeClearance": 0.14
+  },
+  {
+   "prop": "cones@11.6",
+   "at": [
+    11.6,
+    23.5
+   ],
+   "moved": false,
+   "issues": [],
+   "routeClearance": 0.14
+  },
+  {
+   "prop": "netpile@6.5",
+   "at": [
+    6.5,
+    25.6
+   ],
+   "moved": false,
+   "issues": [],
+   "routeClearance": 2.15
+  },
+  {
+   "prop": "netpile@13.5",
+   "at": [
+    13.5,
+    26.8
+   ],
+   "moved": false,
+   "issues": [],
+   "routeClearance": 3.34
+  },
+  {
+   "prop": "netpile@20.5",
+   "at": [
+    20.5,
+    25.2
+   ],
+   "moved": false,
+   "issues": [],
+   "routeClearance": 1.85
+  },
+  {
+   "prop": "pallet_prod@2.6",
+   "at": [
+    2.6,
+    23.5
+   ],
+   "moved": false,
+   "issues": [],
+   "routeClearance": 2.04
+  }
+ ],
+ "fails": [],
+ "ok": true
+}
