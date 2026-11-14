@@ -1,5 +1,9 @@
 # Workers — phase A: report
 
+**Status: conditionally accepted.** Browser regression tests passed; **Android is not yet confirmed** (no emulator
+and no real-device run for phase A). One acceptance criterion is **not met** and is recorded as an accepted visual
+exception (section 9): the minimum pose time of 0.32 s (`POSE_MIN`) is not reached at the high warehouse level.
+
 Dev build only (`.preview/dev.html`). `tycoon/index.html` and the APK are unchanged. Every number below comes
 from headless Chromium with a software GPU (SwiftShader) in this container. **No emulator and no real
 Android device was used for phase A.**
@@ -79,7 +83,7 @@ restored exactly as it was. Afterwards every frame makes the same random draws i
 boat had cast off (the 1.4 s busy timer). Fix: the cart is told every frame whether its boat is moored; if not,
 it turns back and parks at once, and the crate only shows after the cart reached the boat. Afterwards: 0 frames.
 
-### 4.3 Not fixed — the 0.32 s pose minimum at the high warehouse level (decision needed)
+### 4.3 Not fixed — the 0.32 s pose minimum at the high warehouse level (decided: option B, see section 9)
 | Scenario | FPS | Poses | Skipped | Start delay max / median | Ahead max | Shown pose min / median | Load in hand wrong (max run) | Figure still holds the load after the stock rose (max) |
 |---|---|---|---|---|---|---|---|---|
 | mid (pick/drop 0.6 s) | 15 | 128 | 0 | 0.067 / 0.067 | 1 | 0.933 / 0.933 | 0 | 0 |
@@ -209,3 +213,33 @@ Not done: no APK, no emulator run, no real-device run for phase A.
   same random state, so the boats are not at the same places at the same moment.
 - `media/slipcart-slip3-frames.png`, `media/slipcart-slip4-frames.png`: full-resolution crops every 0.4 s
   (frames 280–348) around the two slip carts; `media/after-contact-sheet.png`: one frame every 10 s.
+
+## 9. Decision on the 0.32 s pose minimum (recorded after review)
+
+**Decision: option B is accepted.**
+- `LAG_MAX` stays at 0.25 s.
+- At the high warehouse level (pick-up / drop 0.04 s) the minimum drawn pose time of **0.217–0.267 s** (median
+  0.267–0.283 s; measured in `pose-sync.json`, 15/30/60 FPS) is accepted for phase A.
+- **The `POSE_MIN = 0.32 s` requirement is not fully met.** The code constant is 0.32 s, but the figure's delay
+  cap (0.25 s) limits what is actually shown. This is an accepted visual exception, **not a passed test**: the
+  pose-minimum check in `tests/pose-sync.cjs` was not changed, its criterion was not weakened, and its result
+  stays recorded as failed against 0.32 s. Before this change the pose at that level lasted 0.05–0.067 s.
+- Mid levels (pick/drop 0.6 s) are unaffected (0.90–0.93 s poses).
+- Option C (start the bend slightly before the hauler arrives, using the simulation's recorded states; no extra
+  delay, new code and its own tests needed) is added to the **future visual polish backlog** (`HANDOFF.md`).
+
+Status of the acceptance: browser regression (same seed, 6/6 scenarios identical), save/load (4/4 identical),
+animation and unloading tests passed; **Android confirmation pending**.
+
+## 10. Commits and result files
+
+| Commit | Content |
+|---|---|
+| `97f4ac2` | phase A code (props, walk cycle, replay layer, slip carts) and first tests (work in progress) |
+| `8b28e2e` | test scripts: per-scenario regression output, pose sync, dynamic prop check, save comparison |
+| `118dd87` | slip carts park when their boat leaves; look-around timer restored; deterministic test harness; full results; report |
+| `f6716fc` | screenshots, before/after videos, viewport measurement, report media section |
+
+Basis for comparison ("before"): `tycoon/index.html` as of commit `dc2ed9c` (unchanged by phase A, which was built
+only as the dev build `.preview/dev.html`). All result files are in `tycoon/test-results/workers/` (listed in
+section 8) and were not modified by this documentation change.
