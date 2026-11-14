@@ -197,7 +197,15 @@ Not done: no APK, no emulator run, no real-device run for phase A.
 
 ## 8. Files
 
-- `test-results/workers/regress-<n>.json`, `regress.json`, `regress-1-844x390-120s.json`
+- `test-results/workers/regress-<n>.json`, `regress.json`, `regress-1-844x390-120s.json`,
+  `regress-viewport.json` (measurement: 844×390 vs 200×100 first differ at 3 s, as explained in section 3)
 - `decor-check.json`, `decor-dynamic.json`, `pose-sync.json`, `walk-anim.json`, `unload-show.json`,
   `save-compare.json`, `run-tests-dev.json`, `outer-save-dev.json`, `bench-*.json`, `bench.md`
-- screenshots and videos: `test-results/workers/media/`
+- `media/quay-before.png`, `media/quay-after.png`: the quay at zoom 2.4, 40 s in (the forklift and the fishbox
+  stack stood on the haulers' line; now at the pier edge)
+- `media/workers-before-after.mp4` (stacked) and `media/workers-after.mp4`: 10 fps, real time; 10–130 s with
+  all four slips in view (zoom 0.72: boats coming in, unloading by crane at slips 1–2 and by slip cart at
+  slips 3–4), then 130–150 s close on the quay haulers (zoom 2.4). The two captures do not start from the
+  same random state, so the boats are not at the same places at the same moment.
+- `media/slipcart-slip3-frames.png`, `media/slipcart-slip4-frames.png`: full-resolution crops every 0.4 s
+  (frames 280–348) around the two slip carts; `media/after-contact-sheet.png`: one frame every 10 s.
