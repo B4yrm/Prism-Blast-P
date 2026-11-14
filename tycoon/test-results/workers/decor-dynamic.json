@@ -1,0 +1,1058 @@
+[
+ {
+  "scenario": "mid, 6 haulers",
+  "fps": 15,
+  "build": "before",
+  "props": [
+   {
+    "prop": "pallet_raw",
+    "at": [
+     3.6,
+     22.5
+    ],
+    "nearestHauler": 6.64,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "pallet_prod",
+    "at": [
+     2.6,
+     23.5
+    ],
+    "nearestHauler": 7.74,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "fishbox_stack",
+    "at": [
+     5,
+     22.45
+    ],
+    "nearestHauler": 5.24,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "fishbox_stack",
+    "at": [
+     6.6,
+     22.45
+    ],
+    "nearestHauler": 3.64,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "cones",
+    "at": [
+     11.6,
+     23.5
+    ],
+    "nearestHauler": 0.68,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "fishbox_stack",
+    "at": [
+     16.6,
+     22.45
+    ],
+    "nearestHauler": 0.04,
+    "framesInside": 152,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "forklift_parked",
+    "at": [
+     18.3,
+     22.5
+    ],
+    "nearestHauler": 0.05,
+    "framesInside": 180,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "barrels",
+    "at": [
+     19.4,
+     22.5
+    ],
+    "nearestHauler": 0.07,
+    "framesInside": 184,
+    "framesWrongDrawOrder": 0
+   }
+  ],
+  "errors": []
+ },
+ {
+  "scenario": "mid, 6 haulers",
+  "fps": 15,
+  "build": "after",
+  "props": [
+   {
+    "prop": "pallet_raw",
+    "at": [
+     3.6,
+     22.5
+    ],
+    "nearestHauler": 6.65,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "pallet_prod",
+    "at": [
+     2.6,
+     23.5
+    ],
+    "nearestHauler": 7.74,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "fishbox_stack",
+    "at": [
+     5,
+     22.45
+    ],
+    "nearestHauler": 5.24,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "fishbox_stack",
+    "at": [
+     6.6,
+     22.45
+    ],
+    "nearestHauler": 3.65,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "cones",
+    "at": [
+     11.6,
+     23.5
+    ],
+    "nearestHauler": 0.7,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "fishbox_stack",
+    "at": [
+     15.3,
+     23.55
+    ],
+    "nearestHauler": 0.81,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "forklift_parked",
+    "at": [
+     18.4,
+     23.55
+    ],
+    "nearestHauler": 0.81,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "barrels",
+    "at": [
+     19.4,
+     23.55
+    ],
+    "nearestHauler": 0.8,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   }
+  ],
+  "errors": []
+ },
+ {
+  "scenario": "mid, 6 haulers",
+  "fps": 30,
+  "build": "before",
+  "props": [
+   {
+    "prop": "pallet_raw",
+    "at": [
+     3.6,
+     22.5
+    ],
+    "nearestHauler": 6.63,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "pallet_prod",
+    "at": [
+     2.6,
+     23.5
+    ],
+    "nearestHauler": 7.73,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "fishbox_stack",
+    "at": [
+     5,
+     22.45
+    ],
+    "nearestHauler": 5.23,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "fishbox_stack",
+    "at": [
+     6.6,
+     22.45
+    ],
+    "nearestHauler": 3.63,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "cones",
+    "at": [
+     11.6,
+     23.5
+    ],
+    "nearestHauler": 0.64,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "fishbox_stack",
+    "at": [
+     16.6,
+     22.45
+    ],
+    "nearestHauler": 0.04,
+    "framesInside": 310,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "forklift_parked",
+    "at": [
+     18.3,
+     22.5
+    ],
+    "nearestHauler": 0.05,
+    "framesInside": 356,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "barrels",
+    "at": [
+     19.4,
+     22.5
+    ],
+    "nearestHauler": 0.05,
+    "framesInside": 385,
+    "framesWrongDrawOrder": 0
+   }
+  ],
+  "errors": []
+ },
+ {
+  "scenario": "mid, 6 haulers",
+  "fps": 30,
+  "build": "after",
+  "props": [
+   {
+    "prop": "pallet_raw",
+    "at": [
+     3.6,
+     22.5
+    ],
+    "nearestHauler": 6.63,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "pallet_prod",
+    "at": [
+     2.6,
+     23.5
+    ],
+    "nearestHauler": 7.73,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "fishbox_stack",
+    "at": [
+     5,
+     22.45
+    ],
+    "nearestHauler": 5.23,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "fishbox_stack",
+    "at": [
+     6.6,
+     22.45
+    ],
+    "nearestHauler": 3.63,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "cones",
+    "at": [
+     11.6,
+     23.5
+    ],
+    "nearestHauler": 0.64,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "fishbox_stack",
+    "at": [
+     15.3,
+     23.55
+    ],
+    "nearestHauler": 0.81,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "forklift_parked",
+    "at": [
+     18.4,
+     23.55
+    ],
+    "nearestHauler": 0.81,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "barrels",
+    "at": [
+     19.4,
+     23.55
+    ],
+    "nearestHauler": 0.8,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   }
+  ],
+  "errors": []
+ },
+ {
+  "scenario": "mid, 6 haulers",
+  "fps": 60,
+  "build": "before",
+  "props": [
+   {
+    "prop": "pallet_raw",
+    "at": [
+     3.6,
+     22.5
+    ],
+    "nearestHauler": 6.61,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "pallet_prod",
+    "at": [
+     2.6,
+     23.5
+    ],
+    "nearestHauler": 7.7,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "fishbox_stack",
+    "at": [
+     5,
+     22.45
+    ],
+    "nearestHauler": 5.21,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "fishbox_stack",
+    "at": [
+     6.6,
+     22.45
+    ],
+    "nearestHauler": 3.61,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "cones",
+    "at": [
+     11.6,
+     23.5
+    ],
+    "nearestHauler": 0.69,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "fishbox_stack",
+    "at": [
+     16.6,
+     22.45
+    ],
+    "nearestHauler": 0.03,
+    "framesInside": 650,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "forklift_parked",
+    "at": [
+     18.3,
+     22.5
+    ],
+    "nearestHauler": 0.04,
+    "framesInside": 735,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "barrels",
+    "at": [
+     19.4,
+     22.5
+    ],
+    "nearestHauler": 0.04,
+    "framesInside": 776,
+    "framesWrongDrawOrder": 0
+   }
+  ],
+  "errors": []
+ },
+ {
+  "scenario": "mid, 6 haulers",
+  "fps": 60,
+  "build": "after",
+  "props": [
+   {
+    "prop": "pallet_raw",
+    "at": [
+     3.6,
+     22.5
+    ],
+    "nearestHauler": 6.61,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "pallet_prod",
+    "at": [
+     2.6,
+     23.5
+    ],
+    "nearestHauler": 7.7,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "fishbox_stack",
+    "at": [
+     5,
+     22.45
+    ],
+    "nearestHauler": 5.21,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "fishbox_stack",
+    "at": [
+     6.6,
+     22.45
+    ],
+    "nearestHauler": 3.61,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "cones",
+    "at": [
+     11.6,
+     23.5
+    ],
+    "nearestHauler": 0.69,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "fishbox_stack",
+    "at": [
+     15.3,
+     23.55
+    ],
+    "nearestHauler": 0.82,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "forklift_parked",
+    "at": [
+     18.4,
+     23.55
+    ],
+    "nearestHauler": 0.82,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "barrels",
+    "at": [
+     19.4,
+     23.55
+    ],
+    "nearestHauler": 0.79,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   }
+  ],
+  "errors": []
+ },
+ {
+  "scenario": "high, 10 haulers",
+  "fps": 15,
+  "build": "before",
+  "props": [
+   {
+    "prop": "pallet_raw",
+    "at": [
+     3.6,
+     22.5
+    ],
+    "nearestHauler": 2.78,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "pallet_prod",
+    "at": [
+     2.6,
+     23.5
+    ],
+    "nearestHauler": 3.82,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "fishbox_stack",
+    "at": [
+     5,
+     22.45
+    ],
+    "nearestHauler": 2.72,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "fishbox_stack",
+    "at": [
+     6.6,
+     22.45
+    ],
+    "nearestHauler": 2.71,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "cones",
+    "at": [
+     11.6,
+     23.5
+    ],
+    "nearestHauler": 0.64,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "fishbox_stack",
+    "at": [
+     16.6,
+     22.45
+    ],
+    "nearestHauler": 0.05,
+    "framesInside": 120,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "forklift_parked",
+    "at": [
+     18.3,
+     22.5
+    ],
+    "nearestHauler": 0.23,
+    "framesInside": 170,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "barrels",
+    "at": [
+     19.4,
+     22.5
+    ],
+    "nearestHauler": 0.04,
+    "framesInside": 153,
+    "framesWrongDrawOrder": 0
+   }
+  ],
+  "errors": []
+ },
+ {
+  "scenario": "high, 10 haulers",
+  "fps": 15,
+  "build": "after",
+  "props": [
+   {
+    "prop": "pallet_raw",
+    "at": [
+     3.6,
+     22.5
+    ],
+    "nearestHauler": 2.78,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "pallet_prod",
+    "at": [
+     2.6,
+     23.5
+    ],
+    "nearestHauler": 3.82,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "fishbox_stack",
+    "at": [
+     5,
+     22.45
+    ],
+    "nearestHauler": 2.72,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "fishbox_stack",
+    "at": [
+     6.6,
+     22.45
+    ],
+    "nearestHauler": 2.72,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "cones",
+    "at": [
+     11.6,
+     23.5
+    ],
+    "nearestHauler": 0.72,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "fishbox_stack",
+    "at": [
+     15.3,
+     23.55
+    ],
+    "nearestHauler": 0.74,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "forklift_parked",
+    "at": [
+     18.4,
+     23.55
+    ],
+    "nearestHauler": 0.67,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "barrels",
+    "at": [
+     19.4,
+     23.55
+    ],
+    "nearestHauler": 0.74,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   }
+  ],
+  "errors": []
+ },
+ {
+  "scenario": "high, 10 haulers",
+  "fps": 30,
+  "build": "before",
+  "props": [
+   {
+    "prop": "pallet_raw",
+    "at": [
+     3.6,
+     22.5
+    ],
+    "nearestHauler": 2.75,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "pallet_prod",
+    "at": [
+     2.6,
+     23.5
+    ],
+    "nearestHauler": 3.76,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "fishbox_stack",
+    "at": [
+     5,
+     22.45
+    ],
+    "nearestHauler": 2.7,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "fishbox_stack",
+    "at": [
+     6.6,
+     22.45
+    ],
+    "nearestHauler": 2.69,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "cones",
+    "at": [
+     11.6,
+     23.5
+    ],
+    "nearestHauler": 0.72,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "fishbox_stack",
+    "at": [
+     16.6,
+     22.45
+    ],
+    "nearestHauler": 0.05,
+    "framesInside": 290,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "forklift_parked",
+    "at": [
+     18.3,
+     22.5
+    ],
+    "nearestHauler": 0.03,
+    "framesInside": 371,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "barrels",
+    "at": [
+     19.4,
+     22.5
+    ],
+    "nearestHauler": 0.04,
+    "framesInside": 379,
+    "framesWrongDrawOrder": 0
+   }
+  ],
+  "errors": []
+ },
+ {
+  "scenario": "high, 10 haulers",
+  "fps": 30,
+  "build": "after",
+  "props": [
+   {
+    "prop": "pallet_raw",
+    "at": [
+     3.6,
+     22.5
+    ],
+    "nearestHauler": 2.74,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "pallet_prod",
+    "at": [
+     2.6,
+     23.5
+    ],
+    "nearestHauler": 3.76,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "fishbox_stack",
+    "at": [
+     5,
+     22.45
+    ],
+    "nearestHauler": 2.7,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "fishbox_stack",
+    "at": [
+     6.6,
+     22.45
+    ],
+    "nearestHauler": 2.68,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "cones",
+    "at": [
+     11.6,
+     23.5
+    ],
+    "nearestHauler": 0.72,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "fishbox_stack",
+    "at": [
+     15.3,
+     23.55
+    ],
+    "nearestHauler": 0.79,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "forklift_parked",
+    "at": [
+     18.4,
+     23.55
+    ],
+    "nearestHauler": 0.75,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "barrels",
+    "at": [
+     19.4,
+     23.55
+    ],
+    "nearestHauler": 0.75,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   }
+  ],
+  "errors": []
+ },
+ {
+  "scenario": "high, 10 haulers",
+  "fps": 60,
+  "build": "before",
+  "props": [
+   {
+    "prop": "pallet_raw",
+    "at": [
+     3.6,
+     22.5
+    ],
+    "nearestHauler": 2.73,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "pallet_prod",
+    "at": [
+     2.6,
+     23.5
+    ],
+    "nearestHauler": 3.74,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "fishbox_stack",
+    "at": [
+     5,
+     22.45
+    ],
+    "nearestHauler": 2.63,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "fishbox_stack",
+    "at": [
+     6.6,
+     22.45
+    ],
+    "nearestHauler": 2.66,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "cones",
+    "at": [
+     11.6,
+     23.5
+    ],
+    "nearestHauler": 0.67,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "fishbox_stack",
+    "at": [
+     16.6,
+     22.45
+    ],
+    "nearestHauler": 0.05,
+    "framesInside": 589,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "forklift_parked",
+    "at": [
+     18.3,
+     22.5
+    ],
+    "nearestHauler": 0.07,
+    "framesInside": 692,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "barrels",
+    "at": [
+     19.4,
+     22.5
+    ],
+    "nearestHauler": 0.04,
+    "framesInside": 718,
+    "framesWrongDrawOrder": 0
+   }
+  ],
+  "errors": []
+ },
+ {
+  "scenario": "high, 10 haulers",
+  "fps": 60,
+  "build": "after",
+  "props": [
+   {
+    "prop": "pallet_raw",
+    "at": [
+     3.6,
+     22.5
+    ],
+    "nearestHauler": 2.72,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "pallet_prod",
+    "at": [
+     2.6,
+     23.5
+    ],
+    "nearestHauler": 3.74,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "fishbox_stack",
+    "at": [
+     5,
+     22.45
+    ],
+    "nearestHauler": 2.63,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "fishbox_stack",
+    "at": [
+     6.6,
+     22.45
+    ],
+    "nearestHauler": 2.67,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "cones",
+    "at": [
+     11.6,
+     23.5
+    ],
+    "nearestHauler": 0.64,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "fishbox_stack",
+    "at": [
+     15.3,
+     23.55
+    ],
+    "nearestHauler": 0.69,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "forklift_parked",
+    "at": [
+     18.4,
+     23.55
+    ],
+    "nearestHauler": 0.69,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   },
+   {
+    "prop": "barrels",
+    "at": [
+     19.4,
+     23.55
+    ],
+    "nearestHauler": 0.69,
+    "framesInside": 0,
+    "framesWrongDrawOrder": 0
+   }
+  ],
+  "errors": []
+ }
+]

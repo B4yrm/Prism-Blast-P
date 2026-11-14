@@ -1,0 +1,43 @@
+{
+ "scenario": "mid: 4 boats, 6 haulers, factory",
+ "fps": 30,
+ "seconds": 600,
+ "samples": 1200,
+ "identical": true,
+ "unloadEventsIdentical": true,
+ "unloadEvents": 447,
+ "before": {
+  "money": 500,
+  "caught": 505,
+  "sold": 88,
+  "stock": {
+   "quay": 120,
+   "wh": 100,
+   "facOut": 30,
+   "mRaw": 55,
+   "mProd": 55
+  },
+  "unloadingShown": 250,
+  "shownWithBoatAway": 0
+ },
+ "after": {
+  "money": 500,
+  "caught": 505,
+  "sold": 88,
+  "stock": {
+   "quay": 120,
+   "wh": 100,
+   "facOut": 30,
+   "mRaw": 55,
+   "mProd": 55
+  },
+  "unloadingShown": 447,
+  "shownWithBoatAway": 0
+ },
+ "firstDiff": null,
+ "errors": [],
+ "viewport": {
+  "width": 200,
+  "height": 100
+ }
+}

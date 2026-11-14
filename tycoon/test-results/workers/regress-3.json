@@ -1,0 +1,43 @@
+{
+ "scenario": "max 30/30, loop berths, 10 haulers",
+ "fps": 30,
+ "seconds": 600,
+ "samples": 1200,
+ "identical": true,
+ "unloadEventsIdentical": true,
+ "unloadEvents": 2361,
+ "before": {
+  "money": 500,
+  "caught": 2371,
+  "sold": 530,
+  "stock": {
+   "quay": 11,
+   "wh": 1013,
+   "facOut": 623,
+   "mRaw": 80,
+   "mProd": 77
+  },
+  "unloadingShown": 2312,
+  "shownWithBoatAway": 0
+ },
+ "after": {
+  "money": 500,
+  "caught": 2371,
+  "sold": 530,
+  "stock": {
+   "quay": 11,
+   "wh": 1013,
+   "facOut": 623,
+   "mRaw": 80,
+   "mProd": 77
+  },
+  "unloadingShown": 2312,
+  "shownWithBoatAway": 0
+ },
+ "firstDiff": null,
+ "errors": [],
+ "viewport": {
+  "width": 200,
+  "height": 100
+ }
+}

@@ -1,0 +1,61 @@
+{
+ "ok": true,
+ "runs": [
+  {
+   "save": "current",
+   "loadIdentical": true,
+   "offlineOfferIdentical": true,
+   "offlineOffer": null,
+   "after60Identical": true,
+   "money": [
+    1234,
+    1234
+   ],
+   "diffsAfterLoad": [],
+   "diffsAfter60": [],
+   "errors": []
+  },
+  {
+   "save": "oldMinimal",
+   "loadIdentical": true,
+   "offlineOfferIdentical": true,
+   "offlineOffer": null,
+   "after60Identical": true,
+   "money": [
+    300,
+    300
+   ],
+   "diffsAfterLoad": [],
+   "diffsAfter60": [],
+   "errors": []
+  },
+  {
+   "save": "hourAway",
+   "loadIdentical": true,
+   "offlineOfferIdentical": true,
+   "offlineOffer": "Xoş gəldin!Sən yoxkən işçilər 1 saat 0 dəq işlədi. +$11.9K Topla×2 · 10",
+   "after60Identical": true,
+   "money": [
+    5000,
+    5000
+   ],
+   "diffsAfterLoad": [],
+   "diffsAfter60": [],
+   "errors": []
+  },
+  {
+   "save": "maxLoopBerths",
+   "loadIdentical": true,
+   "offlineOfferIdentical": true,
+   "offlineOffer": null,
+   "after60Identical": true,
+   "money": [
+    99999,
+    99999
+   ],
+   "diffsAfterLoad": [],
+   "diffsAfter60": [],
+   "errors": []
+  }
+ ]
+}

@@ -9,6 +9,20 @@
 //   node tests/save-compare.cjs <before.html> <after.html>  → test-results/workers/save-compare.json
 const { chromium } = require('playwright');
 const path = require('path'), fs = require('fs');
+// small viewport: drawing still runs every frame (same code, same random draws), only the pixel fill is cheaper
+// (108 ms → 1.8 ms a frame in SwiftShader). Both builds always run with the same viewport. VIEW=844x390 to change.
+// deterministic start: Math.random is seeded just before the world (and its simulation) is created, and the
+// world does not update until the test steps it (window.__go), so no real-time frame runs in between
+const FREEZE = () => {
+  let g; Object.defineProperty(window, '__game', { configurable: true, get: () => g, set: v => { g = v; const hook = () => {
+    const w = g.scene.getScene('world'); if (!w || w.__hooked) return; w.__hooked = true;
+    const c = w.create, u = w.update;
+    w.create = function (...a) { let s = 4242; Math.random = () => (s = (s * 16807) % 2147483647) / 2147483647; return c.apply(this, a); };
+    w.update = function (...a) { if (window.__go) return u.apply(this, a); };
+    const st = w.sys.step; w.sys.step = function (...a) { if (window.__go) return st.apply(this, a); };    // particles, tweens, clocks too
+  }; if (g.scene.getScene && g.scene.getScene('world')) hook(); g.events.once('ready', hook); } });
+};
+const VIEW = (([w, h]) => ({ width: w, height: h }))((process.env.VIEW || '200x100').split('x').map(Number));
 const [A, B] = process.argv.slice(2).map(f => 'file://' + path.resolve(f));
 const BASE = 1.8e12;
 const MAXUP = { warehouse: { cap: 30, load: 30, cold: 30 }, factory: { speed: 30, out: 30, qual: 30 }, market: { price: 30, ads: 30, till: 30 }, hq: { train: 30, carry: 30 } };
@@ -19,7 +33,8 @@ const SAVES = {
   maxLoopBerths: { v: 1, money: 99999, boats: 4, workers: 10, level: 30, harborOuter: 2, settings: { quality: 'medium' }, tier: { harbor: 3, warehouse: 3, market: 3, hq: 3, factory: 3, farm: 0 }, up: { ...MAXUP, harbor: { cap: 30, speed: 30, net: 30 } }, stats: { caught: 90000, sold: 80000 }, lastSeen: BASE - 30e3 },
 };
 async function run(b, url, save) {
-  const ctx = await b.newContext({ viewport: { width: 844, height: 390 } });
+  const ctx = await b.newContext({ viewport: VIEW });
+    await ctx.addInitScript(FREEZE);
   await ctx.addInitScript(([save, BASE]) => {
     window.__T = 0; Date.now = () => BASE + window.__T;
     if (sessionStorage.getItem('s')) return; sessionStorage.setItem('s', 1);
@@ -29,12 +44,12 @@ async function run(b, url, save) {
   await p.goto(url);
   await p.waitForFunction(() => window.__game && __game.scene.getScene('world') && __game.scene.getScene('world').fleet && document.getElementById('loader') === null, null, { timeout: 90000 });
   const r = await p.evaluate(() => {
-    __game.loop.sleep();
+    __game.loop.sleep(); window.__go = true; { const gs = __game.step.bind(__game); __game.step = (t, d) => { __game.loop.delta = d; __game.loop.rawDelta = d; return gs(t, d); }; }   // as Phaser's own loop would set it
     const w = __game.scene.getScene('world'), S = w.sim.S, clean = o => { const c = JSON.parse(JSON.stringify(o)); delete c.lastSeen; return c; };
     const modal = document.getElementById('modal'), offerText = modal && !modal.hidden ? modal.textContent.replace(/\s+/g, ' ').trim().slice(0, 120) : null;
     const afterLoad = clean(S);
     let seed = 4242; Math.random = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
-    let T = performance.now();
+    let T = 1e5 /* the same clock start in every run: the boats time their moves on it */;
     for (let k = 0; k < 60 * 30; k++) { T += 1000 / 30; window.__T += 1000 / 30; __game.step(T, 1000 / 30); }
     return { afterLoad, offerText, after60: clean(S) };
   });

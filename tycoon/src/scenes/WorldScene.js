@@ -427,7 +427,7 @@ export class WorldScene extends Phaser.Scene {
     this.life.update(t, dt, [...this.sim.workers.map(w => w.m), ...this.sim.customers.map(c => c.m)]);
     this.drawConveyor();
     this.drawCranes(dt);
-    this.slipCarts.update(dt);
+    this.slipCarts.update(dt, k => this.sim.boats.some(b => this.fleet.mooredSite(b) === k));
     bus.emit('frame');
   }
 
@@ -500,7 +500,7 @@ export class WorldScene extends Phaser.Scene {
     let dir = Math.abs(m.dx) > Math.abs(m.dy) ? (m.dx > 0 ? 0 : 2) : (m.dy > 0 ? 1 : 3);
     // people waiting in the queue look around now and then
     if (!m.moving && !pose && ent.state === 'queue') {
-      ent.lookT = (ent.lookT || Math.random() * 3) - dt;
+      ent.lookT = (ent.lookT || Math.random() * 3) - this.game.loop.delta / 1000;   // unchanged: its random draws share the simulation's stream
       if (ent.lookT <= 0) { ent.lookT = 1.5 + Math.random() * 3; ent.lookDir = Math.random() < 0.5 ? 3 : (Math.random() < 0.5 ? 0 : 2); }
       if (ent.lookDir !== undefined) dir = ent.lookDir;
     }

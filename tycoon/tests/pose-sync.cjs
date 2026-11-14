@@ -12,6 +12,20 @@
 //   node tests/pose-sync.cjs <build.html>  → test-results/workers/pose-sync.json
 const { chromium } = require('playwright');
 const path = require('path'), fs = require('fs');
+// small viewport: drawing still runs every frame (same code, same random draws), only the pixel fill is cheaper
+// (108 ms → 1.8 ms a frame in SwiftShader). Both builds always run with the same viewport. VIEW=844x390 to change.
+// deterministic start: Math.random is seeded just before the world (and its simulation) is created, and the
+// world does not update until the test steps it (window.__go), so no real-time frame runs in between
+const FREEZE = () => {
+  let g; Object.defineProperty(window, '__game', { configurable: true, get: () => g, set: v => { g = v; const hook = () => {
+    const w = g.scene.getScene('world'); if (!w || w.__hooked) return; w.__hooked = true;
+    const c = w.create, u = w.update;
+    w.create = function (...a) { let s = 4242; Math.random = () => (s = (s * 16807) % 2147483647) / 2147483647; return c.apply(this, a); };
+    w.update = function (...a) { if (window.__go) return u.apply(this, a); };
+    const st = w.sys.step; w.sys.step = function (...a) { if (window.__go) return st.apply(this, a); };    // particles, tweens, clocks too
+  }; if (g.scene.getScene && g.scene.getScene('world')) hook(); g.events.once('ready', hook); } });
+};
+const VIEW = (([w, h]) => ({ width: w, height: h }))((process.env.VIEW || '200x100').split('x').map(Number));
 const FILE = 'file://' + path.resolve(process.argv[2]);
 const MAXUP = { warehouse: { cap: 30, load: 30, cold: 30 }, factory: { speed: 30, out: 30, qual: 30 }, market: { price: 30, ads: 30, till: 30 }, hq: { train: 30, carry: 30 } };
 const SCEN = [
@@ -23,7 +37,8 @@ const SECS = +(process.env.SECS || 120);
   const b = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
   const out = [];
   for (const sc of SCEN) for (const fps of [15, 30, 60]) {
-    const ctx = await b.newContext({ viewport: { width: 844, height: 390 } });
+    const ctx = await b.newContext({ viewport: VIEW });
+    await ctx.addInitScript(FREEZE);
     await ctx.addInitScript(sc => { if (sessionStorage.getItem('s')) return; sessionStorage.setItem('s', 1);
       localStorage.setItem('fishingTycoon.save', JSON.stringify({ v: 1, money: 500, boats: sc.boats, workers: sc.workers, level: 12, settings: { quality: 'medium' }, tier: sc.tier, up: { harbor: { cap: 0, speed: 0, net: 0 }, ...sc.up }, stats: { caught: 1, sold: 1 }, lastSeen: Date.now() })); }, sc);
     const p = await ctx.newPage(); const errs = []; p.on('pageerror', e => errs.push(e.message));
@@ -31,12 +46,12 @@ const SECS = +(process.env.SECS || 120);
     await p.waitForFunction(() => window.__game && __game.scene.getScene('world') && __game.scene.getScene('world').fleet && document.getElementById('loader') === null, null, { timeout: 90000 });
     const r = await p.evaluate(([fps, SECS]) => {
       document.querySelectorAll('[data-m]').forEach(x => x.click());
-      __game.loop.sleep();
+      __game.loop.sleep(); window.__go = true; { const gs = __game.step.bind(__game); __game.step = (t, d) => { __game.loop.delta = d; __game.loop.rawDelta = d; return gs(t, d); }; }   // as Phaser's own loop would set it
       let seed = 4242; Math.random = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
       const w = __game.scene.getScene('world'), sim = w.sim, ms = 1000 / fps, dt = 1 / fps;
       const st = [], delays = [], shown = [];
       let skipped = 0, aheadMax = 0, loadLate = 0, stockLate = 0, simPoses = 0, loadTime = 0;
-      let T = performance.now(), t = 0;
+      let T = 1e5 /* the same clock start in every run: the boats time their moves on it */, t = 0;
       for (let k = 0; k < SECS * fps; k++) {
         T += ms; __game.step(T, ms); t += dt;
         sim.workers.forEach((wk, i) => {

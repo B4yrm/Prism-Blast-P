@@ -1,0 +1,43 @@
+{
+ "scenario": "high warehouse level (pick/drop 0.04 s), 10 haulers",
+ "fps": 30,
+ "seconds": 600,
+ "samples": 1200,
+ "identical": true,
+ "unloadEventsIdentical": true,
+ "unloadEvents": 2490,
+ "before": {
+  "money": 500,
+  "caught": 2561,
+  "sold": 524,
+  "stock": {
+   "quay": 120,
+   "wh": 1058,
+   "facOut": 628,
+   "mRaw": 80,
+   "mProd": 79
+  },
+  "unloadingShown": 1318,
+  "shownWithBoatAway": 0
+ },
+ "after": {
+  "money": 500,
+  "caught": 2561,
+  "sold": 524,
+  "stock": {
+   "quay": 120,
+   "wh": 1058,
+   "facOut": 628,
+   "mRaw": 80,
+   "mProd": 79
+  },
+  "unloadingShown": 2490,
+  "shownWithBoatAway": 0
+ },
+ "firstDiff": null,
+ "errors": [],
+ "viewport": {
+  "width": 200,
+  "height": 100
+ }
+}

@@ -1,0 +1,43 @@
+{
+ "scenario": "mid at 15 FPS",
+ "fps": 15,
+ "seconds": 300,
+ "samples": 563,
+ "identical": true,
+ "unloadEventsIdentical": true,
+ "unloadEvents": 441,
+ "before": {
+  "money": 500,
+  "caught": 505,
+  "sold": 82,
+  "stock": {
+   "quay": 120,
+   "wh": 99,
+   "facOut": 30,
+   "mRaw": 55,
+   "mProd": 55
+  },
+  "unloadingShown": 259,
+  "shownWithBoatAway": 0
+ },
+ "after": {
+  "money": 500,
+  "caught": 505,
+  "sold": 82,
+  "stock": {
+   "quay": 120,
+   "wh": 99,
+   "facOut": 30,
+   "mRaw": 55,
+   "mProd": 55
+  },
+  "unloadingShown": 441,
+  "shownWithBoatAway": 0
+ },
+ "firstDiff": null,
+ "errors": [],
+ "viewport": {
+  "width": 200,
+  "height": 100
+ }
+}

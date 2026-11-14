@@ -1,0 +1,731 @@
+{
+ "ok": true,
+ "runs": [
+  {
+   "checks": [
+    {
+     "scenario": "slips: 4 boats, mid",
+     "eventsNotShown": 0,
+     "slipCartFramesWithoutBoat": 0,
+     "existingIndicatorsAsBefore": true,
+     "errors": 0,
+     "pass": true
+    },
+    {
+     "scenario": "slips: 4 boats, high cargo (quay often full)",
+     "eventsNotShown": 0,
+     "slipCartFramesWithoutBoat": 0,
+     "existingIndicatorsAsBefore": true,
+     "errors": 0,
+     "pass": true
+    },
+    {
+     "scenario": "loop berths: max 30/30",
+     "eventsNotShown": 0,
+     "slipCartFramesWithoutBoat": 0,
+     "existingIndicatorsAsBefore": true,
+     "errors": 0,
+     "pass": true
+    }
+   ]
+  },
+  {
+   "build": "index.html",
+   "scenario": "slips: 4 boats, mid",
+   "perBoat": [
+    {
+     "boat": 1,
+     "unloadEvents": 135,
+     "notMoored": 0,
+     "shownBy": {
+      "crane0": 135
+     },
+     "sites": {
+      "0": 135
+     }
+    },
+    {
+     "boat": 2,
+     "unloadEvents": 115,
+     "notMoored": 0,
+     "shownBy": {
+      "crane1": 115
+     },
+     "sites": {
+      "1": 115
+     }
+    },
+    {
+     "boat": 3,
+     "unloadEvents": 106,
+     "notMoored": 0,
+     "shownBy": {
+      "none": 106
+     },
+     "sites": {
+      "2": 106
+     }
+    },
+    {
+     "boat": 4,
+     "unloadEvents": 91,
+     "notMoored": 0,
+     "shownBy": {
+      "none": 91
+     },
+     "sites": {
+      "3": 91
+     }
+    }
+   ],
+   "indicators": {
+    "crane0": {
+     "sites": [
+      0
+     ],
+     "activeSeconds": 68.4,
+     "activeWithNoBoatMooredFrames": 60,
+     "episodes": [
+      [
+       18.57,
+       0.5
+      ],
+      [
+       36.33,
+       0.5
+      ],
+      [
+       80.1,
+       0.5
+      ],
+      [
+       174.13,
+       0.5
+      ]
+     ],
+     "parkingAfterDepartureSeconds": 0
+    },
+    "crane1": {
+     "sites": [
+      1
+     ],
+     "activeSeconds": 53.5,
+     "activeWithNoBoatMooredFrames": 60,
+     "episodes": [
+      [
+       20.53,
+       0.5
+      ],
+      [
+       45.63,
+       0.5
+      ],
+      [
+       92.37,
+       0.5
+      ],
+      [
+       252.67,
+       0.5
+      ]
+     ],
+     "parkingAfterDepartureSeconds": 0
+    }
+   },
+   "errors": []
+  },
+  {
+   "build": "index.html",
+   "scenario": "slips: 4 boats, high cargo (quay often full)",
+   "perBoat": [
+    {
+     "boat": 1,
+     "unloadEvents": 121,
+     "notMoored": 0,
+     "shownBy": {
+      "crane0": 121
+     },
+     "sites": {
+      "0": 121
+     }
+    },
+    {
+     "boat": 2,
+     "unloadEvents": 98,
+     "notMoored": 0,
+     "shownBy": {
+      "crane1": 98
+     },
+     "sites": {
+      "1": 98
+     }
+    },
+    {
+     "boat": 3,
+     "unloadEvents": 42,
+     "notMoored": 0,
+     "shownBy": {
+      "none": 42
+     },
+     "sites": {
+      "2": 42
+     }
+    },
+    {
+     "boat": 4,
+     "unloadEvents": 29,
+     "notMoored": 0,
+     "shownBy": {
+      "none": 29
+     },
+     "sites": {
+      "3": 29
+     }
+    }
+   ],
+   "indicators": {
+    "crane0": {
+     "sites": [
+      0
+     ],
+     "activeSeconds": 37.7,
+     "activeWithNoBoatMooredFrames": 15,
+     "episodes": [
+      [
+       17.7,
+       0.5
+      ]
+     ],
+     "parkingAfterDepartureSeconds": 0
+    },
+    "crane1": {
+     "sites": [
+      1
+     ],
+     "activeSeconds": 35.5,
+     "activeWithNoBoatMooredFrames": 15,
+     "episodes": [
+      [
+       57.07,
+       0.5
+      ]
+     ],
+     "parkingAfterDepartureSeconds": 0
+    }
+   },
+   "errors": []
+  },
+  {
+   "build": "index.html",
+   "scenario": "loop berths: max 30/30",
+   "perBoat": [
+    {
+     "boat": 1,
+     "unloadEvents": 480,
+     "notMoored": 0,
+     "shownBy": {
+      "jettycart1": 480
+     },
+     "sites": {
+      "4": 480
+     }
+    },
+    {
+     "boat": 2,
+     "unloadEvents": 480,
+     "notMoored": 0,
+     "shownBy": {
+      "jettycart0": 480
+     },
+     "sites": {
+      "5": 480
+     }
+    },
+    {
+     "boat": 3,
+     "unloadEvents": 460,
+     "notMoored": 0,
+     "shownBy": {
+      "jettycart1": 445,
+      "jettycart1 (set this frame by the other berth)": 15
+     },
+     "sites": {
+      "6": 460
+     }
+    },
+    {
+     "boat": 4,
+     "unloadEvents": 470,
+     "notMoored": 0,
+     "shownBy": {
+      "jettycart0": 458,
+      "jettycart0 (set this frame by the other berth)": 9,
+      "jettycart1 (set this frame by the other berth)": 3
+     },
+     "sites": {
+      "7": 470
+     }
+    }
+   ],
+   "indicators": {
+    "jettycart1": {
+     "sites": [
+      4,
+      6
+     ],
+     "activeSeconds": 348,
+     "activeWithNoBoatMooredFrames": 3965,
+     "episodes": [
+      [
+       10.37,
+       2
+      ],
+      [
+       14.73,
+       2.37
+      ],
+      [
+       20.33,
+       1.6
+      ],
+      [
+       25.03,
+       2.23
+      ],
+      [
+       30.3,
+       1.93
+      ],
+      [
+       35.33,
+       1.9
+      ]
+     ],
+     "parkingAfterDepartureSeconds": 91.7
+    },
+    "jettycart0": {
+     "sites": [
+      5,
+      7
+     ],
+     "activeSeconds": 348.5,
+     "activeWithNoBoatMooredFrames": 4040,
+     "episodes": [
+      [
+       12.37,
+       1.77
+      ],
+      [
+       16.5,
+       2.37
+      ],
+      [
+       22.3,
+       1.2
+      ],
+      [
+       26.57,
+       2.37
+      ],
+      [
+       32.23,
+       1.33
+      ],
+      [
+       36.63,
+       2.37
+      ]
+     ],
+     "parkingAfterDepartureSeconds": 90.1
+    },
+    "jettycart1 (set this frame by the other berth)": {
+     "sites": [
+      6,
+      7
+     ],
+     "activeSeconds": 0,
+     "activeWithNoBoatMooredFrames": 0,
+     "episodes": [],
+     "parkingAfterDepartureSeconds": 0
+    },
+    "jettycart0 (set this frame by the other berth)": {
+     "sites": [
+      7
+     ],
+     "activeSeconds": 0,
+     "activeWithNoBoatMooredFrames": 0,
+     "episodes": [],
+     "parkingAfterDepartureSeconds": 0
+    }
+   },
+   "errors": []
+  },
+  {
+   "build": ".preview/dev.html",
+   "scenario": "slips: 4 boats, mid",
+   "perBoat": [
+    {
+     "boat": 1,
+     "unloadEvents": 135,
+     "notMoored": 0,
+     "shownBy": {
+      "crane0": 135
+     },
+     "sites": {
+      "0": 135
+     }
+    },
+    {
+     "boat": 2,
+     "unloadEvents": 115,
+     "notMoored": 0,
+     "shownBy": {
+      "crane1": 115
+     },
+     "sites": {
+      "1": 115
+     }
+    },
+    {
+     "boat": 3,
+     "unloadEvents": 106,
+     "notMoored": 0,
+     "shownBy": {
+      "slipcart0": 106
+     },
+     "sites": {
+      "2": 106
+     }
+    },
+    {
+     "boat": 4,
+     "unloadEvents": 91,
+     "notMoored": 0,
+     "shownBy": {
+      "slipcart1": 91
+     },
+     "sites": {
+      "3": 91
+     }
+    }
+   ],
+   "indicators": {
+    "crane0": {
+     "sites": [
+      0
+     ],
+     "activeSeconds": 68.4,
+     "activeWithNoBoatMooredFrames": 60,
+     "episodes": [
+      [
+       18.57,
+       0.5
+      ],
+      [
+       36.33,
+       0.5
+      ],
+      [
+       80.1,
+       0.5
+      ],
+      [
+       174.13,
+       0.5
+      ]
+     ],
+     "parkingAfterDepartureSeconds": 0
+    },
+    "crane1": {
+     "sites": [
+      1
+     ],
+     "activeSeconds": 53.5,
+     "activeWithNoBoatMooredFrames": 60,
+     "episodes": [
+      [
+       20.53,
+       0.5
+      ],
+      [
+       45.63,
+       0.5
+      ],
+      [
+       92.37,
+       0.5
+      ],
+      [
+       252.67,
+       0.5
+      ]
+     ],
+     "parkingAfterDepartureSeconds": 0
+    },
+    "slipcart0": {
+     "sites": [
+      2
+     ],
+     "activeSeconds": 51.9,
+     "activeWithNoBoatMooredFrames": 0,
+     "episodes": [],
+     "parkingAfterDepartureSeconds": 1
+    },
+    "slipcart1": {
+     "sites": [
+      3
+     ],
+     "activeSeconds": 45.9,
+     "activeWithNoBoatMooredFrames": 0,
+     "episodes": [],
+     "parkingAfterDepartureSeconds": 1.6
+    }
+   },
+   "errors": []
+  },
+  {
+   "build": ".preview/dev.html",
+   "scenario": "slips: 4 boats, high cargo (quay often full)",
+   "perBoat": [
+    {
+     "boat": 1,
+     "unloadEvents": 121,
+     "notMoored": 0,
+     "shownBy": {
+      "crane0": 121
+     },
+     "sites": {
+      "0": 121
+     }
+    },
+    {
+     "boat": 2,
+     "unloadEvents": 98,
+     "notMoored": 0,
+     "shownBy": {
+      "crane1": 98
+     },
+     "sites": {
+      "1": 98
+     }
+    },
+    {
+     "boat": 3,
+     "unloadEvents": 42,
+     "notMoored": 0,
+     "shownBy": {
+      "slipcart0": 42
+     },
+     "sites": {
+      "2": 42
+     }
+    },
+    {
+     "boat": 4,
+     "unloadEvents": 29,
+     "notMoored": 0,
+     "shownBy": {
+      "slipcart1": 29
+     },
+     "sites": {
+      "3": 29
+     }
+    }
+   ],
+   "indicators": {
+    "crane0": {
+     "sites": [
+      0
+     ],
+     "activeSeconds": 37.7,
+     "activeWithNoBoatMooredFrames": 15,
+     "episodes": [
+      [
+       17.7,
+       0.5
+      ]
+     ],
+     "parkingAfterDepartureSeconds": 0
+    },
+    "crane1": {
+     "sites": [
+      1
+     ],
+     "activeSeconds": 35.5,
+     "activeWithNoBoatMooredFrames": 15,
+     "episodes": [
+      [
+       57.07,
+       0.5
+      ]
+     ],
+     "parkingAfterDepartureSeconds": 0
+    },
+    "slipcart0": {
+     "sites": [
+      2
+     ],
+     "activeSeconds": 34.3,
+     "activeWithNoBoatMooredFrames": 0,
+     "episodes": [],
+     "parkingAfterDepartureSeconds": 0
+    },
+    "slipcart1": {
+     "sites": [
+      3
+     ],
+     "activeSeconds": 25.2,
+     "activeWithNoBoatMooredFrames": 0,
+     "episodes": [],
+     "parkingAfterDepartureSeconds": 0
+    }
+   },
+   "errors": []
+  },
+  {
+   "build": ".preview/dev.html",
+   "scenario": "loop berths: max 30/30",
+   "perBoat": [
+    {
+     "boat": 1,
+     "unloadEvents": 480,
+     "notMoored": 0,
+     "shownBy": {
+      "jettycart1": 480
+     },
+     "sites": {
+      "4": 480
+     }
+    },
+    {
+     "boat": 2,
+     "unloadEvents": 480,
+     "notMoored": 0,
+     "shownBy": {
+      "jettycart0": 480
+     },
+     "sites": {
+      "5": 480
+     }
+    },
+    {
+     "boat": 3,
+     "unloadEvents": 460,
+     "notMoored": 0,
+     "shownBy": {
+      "jettycart1": 445,
+      "jettycart1 (set this frame by the other berth)": 15
+     },
+     "sites": {
+      "6": 460
+     }
+    },
+    {
+     "boat": 4,
+     "unloadEvents": 470,
+     "notMoored": 0,
+     "shownBy": {
+      "jettycart0": 458,
+      "jettycart0 (set this frame by the other berth)": 9,
+      "jettycart1 (set this frame by the other berth)": 3
+     },
+     "sites": {
+      "7": 470
+     }
+    }
+   ],
+   "indicators": {
+    "jettycart1": {
+     "sites": [
+      4,
+      6
+     ],
+     "activeSeconds": 348,
+     "activeWithNoBoatMooredFrames": 3965,
+     "episodes": [
+      [
+       10.37,
+       2
+      ],
+      [
+       14.73,
+       2.37
+      ],
+      [
+       20.33,
+       1.6
+      ],
+      [
+       25.03,
+       2.23
+      ],
+      [
+       30.3,
+       1.93
+      ],
+      [
+       35.33,
+       1.9
+      ]
+     ],
+     "parkingAfterDepartureSeconds": 91.7
+    },
+    "jettycart0": {
+     "sites": [
+      5,
+      7
+     ],
+     "activeSeconds": 348.5,
+     "activeWithNoBoatMooredFrames": 4040,
+     "episodes": [
+      [
+       12.37,
+       1.77
+      ],
+      [
+       16.5,
+       2.37
+      ],
+      [
+       22.3,
+       1.2
+      ],
+      [
+       26.57,
+       2.37
+      ],
+      [
+       32.23,
+       1.33
+      ],
+      [
+       36.63,
+       2.37
+      ]
+     ],
+     "parkingAfterDepartureSeconds": 90.1
+    },
+    "jettycart1 (set this frame by the other berth)": {
+     "sites": [
+      6,
+      7
+     ],
+     "activeSeconds": 0,
+     "activeWithNoBoatMooredFrames": 0,
+     "episodes": [],
+     "parkingAfterDepartureSeconds": 0
+    },
+    "jettycart0 (set this frame by the other berth)": {
+     "sites": [
+      7
+     ],
+     "activeSeconds": 0,
+     "activeWithNoBoatMooredFrames": 0,
+     "episodes": [],
+     "parkingAfterDepartureSeconds": 0
+    }
+   },
+   "errors": []
+  }
+ ]
+}

@@ -1,0 +1,260 @@
+[
+ {
+  "scenario": "start: 1 boat, 1 hauler",
+  "fps": 30,
+  "seconds": 600,
+  "samples": 1200,
+  "identical": true,
+  "unloadEventsIdentical": true,
+  "unloadEvents": 200,
+  "before": {
+   "money": 500,
+   "caught": 211,
+   "sold": 102,
+   "stock": {
+    "quay": 29,
+    "wh": 40,
+    "facOut": 0,
+    "mRaw": 30,
+    "mProd": 0
+   },
+   "unloadingShown": 200,
+   "shownWithBoatAway": 0
+  },
+  "after": {
+   "money": 500,
+   "caught": 211,
+   "sold": 102,
+   "stock": {
+    "quay": 29,
+    "wh": 40,
+    "facOut": 0,
+    "mRaw": 30,
+    "mProd": 0
+   },
+   "unloadingShown": 200,
+   "shownWithBoatAway": 0
+  },
+  "firstDiff": null,
+  "errors": [],
+  "viewport": {
+   "width": 200,
+   "height": 100
+  }
+ },
+ {
+  "scenario": "mid: 4 boats, 6 haulers, factory",
+  "fps": 30,
+  "seconds": 600,
+  "samples": 1200,
+  "identical": true,
+  "unloadEventsIdentical": true,
+  "unloadEvents": 447,
+  "before": {
+   "money": 500,
+   "caught": 505,
+   "sold": 88,
+   "stock": {
+    "quay": 120,
+    "wh": 100,
+    "facOut": 30,
+    "mRaw": 55,
+    "mProd": 55
+   },
+   "unloadingShown": 250,
+   "shownWithBoatAway": 0
+  },
+  "after": {
+   "money": 500,
+   "caught": 505,
+   "sold": 88,
+   "stock": {
+    "quay": 120,
+    "wh": 100,
+    "facOut": 30,
+    "mRaw": 55,
+    "mProd": 55
+   },
+   "unloadingShown": 447,
+   "shownWithBoatAway": 0
+  },
+  "firstDiff": null,
+  "errors": [],
+  "viewport": {
+   "width": 200,
+   "height": 100
+  }
+ },
+ {
+  "scenario": "high warehouse level (pick/drop 0.04 s), 10 haulers",
+  "fps": 30,
+  "seconds": 600,
+  "samples": 1200,
+  "identical": true,
+  "unloadEventsIdentical": true,
+  "unloadEvents": 2490,
+  "before": {
+   "money": 500,
+   "caught": 2561,
+   "sold": 524,
+   "stock": {
+    "quay": 120,
+    "wh": 1058,
+    "facOut": 628,
+    "mRaw": 80,
+    "mProd": 79
+   },
+   "unloadingShown": 1318,
+   "shownWithBoatAway": 0
+  },
+  "after": {
+   "money": 500,
+   "caught": 2561,
+   "sold": 524,
+   "stock": {
+    "quay": 120,
+    "wh": 1058,
+    "facOut": 628,
+    "mRaw": 80,
+    "mProd": 79
+   },
+   "unloadingShown": 2490,
+   "shownWithBoatAway": 0
+  },
+  "firstDiff": null,
+  "errors": [],
+  "viewport": {
+   "width": 200,
+   "height": 100
+  }
+ },
+ {
+  "scenario": "max 30/30, loop berths, 10 haulers",
+  "fps": 30,
+  "seconds": 600,
+  "samples": 1200,
+  "identical": true,
+  "unloadEventsIdentical": true,
+  "unloadEvents": 2361,
+  "before": {
+   "money": 500,
+   "caught": 2371,
+   "sold": 530,
+   "stock": {
+    "quay": 11,
+    "wh": 1013,
+    "facOut": 623,
+    "mRaw": 80,
+    "mProd": 77
+   },
+   "unloadingShown": 2312,
+   "shownWithBoatAway": 0
+  },
+  "after": {
+   "money": 500,
+   "caught": 2371,
+   "sold": 530,
+   "stock": {
+    "quay": 11,
+    "wh": 1013,
+    "facOut": 623,
+    "mRaw": 80,
+    "mProd": 77
+   },
+   "unloadingShown": 2312,
+   "shownWithBoatAway": 0
+  },
+  "firstDiff": null,
+  "errors": [],
+  "viewport": {
+   "width": 200,
+   "height": 100
+  }
+ },
+ {
+  "scenario": "mid at 15 FPS",
+  "fps": 15,
+  "seconds": 300,
+  "samples": 563,
+  "identical": true,
+  "unloadEventsIdentical": true,
+  "unloadEvents": 441,
+  "before": {
+   "money": 500,
+   "caught": 505,
+   "sold": 82,
+   "stock": {
+    "quay": 120,
+    "wh": 99,
+    "facOut": 30,
+    "mRaw": 55,
+    "mProd": 55
+   },
+   "unloadingShown": 259,
+   "shownWithBoatAway": 0
+  },
+  "after": {
+   "money": 500,
+   "caught": 505,
+   "sold": 82,
+   "stock": {
+    "quay": 120,
+    "wh": 99,
+    "facOut": 30,
+    "mRaw": 55,
+    "mProd": 55
+   },
+   "unloadingShown": 441,
+   "shownWithBoatAway": 0
+  },
+  "firstDiff": null,
+  "errors": [],
+  "viewport": {
+   "width": 200,
+   "height": 100
+  }
+ },
+ {
+  "scenario": "mid at 60 FPS",
+  "fps": 60,
+  "seconds": 300,
+  "samples": 600,
+  "identical": true,
+  "unloadEventsIdentical": true,
+  "unloadEvents": 436,
+  "before": {
+   "money": 500,
+   "caught": 505,
+   "sold": 77,
+   "stock": {
+    "quay": 120,
+    "wh": 99,
+    "facOut": 30,
+    "mRaw": 55,
+    "mProd": 55
+   },
+   "unloadingShown": 239,
+   "shownWithBoatAway": 0
+  },
+  "after": {
+   "money": 500,
+   "caught": 505,
+   "sold": 77,
+   "stock": {
+    "quay": 120,
+    "wh": 99,
+    "facOut": 30,
+    "mRaw": 55,
+    "mProd": 55
+   },
+   "unloadingShown": 436,
+   "shownWithBoatAway": 0
+  },
+  "firstDiff": null,
+  "errors": [],
+  "viewport": {
+   "width": 200,
+   "height": 100
+  }
+ }
+]
