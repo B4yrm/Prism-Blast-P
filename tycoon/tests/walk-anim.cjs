@@ -14,7 +14,7 @@ const SCEN = [
   { name: 'mid (pick/drop ≈ 0.6 s)', boats: 4, workers: 6, tier: { harbor: 3, warehouse: 2, market: 2, hq: 2, factory: 1, farm: 0 }, up: { harbor: { cap: 6, speed: 10, net: 8 } } },
   { name: 'high warehouse level (pick/drop 0.04 s)', boats: 4, workers: 10, tier: { harbor: 3, warehouse: 3, market: 3, hq: 3, factory: 3, farm: 0 }, up: { ...MAXUP, harbor: { cap: 10, speed: 12, net: 10 } } },
 ];
-const SECS = 120;
+const SECS = +(process.env.SECS || 120);
 async function run(b, url, sc, fps) {
   const ctx = await b.newContext({ viewport: { width: 844, height: 390 } });
   await ctx.addInitScript(sc => { if (sessionStorage.getItem('s')) return; sessionStorage.setItem('s', 1);
@@ -34,10 +34,10 @@ async function run(b, url, sc, fps) {
       T += ms; __game.step(T, ms); t += dt;
       sim.workers.forEach((wk, i) => {
         const s = w.workerSpr[i]; if (!s || !st[i]) return;
-        const name = s.frame.name, parts = name.split('/'), isPose = parts[3] && parts[3][0] === 'b', walkK = !isPose ? +parts[3] : null;
+        const name = s.frame.name, parts = name.split('/'), isPose = !!parts[4] && parts[4][0] === 'b', walkK = !isPose ? +parts[4] : null;   // p/<look>/<load>/<dir>/<frame | b0 | b1>
         // walk steps: changes of the walk-cycle frame while the figure is walking
         const moving = s.view ? (w.replay(s.view, s.view.vt).moving) : wk.m.moving;
-        if (!isPose && moving) { st[i].walkT += dt; if (st[i].lastK !== null && walkK !== st[i].lastK) st[i].steps++; st[i].lastK = walkK; } else st[i].lastK = null;
+        if (!isPose && moving) { st[i].walkT += dt; if (st[i].lastK !== null && walkK !== st[i].lastK && st[i].lastDir === parts[3]) st[i].steps++; st[i].lastK = walkK; st[i].lastDir = parts[3]; } else st[i].lastK = null;
         if (isPose) st[i].pose += dt; else if (st[i].pose) { st[i].poses.push(st[i].pose); st[i].pose = 0; }
         // load in hand vs simulation
         const shown = !isPose && parts[2] !== 'none', simHas = wk.carry > 0;
