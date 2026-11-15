@@ -1,0 +1,152 @@
+{
+ "test": "S.stock writers",
+ "pass": true,
+ "problems": [],
+ "scenarios": [
+  {
+   "scenario": "start",
+   "seconds": 600,
+   "stockWrites": 414,
+   "calls": {
+    "updBoat": 18000,
+    "updWorker": 18000,
+    "updFactory": 18000,
+    "updCustomers": 18000
+   },
+   "wrote": {
+    "quay": 200,
+    "pick": 57,
+    "drop": 57,
+    "clampedDrop": 0,
+    "facOut": 0,
+    "wh": 0,
+    "sale": 100,
+    "other": 0
+   }
+  },
+  {
+   "scenario": "mid",
+   "seconds": 600,
+   "stockWrites": 1148,
+   "calls": {
+    "updBoat": 72000,
+    "updWorker": 108000,
+    "updFactory": 18000,
+    "updCustomers": 18000
+   },
+   "wrote": {
+    "quay": 437,
+    "pick": 161,
+    "drop": 161,
+    "clampedDrop": 0,
+    "facOut": 156,
+    "wh": 156,
+    "sale": 77,
+    "other": 0
+   }
+  },
+  {
+   "scenario": "high",
+   "seconds": 600,
+   "stockWrites": 6955,
+   "calls": {
+    "updBoat": 72000,
+    "updWorker": 180000,
+    "updFactory": 18000,
+    "updCustomers": 18000
+   },
+   "wrote": {
+    "quay": 2490,
+    "pick": 740,
+    "drop": 738,
+    "clampedDrop": 0,
+    "facOut": 1227,
+    "wh": 1235,
+    "sale": 525,
+    "other": 0
+   }
+  },
+  {
+   "scenario": "max",
+   "seconds": 600,
+   "stockWrites": 7658,
+   "calls": {
+    "updBoat": 72000,
+    "updWorker": 180000,
+    "updFactory": 18000,
+    "updCustomers": 18000
+   },
+   "wrote": {
+    "quay": 2361,
+    "pick": 1146,
+    "drop": 1142,
+    "clampedDrop": 0,
+    "facOut": 1238,
+    "wh": 1240,
+    "sale": 531,
+    "other": 0
+   }
+  },
+  {
+   "scenario": "no haulers (full quay)",
+   "seconds": 400,
+   "stockWrites": 120,
+   "calls": {
+    "updBoat": 48000,
+    "updWorker": 0,
+    "updFactory": 12000,
+    "updCustomers": 12000
+   },
+   "wrote": {
+    "quay": 120,
+    "pick": 0,
+    "drop": 0,
+    "clampedDrop": 0,
+    "facOut": 0,
+    "wh": 0,
+    "sale": 0,
+    "other": 0
+   }
+  },
+  {
+   "scenario": "warehouse capacity lowered at 100 s",
+   "seconds": 400,
+   "stockWrites": 1143,
+   "calls": {
+    "updBoat": 48000,
+    "updWorker": 72000,
+    "updFactory": 12000,
+    "updCustomers": 12000
+   },
+   "wrote": {
+    "quay": 429,
+    "pick": 161,
+    "drop": 161,
+    "clampedDrop": 1,
+    "facOut": 157,
+    "wh": 157,
+    "sale": 78,
+    "other": 0
+   }
+  }
+ ],
+ "static": {
+  "filesWithStockMentions": [
+   "src/core/state.js",
+   "src/render/boats.js",
+   "src/scenes/WorldScene.js",
+   "src/ui/ui.js"
+  ],
+  "linesChecked": 6,
+  "writes": []
+ },
+ "coverage": {
+  "quay": 6037,
+  "pick": 2265,
+  "drop": 2259,
+  "clampedDrop": 1,
+  "facOut": 2778,
+  "wh": 2788,
+  "sale": 1311
+ }
+}

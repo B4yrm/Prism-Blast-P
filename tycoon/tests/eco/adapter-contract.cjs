@@ -53,17 +53,24 @@ check('contract: fields of a live Sim and of the save', () => {
   for (const k of ['quay', 'wh', 'facOut', 'mRaw', 'mProd']) { assert.ok(k in sim.res, 'res.' + k); assert.ok(k in m.G.S.stock, 'stock.' + k); }
   for (const k of ['wh', 'mRaw', 'mProd']) assert.ok(k in sim.inc, 'inc.' + k);
   assert.ok(Array.isArray(sim.convey) && Array.isArray(sim.queue) && Array.isArray(sim.customers));
+  // the fields the species observers read: a hauler's job names its source and destination, a boat has a cap
+  let seenJob = false, seenCap = false;
+  for (let k = 0; k < 3000 && !(seenJob && seenCap); k++) { sim.update(0.05); for (const w2 of sim.workers) if (w2.job) { assert.ok(['quay', 'wh', 'facOut'].includes(w2.job.src) && ['wh', 'mRaw', 'mProd'].includes(w2.job.dst), JSON.stringify(w2.job)); seenJob = true; } for (const b2 of sim.boats) if (b2.state === 'back') { assert.ok(Number.isInteger(b2.cap) && b2.load === b2.cap); seenCap = true; } }
+  assert.ok(seenJob && seenCap, 'no hauler job / returning boat seen');
   assert.equal(sim.boats.length, 4); assert.equal(sim.workers.length, 6);
 });
 
 check('install runs once; wrappers one level deep; second module copy refused', () => {
   const m = fresh(GAME); m.G.S = midSave(m);
   const r1 = m.A.install(deps(m)), w1 = m.stat.rawPrice, u1 = m.Sim.prototype.update;
+  const obs1 = m.A.OBSERVED.map(n => m.Sim.prototype[n]);
   const r2 = m.A.install(deps(m));
   assert.equal(r1.ok, true); assert.equal(r2.ok, false); assert.match(r2.reason, /already/);
   assert.equal(m.stat.rawPrice, w1); assert.equal(m.Sim.prototype.update, u1);
   for (const k of m.A.WRAPPED_STATS) { assert.equal(typeof m.stat[k].ecoOrig, 'function', k); assert.equal(m.stat[k].ecoOrig.ecoOrig, undefined, k + ' depth'); }
   assert.equal(m.Sim.prototype.update.ecoOrig.ecoOrig, undefined);
+  m.A.OBSERVED.forEach((n, i) => { assert.equal(m.Sim.prototype[n], obs1[i], n + ' replaced by a second install'); assert.equal(typeof m.Sim.prototype[n].ecoOrig, 'function', n); assert.equal(m.Sim.prototype[n].ecoOrig.ecoOrig, undefined, n + ' depth'); });
+  assert.deepEqual(m.A.OBSERVED, ['updBoat', 'updWorker', 'updFactory', 'updCustomers']);
   const other = fresh(ADAPTER_ONLY);                 // a second copy of the adapter module, its own state
   const r3 = other.install(deps(m));
   assert.equal(r3.ok, false); assert.equal(m.stat.rawPrice, w1); assert.equal(m.Sim.prototype.update, u1);

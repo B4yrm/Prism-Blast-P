@@ -67,7 +67,12 @@ boat routes and approved berths, multi-sea system, Stage 2 branch, Balıqçı Id
   A future `S.eco.v` is left untouched and eco stays off. Report: `test-results/eco/T1.2-REPORT.md`.
   Known: `tests/save-compare.cjs` now lists exactly one expected difference (the new `eco` key); `tests/boat-sync.cjs`
   timing checks are flaky on this machine (the unchanged base build also fails them).
-- Waiting for approval before T1.3.
+- T1.3 done: species tracking (sardine, mackerel, sea bass, salmon, tuna) in `src/eco/species.js`, fed by read-only observers of the four
+  `Sim` methods that write `S.stock` (in `adapter.js`). Eco is **off by default**; dev builds switch it on with `?eco=1` or `__eco.setOn(true)`.
+  Nothing in `src/sim`, `src/core`, `src/main.js`, `src/render`, the UI or the production build changed. New field `S.eco.omix` (no version bump).
+  Exact moves, average-mix moves, assumptions and tests: `test-results/eco/T1.3-REPORT.md`. Catch weights for harbor tiers 2 and 3 are placeholders.
+  Known: `tests/boat-sync.cjs` timing checks are noisy (base fails them too); `tests/eco/boat-visual-identity.cjs` is the deterministic check that the boats are drawn identically.
+- Waiting for approval before T1.4.
 
 ## Where things are
 

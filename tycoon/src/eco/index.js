@@ -2,19 +2,22 @@
 // adapter is in place before main.js loads the save and computes the offline
 // earnings (at that moment every wrapper still passes values through).
 //
-// T1.2: S.eco is created / migrated / repaired once per session, lazily, when the
-// world is ready. This listener is registered before main.js registers its own
-// (this module is evaluated first), so it runs before the UI starts and before
-// the first save. Every eco system is still off: the data has no effect on the
-// economy, the save's other fields, the boats, the workers or the offline earnings.
+// T1.2: S.eco is created / migrated / repaired once per session, lazily, when the world is ready. This
+// listener is registered before main.js registers its own (this module is evaluated first), so it runs
+// before the UI starts and before the first save.
+// T1.3: when eco is switched on, the species ledger follows the fish through the simulation (see
+// species.js and the observers in adapter.js). Eco is OFF by default; it is switched on only in a
+// development build, with ?eco=1 in the page address or __eco.setOn(true) in the console. Switched on, the
+// species composition is written to S.eco; nothing in the economy, the save's other fields, the boats,
+// the workers or the offline earnings changes.
 
 import { G, stat } from '../core/economy.js';
 import { Sim } from '../sim/sim.js';
 import { bus } from '../core/bus.js';
-import { install, ecoState, checkContract } from './adapter.js';
+import { install, ecoState, checkContract, activate } from './adapter.js';
 import { initEco, ECO_SCHEMA } from './state-eco.js';
 
-export const ECO_VERSION = 't1.2';
+export const ECO_VERSION = 't1.3';
 
 const result = install({ stat, Sim, bus, G });
 if (!result.ok) console.log('ECOERR install: ' + result.reason);
@@ -33,12 +36,15 @@ function ensureEco() {
   const line = `ECO save status=${r.status} v=${r.v} repairs=${r.repairs.length}${r.reason ? ' reason=' + r.reason : ''}`;
   console.log(r.status === 'recovered' || r.status === 'future' ? 'ECOERR ' + line : line);
   if (r.repairs.length) console.log('ECO repairs ' + JSON.stringify(r.repairs.slice(0, 20)));
+  // development switch: the page address ends with ?eco=1
+  try { if (r.usable && typeof location !== 'undefined' && new URLSearchParams(location.search).get('eco') === '1') { ecoState.on = true; console.log('ECO on (?eco=1)'); } } catch (e) { /* no location */ }
   return r;
 }
 bus.on('worldReady', ensureEco);
 
 // Read-only view for tests and the dev console (ECO builds only).
 if (typeof window !== 'undefined') {
+  const tr = ecoState.species;
   window.__eco = {
     version: ECO_VERSION,
     schema: ECO_SCHEMA,
@@ -50,11 +56,20 @@ if (typeof window !== 'undefined') {
     get save() { return saveState.report && JSON.parse(JSON.stringify({ ...saveState.report, blocked: saveState.blocked, inits: saveState.inits })); },
     result,
     contract: () => checkContract({ stat, Sim, bus }),
-    // dev/test only: switch the eco layer on (in T1.2 that runs the in-memory clock and nothing else); refused while S.eco is blocked
-    setOn(v) { ecoState.on = !!v && !saveState.blocked; return ecoState.on; },
+    // dev/test only: switch the eco layer on or off; refused while S.eco is blocked. Switching off drops the
+    // tracker's in-memory state (S.eco keeps the last composition written).
+    setOn(v) { ecoState.on = !!v && !saveState.blocked; if (!ecoState.on) tr.detach(); return ecoState.on; },
     // dev/test only: try to install again (must report 'already installed')
     reinstall: () => install({ stat, Sim, bus, G }),
     // dev/test only: run the S.eco initialisation again (must change nothing)
     reinit: () => { const r = ensureEco(); return r && JSON.parse(JSON.stringify(r)); },
+    // species ledger (T1.3), read-only except the dev helpers
+    species: {
+      get attached() { return tr.attached; },
+      snapshot: () => tr.snapshot(),
+      ensure: () => ecoState.on && activate(G.sim, G),          // start tracking now instead of at the next simulation step
+      setWeights: w => tr.setWeights(w),                          // dev/test only: catch weights (null = by harbor tier)
+      resetViolations: () => tr.resetViolations(),
+    },
   };
 }

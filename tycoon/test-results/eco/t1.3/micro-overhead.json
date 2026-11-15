@@ -1,0 +1,41 @@
+{
+ "node": "v22.23.4",
+ "perUpdate_us": {
+  "start": {
+   "plain": 2.64,
+   "off": 2.82,
+   "on": 3.72
+  },
+  "mid": {
+   "plain": 4.53,
+   "off": 4.66,
+   "on": 6.25
+  },
+  "max": {
+   "plain": 5.44,
+   "off": 5.68,
+   "on": 6.78
+  }
+ },
+ "simUpdate18000_ms": {
+  "start": {
+   "plain": 47.6,
+   "off": 50.8,
+   "on": 66.9
+  },
+  "mid": {
+   "plain": 81.5,
+   "off": 83.9,
+   "on": 112.5
+  },
+  "max": {
+   "plain": 98,
+   "off": 102.3,
+   "on": 122.1
+  }
+ },
+ "stat2e6calls_ms": {
+  "plain": 159.5,
+  "off": 167.9
+ }
+}

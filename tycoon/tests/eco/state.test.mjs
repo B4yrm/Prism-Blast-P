@@ -26,7 +26,7 @@ function assertValid(S, where = '') {
   assert.ok(Number.isFinite(e.clock.acc) && e.clock.acc >= 0 && e.clock.acc < 60, where + ' clock.acc');
   assert.ok(Number.isInteger(e.clock.hours) && e.clock.hours >= 0, where + ' clock.hours');
   for (const n of E.STREAMS) { const st = e.rng[n]; assert.ok(Array.isArray(st) && st.length === 4 && st.every(isU32) && st.some(x => x), where + ' rng.' + n); }
-  for (const [key, locs, len] of [['mix', E.MIX_LOCS, 5], ['pmix', E.PMIX_LOCS, 5]]) for (const l of locs) {
+  for (const [key, locs, len] of [['mix', E.MIX_LOCS, 5], ['pmix', E.PMIX_LOCS, 5], ['omix', E.OMIX_LOCS, 5]]) for (const l of locs) {
     const a = e[key][l];
     assert.ok(Array.isArray(a) && a.length === len, `${where} ${key}.${l} length`);
     assert.ok(a.every(x => Number.isFinite(x) && x >= 0), `${where} ${key}.${l} values ${JSON.stringify(a)}`);
@@ -191,12 +191,38 @@ test('initEco without a save object does nothing', () => {
   for (const x of [null, undefined, 3, 'S']) assert.equal(E.initEco(x).status, 'no-save');
 });
 
+test('T1.3 field omix: fresh S.eco has it; empty places get the reference mix; bad values are repaired like mix', () => {
+  const S = save('mid'); E.initEco(S);
+  assert.deepEqual(Object.keys(S.eco.omix), ['facOut', 'mProd']);
+  S.eco.omix.facOut = [NaN, 1, 0, 0, 0]; S.eco.omix.mProd = [3, 1, 0, 0, 0]; S.stock.mProd = 8;
+  const r = E.initEco(S);
+  assert.equal(r.status, 'repaired'); assert.deepEqual(S.eco.omix.facOut, E.REF_MIX); assert.deepEqual(S.eco.omix.mProd, [0.75, 0.25, 0, 0, 0]);
+  S.eco.omix = 'x'; E.initEco(S); assertValid(S);
+});
+
+test('upgrade from a T1.2 save: S.eco without omix is filled (status repaired, one note), everything else of S.eco is untouched', () => {
+  const S = save('mid'); E.initEco(S);
+  S.stock.wh = 10; S.eco.mix.wh = [0.2, 0.3, 0.1, 0.25, 0.15]; S.eco.q.wh = 0.55; S.eco.clock = { acc: 5, hours: 40 };
+  E.reconcile(S);
+  const t12 = clone(S); delete t12.eco.omix;                      // what a T1.2 build saved
+  const before = clone(t12.eco); delete before.omix;
+  const r = E.initEco(t12);
+  assert.equal(r.status, 'repaired'); assert.ok(r.repairs.some(x => x.startsWith('omix')), JSON.stringify(r.repairs));
+  assertValid(t12);
+  const after = clone(t12.eco); delete after.omix;
+  assert.deepEqual(after.mix, before.mix); assert.deepEqual(after.rng, before.rng); assert.deepEqual(after.q, before.q); assert.deepEqual(after.clock, before.clock);
+  assert.equal(E.initEco(t12).status, 'ok');
+  // and a T1.2 build keeps omix it does not know: its reconcile leaves unknown keys alone (shape of that rule: extra keys are kept)
+  const withOmix = clone(S); withOmix.eco.omix.mProd = [0.1, 0.1, 0.1, 0.1, 0.6]; withOmix.stock.mProd = 4;
+  assert.equal(E.initEco(withOmix).status, 'ok'); assert.deepEqual(withOmix.eco.omix.mProd, [0.1, 0.1, 0.1, 0.1, 0.6]);
+});
+
 test('fuzz: 3000 random corruptions → valid, idempotent, nothing outside S.eco changes', () => {
   let seed = 20261115; const rnd = n => { seed = (seed * 16807) % 2147483647; return seed % n; };
   const POOL = [NaN, Infinity, -Infinity, -1, 0, 1, 0.5, 2, 1e308, -0, null, undefined, 'x', '', [], {}, [1, 2, 3], [0, 0, 0, 0, 0], [1, 1, 1, 1, 1], true, 2 ** 32, 3.5];
   const PATHS = [['seed'], ['clock'], ['clock', 'acc'], ['clock', 'hours'], ['rng'], ['flags'], ['flags', 'x'], ['mix'], ['pmix'], ['q'],
     ...E.STREAMS.map(n => ['rng', n]), ...E.STREAMS.map(n => ['rng', n, 2]),
-    ...E.MIX_LOCS.map(l => ['mix', l]), ...E.MIX_LOCS.map(l => ['mix', l, 1]), ...E.PMIX_LOCS.map(l => ['pmix', l]), ...E.PMIX_LOCS.map(l => ['pmix', l, 0]), ...E.Q_LOCS.map(l => ['q', l])];
+    ...E.MIX_LOCS.map(l => ['mix', l]), ...E.MIX_LOCS.map(l => ['mix', l, 1]), ...E.PMIX_LOCS.map(l => ['pmix', l]), ...E.PMIX_LOCS.map(l => ['pmix', l, 0]), ...E.OMIX_LOCS.map(l => ['omix', l]), ...E.OMIX_LOCS.map(l => ['omix', l, 2]), ['omix'], ...E.Q_LOCS.map(l => ['q', l])];
   const names = ['new', 'mid', 'max'];
   for (let i = 0; i < 3000; i++) {
     const S = save(names[i % 3]); E.initEco(S);

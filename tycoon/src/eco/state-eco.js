@@ -26,7 +26,8 @@ export const ECO_SCHEMA = 1;
 export const SPECIES = ['sardine', 'mackerel', 'seabass', 'salmon', 'tuna'];
 export const PRODUCTS = ['canned', 'fillet', 'smoked', 'steak', 'meal'];
 export const MIX_LOCS = ['quay', 'wh', 'mRaw'];          // raw fish: species shares
-export const PMIX_LOCS = ['facOut', 'mProd'];            // products: product shares
+export const PMIX_LOCS = ['facOut', 'mProd'];            // products: product shares (recipes, not active yet)
+export const OMIX_LOCS = ['facOut', 'mProd'];            // processed units: species shares of the fish they were made from (T1.3)
 export const Q_LOCS = ['quay', 'wh', 'facOut', 'mRaw', 'mProd'];
 // Reference start mix (GDD §3.1, balance assumption): sardine 55 %, mackerel 35 %, sea bass 10 %.
 export const REF_MIX = [0.55, 0.35, 0.10, 0, 0];
@@ -53,11 +54,12 @@ export function seedFor(S) {
 export function ecoFresh(S) {
   const seed = seedFor(S), rng = {};
   for (const n of STREAMS) rng[n] = createStream(seed, n);
-  const mix = {}, pmix = {}, q = {};
+  const mix = {}, pmix = {}, omix = {}, q = {};
   for (const l of MIX_LOCS) mix[l] = REF_MIX.slice();
   for (const l of PMIX_LOCS) pmix[l] = REF_PMIX.slice();
+  for (const l of OMIX_LOCS) omix[l] = REF_MIX.slice();
   for (const l of Q_LOCS) q[l] = Q_DEFAULT;
-  return { v: ECO_SCHEMA, seed, clock: { acc: 0, hours: 0 }, rng, mix, pmix, q, flags: {} };
+  return { v: ECO_SCHEMA, seed, clock: { acc: 0, hours: 0 }, rng, mix, pmix, omix, q, flags: {} };
 }
 
 // Upgrades an older S.eco. Returns { eco, from, steps } or null when a step is missing.
@@ -113,7 +115,7 @@ export function reconcile(S) {
     }
   }
 
-  for (const [key, locs, ref, len] of [['mix', MIX_LOCS, REF_MIX, SPECIES.length], ['pmix', PMIX_LOCS, REF_PMIX, PRODUCTS.length]]) {
+  for (const [key, locs, ref, len] of [['mix', MIX_LOCS, REF_MIX, SPECIES.length], ['pmix', PMIX_LOCS, REF_PMIX, PRODUCTS.length], ['omix', OMIX_LOCS, REF_MIX, SPECIES.length]]) {
     if (!isObj(eco[key])) { eco[key] = {}; note(key, 'missing'); }
     for (const l of locs) {
       const a = eco[key][l];
@@ -142,6 +144,7 @@ export function reconcile(S) {
   for (const n of STREAMS) for (let i = 0; i < 4; i++) z(eco.rng[n], i);
   for (const l of MIX_LOCS) for (let i = 0; i < SPECIES.length; i++) z(eco.mix[l], i);
   for (const l of PMIX_LOCS) for (let i = 0; i < PRODUCTS.length; i++) z(eco.pmix[l], i);
+  for (const l of OMIX_LOCS) for (let i = 0; i < SPECIES.length; i++) z(eco.omix[l], i);
   for (const l of Q_LOCS) z(eco.q, l);
   for (const k of Object.keys(eco.flags)) z(eco.flags, k);
   if (negZero) note('numbers', negZero + ' × -0 stored as 0');

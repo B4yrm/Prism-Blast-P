@@ -1,0 +1,182 @@
+{
+ "test": "save comparison with the eco key set aside",
+ "pass": true,
+ "runs": [
+  {
+   "save": "current",
+   "baseHasNoEco": true,
+   "offIdenticalToBase": true,
+   "onIdenticalToBase": true,
+   "offerIdentical": true,
+   "offlineOffer": null,
+   "ecoOffCreatedAtLoadAndNeverChanged": true,
+   "ecoOnSameAtLoad": true,
+   "ecoOnTracked": true,
+   "ecoOnNextLoad": {
+    "status": "ok",
+    "repairs": []
+   },
+   "diffs": {
+    "off": [
+     [],
+     []
+    ],
+    "on": [
+     [],
+     []
+    ]
+   },
+   "events": {
+    "catch": 8,
+    "unload": 132,
+    "pick": 28,
+    "drop": 25,
+    "entry": 36,
+    "exit": 33,
+    "sale": 16,
+    "assumed": 0,
+    "clamped": 0
+   },
+   "violations": 0,
+   "errors": [],
+   "ecoerr": [],
+   "money": [
+    1234,
+    1234,
+    1234
+   ]
+  },
+  {
+   "save": "oldMinimal",
+   "baseHasNoEco": true,
+   "offIdenticalToBase": true,
+   "onIdenticalToBase": true,
+   "offerIdentical": true,
+   "offlineOffer": null,
+   "ecoOffCreatedAtLoadAndNeverChanged": true,
+   "ecoOnSameAtLoad": true,
+   "ecoOnTracked": true,
+   "ecoOnNextLoad": {
+    "status": "ok",
+    "repairs": []
+   },
+   "diffs": {
+    "off": [
+     [],
+     []
+    ],
+    "on": [
+     [],
+     []
+    ]
+   },
+   "events": {
+    "catch": 4,
+    "unload": 40,
+    "pick": 8,
+    "drop": 6,
+    "entry": 0,
+    "exit": 0,
+    "sale": 2,
+    "assumed": 0,
+    "clamped": 0
+   },
+   "violations": 0,
+   "errors": [],
+   "ecoerr": [],
+   "money": [
+    300,
+    300,
+    300
+   ]
+  },
+  {
+   "save": "hourAway",
+   "baseHasNoEco": true,
+   "offIdenticalToBase": true,
+   "onIdenticalToBase": true,
+   "offerIdentical": true,
+   "offlineOffer": "Xoş gəldin!Sən yoxkən işçilər 1 saat 0 dəq işlədi. +$11.9K Topla×2 · 10",
+   "ecoOffCreatedAtLoadAndNeverChanged": true,
+   "ecoOnSameAtLoad": true,
+   "ecoOnTracked": true,
+   "ecoOnNextLoad": {
+    "status": "ok",
+    "repairs": []
+   },
+   "diffs": {
+    "off": [
+     [],
+     []
+    ],
+    "on": [
+     [],
+     []
+    ]
+   },
+   "events": {
+    "catch": 10,
+    "unload": 233,
+    "pick": 24,
+    "drop": 19,
+    "entry": 19,
+    "exit": 16,
+    "sale": 0,
+    "assumed": 0,
+    "clamped": 0
+   },
+   "violations": 0,
+   "errors": [],
+   "ecoerr": [],
+   "money": [
+    5000,
+    5000,
+    5000
+   ]
+  },
+  {
+   "save": "maxLoopBerths",
+   "baseHasNoEco": true,
+   "offIdenticalToBase": true,
+   "onIdenticalToBase": true,
+   "offerIdentical": true,
+   "offlineOffer": null,
+   "ecoOffCreatedAtLoadAndNeverChanged": true,
+   "ecoOnSameAtLoad": true,
+   "ecoOnTracked": true,
+   "ecoOnNextLoad": {
+    "status": "ok",
+    "repairs": []
+   },
+   "diffs": {
+    "off": [
+     [],
+     []
+    ],
+    "on": [
+     [],
+     []
+    ]
+   },
+   "events": {
+    "catch": 22,
+    "unload": 1508,
+    "pick": 147,
+    "drop": 140,
+    "entry": 747,
+    "exit": 744,
+    "sale": 19,
+    "assumed": 0,
+    "clamped": 0
+   },
+   "violations": 0,
+   "errors": [],
+   "ecoerr": [],
+   "money": [
+    99999,
+    99999,
+    99999
+   ]
+  }
+ ]
+}
