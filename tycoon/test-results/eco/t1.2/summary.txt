@@ -1,0 +1,10 @@
+unit-rng-clock-state rc=0 secs=1
+no-math-random rc=0 secs=0
+adapter-contract rc=0 secs=0
+eco-browser rc=0 secs=39
+workers-regress rc=0 secs=546
+save-compare rc=1 secs=56
+run-tests-eco rc=0 secs=223
+boat-sync-eco rc=1 secs=348
+outer-save-eco rc=0 secs=230
+DONE

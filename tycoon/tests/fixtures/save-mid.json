@@ -1,0 +1,16 @@
+{
+ "v": 1, "money": 4870.25, "gems": 64, "xp": 140, "level": 9, "register": 212,
+ "tier": { "harbor": 3, "warehouse": 2, "market": 2, "hq": 2, "factory": 2, "farm": 0 },
+ "up": { "harbor": { "cap": 8, "speed": 10, "net": 8 }, "warehouse": { "cap": 9, "load": 6, "cold": 4 }, "factory": { "speed": 7, "out": 5, "qual": 3 }, "market": { "price": 8, "ads": 6, "till": 5 }, "hq": { "train": 6, "carry": 4 } },
+ "workers": 6, "boats": 4, "harborOuter": 0,
+ "stock": { "quay": 37, "wh": 112, "facOut": 18, "mRaw": 9, "mProd": 23 },
+ "stats": { "caught": 18450, "sold": 15210, "soldProd": 6120, "earned": 98400, "collected": 97100, "research": 5 },
+ "mission": 14, "ach": { "caught": 2, "sold": 2, "earned": 1, "workers": 2, "boats": 2, "level": 1 },
+ "daily": { "day": 12, "last": "Sat Nov 14 2026" },
+ "research": { "lv": { "nav": 1, "nets": 2, "ergo": 1, "brand": 1, "cash": 1 }, "active": null },
+ "boostUntil": 0, "freeChestAt": 1794690000000,
+ "log": [ { "t": "Tədqiqat bitdi", "ic": "research", "at": 1794600000000 }, { "t": "Missiya tamamlandı", "ic": "missions", "at": 1794500000000 } ],
+ "logUnread": 0,
+ "settings": { "sound": false, "vibrate": true, "quality": "medium", "missionOpen": true },
+ "lastSeen": 1794700100000, "created": 1793000000000
+}

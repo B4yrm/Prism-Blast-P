@@ -1,0 +1,14 @@
+{
+ "v": 1, "money": 186, "gems": 15, "xp": 22, "level": 1, "register": 34,
+ "tier": { "harbor": 1, "warehouse": 1, "market": 1, "hq": 1, "factory": 0, "farm": 0 },
+ "up": { "harbor": { "cap": 1, "speed": 0, "net": 0 }, "warehouse": { "cap": 0, "load": 0, "cold": 0 }, "factory": { "speed": 0, "out": 0, "qual": 0 }, "market": { "price": 0, "ads": 0, "till": 0 }, "hq": { "train": 0, "carry": 0 } },
+ "workers": 1, "boats": 1, "harborOuter": 0,
+ "stock": { "quay": 6, "wh": 11, "facOut": 0, "mRaw": 4, "mProd": 0 },
+ "stats": { "caught": 40, "sold": 19, "soldProd": 0, "earned": 126, "collected": 76, "research": 0 },
+ "mission": 2, "ach": {}, "daily": { "day": 1, "last": "Sun Nov 15 2026" },
+ "research": { "lv": {}, "active": null }, "boostUntil": 0, "freeChestAt": 0,
+ "log": [ { "t": "Missiya tamamlandı", "ic": "missions", "at": 1794700000000 }, { "t": "Gündəlik mükafat alındı", "ic": "daily", "at": 1794699900000 } ],
+ "logUnread": 2,
+ "settings": { "sound": true, "vibrate": true, "quality": "medium", "missionOpen": false },
+ "lastSeen": 1794700100000, "created": 1794699000000
+}

@@ -1,0 +1,937 @@
+{
+ "test": "eco save matrix (T1.2)",
+ "eco": {
+  "url": "file:///home/user/Prism-Blast-P/tycoon/.preview/eco.html",
+  "sha256": "8268e3b43143e109582db74b5eb023148011e142f5e470ce909ca7c823442c5b"
+ },
+ "oldBuilds": [
+  {
+   "name": "old-prod.html",
+   "url": "file:///home/user/Prism-Blast-P/tycoon/.preview/old-prod.html",
+   "sha": "571a987722b4616c4f4f65e5aee2ac2b8169193ef56c61024bc56c868f610ff6"
+  },
+  {
+   "name": "base.html",
+   "url": "file:///home/user/Prism-Blast-P/tycoon/.preview/base.html",
+   "sha": "8566e4e25306fc480ab28e2b159e894836f9fa22443f2646c5faab6d287a6be7"
+  },
+  {
+   "name": "old-t11-eco.html",
+   "url": "file:///home/user/Prism-Blast-P/tycoon/.preview/old-t11-eco.html",
+   "sha": "a24df6e6dc2865dc44e2335476d3508801284a2eb2f02b276854e3dfe6e838bf"
+  }
+ ],
+ "pass": true,
+ "passed": 71,
+ "total": 71,
+ "results": [
+  {
+   "group": "new",
+   "name": "reference: old-prod.html keeps every fixture field",
+   "pass": true,
+   "info": {
+    "lost": [],
+    "errs": []
+   }
+  },
+  {
+   "group": "new",
+   "name": "A1 old save → eco build: S.eco created (status fresh), valid",
+   "pass": true,
+   "info": {
+    "report": {
+     "status": "fresh",
+     "usable": true,
+     "v": 1,
+     "repairs": [],
+     "reason": "no S.eco",
+     "blocked": false,
+     "inits": 1
+    },
+    "problems": [],
+    "errs": [],
+    "ecoerr": []
+   }
+  },
+  {
+   "group": "new",
+   "name": "A1 progress untouched (= old build, apart from S.eco)",
+   "pass": true,
+   "info": {
+    "diff": []
+   }
+  },
+  {
+   "group": "new",
+   "name": "A1 main SAVE_VERSION still 1, no S.ecoBak",
+   "pass": true
+  },
+  {
+   "group": "new",
+   "name": "A2 reload in eco build: status ok, 0 repairs, S.eco identical",
+   "pass": true,
+   "info": {
+    "report": {
+     "status": "ok",
+     "usable": true,
+     "v": 1,
+     "repairs": [],
+     "reason": "",
+     "blocked": false,
+     "inits": 1
+    },
+    "ecoDiff": []
+   }
+  },
+  {
+   "group": "new",
+   "name": "A2 progress untouched",
+   "pass": true,
+   "info": {
+    "diff": []
+   }
+  },
+  {
+   "group": "new",
+   "name": "B1 eco save → old-prod.html: S.eco carried value for value",
+   "pass": true,
+   "info": {
+    "ecoDiff": [],
+    "errs": []
+   }
+  },
+  {
+   "group": "new",
+   "name": "B1 old-prod.html: progress untouched",
+   "pass": true,
+   "info": {
+    "diff": []
+   }
+  },
+  {
+   "group": "new",
+   "name": "B2 old-prod.html → eco build: status ok, 0 repairs, S.eco identical to before the old build",
+   "pass": true,
+   "info": {
+    "report": {
+     "status": "ok",
+     "usable": true,
+     "v": 1,
+     "repairs": [],
+     "reason": "",
+     "blocked": false,
+     "inits": 1
+    },
+    "ecoDiff": []
+   }
+  },
+  {
+   "group": "new",
+   "name": "B2 progress untouched",
+   "pass": true,
+   "info": {
+    "diff": []
+   }
+  },
+  {
+   "group": "new",
+   "name": "B1 eco save → base.html: S.eco carried value for value",
+   "pass": true,
+   "info": {
+    "ecoDiff": [],
+    "errs": []
+   }
+  },
+  {
+   "group": "new",
+   "name": "B1 base.html: progress untouched",
+   "pass": true,
+   "info": {
+    "diff": []
+   }
+  },
+  {
+   "group": "new",
+   "name": "B2 base.html → eco build: status ok, 0 repairs, S.eco identical to before the old build",
+   "pass": true,
+   "info": {
+    "report": {
+     "status": "ok",
+     "usable": true,
+     "v": 1,
+     "repairs": [],
+     "reason": "",
+     "blocked": false,
+     "inits": 1
+    },
+    "ecoDiff": []
+   }
+  },
+  {
+   "group": "new",
+   "name": "B2 progress untouched",
+   "pass": true,
+   "info": {
+    "diff": []
+   }
+  },
+  {
+   "group": "new",
+   "name": "B1 eco save → old-t11-eco.html: S.eco carried value for value",
+   "pass": true,
+   "info": {
+    "ecoDiff": [],
+    "errs": []
+   }
+  },
+  {
+   "group": "new",
+   "name": "B1 old-t11-eco.html: progress untouched",
+   "pass": true,
+   "info": {
+    "diff": []
+   }
+  },
+  {
+   "group": "new",
+   "name": "B2 old-t11-eco.html → eco build: status ok, 0 repairs, S.eco identical to before the old build",
+   "pass": true,
+   "info": {
+    "report": {
+     "status": "ok",
+     "usable": true,
+     "v": 1,
+     "repairs": [],
+     "reason": "",
+     "blocked": false,
+     "inits": 1
+    },
+    "ecoDiff": []
+   }
+  },
+  {
+   "group": "new",
+   "name": "B2 progress untouched",
+   "pass": true,
+   "info": {
+    "diff": []
+   }
+  },
+  {
+   "group": "new",
+   "name": "C1 old-prod.html played 20 s: S.eco carried value for value while the game moved on",
+   "pass": true,
+   "info": {
+    "changedByPlay": 6,
+    "sample": [
+     "xp: 22 → 27",
+     "register: 34 → 50",
+     "stock.quay: 6 → 0",
+     "stock.mRaw: 4 → 6"
+    ],
+    "errs": []
+   }
+  },
+  {
+   "group": "new",
+   "name": "C2 eco build after the played old build: only empty-place repairs, everything else of S.eco kept, valid",
+   "pass": true,
+   "info": {
+    "report": {
+     "status": "repaired",
+     "usable": true,
+     "v": 1,
+     "repairs": [
+      "q.quay: empty place"
+     ],
+     "reason": "",
+     "blocked": false,
+     "inits": 1
+    },
+    "problems": []
+   }
+  },
+  {
+   "group": "new",
+   "name": "C2 progress written by the old build untouched",
+   "pass": true,
+   "info": {
+    "diff": []
+   }
+  },
+  {
+   "group": "mid",
+   "name": "reference: old-prod.html keeps every fixture field",
+   "pass": true,
+   "info": {
+    "lost": [],
+    "errs": []
+   }
+  },
+  {
+   "group": "mid",
+   "name": "A1 old save → eco build: S.eco created (status fresh), valid",
+   "pass": true,
+   "info": {
+    "report": {
+     "status": "fresh",
+     "usable": true,
+     "v": 1,
+     "repairs": [],
+     "reason": "no S.eco",
+     "blocked": false,
+     "inits": 1
+    },
+    "problems": [],
+    "errs": [],
+    "ecoerr": []
+   }
+  },
+  {
+   "group": "mid",
+   "name": "A1 progress untouched (= old build, apart from S.eco)",
+   "pass": true,
+   "info": {
+    "diff": []
+   }
+  },
+  {
+   "group": "mid",
+   "name": "A1 main SAVE_VERSION still 1, no S.ecoBak",
+   "pass": true
+  },
+  {
+   "group": "mid",
+   "name": "A2 reload in eco build: status ok, 0 repairs, S.eco identical",
+   "pass": true,
+   "info": {
+    "report": {
+     "status": "ok",
+     "usable": true,
+     "v": 1,
+     "repairs": [],
+     "reason": "",
+     "blocked": false,
+     "inits": 1
+    },
+    "ecoDiff": []
+   }
+  },
+  {
+   "group": "mid",
+   "name": "A2 progress untouched",
+   "pass": true,
+   "info": {
+    "diff": []
+   }
+  },
+  {
+   "group": "mid",
+   "name": "B1 eco save → old-prod.html: S.eco carried value for value",
+   "pass": true,
+   "info": {
+    "ecoDiff": [],
+    "errs": []
+   }
+  },
+  {
+   "group": "mid",
+   "name": "B1 old-prod.html: progress untouched",
+   "pass": true,
+   "info": {
+    "diff": []
+   }
+  },
+  {
+   "group": "mid",
+   "name": "B2 old-prod.html → eco build: status ok, 0 repairs, S.eco identical to before the old build",
+   "pass": true,
+   "info": {
+    "report": {
+     "status": "ok",
+     "usable": true,
+     "v": 1,
+     "repairs": [],
+     "reason": "",
+     "blocked": false,
+     "inits": 1
+    },
+    "ecoDiff": []
+   }
+  },
+  {
+   "group": "mid",
+   "name": "B2 progress untouched",
+   "pass": true,
+   "info": {
+    "diff": []
+   }
+  },
+  {
+   "group": "mid",
+   "name": "B1 eco save → base.html: S.eco carried value for value",
+   "pass": true,
+   "info": {
+    "ecoDiff": [],
+    "errs": []
+   }
+  },
+  {
+   "group": "mid",
+   "name": "B1 base.html: progress untouched",
+   "pass": true,
+   "info": {
+    "diff": []
+   }
+  },
+  {
+   "group": "mid",
+   "name": "B2 base.html → eco build: status ok, 0 repairs, S.eco identical to before the old build",
+   "pass": true,
+   "info": {
+    "report": {
+     "status": "ok",
+     "usable": true,
+     "v": 1,
+     "repairs": [],
+     "reason": "",
+     "blocked": false,
+     "inits": 1
+    },
+    "ecoDiff": []
+   }
+  },
+  {
+   "group": "mid",
+   "name": "B2 progress untouched",
+   "pass": true,
+   "info": {
+    "diff": []
+   }
+  },
+  {
+   "group": "mid",
+   "name": "B1 eco save → old-t11-eco.html: S.eco carried value for value",
+   "pass": true,
+   "info": {
+    "ecoDiff": [],
+    "errs": []
+   }
+  },
+  {
+   "group": "mid",
+   "name": "B1 old-t11-eco.html: progress untouched",
+   "pass": true,
+   "info": {
+    "diff": []
+   }
+  },
+  {
+   "group": "mid",
+   "name": "B2 old-t11-eco.html → eco build: status ok, 0 repairs, S.eco identical to before the old build",
+   "pass": true,
+   "info": {
+    "report": {
+     "status": "ok",
+     "usable": true,
+     "v": 1,
+     "repairs": [],
+     "reason": "",
+     "blocked": false,
+     "inits": 1
+    },
+    "ecoDiff": []
+   }
+  },
+  {
+   "group": "mid",
+   "name": "B2 progress untouched",
+   "pass": true,
+   "info": {
+    "diff": []
+   }
+  },
+  {
+   "group": "mid",
+   "name": "C1 old-prod.html played 20 s: S.eco carried value for value while the game moved on",
+   "pass": true,
+   "info": {
+    "changedByPlay": 12,
+    "sample": [
+     "money: 4870.25 → 5325.25",
+     "xp: 140 → 156",
+     "register: 212 → 81",
+     "stock.quay: 37 → 91"
+    ],
+    "errs": []
+   }
+  },
+  {
+   "group": "mid",
+   "name": "C2 eco build after the played old build: only empty-place repairs, everything else of S.eco kept, valid",
+   "pass": true,
+   "info": {
+    "report": {
+     "status": "ok",
+     "usable": true,
+     "v": 1,
+     "repairs": [],
+     "reason": "",
+     "blocked": false,
+     "inits": 1
+    },
+    "problems": []
+   }
+  },
+  {
+   "group": "mid",
+   "name": "C2 progress written by the old build untouched",
+   "pass": true,
+   "info": {
+    "diff": []
+   }
+  },
+  {
+   "group": "max",
+   "name": "reference: old-prod.html keeps every fixture field",
+   "pass": true,
+   "info": {
+    "lost": [],
+    "errs": []
+   }
+  },
+  {
+   "group": "max",
+   "name": "A1 old save → eco build: S.eco created (status fresh), valid",
+   "pass": true,
+   "info": {
+    "report": {
+     "status": "fresh",
+     "usable": true,
+     "v": 1,
+     "repairs": [],
+     "reason": "no S.eco",
+     "blocked": false,
+     "inits": 1
+    },
+    "problems": [],
+    "errs": [],
+    "ecoerr": []
+   }
+  },
+  {
+   "group": "max",
+   "name": "A1 progress untouched (= old build, apart from S.eco)",
+   "pass": true,
+   "info": {
+    "diff": []
+   }
+  },
+  {
+   "group": "max",
+   "name": "A1 main SAVE_VERSION still 1, no S.ecoBak",
+   "pass": true
+  },
+  {
+   "group": "max",
+   "name": "A2 reload in eco build: status ok, 0 repairs, S.eco identical",
+   "pass": true,
+   "info": {
+    "report": {
+     "status": "ok",
+     "usable": true,
+     "v": 1,
+     "repairs": [],
+     "reason": "",
+     "blocked": false,
+     "inits": 1
+    },
+    "ecoDiff": []
+   }
+  },
+  {
+   "group": "max",
+   "name": "A2 progress untouched",
+   "pass": true,
+   "info": {
+    "diff": []
+   }
+  },
+  {
+   "group": "max",
+   "name": "B1 eco save → old-prod.html: S.eco carried value for value",
+   "pass": true,
+   "info": {
+    "ecoDiff": [],
+    "errs": []
+   }
+  },
+  {
+   "group": "max",
+   "name": "B1 old-prod.html: progress untouched",
+   "pass": true,
+   "info": {
+    "diff": []
+   }
+  },
+  {
+   "group": "max",
+   "name": "B2 old-prod.html → eco build: status ok, 0 repairs, S.eco identical to before the old build",
+   "pass": true,
+   "info": {
+    "report": {
+     "status": "ok",
+     "usable": true,
+     "v": 1,
+     "repairs": [],
+     "reason": "",
+     "blocked": false,
+     "inits": 1
+    },
+    "ecoDiff": []
+   }
+  },
+  {
+   "group": "max",
+   "name": "B2 progress untouched",
+   "pass": true,
+   "info": {
+    "diff": []
+   }
+  },
+  {
+   "group": "max",
+   "name": "B1 eco save → base.html: S.eco carried value for value",
+   "pass": true,
+   "info": {
+    "ecoDiff": [],
+    "errs": []
+   }
+  },
+  {
+   "group": "max",
+   "name": "B1 base.html: progress untouched",
+   "pass": true,
+   "info": {
+    "diff": []
+   }
+  },
+  {
+   "group": "max",
+   "name": "B2 base.html → eco build: status ok, 0 repairs, S.eco identical to before the old build",
+   "pass": true,
+   "info": {
+    "report": {
+     "status": "ok",
+     "usable": true,
+     "v": 1,
+     "repairs": [],
+     "reason": "",
+     "blocked": false,
+     "inits": 1
+    },
+    "ecoDiff": []
+   }
+  },
+  {
+   "group": "max",
+   "name": "B2 progress untouched",
+   "pass": true,
+   "info": {
+    "diff": []
+   }
+  },
+  {
+   "group": "max",
+   "name": "B1 eco save → old-t11-eco.html: S.eco carried value for value",
+   "pass": true,
+   "info": {
+    "ecoDiff": [],
+    "errs": []
+   }
+  },
+  {
+   "group": "max",
+   "name": "B1 old-t11-eco.html: progress untouched",
+   "pass": true,
+   "info": {
+    "diff": []
+   }
+  },
+  {
+   "group": "max",
+   "name": "B2 old-t11-eco.html → eco build: status ok, 0 repairs, S.eco identical to before the old build",
+   "pass": true,
+   "info": {
+    "report": {
+     "status": "ok",
+     "usable": true,
+     "v": 1,
+     "repairs": [],
+     "reason": "",
+     "blocked": false,
+     "inits": 1
+    },
+    "ecoDiff": []
+   }
+  },
+  {
+   "group": "max",
+   "name": "B2 progress untouched",
+   "pass": true,
+   "info": {
+    "diff": []
+   }
+  },
+  {
+   "group": "max",
+   "name": "C1 old-prod.html played 20 s: S.eco carried value for value while the game moved on",
+   "pass": true,
+   "info": {
+    "changedByPlay": 11,
+    "sample": [
+     "money: 2486912.75 → 2488078.75",
+     "xp: 3100 → 3115",
+     "register: 0 → 583",
+     "stock.wh: 0 → 387"
+    ],
+    "errs": []
+   }
+  },
+  {
+   "group": "max",
+   "name": "C2 eco build after the played old build: only empty-place repairs, everything else of S.eco kept, valid",
+   "pass": true,
+   "info": {
+    "report": {
+     "status": "ok",
+     "usable": true,
+     "v": 1,
+     "repairs": [],
+     "reason": "",
+     "blocked": false,
+     "inits": 1
+    },
+    "problems": []
+   }
+  },
+  {
+   "group": "max",
+   "name": "C2 progress written by the old build untouched",
+   "pass": true,
+   "info": {
+    "diff": []
+   }
+  },
+  {
+   "group": "damaged",
+   "name": "D null: status fresh, game loads, progress untouched, S.eco as specified",
+   "pass": true,
+   "info": {
+    "report": {
+     "status": "fresh",
+     "usable": true,
+     "v": 1,
+     "repairs": [],
+     "reason": "S.eco was null",
+     "blocked": false,
+     "inits": 1
+    },
+    "progressDiff": [],
+    "secondSession": "ok",
+    "problems": [],
+    "ecoBak": null,
+    "errs": []
+   }
+  },
+  {
+   "group": "damaged",
+   "name": "D string: status recovered, game loads, progress untouched, S.eco as specified",
+   "pass": true,
+   "info": {
+    "report": {
+     "status": "recovered",
+     "usable": true,
+     "v": 1,
+     "repairs": [],
+     "reason": "S.eco is not an object (string)",
+     "blocked": false,
+     "inits": 1
+    },
+    "progressDiff": [],
+    "secondSession": "ok",
+    "problems": [],
+    "ecoBak": {
+     "reason": "S.eco is not an object (string)"
+    },
+    "errs": []
+   }
+  },
+  {
+   "group": "damaged",
+   "name": "D array: status recovered, game loads, progress untouched, S.eco as specified",
+   "pass": true,
+   "info": {
+    "report": {
+     "status": "recovered",
+     "usable": true,
+     "v": 1,
+     "repairs": [],
+     "reason": "S.eco is not an object (array)",
+     "blocked": false,
+     "inits": 1
+    },
+    "progressDiff": [],
+    "secondSession": "ok",
+    "problems": [],
+    "ecoBak": {
+     "reason": "S.eco is not an object (array)"
+    },
+    "errs": []
+   }
+  },
+  {
+   "group": "damaged",
+   "name": "D v as string: status recovered, game loads, progress untouched, S.eco as specified",
+   "pass": true,
+   "info": {
+    "report": {
+     "status": "recovered",
+     "usable": true,
+     "v": 1,
+     "repairs": [],
+     "reason": "S.eco.v is not a positive integer",
+     "blocked": false,
+     "inits": 1
+    },
+    "progressDiff": [],
+    "secondSession": "ok",
+    "problems": [],
+    "ecoBak": {
+     "reason": "S.eco.v is not a positive integer"
+    },
+    "errs": []
+   }
+  },
+  {
+   "group": "damaged",
+   "name": "D partial { v: 1 }: status repaired, game loads, progress untouched, S.eco as specified",
+   "pass": true,
+   "info": {
+    "report": {
+     "status": "repaired",
+     "usable": true,
+     "v": 1,
+     "repairs": [
+      "clock: missing",
+      "rng: missing",
+      "rng.catch: missing",
+      "rng.weather: missing",
+      "rng.market: missing",
+      "rng.contracts: missing",
+      "rng.events: missing",
+      "rng.damage: missing",
+      "mix: missing",
+      "mix.quay: missing",
+      "mix.wh: missing",
+      "mix.mRaw: missing",
+      "pmix: missing",
+      "pmix.facOut: missing",
+      "pmix.mProd: missing",
+      "q: missing",
+      "q.quay: missing",
+      "q.wh: missing",
+      "q.facOut: missing",
+      "q.mRaw: missing",
+      "q.mProd: missing",
+      "flags: invalid"
+     ],
+     "reason": "",
+     "blocked": false,
+     "inits": 1
+    },
+    "progressDiff": [],
+    "secondSession": "ok",
+    "problems": [],
+    "ecoBak": null,
+    "errs": []
+   }
+  },
+  {
+   "group": "damaged",
+   "name": "D NaN / Infinity / negative / wrong lengths (as stored: null): status repaired, game loads, progress untouched, S.eco as specified",
+   "pass": true,
+   "info": {
+    "report": {
+     "status": "repaired",
+     "usable": true,
+     "v": 1,
+     "repairs": [
+      "seed: reset from the save",
+      "clock.acc: out of range",
+      "clock.hours: not whole",
+      "rng.market: invalid",
+      "mix.quay: wrong length: reference mix",
+      "mix.wh: invalid values: reference mix",
+      "pmix.mProd: invalid values: reference mix",
+      "q.quay: clamped",
+      "q.wh: invalid",
+      "q.facOut: clamped"
+     ],
+     "reason": "",
+     "blocked": false,
+     "inits": 1
+    },
+    "progressDiff": [],
+    "secondSession": "ok",
+    "problems": [],
+    "ecoBak": null,
+    "errs": []
+   }
+  },
+  {
+   "group": "damaged",
+   "name": "D future schema v2: status future, game loads, progress untouched, S.eco as specified",
+   "pass": true,
+   "info": {
+    "report": {
+     "status": "future",
+     "usable": false,
+     "v": 2,
+     "repairs": [],
+     "reason": "S.eco schema v2 is newer than this build (v1); kept unchanged, eco stays off",
+     "blocked": true,
+     "inits": 1
+    },
+    "progressDiff": [],
+    "afterOldBuild": true,
+    "afterSecondEcoSession": true,
+    "ecoerr": [
+     "ECOERR ECO save status=future v=2 repairs=0 reason=S.eco schema v2 is newer than this build (v1); kept unchanged, eco stays off"
+    ],
+    "errs": []
+   }
+  },
+  {
+   "group": "fixtures",
+   "name": "fixture files unchanged (sha256 before = after = committed sums)",
+   "pass": true,
+   "info": {
+    "fxAfter": {
+     "save-max.json": {
+      "want": "1d70168555d691bc85a0d8af5a37f2c16fb5cfe526041193fe7fa9ddd6b80bec",
+      "got": "1d70168555d691bc85a0d8af5a37f2c16fb5cfe526041193fe7fa9ddd6b80bec"
+     },
+     "save-mid.json": {
+      "want": "2ce2f1b49b6b42bdd03808594254659795b0f027cc6ff6ac5c243d370398fa92",
+      "got": "2ce2f1b49b6b42bdd03808594254659795b0f027cc6ff6ac5c243d370398fa92"
+     },
+     "save-new.json": {
+      "want": "7464ff6d9ce36fe6e7b4916de01ff255a5f43652e09ed9b74d7de83a42b38261",
+      "got": "7464ff6d9ce36fe6e7b4916de01ff255a5f43652e09ed9b74d7de83a42b38261"
+     }
+    }
+   }
+  }
+ ]
+}

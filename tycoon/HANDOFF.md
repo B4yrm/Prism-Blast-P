@@ -62,7 +62,12 @@ boat routes and approved berths, multi-sea system, Stage 2 branch, Balıqçı Id
 - T1.1 done: `src/eco/` (adapter, rng, clock, index), `src/main-eco.js`, `ECO=1` in `build.mjs` (dev only, needs `BUILD_OUT`).
   Every eco system is off; nothing in the economy, save or offline earnings changes. The build without `ECO` is byte-identical
   to before. Report: `test-results/eco/T1.1-REPORT.md`; baseline: `test-results/eco/perf-M0.md`.
-- Waiting for approval before T1.2 (eco save subtree; Q3 is conditional on the save tests).
+- T1.2 done: `src/eco/state-eco.js` (S.eco schema v1, own version; main `SAVE_VERSION` still 1), initialised once on
+  `worldReady`. Save matrix 71/71, including rollback to the production `index.html`: S.eco survives value for value.
+  A future `S.eco.v` is left untouched and eco stays off. Report: `test-results/eco/T1.2-REPORT.md`.
+  Known: `tests/save-compare.cjs` now lists exactly one expected difference (the new `eco` key); `tests/boat-sync.cjs`
+  timing checks are flaky on this machine (the unchanged base build also fails them).
+- Waiting for approval before T1.3.
 
 ## Where things are
 

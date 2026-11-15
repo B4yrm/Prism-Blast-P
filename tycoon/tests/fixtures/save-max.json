@@ -1,0 +1,16 @@
+{
+ "v": 1, "money": 2486912.75, "gems": 912, "xp": 3100, "level": 31, "register": 0,
+ "tier": { "harbor": 3, "warehouse": 3, "market": 3, "hq": 3, "factory": 3, "farm": 0 },
+ "up": { "harbor": { "cap": 30, "speed": 30, "net": 30 }, "warehouse": { "cap": 30, "load": 30, "cold": 30 }, "factory": { "speed": 30, "out": 30, "qual": 30 }, "market": { "price": 30, "ads": 30, "till": 30 }, "hq": { "train": 30, "carry": 30 } },
+ "workers": 10, "boats": 4, "harborOuter": 2,
+ "stock": { "quay": 120, "wh": 0, "facOut": 330, "mRaw": 0, "mProd": 80 },
+ "stats": { "caught": 1450000, "sold": 1390000, "soldProd": 990000, "earned": 41000000, "collected": 40900000, "research": 15 },
+ "mission": 18, "ach": { "caught": 4, "sold": 4, "earned": 4, "workers": 3, "boats": 3, "level": 4 },
+ "daily": { "day": 60, "last": "Sat Nov 14 2026" },
+ "research": { "lv": { "nav": 3, "nets": 3, "ergo": 3, "brand": 3, "mkt": 3, "cash": 1, "night": 2 }, "active": null },
+ "boostUntil": 0, "freeChestAt": 1794690000000,
+ "log": [ { "t": "Səviyyə 31", "ic": "star", "at": 1794690000000 } ],
+ "logUnread": 1,
+ "settings": { "sound": true, "vibrate": false, "quality": "medium", "missionOpen": false },
+ "lastSeen": 1794700100000, "created": 1780000000000
+}

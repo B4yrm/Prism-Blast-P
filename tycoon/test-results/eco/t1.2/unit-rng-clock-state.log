@@ -1,0 +1,214 @@
+TAP version 13
+# Subtest: one simulated hour at 15, 30, 60 FPS and with irregular steps gives 60 game hours
+ok 1 - one simulated hour at 15, 30, 60 FPS and with irregular steps gives 60 game hours
+  ---
+  duration_ms: 32.251887
+  type: 'test'
+  ...
+# Subtest: onHour receives consecutive hour numbers; one big step completes several hours
+ok 2 - onHour receives consecutive hour numbers; one big step completes several hours
+  ---
+  duration_ms: 0.686288
+  type: 'test'
+  ...
+# Subtest: dt that is not a finite positive number is ignored
+ok 3 - dt that is not a finite positive number is ignored
+  ---
+  duration_ms: 0.193659
+  type: 'test'
+  ...
+# Subtest: day, hour of day, season and year
+ok 4 - day, hour of day, season and year
+  ---
+  duration_ms: 0.145603
+  type: 'test'
+  ...
+# Subtest: sfc32 step matches the reference implementation
+ok 5 - sfc32 step matches the reference implementation
+  ---
+  duration_ms: 6.693761
+  type: 'test'
+  ...
+# Subtest: fixed vector: seeding scheme is stable (saves will depend on it)
+ok 6 - fixed vector: seeding scheme is stable (saves will depend on it)
+  ---
+  duration_ms: 0.72936
+  type: 'test'
+  ...
+# Subtest: same seed gives the same sequence in every stream
+ok 7 - same seed gives the same sequence in every stream
+  ---
+  duration_ms: 16.48592
+  type: 'test'
+  ...
+# Subtest: different seeds give different sequences
+ok 8 - different seeds give different sequences
+  ---
+  duration_ms: 0.383673
+  type: 'test'
+  ...
+# Subtest: streams differ from each other and share no values in their first 1000 draws
+ok 9 - streams differ from each other and share no values in their first 1000 draws
+  ---
+  duration_ms: 2.876386
+  type: 'test'
+  ...
+# Subtest: drawing from one stream never changes another (any interleaving)
+ok 10 - drawing from one stream never changes another (any interleaving)
+  ---
+  duration_ms: 1.498308
+  type: 'test'
+  ...
+# Subtest: a stream created alone equals the same stream in the set (adding names is safe)
+ok 11 - a stream created alone equals the same stream in the set (adding names is safe)
+  ---
+  duration_ms: 0.335721
+  type: 'test'
+  ...
+# Subtest: state survives a JSON round trip mid-sequence
+ok 12 - state survives a JSON round trip mid-sequence
+  ---
+  duration_ms: 0.409449
+  type: 'test'
+  ...
+# Subtest: state is never all zeros and stays uint32
+ok 13 - state is never all zeros and stays uint32
+  ---
+  duration_ms: 9.414566
+  type: 'test'
+  ...
+# Subtest: float is uniform in [0,1): mean and 10-bucket chi-square
+ok 14 - float is uniform in [0,1): mean and 10-bucket chi-square
+  ---
+  duration_ms: 12.072651
+  type: 'test'
+  ...
+# Subtest: int covers [0,n) only; normal has mean ≈ 0 and variance ≈ 1
+ok 15 - int covers [0,n) only; normal has mean ≈ 0 and variance ≈ 1
+  ---
+  duration_ms: 7.752591
+  type: 'test'
+  ...
+# Subtest: main SAVE_VERSION is still 1; schema constants
+ok 16 - main SAVE_VERSION is still 1; schema constants
+  ---
+  duration_ms: 1.05827
+  type: 'test'
+  ...
+# Subtest: ecoFresh: deterministic per save, valid, streams seeded from the save
+ok 17 - ecoFresh: deterministic per save, valid, streams seeded from the save
+  ---
+  duration_ms: 2.385375
+  type: 'test'
+  ...
+# Subtest: fixture new: no S.eco → fresh; nothing outside S.eco changes; empty places get the reference mix
+ok 18 - fixture new: no S.eco → fresh; nothing outside S.eco changes; empty places get the reference mix
+  ---
+  duration_ms: 0.948761
+  type: 'test'
+  ...
+# Subtest: fixture mid: no S.eco → fresh; nothing outside S.eco changes; empty places get the reference mix
+ok 19 - fixture mid: no S.eco → fresh; nothing outside S.eco changes; empty places get the reference mix
+  ---
+  duration_ms: 0.769604
+  type: 'test'
+  ...
+# Subtest: fixture max: no S.eco → fresh; nothing outside S.eco changes; empty places get the reference mix
+ok 20 - fixture max: no S.eco → fresh; nothing outside S.eco changes; empty places get the reference mix
+  ---
+  duration_ms: 0.481695
+  type: 'test'
+  ...
+# Subtest: S.eco = null → fresh (reason recorded), no backup
+ok 21 - S.eco = null → fresh (reason recorded), no backup
+  ---
+  duration_ms: 0.556778
+  type: 'test'
+  ...
+# Subtest: initialisation is idempotent: second and later calls change nothing
+ok 22 - initialisation is idempotent: second and later calls change nothing
+  ---
+  duration_ms: 3.088618
+  type: 'test'
+  ...
+# Subtest: old build round trip (JSON, unknown keys kept) → status ok, S.eco unchanged
+ok 23 - old build round trip (JSON, unknown keys kept) → status ok, S.eco unchanged
+  ---
+  duration_ms: 0.530762
+  type: 'test'
+  ...
+# Subtest: partial S.eco ({ v: 1 }) is filled, not reset; extra keys of the same schema are kept
+ok 24 - partial S.eco ({ v: 1 }) is filled, not reset; extra keys of the same schema are kept
+  ---
+  duration_ms: 0.852299
+  type: 'test'
+  ...
+# Subtest: bad numbers are repaired field by field (NaN, Infinity, negative, null from JSON, wrong lengths)
+ok 25 - bad numbers are repaired field by field (NaN, Infinity, negative, null from JSON, wrong lengths)
+  ---
+  duration_ms: 1.361699
+  type: 'test'
+  ...
+# Subtest: the same corruptions after a JSON round trip (NaN / Infinity become null in the save)
+ok 26 - the same corruptions after a JSON round trip (NaN / Infinity become null in the save)
+  ---
+  duration_ms: 1.814471
+  type: 'test'
+  ...
+# Subtest: empty places: reference mix and Q_EMPTY; places with stock keep their own mix
+ok 27 - empty places: reference mix and Q_EMPTY; places with stock keep their own mix
+  ---
+  duration_ms: 0.392243
+  type: 'test'
+  ...
+# Subtest: unreadable S.eco → backup in S.ecoBak (value preserved), new S.eco, progress untouched
+ok 28 - unreadable S.eco → backup in S.ecoBak (value preserved), new S.eco, progress untouched
+  ---
+  duration_ms: 3.280765
+  type: 'test'
+  ...
+# Subtest: a very large unreadable value is not backed up, and the reason says so
+ok 29 - a very large unreadable value is not backed up, and the reason says so
+  ---
+  duration_ms: 0.426071
+  type: 'test'
+  ...
+# Subtest: S.eco from a newer build (v > schema) is left exactly as it is; eco not usable
+ok 30 - S.eco from a newer build (v > schema) is left exactly as it is; eco not usable
+  ---
+  duration_ms: 0.587857
+  type: 'test'
+  ...
+# Subtest: migrateEco: chain mechanics (temporary test migration), missing step → null
+ok 31 - migrateEco: chain mechanics (temporary test migration), missing step → null
+  ---
+  duration_ms: 0.199146
+  type: 'test'
+  ...
+# Subtest: initEco without a save object does nothing
+ok 32 - initEco without a save object does nothing
+  ---
+  duration_ms: 0.077251
+  type: 'test'
+  ...
+# Subtest: fuzz: 3000 random corruptions → valid, idempotent, nothing outside S.eco changes
+ok 33 - fuzz: 3000 random corruptions → valid, idempotent, nothing outside S.eco changes
+  ---
+  duration_ms: 637.182076
+  type: 'test'
+  ...
+# Subtest: fixture files are unchanged by the tests
+ok 34 - fixture files are unchanged by the tests
+  ---
+  duration_ms: 1.217499
+  type: 'test'
+  ...
+1..34
+# tests 34
+# suites 0
+# pass 34
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 810.400045

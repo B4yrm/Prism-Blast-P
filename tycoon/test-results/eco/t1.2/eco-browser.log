@@ -1,0 +1,94 @@
+{
+ "test": "eco skeleton in the page",
+ "pass": true,
+ "results": [
+  {
+   "name": "eco page: installed once, before the save was loaded, contract ok",
+   "pass": true,
+   "info": {
+    "installed": true,
+    "attempts": 1,
+    "beforeLoad": true,
+    "on": false,
+    "result": {
+     "ok": true,
+     "reason": ""
+    },
+    "contract": [],
+    "version": "t1.2",
+    "again": {
+     "ok": false,
+     "reason": "already installed"
+    },
+    "attemptsAfter": 2,
+    "sameUpdate": true,
+    "depth1": true,
+    "clock": {
+     "acc": 0,
+     "hours": 0
+    }
+   }
+  },
+  {
+   "name": "eco page: second install refused, wrapper unchanged and one level deep",
+   "pass": true,
+   "info": {
+    "again": {
+     "ok": false,
+     "reason": "already installed"
+    }
+   }
+  },
+  {
+   "name": "eco page: eco off by default, clock not running",
+   "pass": true,
+   "info": {
+    "acc": 0,
+    "hours": 0
+   }
+  },
+  {
+   "name": "eco page: no page error, no ECOERR",
+   "pass": true,
+   "info": {
+    "errs": [],
+    "ecoerr": []
+   }
+  },
+  {
+   "name": "base page: no eco layer",
+   "pass": true,
+   "info": {
+    "eco": "undefined",
+    "wrapped": false,
+    "errs": []
+   }
+  },
+  {
+   "name": "stepped 120 s @30 FPS: base == eco off",
+   "pass": true,
+   "info": {
+    "firstDiffSec": null,
+    "samples": 240,
+    "money": 500,
+    "caught": 397,
+    "sold": 58
+   }
+  },
+  {
+   "name": "stepped 120 s @30 FPS: base == eco on (clock only), clock = 2 game hours",
+   "pass": true,
+   "info": {
+    "firstDiffSec": null,
+    "clock": {
+     "acc": 0,
+     "hours": 2
+    },
+    "offClock": {
+     "acc": 0,
+     "hours": 0
+    }
+   }
+  }
+ ]
+}

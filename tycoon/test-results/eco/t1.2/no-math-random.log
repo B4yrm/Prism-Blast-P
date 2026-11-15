@@ -1,0 +1,1 @@
+{"test":"no-math-random","files":["src/main-eco.js","src/eco/adapter.js","src/eco/clock.js","src/eco/index.js","src/eco/rng.js","src/eco/state-eco.js"],"hits":[],"pass":true}
