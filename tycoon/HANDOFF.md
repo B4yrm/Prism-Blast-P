@@ -77,6 +77,16 @@ boat routes and approved berths, multi-sea system, Stage 2 branch, Balıqçı Id
   (steadyRate, shop, UI) the expected catch mix of the harbor tier is used. Products keep their price. Offline at load is unchanged (computed
   before eco switches on). Balance: `tools/balance-sim.mjs` (start mix +0.6 % over 600 s × 8 seeds). Dev switches: `?eco=1` (tracking + prices),
   `?eco=species` (tracking only). Report: `test-results/eco/T1.4-REPORT.md`. Open: tier 2/3 weights make fresh fish worth ×1.14 / ×1.39.
+
+## Q10 — Android performance CI (infrastructure, no Android result yet)
+
+- Added `.github/workflows/android-eco-perf.yml` (manual `workflow_dispatch` only, `contents: read`, artifact only) and `tools/android-perf/` (probe, page and project
+  generators, on-device driver, analyzer, Chromium + fake-adb self test, README). It measures BASE / TRACKING (`?eco=species`) / PRICING (`?eco=1`) dev builds, 3+ runs each,
+  app data cleared before every run; a surviving save fails the run. FPS comes from page `requestAnimationFrame` intervals; `gfxinfo` is listed separately.
+- It builds a perf APK from a temporary **copy** of `android/` (applicationId `az.fishing.tycoon.perf`). Nothing under `android/`, `tycoon/index.html`, `apk/` or `android-apk.yml`
+  was changed (hash-checked). Do not edit `android/**` or `tycoon/index.html` for perf work: that triggers the production APK workflow, which commits APKs.
+- Local checks: actionlint clean, self test 15/15. **Not verified on Android:** the first Actions run decides. Report: `test-results/android-perf/Q10-REPORT.md`; how to run: `tools/android-perf/README.md`.
+- Self test: `cd tycoon && npm ci && bash tools/android-perf/selftest/run-selftest.sh /tmp/q10-selftest` (Chromium numbers, never quote as Android).
 - Waiting for approval before T1.5.
 
 ## Where things are
