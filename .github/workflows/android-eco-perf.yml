@@ -1,0 +1,174 @@
+name: Android eco performance (manual)
+
+# Q10: measures the DEVELOPMENT builds (BASE, TRACKING ?eco=species, PRICING ?eco=1) in a real Android emulator.
+# Manual only. It builds its own perf APK from a temporary copy of android/ (other applicationId, other pages),
+# never touches tycoon/index.html, apk/ or android-apk.yml, commits nothing and pushes nothing.
+# Results exist only as the workflow artifact "android-eco-perf-<run id>".
+
+on:
+  workflow_dispatch:
+    inputs:
+      runs:
+        description: "Runs per mode (each run is a fresh app start with cleared data)"
+        default: "3"
+        required: true
+      warmup:
+        description: "Warm-up seconds after the world is ready, before the window"
+        default: "30"
+        required: true
+      duration:
+        description: "Measurement window in seconds"
+        default: "90"
+        required: true
+      preset:
+        description: "In-game graphics preset (same for all modes)"
+        type: choice
+        default: medium
+        options: [low, medium, high]
+      save:
+        description: "Start save from tycoon/tests/fixtures (same for all modes)"
+        type: choice
+        default: save-mid
+        options: [save-mid, save-max]
+
+permissions:
+  contents: read
+
+jobs:
+  perf:
+    runs-on: ubuntu-latest
+    timeout-minutes: 110
+    env:
+      PERF: ${{ github.workspace }}/perf          # everything generated lives here, outside the tracked tree
+      # inputs go through the environment, never straight into shell text
+      IN_RUNS: ${{ inputs.runs }}
+      IN_WARMUP: ${{ inputs.warmup }}
+      IN_DURATION: ${{ inputs.duration }}
+      IN_PRESET: ${{ inputs.preset }}
+      IN_SAVE: ${{ inputs.save }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Check the inputs
+        run: |
+          for v in "$IN_RUNS" "$IN_WARMUP" "$IN_DURATION"; do
+            case "$v" in ''|*[!0-9]*) echo "::error::numeric input expected, got '$v'"; exit 1;; esac
+          done
+          case "$IN_PRESET" in low|medium|high) ;; *) echo "::error::bad preset"; exit 1;; esac
+          case "$IN_SAVE" in save-mid|save-max) ;; *) echo "::error::bad save"; exit 1;; esac
+          [ "$IN_RUNS" -ge 3 ] || { echo "::error::at least 3 runs per mode are required"; exit 1; }
+          [ "$IN_RUNS" -le 6 ] || { echo "::error::at most 6 runs per mode (job time limit)"; exit 1; }
+          [ "$IN_DURATION" -ge 30 ] || { echo "::error::measurement window must be at least 30 s"; exit 1; }
+          [ "$IN_DURATION" -le 300 ] || { echo "::error::measurement window must be at most 300 s"; exit 1; }
+          [ "$IN_WARMUP" -ge 10 ] || { echo "::error::warm-up must be at least 10 s"; exit 1; }
+
+      # Fingerprint of everything that must not change, checked again at the end.
+      - name: Fingerprint protected files
+        run: |
+          mkdir -p "$PERF"
+          { sha256sum tycoon/index.html .github/workflows/android-apk.yml; find android apk -type f -print0 | sort -z | xargs -0 sha256sum; } > "$PERF/protected.sha256"
+          wc -l "$PERF/protected.sha256"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: tycoon/package-lock.json
+
+      - name: Install build tools (esbuild, phaser)
+        working-directory: tycoon
+        run: npm ci --ignore-scripts
+
+      - name: Verify the start-save fixtures
+        working-directory: tycoon/tests/fixtures
+        run: sha256sum -c fixtures.sha256
+
+      # BUILD_OUT keeps the production page (tycoon/index.html) untouched; ECO=1 refuses to run without it.
+      - name: Build development pages (plain and ECO=1)
+        working-directory: tycoon
+        run: |
+          mkdir -p "$PERF/pages"
+          BUILD_OUT="$PERF/pages/base.raw.html" node build.mjs
+          ECO=1 BUILD_OUT="$PERF/pages/eco.raw.html" node build.mjs
+
+      - name: Add probe and start save to the pages
+        working-directory: tycoon
+        run: |
+          node tools/android-perf/make-perf-pages.mjs \
+            --base "$PERF/pages/base.raw.html" --eco "$PERF/pages/eco.raw.html" \
+            --save "tests/fixtures/$IN_SAVE.json" --preset "$IN_PRESET" \
+            --warmup "$IN_WARMUP" --duration "$IN_DURATION" --out "$PERF/assets"
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+
+      - name: Make the isolated perf copy of the Android project
+        run: node tycoon/tools/android-perf/make-perf-project.mjs --android android --assets "$PERF/assets" --out "$PERF/android"
+
+      - name: Build perf APK (applicationId az.fishing.tycoon.perf)
+        working-directory: ${{ github.workspace }}/perf/android
+        run: gradle assembleTycoonDebug --no-daemon
+
+      - name: Locate the APK
+        run: |
+          APK=$(find "$PERF/android/app/build/outputs/apk/tycoon/debug" -name '*.apk' | head -1)
+          test -f "$APK" || { echo "::error::perf APK not found"; exit 1; }
+          echo "PERF_APK=$APK" >> "$GITHUB_ENV"
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      # Same emulator options as android-apk.yml. No continue-on-error: a failed run fails this job.
+      - name: Measure on the emulator
+        timeout-minutes: 95
+        uses: reactivecircus/android-emulator-runner@v2
+        env:
+          PERF_ASSETS: ${{ github.workspace }}/perf/assets
+          PERF_OUT: ${{ github.workspace }}/perf/out
+          PERF_RUNS: ${{ inputs.runs }}   # a number, validated above
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          emulator-options: -no-snapshot -no-window -noaudio -no-boot-anim -gpu swiftshader_indirect
+          disable-animations: true
+          script: node tycoon/tools/android-perf/run-device.mjs
+
+      # Always: report and artifact, also when the measurement failed or never started.
+      - name: Analyze
+        if: always()
+        shell: bash                     # bash -eo pipefail: a failing analyzer is not hidden by tee / tail
+        run: |
+          mkdir -p "$PERF/out"
+          node tycoon/tools/android-perf/analyze.mjs "$PERF/out" --history tycoon/test-results/android | tee "$PERF/analyze.log" | tail -n 120
+
+      - name: Protected files unchanged
+        if: always()
+        run: |
+          { sha256sum tycoon/index.html .github/workflows/android-apk.yml; find android apk -type f -print0 | sort -z | xargs -0 sha256sum; } > "$PERF/protected-after.sha256"
+          if diff "$PERF/protected.sha256" "$PERF/protected-after.sha256"; then echo "protected files identical"; else echo "::error::a protected file changed"; exit 1; fi
+          if [ -z "$(git status --porcelain --untracked-files=no)" ]; then echo "tracked tree clean"; else git status --short; echo "::error::tracked files were modified"; exit 1; fi
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: android-eco-perf-${{ github.run_id }}
+          if-no-files-found: warn
+          retention-days: 30
+          path: |
+            ${{ github.workspace }}/perf/out
+            ${{ github.workspace }}/perf/assets/manifest.json
+            ${{ github.workspace }}/perf/protected.sha256
+            ${{ github.workspace }}/perf/protected-after.sha256
+            ${{ github.workspace }}/perf/analyze.log
