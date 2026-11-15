@@ -9,7 +9,11 @@
 const { chromium } = require('playwright');
 const path = require('path'), fs = require('fs');
 const [BASE, ECO] = process.argv.slice(2, 4).map(f => 'file://' + path.resolve(f));
-const ECO_ON = ECO + '?eco=1', OUT = process.argv[4], SECS = +(process.argv[5] || 900);
+// ECO_PARAM: 'species' (tracking only) or '1' (tracking + prices, T1.4); default '1'.
+// COLLECT=n: empty the cash register every n steps in every build (as a player or the cashier research does). Without it the
+// till fills up; with prices on it fills at a different moment, customers then wait instead of buying, and the flows (and later
+// the boats) follow that existing rule of the game.
+const ECO_ON = ECO + '?eco=' + (process.env.ECO_PARAM || '1'), OUT = process.argv[4], SECS = +(process.argv[5] || 900), COLLECT = +(process.env.COLLECT || 0);
 const FREEZE = () => {
   let g; Object.defineProperty(window, '__game', { configurable: true, get: () => g, set: v => { g = v; const hook = () => {
     const w = g.scene.getScene('world'); if (!w || w.__hooked) return; w.__hooked = true;
@@ -33,7 +37,7 @@ async function run(b, url, sc) {
   const p = await ctx.newPage(), errs = []; p.on('pageerror', e => errs.push(e.message));
   await p.goto(url);
   await p.waitForFunction(() => window.__game && __game.scene.getScene('world') && __game.scene.getScene('world').fleet && document.getElementById('loader') === null, null, { timeout: 90000 });
-  const r = await p.evaluate(secs => {
+  const r = await p.evaluate(([secs, collect]) => {
     document.querySelectorAll('[data-m]').forEach(x => x.click());
     __game.loop.sleep(); window.__go = true; { const gs = __game.step.bind(__game); __game.step = (t, d) => { __game.loop.delta = d; __game.loop.rawDelta = d; return gs(t, d); }; }
     let seed = 4242; Math.random = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
@@ -42,12 +46,13 @@ async function run(b, url, sc) {
     let T = 1e5; const n = Math.round(secs * 30);
     for (let k = 0; k < n; k++) {
       T += 1000 / 30; __game.step(T, 1000 / 30);
+      if (collect && k % collect === collect - 1) sim.collect(true);
       if (k % 15 === 0) rec.push(JSON.stringify([
         F.boats.map(v => [num(v.x), num(v.y), num(v.h), v.phase, v.mode, v.c, v.trip ? 1 : 0, v.st ? [v.st.leg, num(v.st.s)] : null]),
         sim.boats.map(x => [x.state, x.load, num(x.m.x), num(x.m.y), num(x.t)]), F.logLine()]));
     }
     return { rec, last: F.logLine() };
-  }, SECS);
+  }, [SECS, COLLECT]);
   await ctx.close();
   return { ...r, errs };
 }
@@ -57,7 +62,7 @@ async function run(b, url, sc) {
   for (const sc of SCEN) {
     const base = await run(b, BASE, sc), off = await run(b, ECO, sc), on = await run(b, ECO_ON, sc);
     const first = (x, y) => { const i = x.rec.findIndex((t, k) => t !== y.rec[k]); return i < 0 ? null : { sample: i, seconds: i / 2 }; };
-    const res = { scenario: sc.name, seconds: SECS, samples: base.rec.length, offIdentical: !first(base, off) && base.rec.length === off.rec.length, onIdentical: !first(base, on) && base.rec.length === on.rec.length,
+    const res = { scenario: sc.name, seconds: SECS, ecoParam: process.env.ECO_PARAM || '1', collectEvery: COLLECT || null, samples: base.rec.length, offIdentical: !first(base, off) && base.rec.length === off.rec.length, onIdentical: !first(base, on) && base.rec.length === on.rec.length,
       firstDiffOff: first(base, off), firstDiffOn: first(base, on), fleetLine: base.last, errors: [...base.errs, ...off.errs, ...on.errs].slice(0, 3) };
     out.push(res); console.log(JSON.stringify(res));
   }

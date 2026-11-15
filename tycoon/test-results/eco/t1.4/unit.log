@@ -1,0 +1,340 @@
+TAP version 13
+# Subtest: one simulated hour at 15, 30, 60 FPS and with irregular steps gives 60 game hours
+ok 1 - one simulated hour at 15, 30, 60 FPS and with irregular steps gives 60 game hours
+  ---
+  duration_ms: 31.977465
+  type: 'test'
+  ...
+# Subtest: onHour receives consecutive hour numbers; one big step completes several hours
+ok 2 - onHour receives consecutive hour numbers; one big step completes several hours
+  ---
+  duration_ms: 0.607214
+  type: 'test'
+  ...
+# Subtest: dt that is not a finite positive number is ignored
+ok 3 - dt that is not a finite positive number is ignored
+  ---
+  duration_ms: 0.163641
+  type: 'test'
+  ...
+# Subtest: day, hour of day, season and year
+ok 4 - day, hour of day, season and year
+  ---
+  duration_ms: 0.169075
+  type: 'test'
+  ...
+# Subtest: base multipliers are the GDD values; the normalisation is the value of the reference start mix (0.785)
+ok 5 - base multipliers are the GDD values; the normalisation is the value of the reference start mix (0.785)
+  ---
+  duration_ms: 1.418245
+  type: 'test'
+  ...
+# Subtest: the reference start mix has factor exactly 1 (as shares and as quantities)
+ok 6 - the reference start mix has factor exactly 1 (as shares and as quantities)
+  ---
+  duration_ms: 0.232954
+  type: 'test'
+  ...
+# Subtest: each species alone: base / 0.785, limited to [0.4, 2.5]
+ok 7 - each species alone: base / 0.785, limited to [0.4, 2.5]
+  ---
+  duration_ms: 0.170908
+  type: 'test'
+  ...
+# Subtest: below the limit the factor is linear in the shares: Σ share × base / 0.785
+ok 8 - below the limit the factor is linear in the shares: Σ share × base / 0.785
+  ---
+  duration_ms: 17.248123
+  type: 'test'
+  ...
+# Subtest: more of a dearer species raises the factor, more of a cheaper one lowers it
+ok 9 - more of a dearer species raises the factor, more of a cheaper one lowers it
+  ---
+  duration_ms: 0.17559
+  type: 'test'
+  ...
+# Subtest: the tier mixes of the catch weights (placeholders for tiers 2 and 3)
+ok 10 - the tier mixes of the catch weights (placeholders for tiers 2 and 3)
+  ---
+  duration_ms: 0.162829
+  type: 'test'
+  ...
+# Subtest: never NaN, Infinity, zero or negative: 200,000 random inputs, bad input gives exactly 1
+ok 11 - never NaN, Infinity, zero or negative: 200,000 random inputs, bad input gives exactly 1
+  ---
+  duration_ms: 432.116336
+  type: 'test'
+  ...
+# Subtest: sfc32 step matches the reference implementation
+ok 12 - sfc32 step matches the reference implementation
+  ---
+  duration_ms: 5.888238
+  type: 'test'
+  ...
+# Subtest: fixed vector: seeding scheme is stable (saves will depend on it)
+ok 13 - fixed vector: seeding scheme is stable (saves will depend on it)
+  ---
+  duration_ms: 0.933225
+  type: 'test'
+  ...
+# Subtest: same seed gives the same sequence in every stream
+ok 14 - same seed gives the same sequence in every stream
+  ---
+  duration_ms: 13.27205
+  type: 'test'
+  ...
+# Subtest: different seeds give different sequences
+ok 15 - different seeds give different sequences
+  ---
+  duration_ms: 0.324269
+  type: 'test'
+  ...
+# Subtest: streams differ from each other and share no values in their first 1000 draws
+ok 16 - streams differ from each other and share no values in their first 1000 draws
+  ---
+  duration_ms: 1.291632
+  type: 'test'
+  ...
+# Subtest: drawing from one stream never changes another (any interleaving)
+ok 17 - drawing from one stream never changes another (any interleaving)
+  ---
+  duration_ms: 0.424296
+  type: 'test'
+  ...
+# Subtest: a stream created alone equals the same stream in the set (adding names is safe)
+ok 18 - a stream created alone equals the same stream in the set (adding names is safe)
+  ---
+  duration_ms: 0.182325
+  type: 'test'
+  ...
+# Subtest: state survives a JSON round trip mid-sequence
+ok 19 - state survives a JSON round trip mid-sequence
+  ---
+  duration_ms: 0.320234
+  type: 'test'
+  ...
+# Subtest: state is never all zeros and stays uint32
+ok 20 - state is never all zeros and stays uint32
+  ---
+  duration_ms: 6.731857
+  type: 'test'
+  ...
+# Subtest: float is uniform in [0,1): mean and 10-bucket chi-square
+ok 21 - float is uniform in [0,1): mean and 10-bucket chi-square
+  ---
+  duration_ms: 6.763229
+  type: 'test'
+  ...
+# Subtest: int covers [0,n) only; normal has mean ≈ 0 and variance ≈ 1
+ok 22 - int covers [0,n) only; normal has mean ≈ 0 and variance ≈ 1
+  ---
+  duration_ms: 8.108099
+  type: 'test'
+  ...
+# Subtest: species table: ids match the save schema; tier 1 is the reference mix; rows sum to 1; unlocks match the weights
+ok 23 - species table: ids match the save schema; tier 1 is the reference mix; rows sum to 1; unlocks match the weights
+  ---
+  duration_ms: 2.25669
+  type: 'test'
+  ...
+# Subtest: roundCounts: always sums to the total exactly, never creates a fish for a zero species, within 1 of the exact share (20,000 random cases)
+ok 24 - roundCounts: always sums to the total exactly, never creates a fish for a zero species, within 1 of the exact share (20,000 random cases)
+  ---
+  duration_ms: 93.174538
+  type: 'test'
+  ...
+# Subtest: drawCatch: whole numbers summing to n, zero-weight species never drawn, one draw per fish, deterministic, matches the weights
+ok 25 - drawCatch: whole numbers summing to n, zero-weight species never drawn, one draw per fish, deterministic, matches the weights
+  ---
+  duration_ms: 12.555568
+  type: 'test'
+  ...
+# Subtest: attach: composition × stock; refuses an unusable S.eco; second attach changes nothing
+ok 26 - attach: composition × stock; refuses an unusable S.eco; second attach changes nothing
+  ---
+  duration_ms: 2.099018
+  type: 'test'
+  ...
+# Subtest: hand-computed journey: catch → partial unload → pick → drop → conveyor → pick → drop → sale, all exact
+ok 27 - hand-computed journey: catch → partial unload → pick → drop → conveyor → pick → drop → sale, all exact
+  ---
+  duration_ms: 2.027778
+  type: 'test'
+  ...
+# Subtest: a full place cuts a delivery short: the lost fish are counted with their species, nothing is created
+ok 28 - a full place cuts a delivery short: the lost fish are counted with their species, nothing is created
+  ---
+  duration_ms: 0.561418
+  type: 'test'
+  ...
+# Subtest: rounding never creates or removes a fish: 40,000 random moves, whole-number counts always sum to the stock
+ok 29 - rounding never creates or removes a fish: 40,000 random moves, whole-number counts always sum to the stock
+  ---
+  duration_ms: 123.940535
+  type: 'test'
+  ...
+# Subtest: composition is written to S.eco: shares sum to 1, empty places get the reference mix and quality 1, and the save needs no repair
+ok 30 - composition is written to S.eco: shares sum to 1, empty places get the reference mix and quality 1, and the save needs no repair
+  ---
+  duration_ms: 1.430387
+  type: 'test'
+  ...
+# Subtest: catch stream: saved with S.eco, continues exactly after a reload
+ok 31 - catch stream: saved with S.eco, continues exactly after a reload
+  ---
+  duration_ms: 0.826917
+  type: 'test'
+  ...
+# Subtest: starting in the middle of a session: boats, haulers and conveyor units that are already loaded get an assumed composition, counted
+ok 32 - starting in the middle of a session: boats, haulers and conveyor units that are already loaded get an assumed composition, counted
+  ---
+  duration_ms: 0.780896
+  type: 'test'
+  ...
+# Subtest: the audits catch errors (a test of the tests): every kind of tampering is reported
+ok 33 - the audits catch errors (a test of the tests): every kind of tampering is reported
+  ---
+  duration_ms: 2.851583
+  type: 'test'
+  ...
+# Subtest: weights: validation and the by-tier default
+ok 34 - weights: validation and the by-tier default
+  ---
+  duration_ms: 0.505769
+  type: 'test'
+  ...
+# Subtest: main SAVE_VERSION is still 1; schema constants
+ok 35 - main SAVE_VERSION is still 1; schema constants
+  ---
+  duration_ms: 1.23567
+  type: 'test'
+  ...
+# Subtest: ecoFresh: deterministic per save, valid, streams seeded from the save
+ok 36 - ecoFresh: deterministic per save, valid, streams seeded from the save
+  ---
+  duration_ms: 2.838415
+  type: 'test'
+  ...
+# Subtest: fixture new: no S.eco → fresh; nothing outside S.eco changes; empty places get the reference mix
+ok 37 - fixture new: no S.eco → fresh; nothing outside S.eco changes; empty places get the reference mix
+  ---
+  duration_ms: 1.490007
+  type: 'test'
+  ...
+# Subtest: fixture mid: no S.eco → fresh; nothing outside S.eco changes; empty places get the reference mix
+ok 38 - fixture mid: no S.eco → fresh; nothing outside S.eco changes; empty places get the reference mix
+  ---
+  duration_ms: 0.623513
+  type: 'test'
+  ...
+# Subtest: fixture max: no S.eco → fresh; nothing outside S.eco changes; empty places get the reference mix
+ok 39 - fixture max: no S.eco → fresh; nothing outside S.eco changes; empty places get the reference mix
+  ---
+  duration_ms: 0.587628
+  type: 'test'
+  ...
+# Subtest: S.eco = null → fresh (reason recorded), no backup
+ok 40 - S.eco = null → fresh (reason recorded), no backup
+  ---
+  duration_ms: 0.814018
+  type: 'test'
+  ...
+# Subtest: initialisation is idempotent: second and later calls change nothing
+ok 41 - initialisation is idempotent: second and later calls change nothing
+  ---
+  duration_ms: 2.912629
+  type: 'test'
+  ...
+# Subtest: old build round trip (JSON, unknown keys kept) → status ok, S.eco unchanged
+ok 42 - old build round trip (JSON, unknown keys kept) → status ok, S.eco unchanged
+  ---
+  duration_ms: 0.808169
+  type: 'test'
+  ...
+# Subtest: partial S.eco ({ v: 1 }) is filled, not reset; extra keys of the same schema are kept
+ok 43 - partial S.eco ({ v: 1 }) is filled, not reset; extra keys of the same schema are kept
+  ---
+  duration_ms: 0.968692
+  type: 'test'
+  ...
+# Subtest: bad numbers are repaired field by field (NaN, Infinity, negative, null from JSON, wrong lengths)
+ok 44 - bad numbers are repaired field by field (NaN, Infinity, negative, null from JSON, wrong lengths)
+  ---
+  duration_ms: 1.833994
+  type: 'test'
+  ...
+# Subtest: the same corruptions after a JSON round trip (NaN / Infinity become null in the save)
+ok 45 - the same corruptions after a JSON round trip (NaN / Infinity become null in the save)
+  ---
+  duration_ms: 0.86564
+  type: 'test'
+  ...
+# Subtest: empty places: reference mix and Q_EMPTY; places with stock keep their own mix
+ok 46 - empty places: reference mix and Q_EMPTY; places with stock keep their own mix
+  ---
+  duration_ms: 0.461555
+  type: 'test'
+  ...
+# Subtest: unreadable S.eco → backup in S.ecoBak (value preserved), new S.eco, progress untouched
+ok 47 - unreadable S.eco → backup in S.ecoBak (value preserved), new S.eco, progress untouched
+  ---
+  duration_ms: 5.467555
+  type: 'test'
+  ...
+# Subtest: a very large unreadable value is not backed up, and the reason says so
+ok 48 - a very large unreadable value is not backed up, and the reason says so
+  ---
+  duration_ms: 0.47244
+  type: 'test'
+  ...
+# Subtest: S.eco from a newer build (v > schema) is left exactly as it is; eco not usable
+ok 49 - S.eco from a newer build (v > schema) is left exactly as it is; eco not usable
+  ---
+  duration_ms: 0.739059
+  type: 'test'
+  ...
+# Subtest: migrateEco: chain mechanics (temporary test migration), missing step → null
+ok 50 - migrateEco: chain mechanics (temporary test migration), missing step → null
+  ---
+  duration_ms: 0.272813
+  type: 'test'
+  ...
+# Subtest: initEco without a save object does nothing
+ok 51 - initEco without a save object does nothing
+  ---
+  duration_ms: 0.105511
+  type: 'test'
+  ...
+# Subtest: T1.3 field omix: fresh S.eco has it; empty places get the reference mix; bad values are repaired like mix
+ok 52 - T1.3 field omix: fresh S.eco has it; empty places get the reference mix; bad values are repaired like mix
+  ---
+  duration_ms: 0.499422
+  type: 'test'
+  ...
+# Subtest: upgrade from a T1.2 save: S.eco without omix is filled (status repaired, one note), everything else of S.eco is untouched
+ok 53 - upgrade from a T1.2 save: S.eco without omix is filled (status repaired, one note), everything else of S.eco is untouched
+  ---
+  duration_ms: 0.844125
+  type: 'test'
+  ...
+# Subtest: fuzz: 3000 random corruptions → valid, idempotent, nothing outside S.eco changes
+ok 54 - fuzz: 3000 random corruptions → valid, idempotent, nothing outside S.eco changes
+  ---
+  duration_ms: 588.935148
+  type: 'test'
+  ...
+# Subtest: fixture files are unchanged by the tests
+ok 55 - fixture files are unchanged by the tests
+  ---
+  duration_ms: 1.038196
+  type: 'test'
+  ...
+1..55
+# tests 55
+# suites 0
+# pass 55
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 934.083154

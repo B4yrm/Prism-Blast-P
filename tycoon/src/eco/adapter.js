@@ -9,6 +9,8 @@
 // value untouched. A stat wrapper applies a modifier only when eco is on AND a modifier is registered
 // (none is, yet).
 //
+// Eco on, T1.4: stat.rawPrice() is multiplied by the species price factor (rawPriceFactor below); every other stat
+// function, including prodPrice and priceMul, is still passed through untouched.
 // Eco on (T1.3): the four Sim methods that write S.stock (updBoat, updWorker, updFactory, updCustomers) are
 // OBSERVED: the wrapper reads the few simulation values it needs before the call and again after it and tells
 // the species tracker what moved. It only reads. It never writes to the simulation, never draws from the global random generator,
@@ -20,6 +22,7 @@
 
 import { advance, createClock } from './clock.js';
 import { Tracker } from './species.js';
+import { priceFactor } from './price.js';
 
 // stat functions the eco layer will modify in later tasks (architecture §2.1).
 export const WRAPPED_STATS = ['rawPrice', 'prodPrice', 'custEvery', 'boatSpeed', 'fishTime', 'boatCap', 'workerSpeed'];
@@ -38,7 +41,30 @@ const MARK = Symbol.for('fishingTycoon.eco.installed');
 
 // Shared adapter state. `mods` maps a stat name to a function (value → value); it is empty, so nothing is
 // ever modified. `species` is the T1.3 species tracker.
-export const ecoState = { on: false, clock: createClock(), mods: {}, installed: false, attempts: 0, installedBeforeLoad: null, species: new Tracker() };
+// `systems` are the eco systems that run while eco is on (T1.3 species tracking, T1.4 species prices; prices need the
+// tracking). `inSale` is true only while the simulation serves customers (Sim.updCustomers), see rawPriceFactor().
+export const ecoState = { on: false, clock: createClock(), mods: {}, installed: false, attempts: 0, installedBeforeLoad: null, species: new Tracker(),
+  systems: { species: true, price: true }, inSale: false };
+
+// ---- species prices (T1.4) ----------------------------------------------------------------------------------
+// The one factor applied to stat.rawPrice() while eco is on (see price.js for the formula and the limit):
+//   • during a sale (inside Sim.updCustomers, the only place the simulation sells fresh fish) it is the factor of the
+//     species actually on the fresh-fish shelf (mRaw): a sale takes the shelf's average mix (species.js);
+//   • everywhere else (steadyRate and so the shop's time-warp / purse / chest values, the UI's price display) it is
+//     the factor of the EXPECTED mix, the catch weights of the harbor tier: the long-run mix of the fish that come in.
+// It is exactly 1 when eco is off, prices or tracking are switched off, or tracking has not started.
+// The offline earnings computed when the page loads (main.js) come before eco is switched on, so they use the
+// original price; eco adds no offline amount of its own, so nothing is counted twice.
+export function rawPriceFactor() {
+  const sys = ecoState.systems, tr = ecoState.species;
+  if (!ecoState.on || !sys.price || !sys.species || !tr.attached) return 1;
+  if (ecoState.inSale) {
+    const q = tr.qty.mRaw; let t = 0;
+    for (let i = 0; i < q.length; i++) t += q[i];
+    if (t > 0) return priceFactor(q);
+  }
+  return priceFactor(tr.weights());
+}
 
 export function checkContract({ stat, Sim, bus }) {
   const missing = [];
@@ -82,7 +108,7 @@ export function activate(sim, G) {
 // tracker's in-memory state; S.eco keeps the last written composition.
 function trackerFor(sim) {
   const tr = ecoState.species;
-  if (!ecoState.on) { if (tr.attached) tr.detach(); return null; }
+  if (!ecoState.on || !ecoState.systems.species) { if (tr.attached) tr.detach(); return null; }
   if (tr.attached) return tr;
   return activate(sim, null) ? tr : null;
 }
@@ -138,7 +164,9 @@ function wrapObserved(proto, name) {
         const tr = trackerFor(this);
         if (!tr) return orig.call(this, dt);
         const st = this.S.stock, prod0 = st.mProd, raw0 = st.mRaw;
-        const r = orig.call(this, dt);
+        let r;
+        ecoState.inSale = true;
+        try { r = orig.call(this, dt); } finally { ecoState.inSale = false; }
         const dProd = prod0 - st.mProd, dRaw = raw0 - st.mRaw;
         if (dProd > 0 || dRaw > 0) tr.onSale(Math.max(0, dProd), prod0, Math.max(0, dRaw), raw0);
         return r;
@@ -188,6 +216,7 @@ export function install({ stat, Sim, bus, G }) {
   };
   proto.update.ecoOrig = origUpdate;
   for (const name of OBSERVED) wrapObserved(proto, name);
+  ecoState.mods.rawPrice = v => v * rawPriceFactor();      // applied by the rawPrice wrapper only while eco is on
 
   Object.defineProperty(stat, MARK, { value: true });
   Object.defineProperty(proto, MARK, { value: true });

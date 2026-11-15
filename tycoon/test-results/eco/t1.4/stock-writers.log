@@ -1,0 +1,85 @@
+{
+ "pass": true,
+ "problems": [],
+ "coverage": {
+  "quay": 6037,
+  "pick": 2265,
+  "drop": 2259,
+  "clampedDrop": 1,
+  "facOut": 2778,
+  "wh": 2788,
+  "sale": 1311
+ },
+ "scenarios": [
+  {
+   "s": "start",
+   "writes": 414,
+   "calls": {
+    "updBoat": 18000,
+    "updWorker": 18000,
+    "updFactory": 18000,
+    "updCustomers": 18000
+   }
+  },
+  {
+   "s": "mid",
+   "writes": 1148,
+   "calls": {
+    "updBoat": 72000,
+    "updWorker": 108000,
+    "updFactory": 18000,
+    "updCustomers": 18000
+   }
+  },
+  {
+   "s": "high",
+   "writes": 6955,
+   "calls": {
+    "updBoat": 72000,
+    "updWorker": 180000,
+    "updFactory": 18000,
+    "updCustomers": 18000
+   }
+  },
+  {
+   "s": "max",
+   "writes": 7658,
+   "calls": {
+    "updBoat": 72000,
+    "updWorker": 180000,
+    "updFactory": 18000,
+    "updCustomers": 18000
+   }
+  },
+  {
+   "s": "no haulers (full quay)",
+   "writes": 120,
+   "calls": {
+    "updBoat": 48000,
+    "updWorker": 0,
+    "updFactory": 12000,
+    "updCustomers": 12000
+   }
+  },
+  {
+   "s": "warehouse capacity lowered at 100 s",
+   "writes": 1143,
+   "calls": {
+    "updBoat": 48000,
+    "updWorker": 72000,
+    "updFactory": 12000,
+    "updCustomers": 12000
+   }
+  }
+ ],
+ "static": {
+  "filesWithStockMentions": [
+   "src/core/state.js",
+   "src/render/boats.js",
+   "src/scenes/WorldScene.js",
+   "src/ui/ui.js"
+  ],
+  "linesChecked": 6,
+  "writes": []
+ }
+}

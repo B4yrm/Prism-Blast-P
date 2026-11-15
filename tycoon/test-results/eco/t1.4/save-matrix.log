@@ -1,0 +1,96 @@
+ok   new | reference: old-prod.html keeps every fixture field
+ok   new | A1 old save → eco build: S.eco created (status fresh), valid
+ok   new | A1 progress untouched (= old build, apart from S.eco)
+ok   new | A1 main SAVE_VERSION still 1, no S.ecoBak
+ok   new | A2 reload in eco build: status ok, 0 repairs, S.eco identical
+ok   new | A2 progress untouched
+ok   new | B1 eco save → old-prod.html: S.eco carried value for value
+ok   new | B1 old-prod.html: progress untouched
+ok   new | B2 old-prod.html → eco build: status ok, 0 repairs, S.eco identical to before the old build
+ok   new | B2 progress untouched
+ok   new | B1 eco save → base.html: S.eco carried value for value
+ok   new | B1 base.html: progress untouched
+ok   new | B2 base.html → eco build: status ok, 0 repairs, S.eco identical to before the old build
+ok   new | B2 progress untouched
+ok   new | B1 eco save → old-t11-eco.html: S.eco carried value for value
+ok   new | B1 old-t11-eco.html: progress untouched
+ok   new | B2 old-t11-eco.html → eco build: status ok, 0 repairs, S.eco identical to before the old build
+ok   new | B2 progress untouched
+ok   new | B1 eco save → old-t12-eco.html: S.eco carried value for value
+ok   new | B1 old-t12-eco.html: progress untouched
+ok   new | B2 old-t12-eco.html → eco build: status ok, 0 repairs, S.eco identical to before the old build
+ok   new | B2 progress untouched
+ok   new | B1 eco save → old-t13-eco.html: S.eco carried value for value
+ok   new | B1 old-t13-eco.html: progress untouched
+ok   new | B2 old-t13-eco.html → eco build: status ok, 0 repairs, S.eco identical to before the old build
+ok   new | B2 progress untouched
+ok   new | C1 old-prod.html played 20 s: S.eco carried value for value while the game moved on
+ok   new | C2 eco build after the played old build: only empty-place repairs, everything else of S.eco kept, valid
+ok   new | C2 progress written by the old build untouched
+ok   mid | reference: old-prod.html keeps every fixture field
+ok   mid | A1 old save → eco build: S.eco created (status fresh), valid
+ok   mid | A1 progress untouched (= old build, apart from S.eco)
+ok   mid | A1 main SAVE_VERSION still 1, no S.ecoBak
+ok   mid | A2 reload in eco build: status ok, 0 repairs, S.eco identical
+ok   mid | A2 progress untouched
+ok   mid | B1 eco save → old-prod.html: S.eco carried value for value
+ok   mid | B1 old-prod.html: progress untouched
+ok   mid | B2 old-prod.html → eco build: status ok, 0 repairs, S.eco identical to before the old build
+ok   mid | B2 progress untouched
+ok   mid | B1 eco save → base.html: S.eco carried value for value
+ok   mid | B1 base.html: progress untouched
+ok   mid | B2 base.html → eco build: status ok, 0 repairs, S.eco identical to before the old build
+ok   mid | B2 progress untouched
+ok   mid | B1 eco save → old-t11-eco.html: S.eco carried value for value
+ok   mid | B1 old-t11-eco.html: progress untouched
+ok   mid | B2 old-t11-eco.html → eco build: status ok, 0 repairs, S.eco identical to before the old build
+ok   mid | B2 progress untouched
+ok   mid | B1 eco save → old-t12-eco.html: S.eco carried value for value
+ok   mid | B1 old-t12-eco.html: progress untouched
+ok   mid | B2 old-t12-eco.html → eco build: status ok, 0 repairs, S.eco identical to before the old build
+ok   mid | B2 progress untouched
+ok   mid | B1 eco save → old-t13-eco.html: S.eco carried value for value
+ok   mid | B1 old-t13-eco.html: progress untouched
+ok   mid | B2 old-t13-eco.html → eco build: status ok, 0 repairs, S.eco identical to before the old build
+ok   mid | B2 progress untouched
+ok   mid | C1 old-prod.html played 20 s: S.eco carried value for value while the game moved on
+ok   mid | C2 eco build after the played old build: only empty-place repairs, everything else of S.eco kept, valid
+ok   mid | C2 progress written by the old build untouched
+ok   max | reference: old-prod.html keeps every fixture field
+ok   max | A1 old save → eco build: S.eco created (status fresh), valid
+ok   max | A1 progress untouched (= old build, apart from S.eco)
+ok   max | A1 main SAVE_VERSION still 1, no S.ecoBak
+ok   max | A2 reload in eco build: status ok, 0 repairs, S.eco identical
+ok   max | A2 progress untouched
+ok   max | B1 eco save → old-prod.html: S.eco carried value for value
+ok   max | B1 old-prod.html: progress untouched
+ok   max | B2 old-prod.html → eco build: status ok, 0 repairs, S.eco identical to before the old build
+ok   max | B2 progress untouched
+ok   max | B1 eco save → base.html: S.eco carried value for value
+ok   max | B1 base.html: progress untouched
+ok   max | B2 base.html → eco build: status ok, 0 repairs, S.eco identical to before the old build
+ok   max | B2 progress untouched
+ok   max | B1 eco save → old-t11-eco.html: S.eco carried value for value
+ok   max | B1 old-t11-eco.html: progress untouched
+ok   max | B2 old-t11-eco.html → eco build: status ok, 0 repairs, S.eco identical to before the old build
+ok   max | B2 progress untouched
+ok   max | B1 eco save → old-t12-eco.html: S.eco carried value for value
+ok   max | B1 old-t12-eco.html: progress untouched
+ok   max | B2 old-t12-eco.html → eco build: status ok, 0 repairs, S.eco identical to before the old build
+ok   max | B2 progress untouched
+ok   max | B1 eco save → old-t13-eco.html: S.eco carried value for value
+ok   max | B1 old-t13-eco.html: progress untouched
+ok   max | B2 old-t13-eco.html → eco build: status ok, 0 repairs, S.eco identical to before the old build
+ok   max | B2 progress untouched
+ok   max | C1 old-prod.html played 20 s: S.eco carried value for value while the game moved on
+ok   max | C2 eco build after the played old build: only empty-place repairs, everything else of S.eco kept, valid
+ok   max | C2 progress written by the old build untouched
+ok   damaged | D null: status fresh, game loads, progress untouched, S.eco as specified
+ok   damaged | D string: status recovered, game loads, progress untouched, S.eco as specified
+ok   damaged | D array: status recovered, game loads, progress untouched, S.eco as specified
+ok   damaged | D v as string: status recovered, game loads, progress untouched, S.eco as specified
+ok   damaged | D partial { v: 1 }: status repaired, game loads, progress untouched, S.eco as specified
+ok   damaged | D NaN / Infinity / negative / wrong lengths (as stored: null): status repaired, game loads, progress untouched, S.eco as specified
+ok   damaged | D future schema v2: status future, game loads, progress untouched, S.eco as specified
+ok   fixtures | fixture files unchanged (sha256 before = after = committed sums)
+{"pass":true,"passed":95,"total":95}

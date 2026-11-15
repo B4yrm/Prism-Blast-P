@@ -1,0 +1,48 @@
+{
+ "test": "drawn boats identical in base / eco off / eco on",
+ "pass": false,
+ "runs": [
+  {
+   "scenario": "start-fleet4",
+   "seconds": 900,
+   "samples": 1800,
+   "offIdentical": true,
+   "onIdentical": false,
+   "firstDiffOff": null,
+   "firstDiffOn": {
+    "sample": 633,
+    "seconds": 316.5
+   },
+   "fleetLine": "BOATS n=4 phases=docked,docked,docked,docked arrivals=51 lagMean=-0.54 lagMax=-0.50 waits=14 trips=grounds:51,curve:0,loop:0,move:0,harbour:0 jetties=0 simTrips=51 visTrips=51 nets=51 netMinS=0.73 fx=1",
+   "errors": []
+  },
+  {
+   "scenario": "mid-fleet4 (engine 6, nets 3)",
+   "seconds": 900,
+   "samples": 1800,
+   "offIdentical": true,
+   "onIdentical": false,
+   "firstDiffOff": null,
+   "firstDiffOn": {
+    "sample": 540,
+    "seconds": 270
+   },
+   "fleetLine": "BOATS n=4 phases=docked,docked,docked,docked arrivals=24 lagMean=-0.43 lagMax=0.43 waits=9 trips=grounds:17,curve:7,loop:0,move:0,harbour:0 jetties=0 simTrips=24 visTrips=24 nets=24 netMinS=0.70 fx=1",
+   "errors": []
+  },
+  {
+   "scenario": "mid+-fleet4 (engine 10, nets 8)",
+   "seconds": 900,
+   "samples": 1800,
+   "offIdentical": true,
+   "onIdentical": false,
+   "firstDiffOff": null,
+   "firstDiffOn": {
+    "sample": 496,
+    "seconds": 248
+   },
+   "fleetLine": "BOATS n=4 phases=docked,docked,docked,docked arrivals=19 lagMean=-0.50 lagMax=-0.47 waits=4 trips=grounds:0,curve:19,loop:0,move:0,harbour:0 jetties=0 simTrips=19 visTrips=19 nets=19 netMinS=1.93 fx=1",
+   "errors": []
+  }
+ ]
+}

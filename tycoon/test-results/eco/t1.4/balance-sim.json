@@ -1,0 +1,812 @@
+{
+ "tool": "tools/balance-sim.mjs",
+ "date": "2026-11-15",
+ "node": "v22.23.4",
+ "scenarios": [
+  {
+   "id": "start-600",
+   "name": "start, reference mix (harbor tier 1, no factory)",
+   "seconds": 600,
+   "seeds": 8,
+   "weights": "by harbor tier",
+   "meanRatio": 1.00557990180521,
+   "minRatio": 0.9761306532663316,
+   "maxRatio": 1.0291878172588833,
+   "meanRealisedFreshFactor": 1.001416216921009,
+   "meanFreshShare": 1,
+   "rows": [
+    {
+     "seed": 0,
+     "revenuePlain": 788,
+     "revenueEco": 811,
+     "ratio": 1.0291878172588833,
+     "unitsSold": 197,
+     "products": 0,
+     "freshShare": 1,
+     "realisedFreshFactor": 1.0297132141356005,
+     "expectedFactor": 1,
+     "soldBySpecies": [
+      104.2,
+      66.4,
+      26.4,
+      0,
+      0
+     ],
+     "flowsIdentical": true,
+     "ecoOffIdentical": true
+    },
+    {
+     "seed": 1,
+     "revenuePlain": 784,
+     "revenueEco": 781,
+     "ratio": 0.9961734693877551,
+     "unitsSold": 196,
+     "products": 0,
+     "freshShare": 1,
+     "realisedFreshFactor": 0.9933705966463012,
+     "expectedFactor": 1,
+     "soldBySpecies": [
+      110.2,
+      66.8,
+      19,
+      0,
+      0
+     ],
+     "flowsIdentical": true,
+     "ecoOffIdentical": true
+    },
+    {
+     "seed": 2,
+     "revenuePlain": 780,
+     "revenueEco": 788,
+     "ratio": 1.0102564102564102,
+     "unitsSold": 195,
+     "products": 0,
+     "freshShare": 1,
+     "realisedFreshFactor": 1.0044096031357175,
+     "expectedFactor": 1,
+     "soldBySpecies": [
+      115,
+      54.5,
+      25.5,
+      0,
+      0
+     ],
+     "flowsIdentical": true,
+     "ecoOffIdentical": true
+    },
+    {
+     "seed": 3,
+     "revenuePlain": 780,
+     "revenueEco": 773,
+     "ratio": 0.9910256410256411,
+     "unitsSold": 195,
+     "products": 0,
+     "freshShare": 1,
+     "realisedFreshFactor": 0.9857912787849094,
+     "expectedFactor": 1,
+     "soldBySpecies": [
+      114.5,
+      61,
+      19.5,
+      0,
+      0
+     ],
+     "flowsIdentical": true,
+     "ecoOffIdentical": true
+    },
+    {
+     "seed": 4,
+     "revenuePlain": 788,
+     "revenueEco": 809,
+     "ratio": 1.0266497461928934,
+     "unitsSold": 197,
+     "products": 0,
+     "freshShare": 1,
+     "realisedFreshFactor": 1.0183969737139904,
+     "expectedFactor": 1,
+     "soldBySpecies": [
+      102.2,
+      73.1,
+      21.7,
+      0,
+      0
+     ],
+     "flowsIdentical": true,
+     "ecoOffIdentical": true
+    },
+    {
+     "seed": 5,
+     "revenuePlain": 788,
+     "revenueEco": 802,
+     "ratio": 1.017766497461929,
+     "unitsSold": 197,
+     "products": 0,
+     "freshShare": 1,
+     "realisedFreshFactor": 1.024378415079699,
+     "expectedFactor": 1,
+     "soldBySpecies": [
+      106.5,
+      64.3,
+      26.1,
+      0,
+      0
+     ],
+     "flowsIdentical": true,
+     "ecoOffIdentical": true
+    },
+    {
+     "seed": 6,
+     "revenuePlain": 796,
+     "revenueEco": 777,
+     "ratio": 0.9761306532663316,
+     "unitsSold": 199,
+     "products": 0,
+     "freshShare": 1,
+     "realisedFreshFactor": 0.9605991742150236,
+     "expectedFactor": 1,
+     "soldBySpecies": [
+      118.3,
+      67.8,
+      12.9,
+      0,
+      0
+     ],
+     "flowsIdentical": true,
+     "ecoOffIdentical": true
+    },
+    {
+     "seed": 7,
+     "revenuePlain": 784,
+     "revenueEco": 782,
+     "ratio": 0.9974489795918368,
+     "unitsSold": 196,
+     "products": 0,
+     "freshShare": 1,
+     "realisedFreshFactor": 0.9946704796568308,
+     "expectedFactor": 1,
+     "soldBySpecies": [
+      107.2,
+      71.2,
+      17.6,
+      0,
+      0
+     ],
+     "flowsIdentical": true,
+     "ecoOffIdentical": true
+    }
+   ]
+  },
+  {
+   "id": "start-1800",
+   "name": "start, reference mix, long run",
+   "seconds": 1800,
+   "seeds": 4,
+   "weights": "by harbor tier",
+   "meanRatio": 1.0067732656966293,
+   "minRatio": 1.0008210180623973,
+   "maxRatio": 1.0139344262295082,
+   "meanRealisedFreshFactor": 1.0039289989653648,
+   "meanFreshShare": 1,
+   "rows": [
+    {
+     "seed": 0,
+     "revenuePlain": 2440,
+     "revenueEco": 2449,
+     "ratio": 1.0036885245901639,
+     "unitsSold": 610,
+     "products": 0,
+     "freshShare": 1,
+     "realisedFreshFactor": 1.0024015871358467,
+     "expectedFactor": 1,
+     "soldBySpecies": [
+      340,
+      204,
+      66,
+      0,
+      0
+     ],
+     "flowsIdentical": true
+    },
+    {
+     "seed": 1,
+     "revenuePlain": 2440,
+     "revenueEco": 2474,
+     "ratio": 1.0139344262295082,
+     "unitsSold": 610,
+     "products": 0,
+     "freshShare": 1,
+     "realisedFreshFactor": 1.0126344366711912,
+     "expectedFactor": 1,
+     "soldBySpecies": [
+      337,
+      199,
+      74,
+      0,
+      0
+     ],
+     "flowsIdentical": true
+    },
+    {
+     "seed": 2,
+     "revenuePlain": 2436,
+     "revenueEco": 2438,
+     "ratio": 1.0008210180623973,
+     "unitsSold": 609,
+     "products": 0,
+     "freshShare": 1,
+     "realisedFreshFactor": 0.994902366832961,
+     "expectedFactor": 1,
+     "soldBySpecies": [
+      350,
+      193.9,
+      65.1,
+      0,
+      0
+     ],
+     "flowsIdentical": true
+    },
+    {
+     "seed": 3,
+     "revenuePlain": 2428,
+     "revenueEco": 2449,
+     "ratio": 1.0086490939044481,
+     "unitsSold": 607,
+     "products": 0,
+     "freshShare": 1,
+     "realisedFreshFactor": 1.0057776052214606,
+     "expectedFactor": 1,
+     "soldBySpecies": [
+      332.1,
+      209.7,
+      65.2,
+      0,
+      0
+     ],
+     "flowsIdentical": true
+    }
+   ]
+  },
+  {
+   "id": "sardine-600",
+   "name": "start, sardine only",
+   "seconds": 600,
+   "seeds": 4,
+   "weights": [
+    1,
+    0,
+    0,
+    0,
+    0
+   ],
+   "meanRatio": 0.75,
+   "minRatio": 0.75,
+   "maxRatio": 0.75,
+   "meanRealisedFreshFactor": 0.7643312101910833,
+   "meanFreshShare": 1,
+   "rows": [
+    {
+     "seed": 0,
+     "revenuePlain": 788,
+     "revenueEco": 591,
+     "ratio": 0.75,
+     "unitsSold": 197,
+     "products": 0,
+     "freshShare": 1,
+     "realisedFreshFactor": 0.7643312101910834,
+     "expectedFactor": 0.7643312101910827,
+     "soldBySpecies": [
+      197,
+      0,
+      0,
+      0,
+      0
+     ],
+     "flowsIdentical": true
+    },
+    {
+     "seed": 1,
+     "revenuePlain": 784,
+     "revenueEco": 588,
+     "ratio": 0.75,
+     "unitsSold": 196,
+     "products": 0,
+     "freshShare": 1,
+     "realisedFreshFactor": 0.7643312101910836,
+     "expectedFactor": 0.7643312101910827,
+     "soldBySpecies": [
+      196,
+      0,
+      0,
+      0,
+      0
+     ],
+     "flowsIdentical": true
+    },
+    {
+     "seed": 2,
+     "revenuePlain": 780,
+     "revenueEco": 585,
+     "ratio": 0.75,
+     "unitsSold": 195,
+     "products": 0,
+     "freshShare": 1,
+     "realisedFreshFactor": 0.764331210191083,
+     "expectedFactor": 0.7643312101910827,
+     "soldBySpecies": [
+      195,
+      0,
+      0,
+      0,
+      0
+     ],
+     "flowsIdentical": true
+    },
+    {
+     "seed": 3,
+     "revenuePlain": 780,
+     "revenueEco": 585,
+     "ratio": 0.75,
+     "unitsSold": 195,
+     "products": 0,
+     "freshShare": 1,
+     "realisedFreshFactor": 0.7643312101910831,
+     "expectedFactor": 0.7643312101910827,
+     "soldBySpecies": [
+      195,
+      0,
+      0,
+      0,
+      0
+     ],
+     "flowsIdentical": true
+    }
+   ]
+  },
+  {
+   "id": "tuna-600",
+   "name": "start, tuna only",
+   "seconds": 600,
+   "seeds": 4,
+   "weights": [
+    0,
+    0,
+    0,
+    0,
+    1
+   ],
+   "meanRatio": 2.5,
+   "minRatio": 2.5,
+   "maxRatio": 2.5,
+   "meanRealisedFreshFactor": 2.5,
+   "meanFreshShare": 1,
+   "rows": [
+    {
+     "seed": 0,
+     "revenuePlain": 788,
+     "revenueEco": 1970,
+     "ratio": 2.5,
+     "unitsSold": 197,
+     "products": 0,
+     "freshShare": 1,
+     "realisedFreshFactor": 2.5,
+     "expectedFactor": 2.5,
+     "soldBySpecies": [
+      0,
+      0,
+      0,
+      0,
+      197
+     ],
+     "flowsIdentical": true
+    },
+    {
+     "seed": 1,
+     "revenuePlain": 784,
+     "revenueEco": 1960,
+     "ratio": 2.5,
+     "unitsSold": 196,
+     "products": 0,
+     "freshShare": 1,
+     "realisedFreshFactor": 2.5,
+     "expectedFactor": 2.5,
+     "soldBySpecies": [
+      0,
+      0,
+      0,
+      0,
+      196
+     ],
+     "flowsIdentical": true
+    },
+    {
+     "seed": 2,
+     "revenuePlain": 780,
+     "revenueEco": 1950,
+     "ratio": 2.5,
+     "unitsSold": 195,
+     "products": 0,
+     "freshShare": 1,
+     "realisedFreshFactor": 2.5,
+     "expectedFactor": 2.5,
+     "soldBySpecies": [
+      0,
+      0,
+      0,
+      0,
+      195
+     ],
+     "flowsIdentical": true
+    },
+    {
+     "seed": 3,
+     "revenuePlain": 780,
+     "revenueEco": 1950,
+     "ratio": 2.5,
+     "unitsSold": 195,
+     "products": 0,
+     "freshShare": 1,
+     "realisedFreshFactor": 2.5,
+     "expectedFactor": 2.5,
+     "soldBySpecies": [
+      0,
+      0,
+      0,
+      0,
+      195
+     ],
+     "flowsIdentical": true
+    }
+   ]
+  },
+  {
+   "id": "mid-1800",
+   "name": "mid: harbor tier 3 mix, factory, long run",
+   "seconds": 1800,
+   "seeds": 4,
+   "weights": "by harbor tier",
+   "meanRatio": 1.029653294250221,
+   "minRatio": 1.0253463732681336,
+   "maxRatio": 1.0332394366197184,
+   "meanRealisedFreshFactor": 1.3998865480094274,
+   "meanFreshShare": 0.07140852378038616,
+   "rows": [
+    {
+     "seed": 0,
+     "revenuePlain": 12449,
+     "revenueEco": 12859,
+     "ratio": 1.032934372238734,
+     "unitsSold": 1287,
+     "products": 1043,
+     "freshShare": 0.07839987147562053,
+     "realisedFreshFactor": 1.4005875193468293,
+     "expectedFactor": 1.3898089171974521,
+     "soldBySpecies": [
+      603.1,
+      335.2,
+      132.8,
+      135.6,
+      80.3
+     ],
+     "flowsIdentical": true
+    },
+    {
+     "seed": 1,
+     "revenuePlain": 12291,
+     "revenueEco": 12624,
+     "ratio": 1.0270929948742982,
+     "unitsSold": 1244,
+     "products": 1045,
+     "freshShare": 0.06476283459441869,
+     "realisedFreshFactor": 1.4044169390563963,
+     "expectedFactor": 1.3898089171974521,
+     "soldBySpecies": [
+      550.2,
+      319,
+      157.8,
+      132.8,
+      84.3
+     ],
+     "flowsIdentical": true
+    },
+    {
+     "seed": 2,
+     "revenuePlain": 12425,
+     "revenueEco": 12838,
+     "ratio": 1.0332394366197184,
+     "unitsSold": 1281,
+     "products": 1043,
+     "freshShare": 0.07661971830985916,
+     "realisedFreshFactor": 1.415244872144319,
+     "expectedFactor": 1.3898089171974521,
+     "soldBySpecies": [
+      591.5,
+      333.7,
+      126.6,
+      140.6,
+      88.6
+     ],
+     "flowsIdentical": true
+    },
+    {
+     "seed": 3,
+     "revenuePlain": 12270,
+     "revenueEco": 12581,
+     "ratio": 1.0253463732681336,
+     "unitsSold": 1244,
+     "products": 1042,
+     "freshShare": 0.06585167074164629,
+     "realisedFreshFactor": 1.3792968614901646,
+     "expectedFactor": 1.3898089171974521,
+     "soldBySpecies": [
+      573.9,
+      339.6,
+      133.1,
+      113.7,
+      83.6
+     ],
+     "flowsIdentical": true
+    }
+   ]
+  },
+  {
+   "id": "high-600",
+   "name": "high: harbor tier 3 mix, 10 haulers, factory tier 3",
+   "seconds": 600,
+   "seeds": 4,
+   "weights": "by harbor tier",
+   "meanRatio": 1,
+   "minRatio": 1,
+   "maxRatio": 1,
+   "meanRealisedFreshFactor": 1,
+   "meanFreshShare": 0,
+   "rows": [
+    {
+     "seed": 0,
+     "revenuePlain": 82022,
+     "revenueEco": 82022,
+     "ratio": 1,
+     "unitsSold": 548,
+     "products": 548,
+     "freshShare": 0,
+     "realisedFreshFactor": 1,
+     "expectedFactor": 1.3898089171974521,
+     "soldBySpecies": [
+      249.7,
+      147.2,
+      57.7,
+      59.8,
+      33.5
+     ],
+     "flowsIdentical": true
+    },
+    {
+     "seed": 1,
+     "revenuePlain": 78870,
+     "revenueEco": 78870,
+     "ratio": 1,
+     "unitsSold": 527,
+     "products": 527,
+     "freshShare": 0,
+     "realisedFreshFactor": 1,
+     "expectedFactor": 1.3898089171974521,
+     "soldBySpecies": [
+      238.3,
+      136.2,
+      65.9,
+      55.7,
+      30.9
+     ],
+     "flowsIdentical": true
+    },
+    {
+     "seed": 2,
+     "revenuePlain": 81413,
+     "revenueEco": 81413,
+     "ratio": 1,
+     "unitsSold": 544,
+     "products": 544,
+     "freshShare": 0,
+     "realisedFreshFactor": 1,
+     "expectedFactor": 1.3898089171974521,
+     "soldBySpecies": [
+      255.5,
+      137.6,
+      53.4,
+      59,
+      38.4
+     ],
+     "flowsIdentical": true
+    },
+    {
+     "seed": 3,
+     "revenuePlain": 77080,
+     "revenueEco": 77080,
+     "ratio": 1,
+     "unitsSold": 515,
+     "products": 515,
+     "freshShare": 0,
+     "realisedFreshFactor": 1,
+     "expectedFactor": 1.3898089171974521,
+     "soldBySpecies": [
+      231.1,
+      146.3,
+      56.3,
+      47.4,
+      34
+     ],
+     "flowsIdentical": true
+    }
+   ]
+  },
+  {
+   "id": "notier3-600",
+   "name": "harbor tier 3 mix, no factory (all fish sold fresh)",
+   "seconds": 600,
+   "seeds": 4,
+   "weights": "by harbor tier",
+   "meanRatio": 1.3940398329920574,
+   "minRatio": 1.3598684210526315,
+   "maxRatio": 1.4191542288557213,
+   "meanRealisedFreshFactor": 1.3891871369425848,
+   "meanFreshShare": 1,
+   "rows": [
+    {
+     "seed": 0,
+     "revenuePlain": 1608,
+     "revenueEco": 2282,
+     "ratio": 1.4191542288557213,
+     "unitsSold": 402,
+     "products": 0,
+     "freshShare": 1,
+     "realisedFreshFactor": 1.4124005814027318,
+     "expectedFactor": 1.3898089171974521,
+     "soldBySpecies": [
+      180.2,
+      106.2,
+      41.6,
+      50.1,
+      23.9
+     ],
+     "flowsIdentical": true
+    },
+    {
+     "seed": 1,
+     "revenuePlain": 1684,
+     "revenueEco": 2350,
+     "ratio": 1.3954869358669835,
+     "unitsSold": 421,
+     "products": 0,
+     "freshShare": 1,
+     "realisedFreshFactor": 1.3934221949997614,
+     "expectedFactor": 1.3898089171974521,
+     "soldBySpecies": [
+      193.3,
+      106.9,
+      51.8,
+      43.7,
+      25.2
+     ],
+     "flowsIdentical": true
+    },
+    {
+     "seed": 2,
+     "revenuePlain": 1576,
+     "revenueEco": 2209,
+     "ratio": 1.4016497461928934,
+     "unitsSold": 394,
+     "products": 0,
+     "freshShare": 1,
+     "realisedFreshFactor": 1.3969846826429124,
+     "expectedFactor": 1.3898089171974521,
+     "soldBySpecies": [
+      188.5,
+      98.4,
+      40.6,
+      39.2,
+      27.1
+     ],
+     "flowsIdentical": true
+    },
+    {
+     "seed": 3,
+     "revenuePlain": 1520,
+     "revenueEco": 2067,
+     "ratio": 1.3598684210526315,
+     "unitsSold": 380,
+     "products": 0,
+     "freshShare": 1,
+     "realisedFreshFactor": 1.353941088724933,
+     "expectedFactor": 1.3898089171974521,
+     "soldBySpecies": [
+      174.3,
+      113.2,
+      39.7,
+      28.6,
+      24.2
+     ],
+     "flowsIdentical": true
+    }
+   ]
+  }
+ ],
+ "acceptance": {
+  "pass": true
+ },
+ "prices": {
+  "base": [
+   0.6,
+   0.9,
+   1.4,
+   2,
+   3.5
+  ],
+  "norm": 0.785,
+  "limits": [
+   0.4,
+   2.5
+  ],
+  "perSpecies": [
+   {
+    "species": "sardine",
+    "raw": 0.7643,
+    "factor": 0.7643
+   },
+   {
+    "species": "mackerel",
+    "raw": 1.1465,
+    "factor": 1.1465
+   },
+   {
+    "species": "seabass",
+    "raw": 1.7834,
+    "factor": 1.7834
+   },
+   {
+    "species": "salmon",
+    "raw": 2.5478,
+    "factor": 2.5
+   },
+   {
+    "species": "tuna",
+    "raw": 4.4586,
+    "factor": 2.5
+   }
+  ],
+  "expectedByTier": [
+   {
+    "tier": 1,
+    "weights": [
+     0.55,
+     0.35,
+     0.1,
+     0,
+     0
+    ],
+    "factor": 1
+   },
+   {
+    "tier": 2,
+    "weights": [
+     0.5,
+     0.3,
+     0.12,
+     0.08,
+     0
+    ],
+    "factor": 1.1439
+   },
+   {
+    "tier": 3,
+    "weights": [
+     0.45,
+     0.27,
+     0.12,
+     0.1,
+     0.06
+    ],
+    "factor": 1.3898
+   }
+  ]
+ }
+}

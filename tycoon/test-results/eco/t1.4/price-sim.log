@@ -1,0 +1,12 @@
+ok   P1 every upgrade level, research, boost and harbor tier: rawPrice = original × one factor; prodPrice / priceMul unchanged; off = original
+ok   P2 steadyRate and the offline formula: one factor without a factory, unchanged with a factory
+ok   P3 every sale: register += round(products × price + fresh fish × price × shelf factor), start (raw only), 600 s
+ok   P3 every sale, mid (factory: products and fresh fish), 600 s
+ok   P3 every sale, tuna only (factor at its limit), 300 s
+ok   P4 start: plain = eco off = tracking only (whole economy); prices on: same flows, only money differs
+ok   P4 mid: plain = eco off = tracking only (whole economy); prices on: same flows, only money differs
+ok   P4 max: plain = eco off = tracking only (whole economy); prices on: same flows, only money differs
+ok   P5 directions (paired, 600 s): sardine only < start mix ≈ 1 < tuna only
+ok   P6 save → fresh modules → load: same expected factor, same shelf factor, same fresh-fish price
+ok   P7 never NaN / Infinity / ≤ 0: every fresh-fish price in 4 runs, and with a damaged shelf composition
+{"pass":true,"passed":11,"total":11}

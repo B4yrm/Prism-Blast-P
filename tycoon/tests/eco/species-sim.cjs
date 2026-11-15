@@ -45,6 +45,7 @@ function world(cfg, mode) {                       // mode: 'plain' (no adapter) 
   if (mode !== 'plain') {
     const r = m.A.install({ stat: m.stat, Sim: m.Sim, bus: m.bus, G: m.G }); assert.equal(r.ok, true, r.reason);
     assert.notEqual(m.initEco(S).status, 'future'); m.A.ecoState.on = mode === 'on';
+    m.A.ecoState.systems.price = false;   // these checks are about tracking: since T1.4 prices (on by default) change the cash register by design
   }
   const rnd = seedRandom();
   const sim = new m.Sim();

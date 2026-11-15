@@ -15,7 +15,7 @@
 const { chromium } = require('playwright');
 const path = require('path'), fs = require('fs');
 const [BASE, ECO, OLDPROD, OLDT12] = process.argv.slice(2, 6).map(f => 'file://' + path.resolve(f));
-const ECO_ON = ECO + '?eco=1', OUT = process.argv[6];
+const ECO_ON = ECO + '?eco=species', OUT = process.argv[6];   // tracking only: since T1.4, ?eco=1 also switches prices on, which change the cash register by design
 const root = path.resolve(__dirname, '../..');
 const BLANK = path.join(root, '.preview', 'blank.html');
 fs.mkdirSync(path.dirname(BLANK), { recursive: true }); fs.writeFileSync(BLANK, '<!doctype html><meta charset="utf-8"><title>blank</title>');

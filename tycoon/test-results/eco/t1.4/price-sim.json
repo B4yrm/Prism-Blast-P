@@ -1,0 +1,146 @@
+{
+ "test": "species prices against the real simulation",
+ "pass": true,
+ "passed": 11,
+ "total": 11,
+ "results": [
+  {
+   "name": "P1 every upgrade level, research, boost and harbor tier: rawPrice = original × one factor; prodPrice / priceMul unchanged; off = original",
+   "pass": true,
+   "ms": 9,
+   "info": {
+    "states": 432,
+    "factorsByTier": [
+     1,
+     1.1439,
+     1.3898
+    ]
+   }
+  },
+  {
+   "name": "P2 steadyRate and the offline formula: one factor without a factory, unchanged with a factory",
+   "pass": true,
+   "ms": 2,
+   "info": {
+    "start (no factory, tier 1)": {
+     "steadyOff": 0.793,
+     "steadyOn": 0.793,
+     "factor": 1,
+     "offlineHourOff": 1427,
+     "offlineHourOn": 1427
+    },
+    "no factory, tier 3": {
+     "steadyOff": 3,
+     "steadyOn": 4.1694,
+     "factor": 1.3898,
+     "offlineHourOff": 5400,
+     "offlineHourOn": 7504
+    },
+    "mid (factory)": {
+     "steadyOff": 6.6,
+     "steadyOn": 6.6,
+     "factor": 1.3898,
+     "offlineHourOff": 11880,
+     "offlineHourOn": 11880
+    }
+   }
+  },
+  {
+   "name": "P3 every sale: register += round(products × price + fresh fish × price × shelf factor), start (raw only), 600 s",
+   "pass": true,
+   "ms": 63,
+   "info": {
+    "sales": 115,
+    "rawUnits": 196,
+    "prodUnits": 0
+   }
+  },
+  {
+   "name": "P3 every sale, mid (factory: products and fresh fish), 600 s",
+   "pass": true,
+   "ms": 93,
+   "info": {
+    "sales": 193,
+    "rawUnits": 58,
+    "prodUnits": 324
+   }
+  },
+  {
+   "name": "P3 every sale, tuna only (factor at its limit), 300 s",
+   "pass": true,
+   "ms": 37,
+   "info": {
+    "sales": 54,
+    "rawUnits": 90,
+    "prodUnits": 0
+   }
+  },
+  {
+   "name": "P4 start: plain = eco off = tracking only (whole economy); prices on: same flows, only money differs",
+   "pass": true,
+   "ms": 204,
+   "info": {
+    "revenuePlain": 784,
+    "revenueOn": 805,
+    "ratio": 1.0268,
+    "unitsSold": 201,
+    "ofWhichProducts": 0
+   }
+  },
+  {
+   "name": "P4 mid: plain = eco off = tracking only (whole economy); prices on: same flows, only money differs",
+   "pass": true,
+   "ms": 304,
+   "info": {
+    "revenuePlain": 3796,
+    "revenueOn": 3901,
+    "ratio": 1.0277,
+    "unitsSold": 387,
+    "ofWhichProducts": 324
+   }
+  },
+  {
+   "name": "P4 max: plain = eco off = tracking only (whole economy); prices on: same flows, only money differs",
+   "pass": true,
+   "ms": 420,
+   "info": {
+    "revenuePlain": 79480,
+    "revenueOn": 79480,
+    "ratio": 1,
+    "unitsSold": 536,
+    "ofWhichProducts": 531
+   }
+  },
+  {
+   "name": "P5 directions (paired, 600 s): sardine only < start mix ≈ 1 < tuna only",
+   "pass": true,
+   "ms": 232,
+   "info": {
+    "sardineOnly": 0.75,
+    "startMix": 1.0268,
+    "tunaOnly": 2.5,
+    "note": "the initial stock is the start mix, so the pure-species runs move towards ×0.764 / ×2.5 over time; every sale is rounded to whole money by the simulation, which at a price of 4 turns ×0.764 into ×0.75 for one-fish sales"
+   }
+  },
+  {
+   "name": "P6 save → fresh modules → load: same expected factor, same shelf factor, same fresh-fish price",
+   "pass": true,
+   "ms": 67,
+   "info": {
+    "expected": 1.389809,
+    "shelfBefore": 1.3511402115720101,
+    "shelfAfter": 1.3511402115720101,
+    "priceBefore": 54.04560846288041,
+    "priceAfter": 54.04560846288041
+   }
+  },
+  {
+   "name": "P7 never NaN / Infinity / ≤ 0: every fresh-fish price in 4 runs, and with a damaged shelf composition",
+   "pass": true,
+   "ms": 177,
+   "info": {
+    "pricesChecked": 202
+   }
+  }
+ ]
+}

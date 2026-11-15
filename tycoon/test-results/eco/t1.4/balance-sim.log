@@ -1,0 +1,8 @@
+start-600    mean ×1.0056  [0.9761 … 1.0292]  fresh 100 %  realised fresh-fish factor ×1.0014  flows identical: true  eco off identical: true
+start-1800   mean ×1.0068  [1.0008 … 1.0139]  fresh 100 %  realised fresh-fish factor ×1.0039  flows identical: true
+sardine-600  mean ×0.7500  [0.7500 … 0.7500]  fresh 100 %  realised fresh-fish factor ×0.7643  flows identical: true
+tuna-600     mean ×2.5000  [2.5000 … 2.5000]  fresh 100 %  realised fresh-fish factor ×2.5000  flows identical: true
+mid-1800     mean ×1.0297  [1.0253 … 1.0332]  fresh 7 %  realised fresh-fish factor ×1.3999  flows identical: true
+high-600     mean ×1.0000  [1.0000 … 1.0000]  fresh 0 %  realised fresh-fish factor ×1.0000  flows identical: true
+notier3-600  mean ×1.3940  [1.3599 … 1.4192]  fresh 100 %  realised fresh-fish factor ×1.3892  flows identical: true
+{"pass":true,"failures":[]}

@@ -1,0 +1,822 @@
+[
+ {
+  "scenario": "start: 1 boat, 1 hauler",
+  "fps": 30,
+  "seconds": 600,
+  "samples": 1200,
+  "identical": false,
+  "unloadEventsIdentical": true,
+  "unloadEvents": 200,
+  "before": {
+   "money": 500,
+   "caught": 211,
+   "sold": 102,
+   "stock": {
+    "quay": 29,
+    "wh": 40,
+    "facOut": 0,
+    "mRaw": 30,
+    "mProd": 0
+   },
+   "unloadingShown": 200,
+   "shownWithBoatAway": 0
+  },
+  "after": {
+   "money": 500,
+   "caught": 211,
+   "sold": 102,
+   "stock": {
+    "quay": 29,
+    "wh": 40,
+    "facOut": 0,
+    "mRaw": 30,
+    "mProd": 0
+   },
+   "unloadingShown": 200,
+   "shownWithBoatAway": 0
+  },
+  "firstDiff": {
+   "sample": 113,
+   "seconds": 56.5,
+   "before": [
+    50000,
+    800,
+    7,
+    1,
+    0,
+    4,
+    0,
+    [
+     [
+      "toSrc",
+      10.3889,
+      19.6889,
+      -0.0167,
+      0
+     ]
+    ],
+    [
+     [
+      "dock",
+      6,
+      9.6,
+      26.5
+     ]
+    ],
+    7,
+    21,
+    3
+   ],
+   "after": [
+    50000,
+    900,
+    7,
+    1,
+    0,
+    4,
+    0,
+    [
+     [
+      "toSrc",
+      10.3889,
+      19.6889,
+      -0.0167,
+      0
+     ]
+    ],
+    [
+     [
+      "dock",
+      6,
+      9.6,
+      26.5
+     ]
+    ],
+    7,
+    21,
+    3
+   ]
+  },
+  "errors": [],
+  "viewport": {
+   "width": 200,
+   "height": 100
+  }
+ },
+ {
+  "scenario": "mid: 4 boats, 6 haulers, factory",
+  "fps": 30,
+  "seconds": 600,
+  "samples": 1200,
+  "identical": false,
+  "unloadEventsIdentical": false,
+  "unloadEvents": 443,
+  "before": {
+   "money": 500,
+   "caught": 505,
+   "sold": 88,
+   "stock": {
+    "quay": 120,
+    "wh": 100,
+    "facOut": 30,
+    "mRaw": 55,
+    "mProd": 55
+   },
+   "unloadingShown": 447,
+   "shownWithBoatAway": 0
+  },
+  "after": {
+   "money": 500,
+   "caught": 505,
+   "sold": 84,
+   "stock": {
+    "quay": 120,
+    "wh": 100,
+    "facOut": 30,
+    "mRaw": 55,
+    "mProd": 55
+   },
+   "unloadingShown": 443,
+   "shownWithBoatAway": 0
+  },
+  "firstDiff": {
+   "sample": 143,
+   "seconds": 71.5,
+   "before": [
+    50000,
+    7800,
+    120,
+    81,
+    11,
+    15,
+    0,
+    [
+     [
+      "toSrc",
+      15.1377,
+      19.5377,
+      -0.0167,
+      0
+     ],
+     [
+      "drop",
+      19.7336,
+      19.7336,
+      0.8,
+      6
+     ],
+     [
+      "toDst",
+      19.6579,
+      20.1579,
+      -0.0333,
+      3
+     ],
+     [
+      "idle",
+      19.4321,
+      19.4321,
+      0.0833,
+      0
+     ],
+     [
+      "drop",
+      19.7275,
+      19.7275,
+      0.6333,
+      6
+     ],
+     [
+      "toDst",
+      14.5774,
+      18.8774,
+      -0.0333,
+      6
+     ]
+    ],
+    [
+     [
+      "dock",
+      5,
+      9.6,
+      26.5
+     ],
+     [
+      "dock",
+      15,
+      16.6,
+      26.5
+     ],
+     [
+      "back",
+      28,
+      4.3,
+      27.088
+     ],
+     [
+      "fish",
+      4,
+      33,
+      36
+     ]
+    ],
+    9,
+    309,
+    10
+   ],
+   "after": [
+    50000,
+    8300,
+    120,
+    81,
+    11,
+    15,
+    0,
+    [
+     [
+      "toSrc",
+      15.1377,
+      19.5377,
+      -0.0167,
+      0
+     ],
+     [
+      "drop",
+      19.7336,
+      19.7336,
+      0.8,
+      6
+     ],
+     [
+      "toDst",
+      19.6579,
+      20.1579,
+      -0.0333,
+      3
+     ],
+     [
+      "idle",
+      19.4321,
+      19.4321,
+      0.0833,
+      0
+     ],
+     [
+      "drop",
+      19.7275,
+      19.7275,
+      0.6333,
+      6
+     ],
+     [
+      "toDst",
+      14.5774,
+      18.8774,
+      -0.0333,
+      6
+     ]
+    ],
+    [
+     [
+      "dock",
+      5,
+      9.6,
+      26.5
+     ],
+     [
+      "dock",
+      15,
+      16.6,
+      26.5
+     ],
+     [
+      "back",
+      28,
+      4.3,
+      27.088
+     ],
+     [
+      "fish",
+      4,
+      33,
+      36
+     ]
+    ],
+    9,
+    309,
+    10
+   ]
+  },
+  "errors": [],
+  "viewport": {
+   "width": 200,
+   "height": 100
+  }
+ },
+ {
+  "scenario": "high warehouse level (pick/drop 0.04 s), 10 haulers",
+  "fps": 30,
+  "seconds": 600,
+  "samples": 1200,
+  "identical": true,
+  "unloadEventsIdentical": true,
+  "unloadEvents": 2490,
+  "before": {
+   "money": 500,
+   "caught": 2561,
+   "sold": 524,
+   "stock": {
+    "quay": 120,
+    "wh": 1058,
+    "facOut": 628,
+    "mRaw": 80,
+    "mProd": 79
+   },
+   "unloadingShown": 2490,
+   "shownWithBoatAway": 0
+  },
+  "after": {
+   "money": 500,
+   "caught": 2561,
+   "sold": 524,
+   "stock": {
+    "quay": 120,
+    "wh": 1058,
+    "facOut": 628,
+    "mRaw": 80,
+    "mProd": 79
+   },
+   "unloadingShown": 2490,
+   "shownWithBoatAway": 0
+  },
+  "firstDiff": null,
+  "errors": [],
+  "viewport": {
+   "width": 200,
+   "height": 100
+  }
+ },
+ {
+  "scenario": "max 30/30, loop berths, 10 haulers",
+  "fps": 30,
+  "seconds": 600,
+  "samples": 1200,
+  "identical": true,
+  "unloadEventsIdentical": true,
+  "unloadEvents": 2361,
+  "before": {
+   "money": 500,
+   "caught": 2371,
+   "sold": 530,
+   "stock": {
+    "quay": 11,
+    "wh": 1013,
+    "facOut": 623,
+    "mRaw": 80,
+    "mProd": 77
+   },
+   "unloadingShown": 2312,
+   "shownWithBoatAway": 0
+  },
+  "after": {
+   "money": 500,
+   "caught": 2371,
+   "sold": 530,
+   "stock": {
+    "quay": 11,
+    "wh": 1013,
+    "facOut": 623,
+    "mRaw": 80,
+    "mProd": 77
+   },
+   "unloadingShown": 2312,
+   "shownWithBoatAway": 0
+  },
+  "firstDiff": null,
+  "errors": [],
+  "viewport": {
+   "width": 200,
+   "height": 100
+  }
+ },
+ {
+  "scenario": "mid at 15 FPS",
+  "fps": 15,
+  "seconds": 300,
+  "samples": 563,
+  "identical": false,
+  "unloadEventsIdentical": true,
+  "unloadEvents": 441,
+  "before": {
+   "money": 500,
+   "caught": 505,
+   "sold": 82,
+   "stock": {
+    "quay": 120,
+    "wh": 99,
+    "facOut": 30,
+    "mRaw": 55,
+    "mProd": 55
+   },
+   "unloadingShown": 441,
+   "shownWithBoatAway": 0
+  },
+  "after": {
+   "money": 500,
+   "caught": 505,
+   "sold": 82,
+   "stock": {
+    "quay": 120,
+    "wh": 99,
+    "facOut": 30,
+    "mRaw": 55,
+    "mProd": 55
+   },
+   "unloadingShown": 441,
+   "shownWithBoatAway": 0
+  },
+  "firstDiff": {
+   "sample": 129,
+   "seconds": 64.5,
+   "before": [
+    50000,
+    7800,
+    114,
+    71,
+    9,
+    15,
+    0,
+    [
+     [
+      "toDst",
+      11.9377,
+      22.5377,
+      -0.0333,
+      6
+     ],
+     [
+      "toDst",
+      11.1336,
+      22.7336,
+      -0.0333,
+      4
+     ],
+     [
+      "toDst",
+      19.6579,
+      22.4579,
+      -0.0333,
+      6
+     ],
+     [
+      "toDst",
+      15.4321,
+      10.0321,
+      -0.0333,
+      6
+     ],
+     [
+      "toDst",
+      11.5275,
+      22.7275,
+      -0.0333,
+      6
+     ],
+     [
+      "toDst",
+      15.3774,
+      22.5774,
+      -0.0333,
+      6
+     ]
+    ],
+    [
+     [
+      "dock",
+      6,
+      9.6,
+      26.5
+     ],
+     [
+      "dock",
+      19,
+      16.6,
+      26.5
+     ],
+     [
+      "back",
+      28,
+      1.531,
+      32.319
+     ],
+     [
+      "out",
+      0,
+      22.6,
+      26.41
+     ]
+    ],
+    9,
+    309,
+    10
+   ],
+   "after": [
+    50000,
+    8200,
+    114,
+    71,
+    9,
+    15,
+    0,
+    [
+     [
+      "toDst",
+      11.9377,
+      22.5377,
+      -0.0333,
+      6
+     ],
+     [
+      "toDst",
+      11.1336,
+      22.7336,
+      -0.0333,
+      4
+     ],
+     [
+      "toDst",
+      19.6579,
+      22.4579,
+      -0.0333,
+      6
+     ],
+     [
+      "toDst",
+      15.4321,
+      10.0321,
+      -0.0333,
+      6
+     ],
+     [
+      "toDst",
+      11.5275,
+      22.7275,
+      -0.0333,
+      6
+     ],
+     [
+      "toDst",
+      15.3774,
+      22.5774,
+      -0.0333,
+      6
+     ]
+    ],
+    [
+     [
+      "dock",
+      6,
+      9.6,
+      26.5
+     ],
+     [
+      "dock",
+      19,
+      16.6,
+      26.5
+     ],
+     [
+      "back",
+      28,
+      1.531,
+      32.319
+     ],
+     [
+      "out",
+      0,
+      22.6,
+      26.41
+     ]
+    ],
+    9,
+    309,
+    10
+   ]
+  },
+  "errors": [],
+  "viewport": {
+   "width": 200,
+   "height": 100
+  }
+ },
+ {
+  "scenario": "mid at 60 FPS",
+  "fps": 60,
+  "seconds": 300,
+  "samples": 600,
+  "identical": false,
+  "unloadEventsIdentical": true,
+  "unloadEvents": 436,
+  "before": {
+   "money": 500,
+   "caught": 505,
+   "sold": 77,
+   "stock": {
+    "quay": 120,
+    "wh": 99,
+    "facOut": 30,
+    "mRaw": 55,
+    "mProd": 55
+   },
+   "unloadingShown": 436,
+   "shownWithBoatAway": 0
+  },
+  "after": {
+   "money": 500,
+   "caught": 505,
+   "sold": 77,
+   "stock": {
+    "quay": 120,
+    "wh": 99,
+    "facOut": 30,
+    "mRaw": 55,
+    "mProd": 55
+   },
+   "unloadingShown": 436,
+   "shownWithBoatAway": 0
+  },
+  "firstDiff": {
+   "sample": 140,
+   "seconds": 70,
+   "before": [
+    50000,
+    7000,
+    120,
+    76,
+    10,
+    17,
+    0,
+    [
+     [
+      "toDst",
+      14.5377,
+      15.1377,
+      0,
+      6
+     ],
+     [
+      "toDst",
+      18.2336,
+      22.7336,
+      0,
+      3
+     ],
+     [
+      "toSrc",
+      19.1579,
+      19.6579,
+      -0.0167,
+      0
+     ],
+     [
+      "toDst",
+      19.4321,
+      22.4321,
+      0,
+      6
+     ],
+     [
+      "toDst",
+      18.5775,
+      22.7275,
+      0,
+      6
+     ],
+     [
+      "toDst",
+      19.5774,
+      20.5274,
+      0,
+      6
+     ]
+    ],
+    [
+     [
+      "dock",
+      5,
+      9.6,
+      26.5
+     ],
+     [
+      "dock",
+      15,
+      16.6,
+      26.5
+     ],
+     [
+      "back",
+      28,
+      4.3,
+      28.336
+     ],
+     [
+      "out",
+      0,
+      30.786,
+      34.34
+     ]
+    ],
+    8,
+    309,
+    8
+   ],
+   "after": [
+    50000,
+    7200,
+    120,
+    76,
+    10,
+    17,
+    0,
+    [
+     [
+      "toDst",
+      14.5377,
+      15.1377,
+      0,
+      6
+     ],
+     [
+      "toDst",
+      18.2336,
+      22.7336,
+      0,
+      3
+     ],
+     [
+      "toSrc",
+      19.1579,
+      19.6579,
+      -0.0167,
+      0
+     ],
+     [
+      "toDst",
+      19.4321,
+      22.4321,
+      0,
+      6
+     ],
+     [
+      "toDst",
+      18.5775,
+      22.7275,
+      0,
+      6
+     ],
+     [
+      "toDst",
+      19.5774,
+      20.5274,
+      0,
+      6
+     ]
+    ],
+    [
+     [
+      "dock",
+      5,
+      9.6,
+      26.5
+     ],
+     [
+      "dock",
+      15,
+      16.6,
+      26.5
+     ],
+     [
+      "back",
+      28,
+      4.3,
+      28.336
+     ],
+     [
+      "out",
+      0,
+      30.786,
+      34.34
+     ]
+    ],
+    8,
+    309,
+    8
+   ]
+  },
+  "errors": [],
+  "viewport": {
+   "width": 200,
+   "height": 100
+  }
+ }
+]

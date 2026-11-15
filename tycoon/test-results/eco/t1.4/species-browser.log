@@ -1,0 +1,20 @@
+ok   mid | 1 eco off: the whole game (300 s @30 FPS) is identical to base; S.eco not written; tracking never attached
+ok   mid | 1 eco on (?eco=1): the whole game is identical to base (state every 0.5 s, final save, global-random draws)
+ok   mid | 1 eco on: in-page audit every 2 s clean; no violation; nothing assumed; every kind of move seen
+ok   mid | 1 eco on: S.eco carries a varied composition (the saved game really holds tracked species)
+ok   max | 1 eco off: the whole game (300 s @30 FPS) is identical to base; S.eco not written; tracking never attached
+ok   max | 1 eco on (?eco=1): the whole game is identical to base (state every 0.5 s, final save, global-random draws)
+ok   max | 1 eco on: in-page audit every 2 s clean; no violation; nothing assumed; every kind of move seen
+ok   max | 1 eco on: S.eco carries a varied composition (the saved game really holds tracked species)
+ok   save | 2 session 1 (fixture mid, eco on, 200 s): status fresh, audit clean, no page error
+ok   save | 2 the save holds a valid, varied composition (shares sum to 1; a place with 4+ species; places away from the reference mix)
+ok   save | 2 the catch stream moved on in the save (it continues after a reload)
+ok   save | 2 reload: status ok, no repairs; the tracker attaches to the same composition (quantities equal, whole-number counts equal, sums = stock)
+ok   save | 2 continue 120 s after the reload: audit clean
+ok   rollback | 3 production index.html loads and saves it: S.eco identical value for value, progress untouched
+ok   rollback | 3 T1.2 eco build (does not know omix): status ok, S.eco identical including omix, progress untouched
+ok   rollback | 3 back in the eco build: status ok, no repairs, tracker attaches to the saved composition, audit clean
+ok   played-old | 4 production build played 25 s between two eco sessions (stock moved in wh,facOut,mProd): the eco build attaches, repairs only empty places, audit clean afterwards
+ok   future | 5 ?eco=1 on a newer S.eco: tracking stays off (setOn refused, never attached), S.eco byte-identical after 60 s of play and a save, one ECOERR line
+ok   upgrade | 6 T1.2-format S.eco (no omix): status repaired (omix filled), tracked, audit clean, other S.eco fields kept
+{"pass":true,"passed":19,"total":19}

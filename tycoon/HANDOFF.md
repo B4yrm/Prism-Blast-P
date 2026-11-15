@@ -72,7 +72,12 @@ boat routes and approved berths, multi-sea system, Stage 2 branch, Balıqçı Id
   Nothing in `src/sim`, `src/core`, `src/main.js`, `src/render`, the UI or the production build changed. New field `S.eco.omix` (no version bump).
   Exact moves, average-mix moves, assumptions and tests: `test-results/eco/T1.3-REPORT.md`. Catch weights for harbor tiers 2 and 3 are placeholders.
   Known: `tests/boat-sync.cjs` timing checks are noisy (base fails them too); `tests/eco/boat-visual-identity.cjs` is the deterministic check that the boats are drawn identically.
-- Waiting for approval before T1.4.
+- T1.4 done: species base prices (`src/eco/price.js`): with eco on, `stat.rawPrice()` × one factor = value(shelf mix) / value(start mix),
+  limited to [0.4, 2.5]; start mix ×1.000, sardine ×0.764, mackerel ×1.146, sea bass ×1.783, salmon and tuna ×2.5 (limited). Outside a sale
+  (steadyRate, shop, UI) the expected catch mix of the harbor tier is used. Products keep their price. Offline at load is unchanged (computed
+  before eco switches on). Balance: `tools/balance-sim.mjs` (start mix +0.6 % over 600 s × 8 seeds). Dev switches: `?eco=1` (tracking + prices),
+  `?eco=species` (tracking only). Report: `test-results/eco/T1.4-REPORT.md`. Open: tier 2/3 weights make fresh fish worth ×1.14 / ×1.39.
+- Waiting for approval before T1.5.
 
 ## Where things are
 

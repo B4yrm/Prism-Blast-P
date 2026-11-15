@@ -3,7 +3,8 @@
 //      a second install is refused; wrappers are one level deep; no page error, no ECOERR line
 //   2. the build without ECO has no eco layer at all
 //   3. the whole game stepped frame by frame (seeded, as tests/workers-regress.cjs does), 120 s at 30 FPS,
-//      is identical in: the build without ECO, the ECO build with eco off, the ECO build with eco on (clock only)
+//      is identical in: the build without ECO, the ECO build with eco off, the ECO build with eco on (clock and species tracking;
+//      since T1.4 the species prices are switched off for this check, because prices change the cash register by design)
 //   node tests/eco/eco-browser.cjs <base.html> <eco.html> [out.json]   → exit code 1 on failure
 const { chromium } = require('playwright');
 const path = require('path'), fs = require('fs');
@@ -38,7 +39,7 @@ async function stepped(b, url, ecoOn) {
   const { ctx, p, errs } = await open(b, url, { freeze: true });
   const r = await p.evaluate(on => {
     document.querySelectorAll('[data-m]').forEach(x => x.click());
-    if (on) window.__eco.setOn(true);
+    if (on) { window.__eco.setOn(true); if (window.__eco.setSystems) window.__eco.setSystems({ price: false }); }
     __game.loop.sleep(); window.__go = true; { const gs = __game.step.bind(__game); __game.step = (t, d) => { __game.loop.delta = d; __game.loop.rawDelta = d; return gs(t, d); }; }
     let seed = 4242; Math.random = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
     const sim = __game.scene.getScene('world').sim, S = sim.S, trace = [];
@@ -83,7 +84,7 @@ async function stepped(b, url, ecoOn) {
     const diff = (x, y) => x.trace.findIndex((t, k) => t !== y.trace[k]);
     const dOff = diff(a, off), dOn = diff(a, on);
     check('stepped 120 s @30 FPS: base == eco off', dOff === -1 && a.trace.length === off.trace.length && !off.errs.length, { firstDiffSec: dOff < 0 ? null : dOff / 2, samples: a.trace.length, money: Math.floor(a.money), caught: a.caught, sold: a.sold });
-    check('stepped 120 s @30 FPS: base == eco on (clock only), clock = 2 game hours', dOn === -1 && !on.errs.length && on.clock.hours === 2, { firstDiffSec: dOn < 0 ? null : dOn / 2, clock: on.clock, offClock: off.clock });
+    check('stepped 120 s @30 FPS: base == eco on (clock + tracking, prices off), clock = 2 game hours', dOn === -1 && !on.errs.length && on.clock.hours === 2, { firstDiffSec: dOn < 0 ? null : dOn / 2, clock: on.clock, offClock: off.clock });
   }
   await b.close();
   const out = { test: 'eco skeleton in the page', pass: res.every(r => r.pass), results: res };

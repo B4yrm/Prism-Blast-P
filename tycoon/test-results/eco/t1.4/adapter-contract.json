@@ -1,0 +1,58 @@
+{
+ "test": "eco adapter contract",
+ "pass": true,
+ "results": [
+  {
+   "name": "contract: stat / Sim.prototype / bus",
+   "pass": true,
+   "info": {
+    "stat": 14,
+    "simProto": 8
+   }
+  },
+  {
+   "name": "contract: fields of a live Sim and of the save",
+   "pass": true
+  },
+  {
+   "name": "install runs once; wrappers one level deep; second module copy refused",
+   "pass": true,
+   "info": {
+    "first": {
+     "ok": true,
+     "reason": ""
+    },
+    "second": {
+     "ok": false,
+     "reason": "already installed"
+    },
+    "secondCopy": {
+     "ok": false,
+     "reason": "already installed"
+    }
+   }
+  },
+  {
+   "name": "no crash before the save exists (G.S === null)",
+   "pass": true
+  },
+  {
+   "name": "eco off: wrapped stat values are exactly the originals (many states, modifier registered)",
+   "pass": true,
+   "info": {
+    "comparisons": 2100
+   }
+  },
+  {
+   "name": "simulation 600 s @30 FPS identical: no adapter / adapter off / adapter on (clock only)",
+   "pass": true,
+   "info": {
+    "samples": 1200,
+    "money": 500,
+    "caught": 485,
+    "sold": 65,
+    "clockOn": 10
+   }
+  }
+ ]
+}

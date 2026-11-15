@@ -1,0 +1,419 @@
+{
+ "test": "species tracking in the page",
+ "pass": true,
+ "passed": 19,
+ "total": 19,
+ "results": [
+  {
+   "group": "mid",
+   "name": "1 eco off: the whole game (300 s @30 FPS) is identical to base; S.eco not written; tracking never attached",
+   "pass": true,
+   "info": {
+    "diffAtSample": -1,
+    "draws": [
+     43958,
+     43958
+    ]
+   }
+  },
+  {
+   "group": "mid",
+   "name": "1 eco on (?eco=1): the whole game is identical to base (state every 0.5 s, final save, global-random draws)",
+   "pass": true,
+   "info": {
+    "diffAtSample": -1,
+    "draws": [
+     43958,
+     43958
+    ],
+    "ecoerr": [],
+    "errs": []
+   }
+  },
+  {
+   "group": "mid",
+   "name": "1 eco on: in-page audit every 2 s clean; no violation; nothing assumed; every kind of move seen",
+   "pass": true,
+   "info": {
+    "errors": [],
+    "events": {
+     "catch": 18,
+     "unload": 447,
+     "pick": 154,
+     "drop": 154,
+     "entry": 152,
+     "exit": 152,
+     "sale": 45,
+     "assumed": 0,
+     "clamped": 0
+    },
+    "caught": [
+     228,
+     131,
+     53,
+     62,
+     30
+    ],
+    "sold": [
+     39,
+     21.6,
+     9.5,
+     11.1,
+     5.8
+    ]
+   }
+  },
+  {
+   "group": "mid",
+   "name": "1 eco on: S.eco carries a varied composition (the saved game really holds tracked species)",
+   "pass": true,
+   "info": {
+    "mix": {
+     "quay": [
+      0.4362079760984294,
+      0.27040355916128844,
+      0.11680238998140531,
+      0.12477977102438818,
+      0.05180630373448876
+     ],
+     "wh": [
+      0.4400596398367381,
+      0.27015485406216044,
+      0.10222944659577587,
+      0.13306644426150205,
+      0.05448961524382363
+     ],
+     "mRaw": [
+      0.4558922517271437,
+      0.24563544042442353,
+      0.10354111251735552,
+      0.1279881069762519,
+      0.0669430883548255
+     ]
+    },
+    "omix": {
+     "facOut": [
+      0.44243613496112777,
+      0.2696097382276013,
+      0.09868689908587622,
+      0.13375261821990456,
+      0.0555146095054901
+     ],
+     "mProd": [
+      0.4516937649435724,
+      0.26443675847027326,
+      0.09421364940891165,
+      0.13226626190989443,
+      0.05738956526734834
+     ]
+    }
+   }
+  },
+  {
+   "group": "max",
+   "name": "1 eco off: the whole game (300 s @30 FPS) is identical to base; S.eco not written; tracking never attached",
+   "pass": true,
+   "info": {
+    "diffAtSample": -1,
+    "draws": [
+     73912,
+     73912
+    ]
+   }
+  },
+  {
+   "group": "max",
+   "name": "1 eco on (?eco=1): the whole game is identical to base (state every 0.5 s, final save, global-random draws)",
+   "pass": true,
+   "info": {
+    "diffAtSample": -1,
+    "draws": [
+     73912,
+     73912
+    ],
+    "ecoerr": [],
+    "errs": []
+   }
+  },
+  {
+   "group": "max",
+   "name": "1 eco on: in-page audit every 2 s clean; no violation; nothing assumed; every kind of move seen",
+   "pass": true,
+   "info": {
+    "errors": [],
+    "events": {
+     "catch": 118,
+     "unload": 1168,
+     "pick": 622,
+     "drop": 619,
+     "entry": 976,
+     "exit": 976,
+     "sale": 132,
+     "assumed": 0,
+     "clamped": 0
+    },
+    "caught": [
+     543,
+     308,
+     125,
+     126,
+     78
+    ],
+    "sold": [
+     120,
+     70.4,
+     29.8,
+     32.7,
+     17.1
+    ]
+   }
+  },
+  {
+   "group": "max",
+   "name": "1 eco on: S.eco carries a varied composition (the saved game really holds tracked species)",
+   "pass": true,
+   "info": {
+    "mix": {
+     "quay": [
+      0.4189378255510344,
+      0.35186099219340217,
+      0.09391615528370159,
+      0.13528502697186182,
+      0
+     ],
+     "wh": [
+      0.46782427300126467,
+      0.21573806631812945,
+      0.11884616261501323,
+      0.12319921985820861,
+      0.074392278207384
+     ],
+     "mRaw": [
+      0.55,
+      0.35,
+      0.1,
+      0,
+      0
+     ]
+    },
+    "omix": {
+     "facOut": [
+      0.4672186210320393,
+      0.2690003978788287,
+      0.10224440249959621,
+      0.09387423200022577,
+      0.06766234658931002
+     ],
+     "mProd": [
+      0.4629771868865051,
+      0.2717697321087181,
+      0.0987184625615874,
+      0.10306234114944604,
+      0.06347227729374351
+     ]
+    }
+   }
+  },
+  {
+   "group": "save",
+   "name": "2 session 1 (fixture mid, eco on, 200 s): status fresh, audit clean, no page error",
+   "pass": true,
+   "info": {
+    "st1": "fresh",
+    "errors": [],
+    "errs": []
+   }
+  },
+  {
+   "group": "save",
+   "name": "2 the save holds a valid, varied composition (shares sum to 1; a place with 4+ species; places away from the reference mix)",
+   "pass": true,
+   "info": {
+    "mix": {
+     "quay": [
+      0.4109717081925324,
+      0.2931549024353586,
+      0.12553773552798206,
+      0.08561930931526764,
+      0.08471634452885926
+     ],
+     "wh": [
+      0.42094425141652164,
+      0.2884689647470303,
+      0.13406055661756838,
+      0.08803806608029041,
+      0.06848816113858924
+     ],
+     "mRaw": [
+      0.4541458156381321,
+      0.2916289086052299,
+      0.12756237304999063,
+      0.07965053041621796,
+      0.04701237229042931
+     ]
+    },
+    "omix": {
+     "facOut": [
+      0.44500806239928525,
+      0.29410419995021303,
+      0.128780382595739,
+      0.07954487612776649,
+      0.052562478926996226
+     ],
+     "mProd": [
+      0.45955689300878433,
+      0.2997576993030981,
+      0.12495406627256211,
+      0.07175361828501418,
+      0.04397772313054121
+     ]
+    },
+    "catchStream": [
+     3018008557,
+     3875372065,
+     1981050218,
+     1167283726
+    ]
+   }
+  },
+  {
+   "group": "save",
+   "name": "2 the catch stream moved on in the save (it continues after a reload)",
+   "pass": true
+  },
+  {
+   "group": "save",
+   "name": "2 reload: status ok, no repairs; the tracker attaches to the same composition (quantities equal, whole-number counts equal, sums = stock)",
+   "pass": true,
+   "info": {
+    "rep2": {
+     "status": "ok",
+     "usable": true,
+     "v": 1,
+     "repairs": [],
+     "reason": "",
+     "blocked": false,
+     "inits": 1
+    },
+    "maxQ": 9.237055564881302e-14,
+    "countDiff": 0
+   }
+  },
+  {
+   "group": "save",
+   "name": "2 continue 120 s after the reload: audit clean",
+   "pass": true,
+   "info": {
+    "errors": [],
+    "errs": []
+   }
+  },
+  {
+   "group": "rollback",
+   "name": "3 production index.html loads and saves it: S.eco identical value for value, progress untouched",
+   "pass": true,
+   "info": {
+    "ecoEqual": true,
+    "diffKeys": []
+   }
+  },
+  {
+   "group": "rollback",
+   "name": "3 T1.2 eco build (does not know omix): status ok, S.eco identical including omix, progress untouched",
+   "pass": true,
+   "info": {
+    "rep12": {
+     "status": "ok",
+     "usable": true,
+     "v": 1,
+     "repairs": [],
+     "reason": "",
+     "blocked": false,
+     "inits": 1
+    },
+    "ecoEqual": true
+   }
+  },
+  {
+   "group": "rollback",
+   "name": "3 back in the eco build: status ok, no repairs, tracker attaches to the saved composition, audit clean",
+   "pass": true,
+   "info": {
+    "rep3": {
+     "status": "ok",
+     "usable": true,
+     "v": 1,
+     "repairs": [],
+     "reason": "",
+     "blocked": false,
+     "inits": 1
+    },
+    "maxS3": 0,
+    "errors": []
+   }
+  },
+  {
+   "group": "played-old",
+   "name": "4 production build played 25 s between two eco sessions (stock moved in wh,facOut,mProd): the eco build attaches, repairs only empty places, audit clean afterwards",
+   "pass": true,
+   "info": {
+    "rep": {
+     "status": "ok",
+     "usable": true,
+     "v": 1,
+     "repairs": [],
+     "reason": "",
+     "blocked": false,
+     "inits": 1
+    },
+    "moved": [
+     "wh",
+     "facOut",
+     "mProd"
+    ],
+    "errors": [],
+    "errs": []
+   }
+  },
+  {
+   "group": "future",
+   "name": "5 ?eco=1 on a newer S.eco: tracking stays off (setOn refused, never attached), S.eco byte-identical after 60 s of play and a save, one ECOERR line",
+   "pass": true,
+   "info": {
+    "rep": {
+     "status": "future",
+     "usable": false,
+     "v": 2,
+     "repairs": [],
+     "reason": "S.eco schema v2 is newer than this build (v1); kept unchanged, eco stays off",
+     "blocked": true,
+     "inits": 1
+    },
+    "on": false,
+    "setOn": false,
+    "att": false
+   }
+  },
+  {
+   "group": "upgrade",
+   "name": "6 T1.2-format S.eco (no omix): status repaired (omix filled), tracked, audit clean, other S.eco fields kept",
+   "pass": true,
+   "info": {
+    "rep": {
+     "status": "repaired",
+     "usable": true,
+     "v": 1,
+     "repairs": [
+      "omix: missing",
+      "omix.facOut: missing",
+      "omix.mProd: missing"
+     ],
+     "reason": "",
+     "blocked": false,
+     "inits": 1
+    },
+    "errors": []
+   }
+  }
+ ]
+}

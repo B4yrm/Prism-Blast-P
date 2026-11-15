@@ -1,0 +1,20 @@
+unit rc=0 secs=1
+no-math-random rc=0 secs=0
+adapter-contract rc=0 secs=0
+stock-writers rc=0 secs=1
+species-sim rc=0 secs=2
+price-sim rc=0 secs=2
+balance-sim rc=0 secs=5
+workers-regress-off rc=0 secs=472
+workers-regress-species rc=0 secs=475
+workers-regress-prices rc=1 secs=481
+save-compare-existing-off rc=1 secs=49
+run-tests-off rc=0 secs=177
+run-tests-prices rc=0 secs=176
+outer-save-off rc=0 secs=160
+eco-browser rc=0 secs=34
+species-browser rc=0 secs=273
+save-matrix rc=0 secs=168
+boat-visual-species rc=0 secs=556
+boat-visual-prices rc=1 secs=552
+DONE

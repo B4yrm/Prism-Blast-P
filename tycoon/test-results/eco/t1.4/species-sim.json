@@ -1,0 +1,271 @@
+{
+ "test": "species ledger against the real simulation",
+ "pass": true,
+ "passed": 15,
+ "total": 15,
+ "results": [
+  {
+   "name": "A start: 1 boat, 1 hauler, no factory: audited every step; simulation identical with no adapter / off / on",
+   "pass": true,
+   "ms": 226,
+   "info": {
+    "events": {
+     "catch": 21,
+     "unload": 200,
+     "pick": 57,
+     "drop": 57,
+     "entry": 0,
+     "exit": 0,
+     "sale": 61,
+     "assumed": 0,
+     "clamped": 0
+    },
+    "caught": [
+     114,
+     69,
+     27,
+     0,
+     0
+    ],
+    "sold": [
+     45.2,
+     45.5,
+     9.2,
+     0,
+     0
+    ],
+    "msPerRun": {
+     "plain": 56,
+     "off": 56,
+     "on": 105
+    },
+    "draws": 4615
+   }
+  },
+  {
+   "name": "A mid: 4 boats, 6 haulers, factory: audited every step; simulation identical with no adapter / off / on",
+   "pass": true,
+   "ms": 253,
+   "info": {
+    "events": {
+     "catch": 18,
+     "unload": 437,
+     "pick": 161,
+     "drop": 161,
+     "entry": 156,
+     "exit": 156,
+     "sale": 43,
+     "assumed": 0,
+     "clamped": 0
+    },
+    "caught": [
+     228,
+     131,
+     53,
+     62,
+     30
+    ],
+    "sold": [
+     34.6,
+     19.1,
+     8.4,
+     9.8,
+     5.1
+    ],
+    "msPerRun": {
+     "plain": 77,
+     "off": 65,
+     "on": 106
+    },
+    "draws": 2532
+   }
+  },
+  {
+   "name": "A high warehouse level, 10 haulers: audited every step; simulation identical with no adapter / off / on",
+   "pass": true,
+   "ms": 244,
+   "info": {
+    "events": {
+     "catch": 64,
+     "unload": 2490,
+     "pick": 740,
+     "drop": 738,
+     "entry": 1235,
+     "exit": 1227,
+     "sale": 264,
+     "assumed": 0,
+     "clamped": 0
+    },
+    "caught": [
+     1174,
+     717,
+     274,
+     253,
+     142
+    ],
+    "sold": [
+     239.1,
+     141,
+     55.2,
+     57.5,
+     32.2
+    ],
+    "msPerRun": {
+     "plain": 66,
+     "off": 73,
+     "on": 101
+    },
+    "draws": 8005
+   }
+  },
+  {
+   "name": "A max 30/30, loop berths, 10 haulers: audited every step; simulation identical with no adapter / off / on",
+   "pass": true,
+   "ms": 303,
+   "info": {
+    "events": {
+     "catch": 237,
+     "unload": 2361,
+     "pick": 1146,
+     "drop": 1142,
+     "entry": 1240,
+     "exit": 1238,
+     "sale": 271,
+     "assumed": 0,
+     "clamped": 0
+    },
+    "caught": [
+     1092,
+     653,
+     254,
+     235,
+     136
+    ],
+    "sold": [
+     242.2,
+     140.8,
+     56.3,
+     57.7,
+     34
+    ],
+    "msPerRun": {
+     "plain": 83,
+     "off": 90,
+     "on": 126
+    },
+    "draws": 7362
+   }
+  },
+  {
+   "name": "B one species only (tuna): every other species is exactly 0 in every place, always",
+   "pass": true,
+   "ms": 88,
+   "info": {
+    "tunaSold": 77,
+    "tunaCaught": 504
+   }
+  },
+  {
+   "name": "C boats 0 and 2 catch only sardines, boats 1 and 3 only tuna: cargo purity, caught per species = what the boats brought in",
+   "pass": true,
+   "ms": 136,
+   "info": {
+    "sardineCaught": 1180,
+    "tunaCaught": 1190
+   }
+  },
+  {
+   "name": "D no haulers: the quay fills, boats unload part of their catch and wait with the rest; then haulers arrive",
+   "pass": true,
+   "ms": 61,
+   "info": {
+    "partialUnloadSteps": 344,
+    "boatHeldUpSteps": 39442,
+    "mostAboardWhileHeldUp": 28,
+    "picksAfterHaulersArrived": 69
+   }
+  },
+  {
+   "name": "E warehouse capacity lowered while haulers carry: the cut-short deliveries are counted with their species, the audits stay clean",
+   "pass": true,
+   "ms": 84,
+   "info": {
+    "cutShort": 2,
+    "fishLost": 51,
+    "lostBySpecies": [
+     23.75,
+     12.6,
+     4.91,
+     6.63,
+     3.12
+    ]
+   }
+  },
+  {
+   "name": "F tracking started mid-session: boats, haulers and conveyor units already loaded are assumed and counted; everything afterwards is audited",
+   "pass": true,
+   "ms": 71,
+   "info": {
+    "inBoats": 41,
+    "carried": 4,
+    "conveyorUnits": 3,
+    "assumedEvents": 9
+   }
+  },
+  {
+   "name": "G on → off → on: nothing is written to S.eco while off; tracking restarts from the saved composition",
+   "pass": true,
+   "ms": 70,
+   "info": {
+    "assumedAfterRestart": 11,
+    "qtyBeforeOff": [
+     42.32,
+     22.71,
+     8.64,
+     11.86,
+     5.48
+    ]
+   }
+  },
+  {
+   "name": "H save → fresh modules → load → continue: composition and whole-number counts survive; the audits stay clean",
+   "pass": true,
+   "ms": 146,
+   "info": {
+    "placesWithMixedSpecies": 5
+   }
+  },
+  {
+   "name": "I mutation: with the updBoat observer removed the audits report errors",
+   "pass": true,
+   "ms": 6,
+   "info": {
+    "firstError": "step 285 (9.5 s): boat 0 (back): cargo 0 vs load 28 | the tracker reported: boat 0: cargo 0 vs load 28"
+   }
+  },
+  {
+   "name": "I mutation: with the updWorker observer removed the audits report errors",
+   "pass": true,
+   "ms": 13,
+   "info": {
+    "firstError": "step 744 (24.8 s): quay: species sum 112.00000000000003 vs stock 111 | hauler 0 (toDst): batch 0 vs carry 1 | the tracker reported: quay: tr"
+   }
+  },
+  {
+   "name": "I mutation: with the updFactory observer removed the audits report errors",
+   "pass": true,
+   "ms": 15,
+   "info": {
+    "firstError": "step 892 (29.7 s): wh: species sum 1.0000000000000002 vs stock 0 | conveyor 0 vs 1 | the tracker reported: wh: tracked 1.0000000000000002 vs"
+   }
+  },
+  {
+   "name": "I mutation: with the updCustomers observer removed the audits report errors",
+   "pass": true,
+   "ms": 30,
+   "info": {
+    "firstError": "step 1937 (64.6 s): mProd: species sum 6 vs stock 5 | the tracker reported: mProd: tracked 6 vs simulation 5"
+   }
+  }
+ ]
+}

@@ -1,0 +1,9 @@
+eco-on-r1 rc=1
+base-r1 rc=1
+eco-on-r2 rc=1
+base-r2 rc=1
+base-r3 rc=1
+eco-on-r3 rc=0
+base-r4 rc=1
+eco-on-r4 rc=0
+DONE

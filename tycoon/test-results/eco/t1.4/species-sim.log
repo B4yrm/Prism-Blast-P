@@ -1,0 +1,20 @@
+ok   A start: 1 boat, 1 hauler, no factory: audited every step; simulation identical with no adapter / off / on
+ok   A mid: 4 boats, 6 haulers, factory: audited every step; simulation identical with no adapter / off / on
+ok   A high warehouse level, 10 haulers: audited every step; simulation identical with no adapter / off / on
+ok   A max 30/30, loop berths, 10 haulers: audited every step; simulation identical with no adapter / off / on
+ok   B one species only (tuna): every other species is exactly 0 in every place, always
+ok   C boats 0 and 2 catch only sardines, boats 1 and 3 only tuna: cargo purity, caught per species = what the boats brought in
+ok   D no haulers: the quay fills, boats unload part of their catch and wait with the rest; then haulers arrive
+ok   E warehouse capacity lowered while haulers carry: the cut-short deliveries are counted with their species, the audits stay clean
+ok   F tracking started mid-session: boats, haulers and conveyor units already loaded are assumed and counted; everything afterwards is audited
+ok   G on → off → on: nothing is written to S.eco while off; tracking restarts from the saved composition
+ok   H save → fresh modules → load → continue: composition and whole-number counts survive; the audits stay clean
+ECOERR species boat 0: cargo 0 vs load 28
+ok   I mutation: with the updBoat observer removed the audits report errors
+ECOERR species quay: tracked 112.00000000000003 vs simulation 111
+ok   I mutation: with the updWorker observer removed the audits report errors
+ECOERR species wh: tracked 1.0000000000000002 vs simulation 0
+ok   I mutation: with the updFactory observer removed the audits report errors
+ECOERR species mProd: tracked 6 vs simulation 5
+ok   I mutation: with the updCustomers observer removed the audits report errors
+{"pass":true,"passed":15,"total":15}
