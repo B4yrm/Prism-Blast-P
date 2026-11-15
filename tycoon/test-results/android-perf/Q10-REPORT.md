@@ -84,7 +84,25 @@ or the CPU/PSS collection work. Those are only known after an Actions run. The s
 
 ## 6. GitHub Actions run
 
-See the section appended at the end of this file by the commit that records the run (or its absence).
+**Not run.** After pushing `0f8006f`, a manual dispatch was attempted through the GitHub API
+(`POST /actions/workflows/android-eco-perf.yml/dispatches`, ref `claude/clever-maxwell-tolun5`, inputs runs=3, warm-up 30, window 90, preset medium, `save-mid`) and was refused with
+**404 Not Found**. `list_workflows` shows only "Build Android APK" and "pages-build-deployment": GitHub registers a `workflow_dispatch` workflow only once its file exists on the
+**default branch** (`main`), and this one exists only on the feature branch. Pushing to `main` is outside this task's branch permission, so nothing else was tried.
+
+| Item | State |
+|---|---|
+| Run id / status | none (not started) |
+| Artifact `android-eco-perf-<run id>` | does not exist yet |
+| Production APK workflow | not triggered by the push (latest run is still #44 of 2026-11-14) |
+
+To start it (needs your decision, since it means putting the workflow file on `main`):
+
+1. Put `.github/workflows/android-eco-perf.yml` on `main` (merge or cherry-pick that one file; it is manual-only and cannot run by itself).
+2. Actions, "Android eco performance (manual)", Run workflow, **branch `claude/clever-maxwell-tolun5`** (the run uses the file and tools from the chosen ref), defaults runs=3, warm-up 30, window 90, preset medium, `save-mid`. Or:
+   `gh workflow run android-eco-perf.yml --ref claude/clever-maxwell-tolun5 -f runs=3 -f duration=90 -f preset=medium -f save=save-mid`
+3. About 50 minutes. Artifact `android-eco-perf-<run id>`: `out/REPORT.md`, `out/summary.json`, `out/device.json`, `out/driver.json`, `out/raw/run<N>-<mode>/` (`logcat-full.txt` with every raw frame interval, `probe-lines.txt`, `gfxinfo.txt`,
+   `meminfo-*.txt`, `run.json`), `assets/manifest.json` (hashes of the exact pages measured), `protected.sha256` / `protected-after.sha256`, `analyze.log`.
+4. If the first run fails on one of the unverified points in section 7, the failing step's log and the artifact (uploaded even on failure) say which; fix the tooling and re-run. Do not read a failed run's partial numbers as a result.
 
 ## 7. Open risks
 

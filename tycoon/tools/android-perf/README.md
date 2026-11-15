@@ -6,6 +6,9 @@ builds, never the production page. It commits nothing, pushes nothing, writes on
 
 ## Start it
 
+**Prerequisite:** GitHub only offers (and accepts API dispatch for) a `workflow_dispatch` workflow whose file is on the default branch. Until `.github/workflows/android-eco-perf.yml`
+is on `main`, dispatch answers 404 (seen on 2026-11-15). The run itself uses the workflow file and tools of the branch you pick.
+
 GitHub: Actions, "Android eco performance (manual)", Run workflow on branch `claude/clever-maxwell-tolun5`.
 Inputs: `runs` (3-6, default 3), `warmup` (s, default 30), `duration` (s, default 90), `preset` (default medium), `save`
 (`save-mid` default, from `tycoon/tests/fixtures`). With `gh`:

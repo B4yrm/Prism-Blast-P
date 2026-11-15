@@ -85,7 +85,7 @@ boat routes and approved berths, multi-sea system, Stage 2 branch, Balıqçı Id
   app data cleared before every run; a surviving save fails the run. FPS comes from page `requestAnimationFrame` intervals; `gfxinfo` is listed separately.
 - It builds a perf APK from a temporary **copy** of `android/` (applicationId `az.fishing.tycoon.perf`). Nothing under `android/`, `tycoon/index.html`, `apk/` or `android-apk.yml`
   was changed (hash-checked). Do not edit `android/**` or `tycoon/index.html` for perf work: that triggers the production APK workflow, which commits APKs.
-- Local checks: actionlint clean, self test 15/15. **Not verified on Android:** the first Actions run decides. Report: `test-results/android-perf/Q10-REPORT.md`; how to run: `tools/android-perf/README.md`.
+- Local checks: actionlint clean, self test 15/15. **Not verified on Android, not yet run:** dispatch returned 404 because the workflow file is not on `main` (GitHub needs it there). Putting that one file on `main` is the owner's decision; then run it with branch `claude/clever-maxwell-tolun5`. Report: `test-results/android-perf/Q10-REPORT.md`; how to run: `tools/android-perf/README.md`.
 - Self test: `cd tycoon && npm ci && bash tools/android-perf/selftest/run-selftest.sh /tmp/q10-selftest` (Chromium numbers, never quote as Android).
 - Waiting for approval before T1.5.
 
