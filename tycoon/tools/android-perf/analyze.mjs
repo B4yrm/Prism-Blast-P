@@ -62,11 +62,24 @@ export function analyze(dir, historyDir) {
     if (ev && ev.micro) r.micro = ev.micro;
     const gfx = readIf(path.join(rawDir, d, 'gfxinfo.txt'));
     if (gfx) r.gfx = parseGfxinfo(gfx);
-    const ms = readIf(path.join(rawDir, d, 'meminfo-start.txt')), me = readIf(path.join(rawDir, d, 'meminfo-end.txt'));
-    const fs0 = readIf(path.join(rawDir, d, 'meminfo-full-start.txt')), fe = readIf(path.join(rawDir, d, 'meminfo-full-end.txt'));
     const pkg = (driver && driver.pkg) || 'az.fishing.tycoon.perf';
-    if (me) r.memEnd = { ...parseMeminfoPkg(me), ...(fe ? parseMeminfoProcesses(fe, pkg) : {}) };
-    if (ms) r.memStart = { ...parseMeminfoPkg(ms), ...(fs0 ? parseMeminfoProcesses(fs0, pkg) : {}) };
+    const memFrom = (snap, tag) => {
+      if (!snap) return null;
+      const procs = snap.procs.map(q => { const txt = readIf(path.join(rawDir, d, q.file)); const m = txt ? parseMeminfoPkg(txt) : {}; return { pid: q.pid, name: q.name, role: q.role, pssKb: m.totalPssKb ?? null }; });
+      const sum = role => { const l = procs.filter(q => q.role === role); return l.length && l.every(q => q.pssKb != null) ? l.reduce((a, q) => a + q.pssKb, 0) : null; };
+      const appKb = sum('app'), rendererKb = sum('renderer'), hasRenderer = procs.some(q => q.role === 'renderer');
+      const full = readIf(path.join(rawDir, d, `meminfo-full-${tag}.txt`)), fc = full ? parseMeminfoProcesses(full, pkg) : null;
+      return { procs, appKb, rendererKb, hasRenderer, totalKb: appKb != null && (rendererKb != null || !hasRenderer) ? appKb + (rendererKb || 0) : null,
+        fullCheck: fc && { sectionFound: fc.sectionFound, sumKb: fc.sumPssKb, appKb: fc.appPssKb, rendererKb: fc.rendererPssKb, duplicatesDropped: fc.duplicatesDropped } };
+    };
+    r.memEnd = memFrom(rec.memEnd, 'end'); r.memStart = memFrom(rec.memStart, 'start');
+    const memTotalKb = device && +device.memTotal;
+    for (const m of [r.memEnd, r.memStart]) {
+      if (!m) continue;
+      if (memTotalKb && m.totalKb != null && m.totalKb > 0.8 * memTotalKb) { problems.push(`run ${r.run} ${r.mode}: PSS total ${(m.totalKb / 1024).toFixed(0)} MB is implausible for ${(memTotalKb / 1024).toFixed(0)} MB RAM; excluded`); m.totalKb = null; }
+    }
+    if (r.memEnd && device && (device.webviewUpdate || []).some(x => /Multiprocess enabled: true/.test(x)) && !r.memEnd.hasRenderer) problems.push(`run ${r.run} ${r.mode}: multiprocess WebView but no renderer process found; renderer-inclusive PSS unavailable`);
+    r.boots = rec.boots || null; r.events = rec.events || null; r.leftover = rec.leftover || null;
     if (rec.cpuStart && rec.cpuEnd) {
       let ticks = 0, ok = true;
       for (const [pid, e] of Object.entries(rec.cpuEnd.procs)) {
@@ -99,9 +112,10 @@ export function analyze(dir, historyDir) {
     ['simRatio', 'simulation time / real time', r => r.page.simRatio, 3], ['sceneStepsPerS', 'scene steps per second (source B)', r => r.page.sceneStepsPerS, 2],
     ['sceneMsMean', 'JS time in scene update, ms/frame', r => r.page.sceneMsMean, 3], ['simMsMean', 'JS time in Sim.update, ms/frame', r => r.page.simMsMean, 4],
     ['longTasks', 'long tasks (> 50 ms) in window', r => r.page.longTasks, 0],
-    ['pssSum', 'PSS app + WebView processes at end, MB', r => (r.memEnd && r.memEnd.sumPssKb != null ? r.memEnd.sumPssKb / 1024 : (r.memEnd && r.memEnd.totalPssKb != null ? r.memEnd.totalPssKb / 1024 : null)), 1],
-    ['pssApp', 'PSS app process only at end, MB', r => (r.memEnd && r.memEnd.totalPssKb != null ? r.memEnd.totalPssKb / 1024 : null), 1],
-    ['pssGrowth', 'PSS growth during window (app + WebView), MB', r => (r.memEnd && r.memStart && (r.memEnd.sumPssKb ?? r.memEnd.totalPssKb) != null && (r.memStart.sumPssKb ?? r.memStart.totalPssKb) != null ? ((r.memEnd.sumPssKb ?? r.memEnd.totalPssKb) - (r.memStart.sumPssKb ?? r.memStart.totalPssKb)) / 1024 : null), 1],
+    ['pssTotal', 'PSS app + WebView renderer at end, MB', r => (r.memEnd && r.memEnd.totalKb != null ? r.memEnd.totalKb / 1024 : null), 1],
+    ['pssApp', 'PSS app process at end, MB', r => (r.memEnd && r.memEnd.appKb != null ? r.memEnd.appKb / 1024 : null), 1],
+    ['pssRenderer', 'PSS WebView renderer at end, MB', r => (r.memEnd && r.memEnd.rendererKb != null ? r.memEnd.rendererKb / 1024 : null), 1],
+    ['pssGrowth', 'PSS (app + renderer) growth during window, MB', r => (r.memEnd && r.memStart && r.memEnd.totalKb != null && r.memStart.totalKb != null ? (r.memEnd.totalKb - r.memStart.totalKb) / 1024 : null), 1],
     ['heapEnd', 'JS heap at end, MB (only if the values move)', r => (r.heap.reliable ? r.heap.samples[r.heap.samples.length - 1] : null), 1],
     ['heapGrowth', 'JS heap growth over window, MB (only if the values move)', r => (r.heap.reliable ? r.heap.samples[r.heap.samples.length - 1] - r.heap.samples[0] : null), 2],
     ['cpuCores', 'process CPU, cores busy (app + WebView)', r => (r.cpu ? r.cpu.cores : null), 2],
@@ -229,8 +243,39 @@ export function report(a) {
   P('|---|---|---|---|---|---|---|---|---|---|---|');
   for (const r of a.runs) {
     if (!r.frame) { P(`| ${r.run} | ${r.mode} | - | - | - | - | - | - | - | - | **FAILED** |`); continue; }
-    const pss = r.memEnd ? (r.memEnd.sumPssKb ?? r.memEnd.totalPssKb) / 1024 : null;
+    const pss = r.memEnd && r.memEnd.totalKb != null ? r.memEnd.totalKb / 1024 : null;
     P(`| ${r.run} | ${r.mode} | ${r.frame.frames} | ${f1(r.frame.fpsMean, 2)} | ${f1(r.frame.fpsMedian, 2)} | ${f1(r.frame.frameMsMedian)} / ${f1(r.frame.frameMsP95)} / ${f1(r.frame.frameMsP99)} | ${f1(r.frame.jank25Pct)} | ${f1(r.page.simRatio, 3)} | ${f1(pss)} | ${r.gfx ? f1(r.gfx.jankyPct) : 'n/a'} | ${r.ok ? 'yes' : '**NO**'} |`);
+  }
+  P('');
+
+  P('## Page boots, activity events and leftover processes (every PROBE_BOOT is kept)');
+  P('');
+  P('A clean run has exactly one boot. Boot lines come from the page, `pid` and time from logcat; activity events from `logcat -b events` (created / destroyed / relaunched = `am_create_activity` / `am_destroy_activity` / `am_relaunch_activity`).');
+  P('');
+  P('| run | mode | boots | sequence (logcat pid, time, hadSave, seeded) | activity created / destroyed / relaunched | processes alive before start | cleanup action | alive after cleanup |');
+  P('|---|---|---|---|---|---|---|---|');
+  for (const r of a.runs) {
+    const bs = r.boots ? r.boots.map(b => `${b.pid} ${b.time} ${b.hadSave} ${b.seeded}`).join(' ; ') : 'n/a', ev = r.events ? `${r.events.created} / ${r.events.destroyed} / ${r.events.relaunched}` : 'n/a', lo = r.leftover;
+    P(`| ${r.run} | ${r.mode} | ${r.boots ? r.boots.length : 'n/a'}${r.boots && r.boots.length !== 1 ? ' **!**' : ''} | ${bs} | ${ev} | ${lo ? lo.before.length : 'n/a'} | ${lo && lo.action ? lo.action : '-'} | ${lo ? lo.after.length : 'n/a'} |`);
+  }
+  P('');
+  const pr = a.driver && a.driver.prime;
+  if (pr) {
+    P(`**Warm-up launch before run 1 (discarded, not in any statistic):** boots ${pr.boots ? pr.boots.length : 'n/a'}${pr.boots ? ' (' + pr.boots.map(b => `${b.pid} ${b.time} hadSave=${b.hadSave} seeded=${b.seeded}`).join(' ; ') + ')' : ''}; activity created / destroyed / relaunched ${pr.events ? `${pr.events.created} / ${pr.events.destroyed} / ${pr.events.relaunched}` : 'n/a'}; observations: ${pr.observations && pr.observations.length ? pr.observations.join(' | ') : 'none'}.`);
+    P('');
+  }
+
+  P('## Memory per run (PSS, MB; one `dumpsys meminfo <pid>` per process)');
+  P('');
+  P('Renderer = WebView `sandboxed_process` processes alive during the run (leftovers of earlier runs are removed before the run starts and recorded above). The last column is the full `dumpsys meminfo` read only from its "Total PSS by process" section with duplicate pids dropped, as a cross-check of the per-pid numbers.');
+  P('');
+  P('| run | mode | app | renderer | total | processes (end) | full-dump cross-check total | duplicate entries dropped |');
+  P('|---|---|---|---|---|---|---|---|');
+  const mb = x => (x == null ? 'n/a' : (x / 1024).toFixed(1));
+  for (const r of a.runs) {
+    const m = r.memEnd;
+    if (!m) { P(`| ${r.run} | ${r.mode} | n/a | n/a | n/a | n/a | n/a | n/a |`); continue; }
+    P(`| ${r.run} | ${r.mode} | ${mb(m.appKb)} | ${mb(m.rendererKb)} | ${mb(m.totalKb)} | ${m.procs.map(q => `${q.role[0]}${q.pid}`).join(' ')} | ${m.fullCheck && m.fullCheck.sectionFound ? mb(m.fullCheck.sumKb) : 'section not found'} | ${m.fullCheck ? m.fullCheck.duplicatesDropped : 'n/a'} |`);
   }
   P('');
 

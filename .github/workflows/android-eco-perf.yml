@@ -151,7 +151,8 @@ jobs:
         shell: bash                     # bash -eo pipefail: a failing analyzer is not hidden by tee / tail
         run: |
           mkdir -p "$PERF/out"
-          node tycoon/tools/android-perf/analyze.mjs "$PERF/out" --history tycoon/test-results/android | tee "$PERF/analyze.log" | tail -n 120
+          # the whole report goes to the job log as well (the artifact may not be reachable from everywhere)
+          node tycoon/tools/android-perf/analyze.mjs "$PERF/out" --history tycoon/test-results/android | tee "$PERF/analyze.log"
 
       - name: Protected files unchanged
         if: always()

@@ -57,6 +57,19 @@ seeds the same start save into an empty `localStorage`. If `localStorage` is **n
 
 If a number could not be measured reliably it appears as `n/a`. No value is estimated.
 
+## Evidence the driver keeps (added after the first CI run)
+
+- **Every `PROBE_BOOT`** of a run with logcat pid and time; the clean-start check applies to the **first** boot only. A second boot is a failure of its own ("page booted N times"),
+  described as a second load inside the same run when the later boots find the save the first boot seeded. `logcat -b events` is kept too (`am_create_activity` / `am_destroy_activity` /
+  `am_relaunch_activity`), so an activity re-creation shows as such.
+- **A discarded warm-up launch** runs once before run 1 with the same checks. It is not in any statistic; its findings are reported as an observation. It exists because the first start of an app after the emulator boots
+  is not representative; no check of the measured runs is relaxed.
+- **Leftover renderer processes** (`sandboxed_process`) are looked for before every run. If any survive `am force-stop`, the WebView provider package is force-stopped (kills only its own service processes);
+  what was found and done is recorded; if something still survives, the run is failed and not measured.
+- **Memory** is one `dumpsys meminfo <pid>` per process of the run (app, renderer), reported separately and summed. The full dump is read only from its "Total PSS by process" section with duplicate pids dropped and
+  shown as a cross-check. A total above 80 % of the device RAM is rejected as implausible; a multiprocess WebView with no renderer process found is reported as a problem.
+- The analyzer's whole report is printed in the job log (the artifact is not always reachable).
+
 ## Comparison rules
 
 Per mode: mean, standard deviation, min, max, CV over the valid runs. TRACKING - BASE and PRICING - BASE: difference of means with a Welch 95 % interval

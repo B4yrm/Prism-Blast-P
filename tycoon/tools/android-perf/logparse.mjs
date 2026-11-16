@@ -3,10 +3,11 @@
 import fs from 'fs';
 
 const LINE = /\bFishingTycoon\s*:\s*(PROBE_[A-Z_]+) (.*)$/;
+const PREFIX = /^(\d\d-\d\d \d\d:\d\d:\d\d\.\d+)\s+(\d+)\s+(\d+)\s/;        // logcat -v threadtime: time, pid, tid
 
 // Parse a logcat text (any -v format that keeps "FishingTycoon: <message>") into the probe's events of ONE run.
 export function parseProbeLog(text) {
-  const ev = { boot: null, ready: null, syncBegin: null, windowBegin: null, windowEnd: null, result: null, rawEnd: null, micro: null, done: null, fail: null, storage: null,
+  const ev = { boots: [], readies: [], boot: null, ready: null, syncBegin: null, windowBegin: null, windowEnd: null, result: null, rawEnd: null, micro: null, done: null, fail: null, storage: null,
     rawChunks: new Map(), badLines: 0, jsErrorLines: [], ecoErrLines: 0, probeLineCount: 0 };
   for (const line of text.split('\n')) {
     const m = LINE.exec(line);
@@ -24,7 +25,12 @@ export function parseProbeLog(text) {
     }
     let obj;
     try { obj = JSON.parse(payload); } catch (e) { ev.badLines++; continue; }
-    const key = { PROBE_BOOT: 'boot', PROBE_READY: 'ready', PROBE_SYNC_BEGIN: 'syncBegin', PROBE_WINDOW_BEGIN: 'windowBegin', PROBE_WINDOW_END: 'windowEnd',
+    const pre = PREFIX.exec(line), meta = { logTime: pre ? pre[1] : null, logPid: pre ? +pre[2] : null };
+    // Every boot and every ready is kept (a page that loads twice shows two); .boot / .ready stay the FIRST one,
+    // which is the one the clean-start check applies to.
+    if (tag === 'PROBE_BOOT') { ev.boots.push({ ...obj, ...meta }); if (!ev.boot) ev.boot = obj; continue; }
+    if (tag === 'PROBE_READY') { ev.readies.push({ ...obj, ...meta }); if (!ev.ready) ev.ready = obj; continue; }
+    const key = { PROBE_SYNC_BEGIN: 'syncBegin', PROBE_WINDOW_BEGIN: 'windowBegin', PROBE_WINDOW_END: 'windowEnd',
       PROBE_RESULT: 'result', PROBE_RAW_END: 'rawEnd', PROBE_MICRO: 'micro', PROBE_DONE: 'done', PROBE_FAIL: 'fail', PROBE_STORAGE: 'storage' }[tag];
     if (key) ev[key] = obj; else ev.badLines++;
   }
@@ -75,18 +81,41 @@ export function parseMeminfoPkg(text) {
   return { totalPssKb: m ? +m[1] : (t ? +t[1] : null), totalRssKb: m ? +m[2] : null, javaHeapPssKb: row('Java Heap'), nativeHeapPssKb: row('Native Heap'), graphicsPssKb: row('Graphics') };
 }
 
-// Full "dumpsys meminfo" -> "Total PSS by process" lines for the app and for WebView / sandboxed renderer processes.
+// Full "dumpsys meminfo" -> ONLY the section "Total PSS by process:" (the same processes are listed again under
+// "Total PSS by OOM adjustment:", which doubled the sum in the first CI run). Entries are de-duplicated by pid; the
+// WebView renderer (sandboxed_process...) is reported separately from the app process. If the section is not found
+// nothing is guessed: sectionFound is false and every number is null.
 export function parseMeminfoProcesses(text, pkg) {
-  const procs = [];
-  for (const l of text.split('\n')) {
+  const lines = text.split('\n');
+  const start = lines.findIndex(l => /^\s*Total PSS by process:/.test(l));
+  const out = { sectionFound: start >= 0, procs: [], appPssKb: null, rendererPssKb: null, sumPssKb: null, rendererSeparate: false, duplicatesDropped: 0 };
+  if (start < 0) return out;
+  const seen = new Map();
+  let entries = 0;
+  for (let i = start + 1; i < lines.length; i++) {
+    const l = lines[i];
+    if (/^\s*Total PSS by /.test(l)) break;                                  // next section
+    if (l.trim() === '') { if (entries > 0) break; else continue; }          // blank line ends the section
     const m = /^\s*([\d,]+)K:\s+(\S+)\s+\(pid (\d+)/.exec(l);
     if (!m) continue;
-    const name = m[2];
-    if (name === pkg || /sandboxed_process/i.test(name)) procs.push({ name, pid: +m[3], pssKb: +m[1].replace(/,/g, '') });
+    entries++;
+    const pid = +m[3];
+    if (seen.has(pid)) { out.duplicatesDropped++; continue; }
+    seen.set(pid, { name: m[2], pid, pssKb: +m[1].replace(/,/g, '') });
   }
-  const app = procs.filter(p => p.name === pkg).reduce((a, p) => a + p.pssKb, 0);
-  const web = procs.filter(p => p.name !== pkg).reduce((a, p) => a + p.pssKb, 0);
-  return { procs, appPssKb: procs.length ? app : null, webviewPssKb: procs.length ? web : null, sumPssKb: procs.length ? app + web : null, rendererSeparate: procs.some(p => p.name !== pkg && /sandboxed_process/i.test(p.name)) };
+  out.procs = [...seen.values()].filter(p => p.name === pkg || /sandboxed_process/i.test(p.name)).map(p => ({ ...p, role: p.name === pkg ? 'app' : 'renderer' }));
+  const sum = role => out.procs.filter(p => p.role === role).reduce((a, p) => a + p.pssKb, 0);
+  if (out.procs.length) { out.appPssKb = sum('app'); out.rendererPssKb = sum('renderer'); out.sumPssKb = out.appPssKb + out.rendererPssKb; }
+  out.rendererSeparate = out.procs.some(p => p.role === 'renderer');
+  return out;
+}
+
+// Activity-lifecycle evidence from `logcat -b events` for the app: how often the activity was created, destroyed,
+// relaunched, and how often a process was started for the package.
+export function eventsSummary(text, pkg) {
+  const mine = text.split('\n').filter(l => l.includes(pkg));
+  const n = tag => mine.filter(l => l.includes(tag + ':')).length;
+  return { created: n('am_create_activity'), destroyed: n('am_destroy_activity'), relaunched: n('am_relaunch_activity'), procStart: n('am_proc_start'), procDied: n('am_proc_died'), kill: n('am_kill'), lines: mine.slice(0, 30).map(l => l.slice(0, 200)) };
 }
 
 export function readIf(file) { try { return fs.readFileSync(file, 'utf8'); } catch (e) { return null; } }
