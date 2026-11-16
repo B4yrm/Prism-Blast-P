@@ -134,6 +134,38 @@ The game runs at **about 10.7 FPS in this emulator in every mode** (preset mediu
 (a) keep the first and every `PROBE_BOOT` and report the boot count, so a double load is visible; (b) parse only the "Total PSS by process" section and, per run, kill leftover `sandboxed_process` processes
 or list their pids before the window; (c) re-run with `runs=5`. These touch only `tycoon/tools/android-perf/`.
 
+## 6b. Second Actions run: 15 of 15 runs failed, nothing measured
+
+[Run 43810882591](https://github.com/B4yrm/Prism-Blast-P/actions/runs/43810882591) (head `1bd4186`, runs=5, warm-up 30, window 90, medium, `save-mid`): conclusion `failure`; artifact `android-eco-perf-43810882591`
+(id 14202076224, not downloadable from this sandbox). Build, emulator boot, analyzer and the protected-file check behaved as designed (`protected files identical`, `tracked tree clean`); the analyzer said
+"No valid measurement exists" and gave no FPS. **There is no FPS, frame-time, PSS or simulation/real result from this run.** All of the following is read from the job log.
+
+| What happened | Evidence in the log |
+|---|---|
+| 14 runs: `timeout waiting for PROBE_WINDOW_BEGIN` + `Renderer process (pid) crash detected (code 11)` (SIGSEGV of the WebView renderer) | one line per run; every one of the 14 crashes happened **29 to 32 s after the run's "ready" line** |
+| 1 run (run 1 BASE, the first measured run after the warm-up launch): never reached `PROBE_READY` within the 180 s boot timeout, 1 boot seen, no crash line | `timeout waiting for PROBE_BOOT + PROBE_READY`; the emulator logged `Failed to find ColorBuffer: 337` / `Failed to bind to texture` shortly before (correlation only) |
+| Warm-up launch (discarded): page booted **2 times in the same process** (pid 4161, 11 s apart; first boot clean, second boot `hadSave=true, seeded=false`) | `PRIME launch ... boots 2 ... pid 4161 at 05:35:13.729 ... | pid 4161 at 05:35:25.318` |
+| Every later launch: exactly 1 boot ("boots 1" in all 15 run lines) | same lines |
+
+### Diagnosis
+
+1. **The renderer crashes are very probably caused by my change in `1bd4186`, not by the game.** The warm-up is 30 s plus a 1.5 s start delay, so "29 to 32 s after ready" is the moment the driver takes the start-of-window snapshot;
+   that snapshot now runs `dumpsys meminfo <pid>` against the **WebView renderer process** (new in this commit). The first CI run (`6837523`) took the same moment's gfxinfo reset, CPU times, `dumpsys meminfo <package>` and the full
+   `dumpsys meminfo`, but not a per-pid dump of the renderer, and had no renderer crash in 9 runs. 14 of 14 crashes at that moment against 0 of 9 before is strong evidence, but it is an inference: the crash dump itself was not read.
+   My Chromium and fake-adb self test could not show this (a fake `dumpsys` cannot crash a renderer); that is a gap in the self test, not a reason to doubt the finding.
+2. **The activity-event evidence is empty because of a bug of mine, not because there were no events.** The warm-up launch reports activity events created/destroyed/relaunched = 0/0/0 although the page loaded twice. The parser looks for
+   `am_create_activity`, `am_destroy_activity`, `am_relaunch_activity`; on API 34 these events are very probably named `wm_create_activity` etc. (only `am_proc_start` kept its name; it counted 2 because the renderer process start also names the package).
+   Unverified until the events file is read.
+3. **The double load of the first launch is now seen twice** (first CI run: first measured run; this run: warm-up launch), both times on the first start of the app after the emulator boot, and **not once in 23 later launches**. Same process, so not a process restart.
+   Whether the cause is an activity re-creation or a second navigation of the same WebView is still **not proven**; with the events parsing fixed, the next run would show it. The warm-up launch absorbed it: all 15 measured runs show one boot, no state leak.
+4. The run 1 BASE no-ready case is unexplained (no crash line, no state-leak message).
+
+### What this means
+
+- Q10's tooling is not yet delivering a valid Android measurement. The **first run (43755355349, 8 valid runs)** remains the only real Android data; its limits are in section 6.
+- Not done, by instruction: no further CI run, no extra test. Proposed fix (needs approval): remove the per-pid `dumpsys meminfo` on renderer processes and read renderer PSS from the full dump's "Total PSS by process" section (section-aware, de-duplicated by pid), which did
+  not crash anything in the first run; fix the `wm_*` event names; keep everything else.
+
 ## 7. Open risks
 
 1. **Resolved by run 43755355349:** the Gradle build, `am start --es page/query`, the `?query` on the asset URL, `run-as`, CPU and gfxinfo collection and the analyzer all worked on the emulator. **Still open:** the two problems in section 6. Originally listed as unverified: `am start --es page/query` into the patched `MainActivity`; `?query` on an `android_asset` URL; `run-as` listing after `pm clear`; `ps -A -o PID,NAME` and `/proc/<pid>/stat` as shell user (CPU is best effort and becomes `n/a`); the `Total PSS by process` format; Gradle accepting `from(...) { include ... }`.
